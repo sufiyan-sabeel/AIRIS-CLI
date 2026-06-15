@@ -19,22 +19,30 @@ A powerful AI coding agent CLI with read, bash, edit, write tools and session ma
 - 🎨 **Beautiful TUI** - Rich terminal user interface with themes
 - 🔌 **Extensible** - Custom extensions and tools support
 
-## Quick Start
+## Quick Install
 
-### Install
+### One-liner Install
 
 ```bash
-# Clone the repository
+curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/AIRIS-CLI/main/install.sh | bash
+```
+
+### Or Clone & Install
+
+```bash
 git clone https://github.com/YOUR_USERNAME/AIRIS-CLI.git
 cd AIRIS-CLI
+chmod +x setup.sh
+./setup.sh
+```
 
-# Install dependencies
+### Manual Install
+
+```bash
+git clone https://github.com/YOUR_USERNAME/AIRIS-CLI.git
+cd AIRIS-CLI
 npm install --ignore-scripts --no-audit --no-fund
-
-# Build all packages
 npm run build
-
-# Link globally
 npm link
 ```
 
