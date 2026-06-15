@@ -24,13 +24,13 @@ A powerful AI coding agent CLI with read, bash, edit, write tools and session ma
 ### One-liner Install
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/AIRIS-CLI/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/sufiyan-sabeel/AIRIS-CLI/main/install.sh | bash
 ```
 
 ### Or Clone & Install
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/AIRIS-CLI.git
+git clone https://github.com/sufiyan-sabeel/AIRIS-CLI.git
 cd AIRIS-CLI
 chmod +x setup.sh
 ./setup.sh
@@ -39,7 +39,7 @@ chmod +x setup.sh
 ### Manual Install
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/AIRIS-CLI.git
+git clone https://github.com/sufiyan-sabeel/AIRIS-CLI.git
 cd AIRIS-CLI
 npm install --ignore-scripts --no-audit --no-fund
 npm run build

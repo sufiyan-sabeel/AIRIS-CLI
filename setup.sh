@@ -149,8 +149,8 @@ cat << 'FOOTER'
            ╔═══════════════════════════════════════════════════════╗
            ║  "The future of coding is AI-assisted."              ║
            ║                                                       ║
-           ║  GitHub:  https://github.com/YOUR_USERNAME/AIRIS-CLI ║
-           ║  Docs:    https://github.com/YOUR_USERNAME/AIRIS-CLI ║
+           ║  GitHub:  https://github.com/sufiyan-sabeel/AIRIS-CLI ║
+           ║  Docs:    https://github.com/sufiyan-sabeel/AIRIS-CLI ║
            ╚═══════════════════════════════════════════════════════╝
 FOOTER
 echo -e "${NC}"
