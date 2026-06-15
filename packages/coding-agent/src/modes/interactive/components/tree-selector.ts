@@ -10,7 +10,7 @@ import {
 	truncateToWidth,
 	visibleWidth,
 	wrapTextWithAnsi,
-} from "@earendil-works/pi-tui";
+} from "@earendil-works/airis-tui";
 import type { SessionTreeNode } from "../../../core/session-manager.ts";
 import { theme } from "../theme/theme.ts";
 import { DynamicBorder } from "./dynamic-border.ts";

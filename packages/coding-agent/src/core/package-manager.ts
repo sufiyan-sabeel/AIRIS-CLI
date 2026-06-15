@@ -155,7 +155,7 @@ interface GitUpdateTarget extends ConfiguredUpdateSource {
 	parsed: GitSource;
 }
 
-interface PiManifest {
+interface AirisManifest {
 	extensions?: string[];
 	skills?: string[];
 	prompts?: string[];
@@ -343,7 +343,7 @@ function collectFiles(
 	return files;
 }
 
-type SkillDiscoveryMode = "pi" | "agents";
+type SkillDiscoveryMode = "airis" | "agents";
 
 function collectSkillEntries(
 	dir: string,
@@ -402,7 +402,7 @@ function collectSkillEntries(
 			}
 
 			const relPath = toPosixPath(relative(root, fullPath));
-			if (mode === "pi" && dir === root && isFile && entry.name.endsWith(".md") && !ig.ignores(relPath)) {
+			if (mode === "airis" && dir === root && isFile && entry.name.endsWith(".md") && !ig.ignores(relPath)) {
 				entries.push(fullPath);
 				continue;
 			}
@@ -532,10 +532,10 @@ function collectAutoThemeEntries(dir: string): string[] {
 	return entries;
 }
 
-function readPiManifestFile(packageJsonPath: string): PiManifest | null {
+function readAirisManifestFile(packageJsonPath: string): AirisManifest | null {
 	try {
 		const content = readFileSync(packageJsonPath, "utf-8");
-		const pkg = JSON.parse(content) as { pi?: PiManifest };
+		const pkg = JSON.parse(content) as { pi?: AirisManifest };
 		return pkg.pi ?? null;
 	} catch {
 		return null;
@@ -545,7 +545,7 @@ function readPiManifestFile(packageJsonPath: string): PiManifest | null {
 function resolveExtensionEntries(dir: string): string[] | null {
 	const packageJsonPath = join(dir, "package.json");
 	if (existsSync(packageJsonPath)) {
-		const manifest = readPiManifestFile(packageJsonPath);
+		const manifest = readAirisManifestFile(packageJsonPath);
 		if (manifest?.extensions?.length) {
 			const entries: string[] = [];
 			for (const extPath of manifest.extensions) {
@@ -632,7 +632,7 @@ function collectAutoExtensionEntries(dir: string): string[] {
  */
 function collectResourceFiles(dir: string, resourceType: ResourceType): string[] {
 	if (resourceType === "skills") {
-		return collectSkillEntries(dir, "pi");
+		return collectSkillEntries(dir, "airis");
 	}
 	if (resourceType === "extensions") {
 		return collectAutoExtensionEntries(dir);
@@ -1736,10 +1736,10 @@ export class DefaultPackageManager implements PackageManager {
 
 	private getNpmInstallArgs(specs: string[], installRoot: string): string[] {
 		const packageManagerName = this.getPackageManagerName();
-		// Extension packages run inside pi and resolve pi APIs through loader aliases/virtual modules.
+		// Extension packages run inside airis and resolve airis APIs through loader aliases/virtual modules.
 		// Disable peer dependency resolution for managed installs (npm's --legacy-peer-deps, and
 		// equivalent bun/pnpm settings) so package managers do not install or solve host-provided
-		// @earendil-works/pi-* peers. Stale auto-installed pi peers can otherwise block updates.
+		// @earendil-works/airis-* peers. Stale auto-installed airis peers can otherwise block updates.
 		if (packageManagerName === "bun") {
 			return ["install", ...specs, "--cwd", installRoot, "--omit=peer"];
 		}
@@ -1896,7 +1896,7 @@ export class DefaultPackageManager implements PackageManager {
 		this.ensureGitIgnore(installRoot);
 		const packageJsonPath = join(installRoot, "package.json");
 		if (!existsSync(packageJsonPath)) {
-			const pkgJson = { name: "pi-extensions", private: true };
+			const pkgJson = { name: "airis-extensions", private: true };
 			writeFileSync(packageJsonPath, JSON.stringify(pkgJson, null, 2), "utf-8");
 		}
 	}
@@ -2058,10 +2058,10 @@ export class DefaultPackageManager implements PackageManager {
 			return true;
 		}
 
-		const manifest = this.readPiManifest(packageRoot);
+		const manifest = this.readAirisManifest(packageRoot);
 		if (manifest) {
 			for (const resourceType of RESOURCE_TYPES) {
-				const entries = manifest[resourceType as keyof PiManifest];
+				const entries = manifest[resourceType as keyof AirisManifest];
 				this.addManifestEntries(
 					entries,
 					packageRoot,
@@ -2094,8 +2094,8 @@ export class DefaultPackageManager implements PackageManager {
 		target: Map<string, { metadata: PathMetadata; enabled: boolean }>,
 		metadata: PathMetadata,
 	): void {
-		const manifest = this.readPiManifest(packageRoot);
-		const entries = manifest?.[resourceType as keyof PiManifest];
+		const manifest = this.readAirisManifest(packageRoot);
+		const entries = manifest?.[resourceType as keyof AirisManifest];
 		if (entries) {
 			this.addManifestEntries(entries, packageRoot, resourceType, target, metadata);
 			return;
@@ -2145,8 +2145,8 @@ export class DefaultPackageManager implements PackageManager {
 		packageRoot: string,
 		resourceType: ResourceType,
 	): { allFiles: string[]; enabledByManifest: Set<string> } {
-		const manifest = this.readPiManifest(packageRoot);
-		const entries = manifest?.[resourceType as keyof PiManifest];
+		const manifest = this.readAirisManifest(packageRoot);
+		const entries = manifest?.[resourceType as keyof AirisManifest];
 		if (entries && entries.length > 0) {
 			const allFiles = this.collectFilesFromManifestEntries(entries, packageRoot, resourceType);
 			const manifestPatterns = entries.filter(isOverridePattern);
@@ -2163,7 +2163,7 @@ export class DefaultPackageManager implements PackageManager {
 		return { allFiles, enabledByManifest: new Set(allFiles) };
 	}
 
-	private readPiManifest(packageRoot: string): PiManifest | null {
+	private readAirisManifest(packageRoot: string): AirisManifest | null {
 		const packageJsonPath = join(packageRoot, "package.json");
 		if (!existsSync(packageJsonPath)) {
 			return null;
@@ -2171,7 +2171,7 @@ export class DefaultPackageManager implements PackageManager {
 
 		try {
 			const content = readFileSync(packageJsonPath, "utf-8");
-			const pkg = JSON.parse(content) as { pi?: PiManifest };
+			const pkg = JSON.parse(content) as { pi?: AirisManifest };
 			return pkg.pi ?? null;
 		} catch {
 			return null;
@@ -2304,7 +2304,7 @@ export class DefaultPackageManager implements PackageManager {
 		};
 
 		if (projectTrusted) {
-			// Project extensions from .pi/
+			// Project extensions from .airis/
 			addResources(
 				"extensions",
 				collectAutoExtensionEntries(projectDirs.extensions),
@@ -2313,10 +2313,10 @@ export class DefaultPackageManager implements PackageManager {
 				projectBaseDir,
 			);
 
-			// Project skills from .pi/
+			// Project skills from .airis/
 			addResources(
 				"skills",
-				collectAutoSkillEntries(projectDirs.skills, "pi"),
+				collectAutoSkillEntries(projectDirs.skills, "airis"),
 				projectMetadata,
 				projectOverrides.skills,
 				projectBaseDir,
@@ -2356,7 +2356,7 @@ export class DefaultPackageManager implements PackageManager {
 			);
 		}
 
-		// User extensions from ~/.pi/agent/
+		// User extensions from ~/.airis/agent/
 		addResources(
 			"extensions",
 			collectAutoExtensionEntries(userDirs.extensions),
@@ -2365,10 +2365,10 @@ export class DefaultPackageManager implements PackageManager {
 			globalBaseDir,
 		);
 
-		// User skills from ~/.pi/agent/
+		// User skills from ~/.airis/agent/
 		addResources(
 			"skills",
-			collectAutoSkillEntries(userDirs.skills, "pi"),
+			collectAutoSkillEntries(userDirs.skills, "airis"),
 			userMetadata,
 			userOverrides.skills,
 			globalBaseDir,

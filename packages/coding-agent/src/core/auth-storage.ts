@@ -2,7 +2,7 @@
  * Credential storage for API keys and OAuth tokens.
  * Handles loading, saving, and refreshing credentials from auth.json.
  *
- * Uses file locking to prevent race conditions when multiple pi instances
+ * Uses file locking to prevent race conditions when multiple airis instances
  * try to refresh tokens simultaneously.
  */
 
@@ -12,8 +12,8 @@ import {
 	type OAuthCredentials,
 	type OAuthLoginCallbacks,
 	type OAuthProviderId,
-} from "@earendil-works/pi-ai";
-import { getOAuthApiKey, getOAuthProvider, getOAuthProviders } from "@earendil-works/pi-ai/oauth";
+} from "@earendil-works/airis-ai";
+import { getOAuthApiKey, getOAuthProvider, getOAuthProviders } from "@earendil-works/airis-ai/oauth";
 import { chmodSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import { dirname, join } from "path";
 import lockfile from "proper-lockfile";

@@ -2,7 +2,7 @@
  * CLI argument parsing and help display
  */
 
-import type { ThinkingLevel } from "@earendil-works/pi-agent-core";
+import type { ThinkingLevel } from "@earendil-works/airis-agent-core";
 import chalk from "chalk";
 import { APP_NAME, CONFIG_DIR_NAME, ENV_AGENT_DIR, ENV_SESSION_DIR } from "../config.ts";
 import type { ExtensionFlag } from "../core/extensions/types.ts";
@@ -229,7 +229,7 @@ ${chalk.bold("Commands:")}
   ${APP_NAME} install <source> [-l]     Install extension source and add to settings
   ${APP_NAME} remove <source> [-l]      Remove extension source from settings
   ${APP_NAME} uninstall <source> [-l]   Alias for remove
-  ${APP_NAME} update [source|self|pi]   Update pi and installed extensions
+  ${APP_NAME} update [source|self]      Update AIRIS and installed extensions
   ${APP_NAME} list                      List installed extensions from settings
   ${APP_NAME} config                    Open TUI to enable/disable package resources
   ${APP_NAME} <command> --help          Show help for install/remove/uninstall/update/list
@@ -377,6 +377,7 @@ ${chalk.bold("Environment Variables:")}
   PI_OFFLINE                       - Disable startup network operations when set to 1/true/yes
   PI_TELEMETRY                     - Override install telemetry when set to 1/true/yes or 0/false/no
   PI_SHARE_VIEWER_URL              - Base URL for /share command (default: https://pi.dev/session/)
+  AIRIS_CODING_AGENT               - Set to "true" when running inside AIRIS
 
 ${chalk.bold("Built-in Tool Names:")}
   read   - Read file contents

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Build pi binaries for all platforms locally.
+# Build AIRIS binaries for all platforms locally.
 # Mirrors .github/workflows/build-binaries.yml
 #
 # Usage:
@@ -15,12 +15,12 @@
 #
 # Output:
 #   packages/coding-agent/binaries/
-#     pi-darwin-arm64.tar.gz
-#     pi-darwin-x64.tar.gz
-#     pi-linux-x64.tar.gz
-#     pi-linux-arm64.tar.gz
-#     pi-windows-x64.zip
-#     pi-windows-arm64.zip
+#     airis-darwin-arm64.tar.gz
+#     airis-darwin-x64.tar.gz
+#     airis-linux-x64.tar.gz
+#     airis-linux-arm64.tar.gz
+#     airis-windows-x64.zip
+#     airis-windows-arm64.zip
 
 set -euo pipefail
 
@@ -134,9 +134,9 @@ for platform in "${PLATFORMS[@]}"; do
     # explicit build entrypoints. The runtime can still use new URL(...), but the
     # worker must be present in the compiled executable.
     if [[ "$platform" == windows-* ]]; then
-        bun build --compile --target=bun-$platform ./dist/bun/cli.js ./src/utils/image-resize-worker.ts --outfile "$OUTPUT_DIR/$platform/pi.exe"
+        bun build --compile --target=bun-$platform ./dist/bun/cli.js ./src/utils/image-resize-worker.ts --outfile "$OUTPUT_DIR/$platform/airis.exe"
     else
-        bun build --compile --target=bun-$platform ./dist/bun/cli.js ./src/utils/image-resize-worker.ts --outfile "$OUTPUT_DIR/$platform/pi"
+        bun build --compile --target=bun-$platform ./dist/bun/cli.js ./src/utils/image-resize-worker.ts --outfile "$OUTPUT_DIR/$platform/airis"
     fi
 done
 
@@ -202,12 +202,12 @@ cd "$OUTPUT_DIR"
 for platform in "${PLATFORMS[@]}"; do
     if [[ "$platform" == windows-* ]]; then
         # Windows (zip)
-        echo "Creating pi-$platform.zip..."
-        (cd "$platform" && zip -r ../pi-$platform.zip .)
+        echo "Creating airis-$platform.zip..."
+        (cd "$platform" && zip -r ../airis-$platform.zip .)
     else
         # Unix platforms (tar.gz) - use wrapper directory for mise compatibility
-        echo "Creating pi-$platform.tar.gz..."
-        mv "$platform" pi && tar -czf pi-$platform.tar.gz pi && mv pi "$platform"
+        echo "Creating airis-$platform.tar.gz..."
+        mv "$platform" airis && tar -czf airis-$platform.tar.gz pi && mv airis "$platform"
     fi
 done
 
@@ -216,9 +216,9 @@ echo "==> Extracting archives for testing..."
 for platform in "${PLATFORMS[@]}"; do
     rm -rf "$platform"
     if [[ "$platform" == windows-* ]]; then
-        mkdir -p "$platform" && (cd "$platform" && unzip -q ../pi-$platform.zip)
+        mkdir -p "$platform" && (cd "$platform" && unzip -q ../airis-$platform.zip)
     else
-        tar -xzf pi-$platform.tar.gz && mv pi "$platform"
+        tar -xzf airis-$platform.tar.gz && mv airis "$platform"
     fi
 done
 
@@ -230,8 +230,8 @@ echo ""
 echo "Extracted directories for testing:"
 for platform in "${PLATFORMS[@]}"; do
     if [[ "$platform" == windows-* ]]; then
-        echo "  $OUTPUT_DIR/$platform/pi.exe"
+        echo "  $OUTPUT_DIR/$platform/airis.exe"
     else
-        echo "  $OUTPUT_DIR/$platform/pi"
+        echo "  $OUTPUT_DIR/$platform/airis"
     fi
 done

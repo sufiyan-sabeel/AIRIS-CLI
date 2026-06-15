@@ -57,16 +57,16 @@ See [examples/extensions/](../examples/extensions/) for working implementations.
 Create `~/.pi/agent/extensions/my-extension.ts`:
 
 ```typescript
-import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import type { ExtensionAPI } from "@earendil-works/airis-coding-agent";
 import { Type } from "typebox";
 
 export default function (pi: ExtensionAPI) {
   // React to events
-  pi.on("session_start", async (_event, ctx) => {
+  airis.on("session_start", async (_event, ctx) => {
     ctx.ui.notify("Extension loaded!", "info");
   });
 
-  pi.on("tool_call", async (event, ctx) => {
+  airis.on("tool_call", async (event, ctx) => {
     if (event.toolName === "bash" && event.input.command?.includes("rm -rf")) {
       const ok = await ctx.ui.confirm("Dangerous!", "Allow rm -rf?");
       if (!ok) return { block: true, reason: "Blocked by user" };
@@ -139,10 +139,10 @@ To share extensions via npm or git as pi packages, see [packages.md](packages.md
 
 | Package | Purpose |
 |---------|---------|
-| `@earendil-works/pi-coding-agent` | Extension types (`ExtensionAPI`, `ExtensionContext`, events) |
+| `@earendil-works/airis-coding-agent` | Extension types (`ExtensionAPI`, `ExtensionContext`, events) |
 | `typebox` | Schema definitions for tool parameters |
-| `@earendil-works/pi-ai` | AI utilities (`StringEnum` for Google-compatible enums) |
-| `@earendil-works/pi-tui` | TUI components for custom rendering |
+| `@earendil-works/airis-ai` | AI utilities (`StringEnum` for Google-compatible enums) |
+| `@earendil-works/airis-tui` | TUI components for custom rendering |
 
 npm dependencies work too. Add a `package.json` next to your extension (or in a parent directory), run `npm install`, and imports from `node_modules/` are resolved automatically.
 
@@ -155,11 +155,11 @@ Node.js built-ins (`node:fs`, `node:path`, etc.) are also available.
 An extension exports a default factory function that receives `ExtensionAPI`. The factory can be synchronous or asynchronous:
 
 ```typescript
-import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import type { ExtensionAPI } from "@earendil-works/airis-coding-agent";
 
 export default function (pi: ExtensionAPI) {
   // Subscribe to events
-  pi.on("event_name", async (event, ctx) => {
+  airis.on("event_name", async (event, ctx) => {
     // ctx.ui for user interaction
     const ok = await ctx.ui.confirm("Title", "Are you sure?");
     ctx.ui.notify("Done!", "info");
@@ -184,7 +184,7 @@ If the factory returns a `Promise`, pi awaits it before continuing startup. That
 Use an async factory for one-time startup work such as fetching remote configuration or dynamically discovering available models.
 
 ```typescript
-import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import type { ExtensionAPI } from "@earendil-works/airis-coding-agent";
 
 export default async function (pi: ExtensionAPI) {
   const response = await fetch("http://localhost:1234/v1/models");
@@ -348,7 +348,7 @@ exit (Ctrl+C, Ctrl+D, SIGHUP, SIGTERM)
 Fired before pi decides whether to trust a project with dynamic configs (`.pi` or `.agents/skills`). It runs during startup and when session replacement (for example `/resume`) enters a cwd whose trust has not been resolved in the current process. Only user/global extensions and CLI `-e` extensions participate; project-local extensions are not loaded until after trust is resolved.
 
 ```typescript
-pi.on("project_trust", async (event, ctx) => {
+airis.on("project_trust", async (event, ctx) => {
   // event.cwd - current working directory
   // ctx has a limited trust context: cwd, mode, hasUI, and select/confirm/input/notify UI helpers
   if (await ctx.ui.confirm("Trust project?", event.cwd)) {
@@ -368,7 +368,7 @@ Fired after `session_start` so extensions can contribute additional skill, promp
 The startup path uses `reason: "startup"`. Reload uses `reason: "reload"`.
 
 ```typescript
-pi.on("resources_discover", async (event, _ctx) => {
+airis.on("resources_discover", async (event, _ctx) => {
   // event.cwd - current working directory
   // event.reason - "startup" | "reload"
   return {
@@ -388,7 +388,7 @@ See [Session Format](session-format.md) for session storage internals and the Se
 Fired when a session is started, loaded, or reloaded.
 
 ```typescript
-pi.on("session_start", async (event, ctx) => {
+airis.on("session_start", async (event, ctx) => {
   // event.reason - "startup" | "reload" | "new" | "resume" | "fork"
   // event.previousSessionFile - present for "new", "resume", and "fork"
   ctx.ui.notify(`Session: ${ctx.sessionManager.getSessionFile() ?? "ephemeral"}`, "info");
@@ -400,7 +400,7 @@ pi.on("session_start", async (event, ctx) => {
 Fired before starting a new session (`/new`) or switching sessions (`/resume`).
 
 ```typescript
-pi.on("session_before_switch", async (event, ctx) => {
+airis.on("session_before_switch", async (event, ctx) => {
   // event.reason - "new" or "resume"
   // event.targetSessionFile - session we're switching to (only for "resume")
 
@@ -419,7 +419,7 @@ Do cleanup work in `session_shutdown`, then reestablish any in-memory state in `
 Fired when forking via `/fork` or cloning via `/clone`.
 
 ```typescript
-pi.on("session_before_fork", async (event, ctx) => {
+airis.on("session_before_fork", async (event, ctx) => {
   // event.entryId - ID of the selected entry
   // event.position - "before" for /fork, "at" for /clone
   return { cancel: true }; // Cancel fork/clone
@@ -436,7 +436,7 @@ Do cleanup work in `session_shutdown`, then reestablish any in-memory state in `
 Fired on compaction. See [compaction.md](compaction.md) for details.
 
 ```typescript
-pi.on("session_before_compact", async (event, ctx) => {
+airis.on("session_before_compact", async (event, ctx) => {
   const { preparation, branchEntries, customInstructions, signal } = event;
 
   // Cancel:
@@ -452,7 +452,7 @@ pi.on("session_before_compact", async (event, ctx) => {
   };
 });
 
-pi.on("session_compact", async (event, ctx) => {
+airis.on("session_compact", async (event, ctx) => {
   // event.compactionEntry - the saved compaction
   // event.fromExtension - whether extension provided it
 });
@@ -463,14 +463,14 @@ pi.on("session_compact", async (event, ctx) => {
 Fired on `/tree` navigation. See [Sessions](sessions.md) for tree navigation concepts.
 
 ```typescript
-pi.on("session_before_tree", async (event, ctx) => {
+airis.on("session_before_tree", async (event, ctx) => {
   const { preparation, signal } = event;
   return { cancel: true };
   // OR provide custom summary:
   return { summary: { summary: "...", details: {} } };
 });
 
-pi.on("session_tree", async (event, ctx) => {
+airis.on("session_tree", async (event, ctx) => {
   // event.newLeafId, oldLeafId, summaryEntry, fromExtension
 });
 ```
@@ -480,7 +480,7 @@ pi.on("session_tree", async (event, ctx) => {
 Fired before a started session runtime is torn down. Use this to clean up resources opened from `session_start` or other session-scoped hooks.
 
 ```typescript
-pi.on("session_shutdown", async (event, ctx) => {
+airis.on("session_shutdown", async (event, ctx) => {
   // event.reason - "quit" | "reload" | "new" | "resume" | "fork"
   // event.targetSessionFile - destination session for session replacement flows
   // Cleanup, save state, etc.
@@ -494,7 +494,7 @@ pi.on("session_shutdown", async (event, ctx) => {
 Fired after user submits prompt, before agent loop. Can inject a message and/or modify the system prompt.
 
 ```typescript
-pi.on("before_agent_start", async (event, ctx) => {
+airis.on("before_agent_start", async (event, ctx) => {
   // event.prompt - user's prompt text
   // event.images - attached images (if any)
   // event.systemPrompt - current chained system prompt for this handler
@@ -531,9 +531,9 @@ Inside `before_agent_start`, `event.systemPrompt` and `ctx.getSystemPrompt()` bo
 Fired once per user prompt.
 
 ```typescript
-pi.on("agent_start", async (_event, ctx) => {});
+airis.on("agent_start", async (_event, ctx) => {});
 
-pi.on("agent_end", async (event, ctx) => {
+airis.on("agent_end", async (event, ctx) => {
   // event.messages - messages from this prompt
 });
 ```
@@ -543,11 +543,11 @@ pi.on("agent_end", async (event, ctx) => {
 Fired for each turn (one LLM response + tool calls).
 
 ```typescript
-pi.on("turn_start", async (event, ctx) => {
+airis.on("turn_start", async (event, ctx) => {
   // event.turnIndex, event.timestamp
 });
 
-pi.on("turn_end", async (event, ctx) => {
+airis.on("turn_end", async (event, ctx) => {
   // event.turnIndex, event.message, event.toolResults
 });
 ```
@@ -561,16 +561,16 @@ Fired for message lifecycle updates.
 - `message_end` handlers can return `{ message }` to replace the finalized message. The replacement must keep the same `role`.
 
 ```typescript
-pi.on("message_start", async (event, ctx) => {
+airis.on("message_start", async (event, ctx) => {
   // event.message
 });
 
-pi.on("message_update", async (event, ctx) => {
+airis.on("message_update", async (event, ctx) => {
   // event.message
   // event.assistantMessageEvent (token-by-token stream event)
 });
 
-pi.on("message_end", async (event, ctx) => {
+airis.on("message_end", async (event, ctx) => {
   if (event.message.role !== "assistant") return;
 
   return {
@@ -599,15 +599,15 @@ In parallel tool mode:
 - final `toolResult` message events are still emitted later in assistant source order
 
 ```typescript
-pi.on("tool_execution_start", async (event, ctx) => {
+airis.on("tool_execution_start", async (event, ctx) => {
   // event.toolCallId, event.toolName, event.args
 });
 
-pi.on("tool_execution_update", async (event, ctx) => {
+airis.on("tool_execution_update", async (event, ctx) => {
   // event.toolCallId, event.toolName, event.args, event.partialResult
 });
 
-pi.on("tool_execution_end", async (event, ctx) => {
+airis.on("tool_execution_end", async (event, ctx) => {
   // event.toolCallId, event.toolName, event.result, event.isError
 });
 ```
@@ -617,7 +617,7 @@ pi.on("tool_execution_end", async (event, ctx) => {
 Fired before each LLM call. Modify messages non-destructively. See [Session Format](session-format.md) for message types.
 
 ```typescript
-pi.on("context", async (event, ctx) => {
+airis.on("context", async (event, ctx) => {
   // event.messages - deep copy, safe to modify
   const filtered = event.messages.filter(m => !shouldPrune(m));
   return { messages: filtered };
@@ -631,7 +631,7 @@ Fired after the provider-specific payload is built, right before the request is 
 This hook can rewrite provider-level system instructions or remove them entirely. Those payload-level changes are not reflected by `ctx.getSystemPrompt()`, which reports Pi's system prompt string rather than the final serialized provider payload.
 
 ```typescript
-pi.on("before_provider_request", (event, ctx) => {
+airis.on("before_provider_request", (event, ctx) => {
   console.log(JSON.stringify(event.payload, null, 2));
 
   // Optional: replace payload
@@ -646,7 +646,7 @@ This is mainly useful for debugging provider serialization and cache behavior.
 Fired after an HTTP response is received and before its stream body is consumed. Handlers run in extension load order.
 
 ```typescript
-pi.on("after_provider_response", (event, ctx) => {
+airis.on("after_provider_response", (event, ctx) => {
   // event.status - HTTP status code
   // event.headers - normalized response headers
   if (event.status === 429) {
@@ -664,7 +664,7 @@ Header availability depends on provider and transport. Providers that abstract H
 Fired when the model changes via `/model` command, model cycling (`Ctrl+P`), or session restore.
 
 ```typescript
-pi.on("model_select", async (event, ctx) => {
+airis.on("model_select", async (event, ctx) => {
   // event.model - newly selected model
   // event.previousModel - previous model (undefined if first selection)
   // event.source - "set" | "cycle" | "restore"
@@ -685,7 +685,7 @@ Use this to update UI elements (status bars, footers) or perform model-specific 
 Fired when the thinking level changes. This is notification-only; handler return values are ignored.
 
 ```typescript
-pi.on("thinking_level_select", async (event, ctx) => {
+airis.on("thinking_level_select", async (event, ctx) => {
   // event.level - newly selected thinking level
   // event.previousLevel - previous thinking level
 
@@ -714,9 +714,9 @@ Behavior guarantees:
 - Return values from `tool_call` only control blocking via `{ block: true, reason?: string }`
 
 ```typescript
-import { isToolCallEventType } from "@earendil-works/pi-coding-agent";
+import { isToolCallEventType } from "@earendil-works/airis-coding-agent";
 
-pi.on("tool_call", async (event, ctx) => {
+airis.on("tool_call", async (event, ctx) => {
   // event.toolName - "bash", "read", "write", "edit", etc.
   // event.toolCallId
   // event.input - tool parameters (mutable)
@@ -750,10 +750,10 @@ export type MyToolInput = Static<typeof myToolSchema>;
 Use `isToolCallEventType` with explicit type parameters:
 
 ```typescript
-import { isToolCallEventType } from "@earendil-works/pi-coding-agent";
+import { isToolCallEventType } from "@earendil-works/airis-coding-agent";
 import type { MyToolInput } from "my-extension";
 
-pi.on("tool_call", (event) => {
+airis.on("tool_call", (event) => {
   if (isToolCallEventType<"my_tool", MyToolInput>("my_tool", event)) {
     event.input.action;  // typed
   }
@@ -774,9 +774,9 @@ In parallel tool mode, `tool_result` and `tool_execution_end` may interleave in 
 Use `ctx.signal` for nested async work inside the handler. This lets Esc cancel model calls, `fetch()`, and other abort-aware operations started by the extension.
 
 ```typescript
-import { isBashToolResult } from "@earendil-works/pi-coding-agent";
+import { isBashToolResult } from "@earendil-works/airis-coding-agent";
 
-pi.on("tool_result", async (event, ctx) => {
+airis.on("tool_result", async (event, ctx) => {
   // event.toolName, event.toolCallId, event.input
   // event.content, event.details, event.isError
 
@@ -802,9 +802,9 @@ pi.on("tool_result", async (event, ctx) => {
 Fired when user executes `!` or `!!` commands. **Can intercept.**
 
 ```typescript
-import { createLocalBashOperations } from "@earendil-works/pi-coding-agent";
+import { createLocalBashOperations } from "@earendil-works/airis-coding-agent";
 
-pi.on("user_bash", (event, ctx) => {
+airis.on("user_bash", (event, ctx) => {
   // event.command - the bash command
   // event.excludeFromContext - true if !! prefix
   // event.cwd - working directory
@@ -841,7 +841,7 @@ Fired when user input is received, after extension commands are checked but befo
 5. Agent processing begins (`before_agent_start`, etc.)
 
 ```typescript
-pi.on("input", async (event, ctx) => {
+airis.on("input", async (event, ctx) => {
   // event.text - raw input (before skill/template expansion)
   // event.images - attached images, if any
   // event.source - "interactive" (typed), "rpc" (API), or "extension" (via sendUserMessage)
@@ -933,7 +933,7 @@ Use this for abort-aware nested work started by extension handlers, for example:
 It is usually `undefined` in idle or non-turn contexts such as session events, extension commands, and shortcuts fired while pi is idle.
 
 ```typescript
-pi.on("tool_result", async (event, ctx) => {
+airis.on("tool_result", async (event, ctx) => {
   const response = await fetch("https://example.com/api", {
     method: "POST",
     body: JSON.stringify(event),
@@ -960,7 +960,7 @@ Request a graceful shutdown of pi.
 Emits `session_shutdown` event to all extensions before exiting. Available in all contexts (event handlers, tools, commands, shortcuts).
 
 ```typescript
-pi.on("tool_call", (event, ctx) => {
+airis.on("tool_call", (event, ctx) => {
   if (isFatal(event.input)) {
     ctx.shutdown();
   }
@@ -1004,7 +1004,7 @@ Returns Pi's current system prompt string.
 - If later-loaded extensions run after yours, they can still change what is ultimately sent.
 
 ```typescript
-pi.on("before_agent_start", (event, ctx) => {
+airis.on("before_agent_start", (event, ctx) => {
   const prompt = ctx.getSystemPrompt();
   console.log(`System prompt length: ${prompt.length}`);
 });
@@ -1139,7 +1139,7 @@ Options:
 To discover available sessions, use the static `SessionManager.list()` or `SessionManager.listAll()` methods:
 
 ```typescript
-import { SessionManager } from "@earendil-works/pi-coding-agent";
+import { SessionManager } from "@earendil-works/airis-coding-agent";
 
 pi.registerCommand("switch", {
   description: "Switch to another session",
@@ -1233,7 +1233,7 @@ Tools run with `ExtensionContext`, so they cannot call `ctx.reload()` directly. 
 Example tool the LLM can call to trigger reload:
 
 ```typescript
-import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import type { ExtensionAPI } from "@earendil-works/airis-coding-agent";
 import { Type } from "typebox";
 
 export default function (pi: ExtensionAPI) {
@@ -1262,7 +1262,7 @@ export default function (pi: ExtensionAPI) {
 
 ## ExtensionAPI Methods
 
-### pi.on(event, handler)
+### airis.on(event, handler)
 
 Subscribe to events. See [Events](#events) for event types and return values.
 
@@ -1282,7 +1282,7 @@ See [dynamic-tools.ts](../examples/extensions/dynamic-tools.ts) for a full examp
 
 ```typescript
 import { Type } from "typebox";
-import { StringEnum } from "@earendil-works/pi-ai";
+import { StringEnum } from "@earendil-works/airis-ai";
 
 pi.registerTool({
   name: "my_tool",
@@ -1376,7 +1376,7 @@ Persist extension state (does NOT participate in LLM context).
 pi.appendEntry("my-state", { count: 42 });
 
 // Restore on reload
-pi.on("session_start", async (_event, ctx) => {
+airis.on("session_start", async (_event, ctx) => {
   for (const entry of ctx.sessionManager.getEntries()) {
     if (entry.type === "custom" && entry.customType === "my-state") {
       // Reconstruct from entry.data
@@ -1440,7 +1440,7 @@ pi.registerCommand("stats", {
 Optional: add argument auto-completion for `/command ...`:
 
 ```typescript
-import type { AutocompleteItem } from "@earendil-works/pi-tui";
+import type { AutocompleteItem } from "@earendil-works/airis-tui";
 
 pi.registerCommand("deploy", {
   description: "Deploy to an environment",
@@ -1685,7 +1685,7 @@ export default function (pi: ExtensionAPI) {
   let items: string[] = [];
 
   // Reconstruct state from session
-  pi.on("session_start", async (_event, ctx) => {
+  airis.on("session_start", async (_event, ctx) => {
     items = [];
     for (const entry of ctx.sessionManager.getBranch()) {
       if (entry.type === "message" && entry.message.role === "toolResult") {
@@ -1731,7 +1731,7 @@ Pass the real target file path to `withFileMutationQueue()`, not the raw user ar
 Queue the entire mutation window on that target path. That includes read-modify-write logic, not just the final write.
 
 ```typescript
-import { withFileMutationQueue } from "@earendil-works/pi-coding-agent";
+import { withFileMutationQueue } from "@earendil-works/airis-coding-agent";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 
@@ -1756,8 +1756,8 @@ async execute(_toolCallId, params, _signal, _onUpdate, ctx) {
 
 ```typescript
 import { Type } from "typebox";
-import { StringEnum } from "@earendil-works/pi-ai";
-import { Text } from "@earendil-works/pi-tui";
+import { StringEnum } from "@earendil-works/airis-ai";
+import { Text } from "@earendil-works/airis-tui";
 
 pi.registerTool({
   name: "my_tool",
@@ -1825,7 +1825,7 @@ async execute(toolCallId, params) {
 }
 ```
 
-**Important:** Use `StringEnum` from `@earendil-works/pi-ai` for string enums. `Type.Union`/`Type.Literal` doesn't work with Google's API.
+**Important:** Use `StringEnum` from `@earendil-works/airis-ai` for string enums. `Type.Union`/`Type.Literal` doesn't work with Google's API.
 
 **Argument preparation:** `prepareArguments(args)` is optional. If defined, it runs before schema validation and before `execute()`. Use it to mimic an older accepted input shape when pi resumes an older session whose stored tool call arguments no longer match the current schema. Return the object you want validated against `parameters`. Keep the public schema strict. Do not add deprecated compatibility fields to `parameters` just to keep old resumed sessions working.
 
@@ -1911,7 +1911,7 @@ Built-in tool implementations:
 Built-in tools support pluggable operations for delegating to remote systems (SSH, containers, etc.):
 
 ```typescript
-import { createReadTool, createBashTool, type ReadOperations } from "@earendil-works/pi-coding-agent";
+import { createReadTool, createBashTool, type ReadOperations } from "@earendil-works/airis-coding-agent";
 
 // Create tool with custom operations
 const remoteRead = createReadTool(cwd, {
@@ -1942,7 +1942,7 @@ For `user_bash`, extensions can reuse pi's local shell backend via `createLocalB
 The bash tool also supports a spawn hook to adjust the command, cwd, or env before execution:
 
 ```typescript
-import { createBashTool } from "@earendil-works/pi-coding-agent";
+import { createBashTool } from "@earendil-works/airis-coding-agent";
 
 const bashTool = createBashTool(cwd, {
   spawnHook: ({ command, cwd, env }) => ({
@@ -1972,7 +1972,7 @@ import {
   formatSize,        // Human-readable size (e.g., "50KB", "1.5MB")
   DEFAULT_MAX_BYTES, // 50KB
   DEFAULT_MAX_LINES, // 2000
-} from "@earendil-works/pi-coding-agent";
+} from "@earendil-works/airis-coding-agent";
 
 async execute(toolCallId, params, signal, onUpdate, ctx) {
   const output = await runCommand();
@@ -2019,7 +2019,7 @@ export default function (pi: ExtensionAPI) {
   pi.registerTool({ name: "db_query", ... });
   pi.registerTool({ name: "db_close", ... });
 
-  pi.on("session_shutdown", async () => {
+  airis.on("session_shutdown", async () => {
     connection?.close();
   });
 }
@@ -2063,7 +2063,7 @@ Use `context.state` for cross-slot shared state. Keep slot-local caches on the r
 Renders the tool call or header:
 
 ```typescript
-import { Text } from "@earendil-works/pi-tui";
+import { Text } from "@earendil-works/airis-tui";
 
 renderCall(args, theme, context) {
   const text = (context.lastComponent as Text | undefined) ?? new Text("", 0, 0);
@@ -2108,7 +2108,7 @@ If a slot intentionally has no visible content, return an empty `Component` such
 Use `keyHint()` to display keybinding hints that respect the active keybinding configuration:
 
 ```typescript
-import { keyHint } from "@earendil-works/pi-coding-agent";
+import { keyHint } from "@earendil-works/airis-coding-agent";
 
 renderResult(result, { expanded }, theme, context) {
   let text = theme.fg("success", "✓ Done");
@@ -2346,7 +2346,7 @@ Typical pattern:
 - delegate `applyCompletion(...)` unless you need custom insertion behavior
 
 ```typescript
-pi.on("session_start", (_event, ctx) => {
+airis.on("session_start", (_event, ctx) => {
   ctx.ui.addAutocompleteProvider((current) => ({
     triggerCharacters: ["#"],
     async getSuggestions(lines, cursorLine, cursorCol, options) {
@@ -2384,7 +2384,7 @@ See [github-issue-autocomplete.ts](../examples/extensions/github-issue-autocompl
 For complex UI, use `ctx.ui.custom()`. This temporarily replaces the editor with your component until `done()` is called:
 
 ```typescript
-import { Text, Component } from "@earendil-works/pi-tui";
+import { Text, Component } from "@earendil-works/airis-tui";
 
 const result = await ctx.ui.custom<boolean>((tui, theme, keybindings, done) => {
   const text = new Text("Press Enter to confirm, Escape to cancel", 1, 1);
@@ -2449,8 +2449,8 @@ See [tui.md](tui.md) for the full `OverlayOptions` and `OverlayHandle` API and [
 Replace the main input editor with a custom implementation (vim mode, emacs mode, etc.):
 
 ```typescript
-import { CustomEditor, type ExtensionAPI } from "@earendil-works/pi-coding-agent";
-import { matchesKey } from "@earendil-works/pi-tui";
+import { CustomEditor, type ExtensionAPI } from "@earendil-works/airis-coding-agent";
+import { matchesKey } from "@earendil-works/airis-tui";
 
 class VimEditor extends CustomEditor {
   private mode: "normal" | "insert" = "insert";
@@ -2469,7 +2469,7 @@ class VimEditor extends CustomEditor {
 }
 
 export default function (pi: ExtensionAPI) {
-  pi.on("session_start", (_event, ctx) => {
+  airis.on("session_start", (_event, ctx) => {
     ctx.ui.setEditorComponent((_tui, theme, keybindings) =>
       new VimEditor(theme, keybindings)
     );
@@ -2500,7 +2500,7 @@ See [tui.md](tui.md) Pattern 7 for a complete example with mode indicator.
 Register a custom renderer for messages with your `customType`:
 
 ```typescript
-import { Text } from "@earendil-works/pi-tui";
+import { Text } from "@earendil-works/airis-tui";
 
 pi.registerMessageRenderer("my-extension", (message, options, theme) => {
   const { expanded } = options;
@@ -2549,7 +2549,7 @@ theme.strikethrough(text)
 For syntax highlighting in custom tool renderers:
 
 ```typescript
-import { highlightCode, getLanguageFromPath } from "@earendil-works/pi-coding-agent";
+import { highlightCode, getLanguageFromPath } from "@earendil-works/airis-coding-agent";
 
 // Highlight code with explicit language
 const highlighted = highlightCode("const x = 1;", "typescript", theme);

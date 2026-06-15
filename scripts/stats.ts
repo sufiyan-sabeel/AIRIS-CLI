@@ -131,7 +131,7 @@ function parseArgs(): Args {
 Options:
   -n, --days <days>         Number of local calendar days to include (default: 7)
   -d, --dir, --cwd <path>   Project cwd to inspect (default: current cwd)
-  --sessions-base <path>    Sessions base directory (default: ~/.pi/agent/sessions)
+  --sessions-base <path>    Sessions base directory (default: ~/.airis/agent/sessions)
   -h, --help                Show this help`);
 			process.exit(0);
 		}

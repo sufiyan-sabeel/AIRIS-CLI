@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://pi.dev">
-    <img alt="pi logo" src="https://pi.dev/logo-auto.svg" width="128">
+    <img alt="AIRIS logo" src="https://pi.dev/logo-auto.svg" width="128">
   </a>
 </p>
 <p align="center">
@@ -16,55 +16,61 @@
 
 ---
 
-# Pi Agent Harness Mono Repo
+> **AIRIS** — Artificial Intelligence Responsive Integrated System
+>
+> Based on the [Pi Agent Harness](https://github.com/earendil-works/pi).
 
-This is the home of the pi agent harness project including our self extensible coding agent.
+---
 
-* **[@earendil-works/pi-coding-agent](packages/coding-agent)**: Interactive coding agent CLI
-* **[@earendil-works/pi-agent-core](packages/agent)**: Agent runtime with tool calling and state management
-* **[@earendil-works/pi-ai](packages/ai)**: Unified multi-provider LLM API (OpenAI, Anthropic, Google, …)
+# AIRIS Agent Harness Mono Repo
 
-To learn more about pi:
+This is the home of the AIRIS agent harness project including our self extensible coding agent.
+
+* **[@earendil-works/airis-coding-agent](packages/coding-agent)**: Interactive coding agent CLI
+* **[@earendil-works/airis-agent-core](packages/agent)**: Agent runtime with tool calling and state management
+* **[@earendil-works/airis-ai](packages/ai)**: Unified multi-provider LLM API (OpenAI, Anthropic, Google, …)
+
+To learn more about AIRIS:
 
 * [Visit pi.dev](https://pi.dev), the project website with demos
 * [Read the documentation](https://pi.dev/docs/latest), but you can also ask the agent to explain itself
 
 ## Share your OSS coding agent sessions
 
-If you use pi or other coding agents for open source work, please share your sessions.
+If you use AIRIS or other coding agents for open source work, please share your sessions.
 
 Public OSS session data helps improve coding agents with real-world tasks, tool use, failures, and fixes instead of toy benchmarks.
 
 For the full explanation, see [this post on X](https://x.com/badlogicgames/status/2037811643774652911).
 
-To publish sessions, use [`badlogic/pi-share-hf`](https://github.com/badlogic/pi-share-hf). Read its README.md for setup instructions. All you need is a Hugging Face account, the Hugging Face CLI, and `pi-share-hf`.
+To publish sessions, use [`badlogic/airis-share-hf`](https://github.com/badlogic/airis-share-hf). Read its README.md for setup instructions. All you need is a Hugging Face account, the Hugging Face CLI, and `airis-share-hf`.
 
-You can also watch [this video](https://x.com/badlogicgames/status/2041151967695634619), where I show how I publish my `pi-mono` sessions.
+You can also watch [this video](https://x.com/badlogicgames/status/2041151967695634619), where I show how I publish my `airis-mono` sessions.
 
-I regularly publish my own `pi-mono` work sessions here:
+I regularly publish my own `airis-mono` work sessions here:
 
-- [badlogicgames/pi-mono on Hugging Face](https://huggingface.co/datasets/badlogicgames/pi-mono)
+- [badlogicgames/airis-mono on Hugging Face](https://huggingface.co/datasets/badlogicgames/airis-mono)
 
 ## All Packages
 
 | Package | Description |
 |---------|-------------|
-| **[@earendil-works/pi-ai](packages/ai)** | Unified multi-provider LLM API (OpenAI, Anthropic, Google, etc.) |
-| **[@earendil-works/pi-agent-core](packages/agent)** | Agent runtime with tool calling and state management |
-| **[@earendil-works/pi-coding-agent](packages/coding-agent)** | Interactive coding agent CLI |
-| **[@earendil-works/pi-tui](packages/tui)** | Terminal UI library with differential rendering |
+| **[@earendil-works/airis-ai](packages/ai)** | Unified multi-provider LLM API (OpenAI, Anthropic, Google, etc.) |
+| **[@earendil-works/airis-agent-core](packages/agent)** | Agent runtime with tool calling and state management |
+| **[@earendil-works/airis-coding-agent](packages/coding-agent)** | Interactive coding agent CLI |
+| **[@earendil-works/airis-tui](packages/tui)** | Terminal UI library with differential rendering |
 
 For Slack/chat automation and workflows see [earendil-works/pi-chat](https://github.com/earendil-works/pi-chat).
 
 ## Permissions & Containerization
 
-Pi does not include a built-in permission system for restricting filesystem, process, network, or credential access. By default, it runs with the permissions of the user and process that launched it.
+AIRIS does not include a built-in permission system for restricting filesystem, process, network, or credential access. By default, it runs with the permissions of the user and process that launched it.
 
-If you need stronger boundaries, containerize or sandbox Pi. See [packages/coding-agent/docs/containerization.md](packages/coding-agent/docs/containerization.md) for three patterns:
+If you need stronger boundaries, containerize or sandbox AIRIS. See [packages/coding-agent/docs/containerization.md](packages/coding-agent/docs/containerization.md) for three patterns:
 
-- **OpenShell**: run the whole `pi` process in a policy-controlled sandbox.
-- **Gondolin extension**: keep `pi` and provider auth on the host while routing built-in tools and `!` commands into a local Linux micro-VM.
-- **Plain Docker**: run the whole `pi` process in a local container for simple isolation.
+- **OpenShell**: run the whole `airis` process in a policy-controlled sandbox.
+- **Gondolin extension**: keep `airis` and provider auth on the host while routing built-in tools and `!` commands into a local Linux micro-VM.
+- **Plain Docker**: run the whole `airis` process in a local container for simple isolation.
 
 ## Contributing
 
@@ -77,7 +83,7 @@ npm install --ignore-scripts  # Install all dependencies without running lifecyc
 npm run build        # Build all packages
 npm run check        # Lint, format, and type check
 ./test.sh            # Run tests (skips LLM-dependent tests without API keys)
-./pi-test.sh         # Run pi from sources (can be run from any directory)
+./airis-test.sh      # Run AIRIS from sources (can be run from any directory)
 ```
 
 ## Supply-chain hardening

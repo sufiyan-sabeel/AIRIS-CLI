@@ -1,4 +1,4 @@
-import { Container, getKeybindings, Spacer, Text } from "@earendil-works/pi-tui";
+import { Container, getKeybindings, Spacer, Text } from "@earendil-works/airis-tui";
 import { APP_NAME } from "../../../config.ts";
 import { type TerminalTheme, theme } from "../theme/theme.ts";
 import { DynamicBorder } from "./dynamic-border.ts";
@@ -71,7 +71,7 @@ export class FirstTimeSetupComponent extends Container {
 				new Text(
 					theme.fg(
 						"muted",
-						"Opting in stores a tracking identifier in settings.json and enables anonymous\nusage analytics. This helps us to better debug, reproduce, and resolve issues\nand bugs within Pi. You can observe what is shared using /privacy and make\nchanges anytime in settings.json.",
+						"Opting in stores a tracking identifier in settings.json and enables anonymous\nusage analytics. This helps us to better debug, reproduce, and resolve issues\nand bugs within AIRIS. You can observe what is shared using /privacy and make\nchanges anytime in settings.json.",
 					),
 					1,
 					0,

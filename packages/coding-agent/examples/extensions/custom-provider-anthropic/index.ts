@@ -42,8 +42,8 @@ import {
 	type Tool,
 	type ToolCall,
 	type ToolResultMessage,
-} from "@earendil-works/pi-ai";
-import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+} from "@earendil-works/airis-ai";
+import type { ExtensionAPI } from "@earendil-works/airis-coding-agent";
 
 // =============================================================================
 // OAuth Implementation (copied from packages/ai/src/utils/oauth/anthropic.ts)

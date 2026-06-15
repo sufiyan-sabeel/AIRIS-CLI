@@ -4,7 +4,7 @@ Pi uses JSON settings files with project settings overriding global settings.
 
 | Location | Scope |
 |----------|-------|
-| `~/.pi/agent/settings.json` | Global (all projects) |
+| `~/.airis/agent/settings.json` | Global (all projects) |
 | `.pi/settings.json` | Project (current directory) |
 
 Edit directly or use `/settings` for common options.
@@ -15,7 +15,7 @@ On interactive startup, pi asks before trusting a project folder that contains p
 
 Non-interactive modes (`-p`, `--mode json`, and `--mode rpc`) do not show a trust prompt. Without an applicable saved trust decision, they use `defaultProjectTrust` from global settings: `ask` (default) and `never` ignore those project resources, while `always` trusts them. Pass `--approve`/`-a` or `--no-approve`/`-na` to override project trust for one run.
 
-If no extension or saved decision applies, `defaultProjectTrust` controls the fallback behavior. Set it to `"ask"`, `"always"`, or `"never"` in `~/.pi/agent/settings.json`, or change it with `/settings`.
+If no extension or saved decision applies, `defaultProjectTrust` controls the fallback behavior. Set it to `"ask"`, `"always"`, or `"never"` in `~/.airis/agent/settings.json`, or change it with `/settings`.
 
 `pi config` and package commands use the same project trust flow, except `pi update` never prompts. Pass `--approve` to trust project-local settings for one command or `--no-approve` to ignore them.
 
@@ -208,7 +208,7 @@ When multiple sources specify a session directory, precedence is `--session-dir`
 
 These settings define where to load extensions, skills, prompts, and themes from.
 
-Paths in `~/.pi/agent/settings.json` resolve relative to `~/.pi/agent`. Paths in `.pi/settings.json` resolve relative to `.pi`. Absolute paths and `~` are supported.
+Paths in `~/.airis/agent/settings.json` resolve relative to `~/.pi/agent`. Paths in `.pi/settings.json` resolve relative to `.pi`. Absolute paths and `~` are supported.
 
 | Setting | Type | Default | Description |
 |---------|------|---------|-------------|
@@ -277,7 +277,7 @@ See [packages.md](packages.md) for package management details.
 Project settings (`.pi/settings.json`) override global settings. Nested objects are merged:
 
 ```json
-// ~/.pi/agent/settings.json (global)
+// ~/.airis/agent/settings.json (global)
 {
   "theme": "dark",
   "compaction": { "enabled": true, "reserveTokens": 16384 }

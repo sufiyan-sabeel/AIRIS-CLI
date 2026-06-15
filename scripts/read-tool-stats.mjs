@@ -56,7 +56,7 @@ function printHelp() {
 	console.log(`Usage: node scripts/read-tool-stats.mjs [options]
 
 Options:
-  --sessions-dir <path>  Sessions directory (default: ~/.pi/agent/sessions)
+  --sessions-dir <path>  Sessions directory (default: ~/.airis/agent/sessions)
   --model <substring>    Filter provider/model by substring
   --top <n>              Number of examples to show (default: ${DEFAULT_TOP})
   --since <iso>          Only scan session files created at or after this ISO time

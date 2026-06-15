@@ -1,6 +1,6 @@
 import { join } from "node:path";
-import { Agent, type AgentMessage, type ThinkingLevel } from "@earendil-works/pi-agent-core";
-import { clampThinkingLevel, type Message, type Model, streamSimple } from "@earendil-works/pi-ai";
+import { Agent, type AgentMessage, type ThinkingLevel } from "@earendil-works/airis-agent-core";
+import { clampThinkingLevel, type Message, type Model, streamSimple } from "@earendil-works/airis-ai";
 import { getAgentDir } from "../config.ts";
 import { resolvePath } from "../utils/paths.ts";
 import { AgentSession } from "./agent-session.ts";
@@ -34,7 +34,7 @@ import {
 export interface CreateAgentSessionOptions {
 	/** Working directory for project-local discovery. Default: process.cwd() */
 	cwd?: string;
-	/** Global config directory. Default: ~/.pi/agent */
+	/** Global config directory. Default: ~/.airis/agent */
 	agentDir?: string;
 
 	/** Auth storage for credentials. Default: AuthStorage.create(agentDir/auth.json) */
@@ -60,7 +60,7 @@ export interface CreateAgentSessionOptions {
 	/**
 	 * Optional allowlist of tool names.
 	 *
-	 * When omitted, pi enables the default built-in tools (read, bash, edit, write)
+	 * When omitted, airis enables the default built-in tools (read, bash, edit, write)
 	 * and leaves extension/custom tools enabled unless `noTools` changes that default.
 	 * When provided, only the listed tool names are enabled.
 	 */
@@ -137,7 +137,7 @@ function getDefaultAgentDir(): string {
  * const { session } = await createAgentSession();
  *
  * // With explicit model
- * import { getModel } from '@earendil-works/pi-ai';
+ * import { getModel } from '@earendil-works/airis-ai';
  * const { session } = await createAgentSession({
  *   model: getModel('anthropic', 'claude-opus-4-5'),
  *   thinkingLevel: 'high',

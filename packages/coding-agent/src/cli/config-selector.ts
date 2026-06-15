@@ -1,8 +1,8 @@
 /**
- * TUI config selector for `pi config` command
+ * TUI config selector for `airis config` command
  */
 
-import { ProcessTerminal, TUI } from "@earendil-works/pi-tui";
+import { ProcessTerminal, TUI } from "@earendil-works/airis-tui";
 import type { ResolvedPaths } from "../core/package-manager.ts";
 import type { SettingsManager } from "../core/settings-manager.ts";
 import { ConfigSelectorComponent } from "../modes/interactive/components/config-selector.ts";

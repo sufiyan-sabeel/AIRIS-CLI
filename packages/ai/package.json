@@ -1,5 +1,5 @@
 {
-	"name": "@earendil-works/pi-ai",
+	"name": "@earendil-works/airis-ai",
 	"version": "0.79.3",
 	"description": "Unified LLM API with automatic model discovery and provider configuration",
 	"type": "module",

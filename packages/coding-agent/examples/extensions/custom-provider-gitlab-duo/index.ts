@@ -21,8 +21,8 @@ import {
 	streamSimpleAnthropic,
 	streamSimpleOpenAIResponses,
 	type ThinkingLevelMap,
-} from "@earendil-works/pi-ai";
-import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+} from "@earendil-works/airis-ai";
+import type { ExtensionAPI } from "@earendil-works/airis-coding-agent";
 
 // =============================================================================
 // Constants
