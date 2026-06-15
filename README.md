@@ -1,105 +1,192 @@
-<p align="center">
-  <a href="https://pi.dev">
-    <img alt="AIRIS logo" src="https://pi.dev/logo-auto.svg" width="128">
-  </a>
-</p>
-<p align="center">
-  <a href="https://discord.com/invite/3cU7Bz4UPx"><img alt="Discord" src="https://img.shields.io/badge/discord-community-5865F2?style=flat-square&logo=discord&logoColor=white" /></a>
-</p>
-<p align="center">
-  <a href="https://pi.dev">pi.dev</a> domain graciously donated by
-  <br /><br />
-  <a href="https://exe.dev"><img src="packages/coding-agent/docs/images/exy.png" alt="Exy mascot" width="48" /><br />exe.dev</a>
-</p>
+# AIRIS CLI
 
-> New issues and PRs from new contributors are auto-closed by default. Maintainers review auto-closed issues daily. See [CONTRIBUTING.md](CONTRIBUTING.md).
+**Artificial Intelligence Responsive Integrated System**
 
----
+A powerful AI coding agent CLI with read, bash, edit, write tools and session management.
 
-> **AIRIS** — Artificial Intelligence Responsive Integrated System
->
-> Based on the [Pi Agent Harness](https://github.com/earendil-works/pi).
+> Based on [Pi Agent Harness](https://github.com/earendil-works/pi) - All original features preserved.
 
----
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![Node](https://img.shields.io/badge/node-%3E%3D22.19.0-green.svg)
 
-# AIRIS Agent Harness Mono Repo
+## Features
 
-This is the home of the AIRIS agent harness project including our self extensible coding agent.
+- 🤖 **Interactive AI Assistant** - Chat with AI models directly in your terminal
+- 📁 **File Operations** - Read, edit, and write files with AI assistance
+- 💻 **Shell Commands** - Execute bash commands with AI guidance
+- 🔄 **Session Management** - Save and resume conversations
+- 🧠 **Multi-Model Support** - Works with OpenAI, Anthropic, Google, and more
+- 🎨 **Beautiful TUI** - Rich terminal user interface with themes
+- 🔌 **Extensible** - Custom extensions and tools support
 
-* **[@earendil-works/airis-coding-agent](packages/coding-agent)**: Interactive coding agent CLI
-* **[@earendil-works/airis-agent-core](packages/agent)**: Agent runtime with tool calling and state management
-* **[@earendil-works/airis-ai](packages/ai)**: Unified multi-provider LLM API (OpenAI, Anthropic, Google, …)
+## Quick Start
 
-To learn more about AIRIS:
+### Install
 
-* [Visit pi.dev](https://pi.dev), the project website with demos
-* [Read the documentation](https://pi.dev/docs/latest), but you can also ask the agent to explain itself
+```bash
+# Clone the repository
+git clone https://github.com/YOUR_USERNAME/AIRIS-CLI.git
+cd AIRIS-CLI
 
-## Share your OSS coding agent sessions
+# Install dependencies
+npm install --ignore-scripts --no-audit --no-fund
 
-If you use AIRIS or other coding agents for open source work, please share your sessions.
+# Build all packages
+npm run build
 
-Public OSS session data helps improve coding agents with real-world tasks, tool use, failures, and fixes instead of toy benchmarks.
+# Link globally
+npm link
+```
 
-For the full explanation, see [this post on X](https://x.com/badlogicgames/status/2037811643774652911).
+### Run
 
-To publish sessions, use [`badlogic/airis-share-hf`](https://github.com/badlogic/airis-share-hf). Read its README.md for setup instructions. All you need is a Hugging Face account, the Hugging Face CLI, and `airis-share-hf`.
+```bash
+# Show help
+airis --help
 
-You can also watch [this video](https://x.com/badlogicgames/status/2041151967695634619), where I show how I publish my `airis-mono` sessions.
+# Run interactively (requires API key)
+export GEMINI_API_KEY="your-key-here"
+airis
 
-I regularly publish my own `airis-mono` work sessions here:
+# One-shot prompt
+airis -p "List all TypeScript files in src/"
+```
 
-- [badlogicgames/airis-mono on Hugging Face](https://huggingface.co/datasets/badlogicgames/airis-mono)
+## Usage
 
-## All Packages
+### Basic Commands
 
-| Package | Description |
-|---------|-------------|
-| **[@earendil-works/airis-ai](packages/ai)** | Unified multi-provider LLM API (OpenAI, Anthropic, Google, etc.) |
-| **[@earendil-works/airis-agent-core](packages/agent)** | Agent runtime with tool calling and state management |
-| **[@earendil-works/airis-coding-agent](packages/coding-agent)** | Interactive coding agent CLI |
-| **[@earendil-works/airis-tui](packages/tui)** | Terminal UI library with differential rendering |
+```bash
+# Interactive mode
+airis
 
-For Slack/chat automation and workflows see [earendil-works/pi-chat](https://github.com/earendil-works/pi-chat).
+# Non-interactive (print and exit)
+airis -p "Your prompt here"
 
-## Permissions & Containerization
+# Continue last session
+airis --continue
 
-AIRIS does not include a built-in permission system for restricting filesystem, process, network, or credential access. By default, it runs with the permissions of the user and process that launched it.
+# Resume a specific session
+airis --resume
+```
 
-If you need stronger boundaries, containerize or sandbox AIRIS. See [packages/coding-agent/docs/containerization.md](packages/coding-agent/docs/containerization.md) for three patterns:
+### Options
 
-- **OpenShell**: run the whole `airis` process in a policy-controlled sandbox.
-- **Gondolin extension**: keep `airis` and provider auth on the host while routing built-in tools and `!` commands into a local Linux micro-VM.
-- **Plain Docker**: run the whole `airis` process in a local container for simple isolation.
+| Option | Description |
+|--------|-------------|
+| `--provider <name>` | Provider name (default: google) |
+| `--model <pattern>` | Model pattern or ID |
+| `--api-key <key>` | API key (defaults to env vars) |
+| `--print, -p` | Non-interactive mode |
+| `--continue, -c` | Continue previous session |
+| `--resume, -r` | Select session to resume |
+| `--name, -n` | Set session display name |
+| `--thinking <level>` | Set thinking level (off/low/medium/high) |
+| `--help, -h` | Show help |
+| `--version, -v` | Show version |
 
-## Contributing
+### Examples
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines and [AGENTS.md](AGENTS.md) for project-specific rules (for both humans and agents).
+```bash
+# Interactive mode with initial prompt
+airis "List all .ts files in src/"
+
+# Include files in message
+airis @prompt.md @image.png "What color is the sky?"
+
+# Use different model
+airis --provider openai --model gpt-4o-mini "Help me refactor"
+
+# Read-only mode
+airis --tools read,grep,find,ls -p "Review the code in src/"
+
+# Export session to HTML
+airis --export session.jsonl output.html
+```
+
+## Environment Variables
+
+| Variable | Description |
+|----------|-------------|
+| `GEMINI_API_KEY` | Google Gemini API key |
+| `ANTHROPIC_API_KEY` | Anthropic Claude API key |
+| `OPENAI_API_KEY` | OpenAI GPT API key |
+| `AIRIS_CODING_AGENT_DIR` | Config directory (default: `~/.airis/agent`) |
+| `PI_OFFLINE` | Disable startup network operations |
+
+See `airis --help` for full list of supported providers and API keys.
+
+## Configuration
+
+AIRIS stores configuration in `~/.airis/agent/`:
+
+```
+~/.airis/agent/
+├── auth.json        # Provider authentication
+├── settings.json    # User settings
+├── models.json      # Custom model definitions
+├── sessions/        # Session storage
+├── extensions/      # Custom extensions
+├── skills/          # Custom skills
+└── prompts/         # Custom prompt templates
+```
 
 ## Development
 
 ```bash
-npm install --ignore-scripts  # Install all dependencies without running lifecycle scripts
-npm run build        # Build all packages
-npm run check        # Lint, format, and type check
-./test.sh            # Run tests (skips LLM-dependent tests without API keys)
-./airis-test.sh      # Run AIRIS from sources (can be run from any directory)
+# Install with lifecycle scripts
+npm install
+
+# Build all packages
+npm run build
+
+# Lint, format, and type check
+npm run check
+
+# Run tests
+./test.sh
+
+# Run AIRIS from sources
+./airis-test.sh
 ```
 
-## Supply-chain hardening
+## Project Structure
 
-We treat npm dependency changes as reviewed code changes.
+```
+AIRIS-CLI/
+├── packages/
+│   ├── coding-agent/    # Main CLI application
+│   ├── ai/              # Unified LLM API
+│   ├── agent/           # Agent runtime
+│   └── tui/             # Terminal UI library
+├── .airis/              # Built-in extensions and skills
+└── scripts/             # Build and release scripts
+```
 
-- Direct external dependencies are pinned to exact versions. Internal workspace packages remain version-ranged.
-- `.npmrc` sets `save-exact=true` and `min-release-age=2` to avoid same-day dependency releases during npm resolution.
-- `package-lock.json` is the dependency ground truth. Pre-commit blocks accidental lockfile commits unless `PI_ALLOW_LOCKFILE_CHANGE=1` is set.
-- `npm run check` verifies pinned direct deps, native TypeScript import compatibility, and the generated coding-agent shrinkwrap.
-- The published CLI package includes `packages/coding-agent/npm-shrinkwrap.json`, generated from the root lockfile, to pin transitive deps for npm users.
-- Release smoke tests use `npm run release:local` to build, pack, and create isolated npm and Bun installs outside the repo before tagging a release.
-- Local release installs, documented npm installs, and `pi update --self` use `--ignore-scripts` where supported.
-- CI installs with `npm ci --ignore-scripts`, and a scheduled GitHub workflow runs `npm audit --omit=dev` plus `npm audit signatures --omit=dev`.
-- Shrinkwrap generation has an explicit allowlist for dependency lifecycle scripts; new lifecycle-script deps fail checks until reviewed.
+## Extending AIRIS
+
+Create custom extensions in `~/.airis/agent/extensions/`:
+
+```typescript
+// my-extension.ts
+import type { ExtensionAPI } from "@earendil-works/airis-coding-agent";
+
+export default function(api: ExtensionAPI) {
+  api.registerCommand("hello", {
+    description: "Say hello",
+    handler: () => "Hello from AIRIS!"
+  });
+}
+```
 
 ## License
 
-MIT
+MIT License - See [LICENSE](LICENSE) for details.
+
+## Credits
+
+Built on [Pi Agent Harness](https://github.com/earendil-works/pi) by [Mario Zechner](https://github.com/badlogic).
+
+---
+
+**AIRIS** - Artificial Intelligence Responsive Integrated System
