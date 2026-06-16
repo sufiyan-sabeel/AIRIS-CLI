@@ -16,7 +16,7 @@ A powerful AI coding agent CLI with read, bash, edit, write tools and session ma
 - **Shell Commands** - Execute bash commands with AI guidance
 - **Session Management** - Save, resume, fork, and export conversations
 - **Multi-Model Support** - Works with 25+ providers including OpenAI, Anthropic, Google, and more
-- **Beautiful TUI** - Rich terminal user interface with themes (dark, light, graphite, amoled)
+- **Beautiful TUI** - Rich terminal user interface with 14 built-in themes
 - **Extensible** - Custom extensions, skills, and prompt templates support
 - **Android Ready** - Full functionality on Termux
 
@@ -189,12 +189,24 @@ AIRIS stores configuration in `~/.airis/agent/`:
 
 ## Themes
 
-AIRIS includes 4 built-in themes:
+AIRIS includes 14 built-in themes:
 
-- **dark** - Default dark theme
-- **light** - Light theme
-- **graphite** - Graphite dark theme (default)
-- **oled** - AMOLED black theme
+| Theme | Description |
+|-------|-------------|
+| **dark** | Default dark theme |
+| **light** | Light theme |
+| **graphite** | Graphite dark theme (default) |
+| **amoled** | AMOLED black theme |
+| **nord** | Arctic, bluish color scheme |
+| **dracula** | Popular dark theme with purple/pink accents |
+| **gruvbox** | Retro groove with warm colors |
+| **tokyo-night** | Popular VS Code theme |
+| **catppuccin** | Pastel color scheme |
+| **monokai** | Classic dark theme |
+| **solarized-dark** | Classic solarized |
+| **one-dark** | Atom One Dark theme |
+| **rose-pine** | Rose Pine theme |
+| **matrix** | Green on black terminal style |
 
 ```bash
 # List themes
@@ -202,6 +214,9 @@ airis theme list
 
 # Set theme
 airis theme set dark
+
+# Use custom theme file
+airis --theme ./my-theme.json
 ```
 
 ## Commands

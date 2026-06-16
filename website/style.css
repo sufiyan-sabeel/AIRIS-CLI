@@ -744,6 +744,171 @@ code {
   border-radius: 6px;
 }
 
+/* --- Themes --- */
+.themes-section {
+  background: linear-gradient(180deg, transparent 0%, rgba(255, 255, 255, 0.02) 50%, transparent 100%);
+}
+
+.themes-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+.theme-card {
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.theme-card:hover {
+  border-color: rgba(255, 255, 255, 0.12);
+  transform: translateY(-2px);
+}
+
+.theme-preview {
+  height: 80px;
+  position: relative;
+}
+
+.theme-preview::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+}
+
+/* Theme previews */
+.theme-dark {
+  background: #18181e;
+  --accent: #8abeb7;
+  --accent2: #5f87ff;
+}
+
+.theme-light {
+  background: #f5f5f5;
+  --accent: #2196f3;
+  --accent2: #673ab7;
+}
+
+.theme-graphite {
+  background: #252530;
+  --accent: #6c8eb0;
+  --accent2: #7a9aba;
+}
+
+.theme-amoled {
+  background: #000000;
+  --accent: #00ff41;
+  --accent2: #00cc33;
+}
+
+.theme-nord {
+  background: #2e3440;
+  --accent: #88c0d0;
+  --accent2: #81a1c1;
+}
+
+.theme-dracula {
+  background: #282a36;
+  --accent: #bd93f9;
+  --accent2: #ff79c6;
+}
+
+.theme-gruvbox {
+  background: #282828;
+  --accent: #d3869b;
+  --accent2: #b8bb26;
+}
+
+.theme-tokyo {
+  background: #1a1b26;
+  --accent: #bb9af7;
+  --accent2: #7aa2f7;
+}
+
+.theme-catppuccin {
+  background: #1e1e2e;
+  --accent: #cba6f7;
+  --accent2: #89b4fa;
+}
+
+.theme-monokai {
+  background: #272822;
+  --accent: #ae81ff;
+  --accent2: #a6e22e;
+}
+
+.theme-solarized {
+  background: #002b36;
+  --accent: #6c71c4;
+  --accent2: #268bd2;
+}
+
+.theme-one-dark {
+  background: #282c34;
+  --accent: #c678dd;
+  --accent2: #61afef;
+}
+
+.theme-rose-pine {
+  background: #191724;
+  --accent: #c4a7e7;
+  --accent2: #ebbcba;
+}
+
+.theme-matrix {
+  background: #000000;
+  --accent: #00ff41;
+  --accent2: #00cc33;
+}
+
+.theme-info {
+  padding: 0.875rem;
+  text-align: center;
+}
+
+.theme-info h3 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #e4e4e7;
+  margin-bottom: 0.35rem;
+}
+
+.theme-info code {
+  font-size: 0.7rem;
+  color: #60a5fa;
+  background: rgba(59, 130, 246, 0.1);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+}
+
+.themes-note {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  max-width: 700px;
+  margin: 2rem auto 0;
+  padding: 0.875rem 1.25rem;
+  border-radius: 10px;
+  background: rgba(59, 130, 246, 0.05);
+  border: 1px solid rgba(59, 130, 246, 0.1);
+  font-size: 0.85rem;
+  color: #71717a;
+}
+
+.themes-note code {
+  color: #60a5fa;
+  background: rgba(59, 130, 246, 0.1);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+}
+
 /* --- Android --- */
 .android-section {
   background: linear-gradient(180deg, transparent 0%, rgba(255, 255, 255, 0.02) 50%, transparent 100%);
@@ -1124,6 +1289,10 @@ details[open] .faq-question::before {
   .sessions-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+  
+  .themes-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 @media (max-width: 768px) {
@@ -1172,7 +1341,8 @@ details[open] .faq-question::before {
   }
 
   .features-grid,
-  .sessions-grid {
+  .sessions-grid,
+  .themes-grid {
     grid-template-columns: 1fr;
   }
 
