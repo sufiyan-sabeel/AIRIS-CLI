@@ -41,3 +41,6 @@ plans/
 .airis/hf-sessions/
 .airis/hf-sessions-backup/
 collect.sh
+
+# Local Netlify folder
+.netlify

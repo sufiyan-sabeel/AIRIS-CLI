@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AIRIS CLI – Advanced AI Responsive CLI</title>
+  <meta name="description" content="AIRIS CLI – Artificial Intelligence Responsive Integrated System. A powerful AI coding agent CLI with read, bash, edit, write tools and session management." />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <nav class="navbar" id="navbar">
+    <div class="container nav-inner">
+      <a href="#" class="logo">
+        <span class="logo-icon">◆</span>
+        <span class="logo-text">AIRIS</span>
+      </a>
+      <div class="nav-links" id="navLinks">
+        <a href="#install">Install</a>
+        <a href="#features">Features</a>
+        <a href="#commands">Commands</a>
+        <a href="#sessions">Sessions</a>
+        <a href="#roadmap">Roadmap</a>
+        <a href="#faq">FAQ</a>
+      </div>
+      <button class="nav-toggle" id="navToggle" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <main>
+    <!-- HERO -->
+    <section class="hero" id="hero">
+      <div class="hero-bg"></div>
+      <div class="container hero-inner">
+        <div class="hero-badge">v0.79.3 &middot; MIT License</div>
+        <h1 class="hero-title">
+          <span class="title-line">Artificial Intelligence</span>
+          <span class="title-line accent">Responsive Integrated System</span>
+        </h1>
+        <p class="hero-subtitle">
+          A powerful AI coding agent CLI with read, bash, edit, write tools,
+          session management, multi-model support, and a rich terminal UI.
+        </p>
+        <div class="hero-actions">
+          <a href="#install" class="btn btn-primary">
+            <span class="btn-icon">↓</span> Install Now
+          </a>
+          <button class="btn btn-ghost" id="heroCopyBtn">
+            <span class="btn-icon">⎘</span> Copy Install Command
+          </button>
+        </div>
+        <div class="hero-brand">
+          <span class="brand-pill">Brand: KageOS</span>
+          <span class="brand-pill">Creator: Umaiz Sufiyan</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- INSTALL -->
+    <section class="section install-section" id="install">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-label">Install</span>
+          <h2 class="section-title">Get Started in Seconds</h2>
+          <p class="section-desc">Choose your preferred package manager. One command, zero configuration.</p>
+        </div>
+
+        <div class="install-tabs">
+          <div class="tabs-bar" id="tabsBar">
+            <button class="tab-btn active" data-tab="curl">curl</button>
+            <button class="tab-btn" data-tab="npm">npm</button>
+            <button class="tab-btn" data-tab="pnpm">pnpm</button>
+            <button class="tab-btn" data-tab="bun">bun</button>
+          </div>
+          <div class="tab-content" id="tabContent">
+            <div class="tab-pane active" id="tab-curl">
+              <div class="code-block">
+                <button class="copy-btn" data-copy="curl -fsSL https://airis-cli.netlify.app/install.sh | sh" aria-label="Copy command">⎘</button>
+                <pre><code>curl -fsSL https://airis-cli.netlify.app/install.sh | sh</code></pre>
+              </div>
+            </div>
+            <div class="tab-pane" id="tab-npm">
+              <div class="code-block">
+                <button class="copy-btn" data-copy="npm install -g --ignore-scripts @earendil-works/airis-coding-agent" aria-label="Copy command">⎘</button>
+                <pre><code>npm install -g --ignore-scripts @earendil-works/airis-coding-agent</code></pre>
+              </div>
+            </div>
+            <div class="tab-pane" id="tab-pnpm">
+              <div class="code-block">
+                <button class="copy-btn" data-copy="pnpm add -g --ignore-scripts @earendil-works/airis-coding-agent" aria-label="Copy command">⎘</button>
+                <pre><code>pnpm add -g --ignore-scripts @earendil-works/airis-coding-agent</code></pre>
+              </div>
+            </div>
+            <div class="tab-pane" id="tab-bun">
+              <div class="code-block">
+                <button class="copy-btn" data-copy="bun add -g @earendil-works/airis-coding-agent" aria-label="Copy command">⎘</button>
+                <pre><code>bun add -g @earendil-works/airis-coding-agent</code></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="install-note">
+          <span class="note-icon">ℹ</span>
+          <span>Requires Node.js 22.19+ and an API key from a supported provider (Google Gemini, Anthropic Claude, OpenAI, and more).</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- CLI PREVIEW / TERMINAL DEMO -->
+    <section class="section terminal-section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-label">Demo</span>
+          <h2 class="section-title">Terminal Preview</h2>
+          <p class="section-desc">Interactive AI coding assistant running directly in your terminal.</p>
+        </div>
+        <div class="terminal">
+          <div class="terminal-header">
+            <div class="terminal-dots">
+              <span class="dot dot-red"></span>
+              <span class="dot dot-yellow"></span>
+              <span class="dot dot-green"></span>
+            </div>
+            <span class="terminal-title">airis — interactive session</span>
+          </div>
+          <div class="terminal-body" id="terminalBody">
+            <div class="line"><span class="prompt">$</span> <span class="cmd">airis --model gemini/gemini-2.0-flash "Refactor this function"</span></div>
+            <div class="line"><span class="prompt">◆</span> <span class="output">Analyzing function at src/utils/parser.ts:42...</span></div>
+            <div class="line"><span class="prompt">◆</span> <span class="output">I see several improvements: the function mixes concerns (parsing + validation), uses</span></div>
+            <div class="line"><span class="prompt">◆</span> <span class="output">mutability where immutable patterns would be cleaner, and lacks error boundaries.</span></div>
+            <div class="line"><span class="prompt">◆</span> <span class="output">Here's the refactored version:</span></div>
+            <div class="line code-line"><span class="output">  function parseConfig(input: string): Config {</span></div>
+            <div class="line code-line"><span class="output">    const raw = JSON.parse(input);</span></div>
+            <div class="line code-line"><span class="output">    return validateConfig(raw);</span></div>
+            <div class="line code-line"><span class="output">  }</span></div>
+            <div class="line"><span class="prompt">◆</span> <span class="output accent">✓ Refactored function. Reduced complexity from 8 to 3. Tests pass.</span></div>
+            <div class="line cursor-line"><span class="prompt">$</span> <span class="cursor">▊</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="section features-section" id="features">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-label">Features</span>
+          <h2 class="section-title">Everything You Need</h2>
+          <p class="section-desc">Built for developers who want AI assistance directly in their terminal.</p>
+        </div>
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">🤖</div>
+            <h3>Interactive AI</h3>
+            <p>Chat with AI models directly in your terminal. Multi-turn conversations with context awareness.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">📁</div>
+            <h3>File Operations</h3>
+            <p>Read, edit, write, and search files with AI assistance. Powered by built-in tooling.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">💻</div>
+            <h3>Shell Commands</h3>
+            <p>Execute bash commands with AI guidance. Safe, sandboxed execution environment.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🔄</div>
+            <h3>Session Management</h3>
+            <p>Save, resume, and fork sessions. Never lose context between work sessions.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🧠</div>
+            <h3>Multi-Model</h3>
+            <p>Works with 25+ providers including OpenAI, Anthropic, Google Gemini, Groq, Mistral, and more.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🎨</div>
+            <h3>Beautiful TUI</h3>
+            <p>Rich terminal user interface with themes (dark, light, graphite, amoled). Syntax highlighting.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🔌</div>
+            <h3>Extensible</h3>
+            <p>Custom extensions, skills, prompt templates, and tools. Full TypeScript SDK.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">📱</div>
+            <h3>Android Ready</h3>
+            <p>Runs on Termux on Android. Full CLI functionality on mobile devices.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMMANDS -->
+    <section class="section commands-section" id="commands">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-label">Reference</span>
+          <h2 class="section-title">Commands</h2>
+          <p class="section-desc">Complete command reference for AIRIS CLI.</p>
+        </div>
+        <div class="commands-list">
+          <div class="command-item">
+            <code class="command-name">airis</code>
+            <span class="command-desc">Launch interactive mode</span>
+          </div>
+          <div class="command-item">
+            <code class="command-name">airis -p "prompt"</code>
+            <span class="command-desc">Non-interactive prompt mode</span>
+          </div>
+          <div class="command-item">
+            <code class="command-name">airis --continue</code>
+            <span class="command-desc">Continue last session</span>
+          </div>
+          <div class="command-item">
+            <code class="command-name">airis --resume</code>
+            <span class="command-desc">Pick and resume a session</span>
+          </div>
+          <div class="command-item">
+            <code class="command-name">airis sessions</code>
+            <span class="command-desc">List recent sessions</span>
+          </div>
+          <div class="command-item">
+            <code class="command-name">airis --model &lt;pattern&gt;</code>
+            <span class="command-desc">Use specific model (supports glob/fuzzy)</span>
+          </div>
+          <div class="command-item">
+            <code class="command-name">airis --provider &lt;name&gt;</code>
+            <span class="command-desc">Set provider (google, anthropic, openai...)</span>
+          </div>
+          <div class="command-item">
+            <code class="command-name">airis --thinking &lt;level&gt;</code>
+            <span class="command-desc">Thinking level: off/minimal/low/medium/high/xhigh</span>
+          </div>
+          <div class="command-item">
+            <code class="command-name">airis --tools &lt;list&gt;</code>
+            <span class="command-desc">Enable specific tools (read, bash, edit, write...)</span>
+          </div>
+          <div class="command-item">
+            <code class="command-name">airis --no-tools</code>
+            <span class="command-desc">Disable all tools (read-only mode)</span>
+          </div>
+          <div class="command-item">
+            <code class="command-name">airis --export &lt;file&gt;</code>
+            <span class="command-desc">Export session to HTML</span>
+          </div>
+          <div class="command-item">
+            <code class="command-name">airis trust</code>
+            <span class="command-desc">Trust current folder</span>
+          </div>
+          <div class="command-item">
+            <code class="command-name">airis theme set &lt;name&gt;</code>
+            <span class="command-desc">Set theme (dark, light, graphite, amoled)</span>
+          </div>
+          <div class="command-item">
+            <code class="command-name">airis install &lt;source&gt;</code>
+            <span class="command-desc">Install extension</span>
+          </div>
+          <div class="command-item">
+            <code class="command-name">airis update</code>
+            <span class="command-desc">Update AIRIS and extensions</span>
+          </div>
+          <div class="command-item">
+            <code class="command-name">airis --list-models</code>
+            <span class="command-desc">List available models with search</span>
+          </div>
+          <div class="command-item">
+            <code class="command-name">airis --version</code>
+            <span class="command-desc">Show version</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SESSIONS -->
+    <section class="section sessions-section" id="sessions">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-label">Workflow</span>
+          <h2 class="section-title">Smart Session Management</h2>
+          <p class="section-desc">Pick up exactly where you left off. Fork experiments. Export conversations.</p>
+        </div>
+        <div class="sessions-grid">
+          <div class="session-card">
+            <div class="session-card-header">
+              <span class="session-card-icon">↻</span>
+              <h3>Resume</h3>
+            </div>
+            <p>Resume any previous session by ID or browse a picker. Full context restored.</p>
+            <div class="session-code">
+              <code>airis --resume</code>
+              <code>airis resume &lt;session_id&gt;</code>
+            </div>
+          </div>
+          <div class="session-card">
+            <div class="session-card-header">
+              <span class="session-card-icon">⑂</span>
+              <h3>Fork</h3>
+            </div>
+            <p>Fork an existing session into a new one. Perfect for exploring alternative approaches.</p>
+            <div class="session-code">
+              <code>airis --fork &lt;session_id&gt;</code>
+            </div>
+          </div>
+          <div class="session-card">
+            <div class="session-card-header">
+              <span class="session-card-icon">⬇</span>
+              <h3>Export</h3>
+            </div>
+            <p>Export any session to a standalone HTML file for sharing or documentation.</p>
+            <div class="session-code">
+              <code>airis --export session.jsonl output.html</code>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ANDROID / TERMUX -->
+    <section class="section android-section" id="android">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-label">Mobile</span>
+          <h2 class="section-title">Android &amp; Termux Workflows</h2>
+          <p class="section-desc">Full AIRIS CLI experience on your Android device via Termux.</p>
+        </div>
+        <div class="android-content">
+          <div class="android-card">
+            <div class="android-icon">📱</div>
+            <h3>Install on Termux</h3>
+            <div class="code-block">
+              <button class="copy-btn" data-copy="pkg update && pkg install nodejs git && npm install -g --ignore-scripts @earendil-works/airis-coding-agent" aria-label="Copy command">⎘</button>
+              <pre><code>pkg update && pkg install nodejs git
+npm install -g --ignore-scripts @earendil-works/airis-coding-agent</code></pre>
+            </div>
+            <p class="android-note">Set your API key and run <code>airis</code> — same experience as desktop.</p>
+          </div>
+          <div class="android-features">
+            <div class="android-feat">
+              <span class="feat-icon">✓</span>
+              <span>Works with all providers</span>
+            </div>
+            <div class="android-feat">
+              <span class="feat-icon">✓</span>
+              <span>Full file system access</span>
+            </div>
+            <div class="android-feat">
+              <span class="feat-icon">✓</span>
+              <span>Session persistence</span>
+            </div>
+            <div class="android-feat">
+              <span class="feat-icon">✓</span>
+              <span>Theme support</span>
+            </div>
+            <div class="android-feat">
+              <span class="feat-icon">✓</span>
+              <span>Extension system</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CREATOR -->
+    <section class="section creator-section" id="creator">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-label">About</span>
+          <h2 class="section-title">Creator &amp; Brand</h2>
+        </div>
+        <div class="creator-card">
+          <div class="creator-info">
+            <div class="creator-avatar">US</div>
+            <h3>Umaiz Sufiyan</h3>
+            <p class="creator-role">Creator &amp; Lead Developer</p>
+            <p class="creator-desc">
+              AIRIS CLI is built on the <strong>Pi Agent Harness</strong> foundation
+              and extended with advanced features for coding, automation, agents,
+              and Android workflows under the <strong>KageOS</strong> brand.
+            </p>
+            <div class="creator-links">
+              <a href="https://github.com/sufiyan-sabeel" target="_blank" rel="noopener" class="creator-link">GitHub</a>
+              <a href="https://github.com/sufiyan-sabeel/AIRIS-CLI" target="_blank" rel="noopener" class="creator-link">Repository</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ROADMAP -->
+    <section class="section roadmap-section" id="roadmap">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-label">Roadmap</span>
+          <h2 class="section-title">What's Coming</h2>
+          <p class="section-desc">Planned features and improvements for AIRIS CLI.</p>
+        </div>
+        <div class="roadmap-timeline">
+          <div class="roadmap-item done">
+            <div class="roadmap-marker"></div>
+            <div class="roadmap-content">
+              <span class="roadmap-status">Done</span>
+              <h3>v0.79 — Core CLI &amp; TUI</h3>
+              <p>Interactive mode, session management, multi-model support, terminal themes, extension system.</p>
+            </div>
+          </div>
+          <div class="roadmap-item progress">
+            <div class="roadmap-marker"></div>
+            <div class="roadmap-content">
+              <span class="roadmap-status">In Progress</span>
+              <h3>v0.80 — npm Publishing &amp; CI/CD</h3>
+              <p>Publish @earendil-works/airis-coding-agent to npm. Automated binary builds for Linux, macOS, Windows, Android/Termux.</p>
+            </div>
+          </div>
+          <div class="roadmap-item">
+            <div class="roadmap-marker"></div>
+            <div class="roadmap-content">
+              <span class="roadmap-status">Planned</span>
+              <h3>v0.85 — Agent Mode &amp; Planning</h3>
+              <p>Autonomous agent mode with planning, multi-step task execution, and file monitoring.</p>
+            </div>
+          </div>
+          <div class="roadmap-item">
+            <div class="roadmap-marker"></div>
+            <div class="roadmap-content">
+              <span class="roadmap-status">Planned</span>
+              <h3>v0.90 — MCP Server &amp; IDE Integration</h3>
+              <p>Model Context Protocol server for IDE integration. VS Code and Neovim plugins.</p>
+            </div>
+          </div>
+          <div class="roadmap-item">
+            <div class="roadmap-marker"></div>
+            <div class="roadmap-content">
+              <span class="roadmap-status">Planned</span>
+              <h3>v1.0 — Stable Release</h3>
+              <p>Production-ready stable release with full documentation, binary distributions, and official package registries.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section faq-section" id="faq">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-label">Support</span>
+          <h2 class="section-title">Frequently Asked Questions</h2>
+        </div>
+        <div class="faq-list">
+          <details class="faq-item" open>
+            <summary class="faq-question">What is AIRIS CLI?</summary>
+            <div class="faq-answer">
+              <p><strong>Artificial Intelligence Responsive Integrated System</strong> (AIRIS) is a powerful AI coding agent CLI that runs in your terminal. It provides read, bash, edit, write tools, session management, and supports 25+ LLM providers.</p>
+            </div>
+          </details>
+          <details class="faq-item">
+            <summary class="faq-question">How do I get an API key?</summary>
+            <div class="faq-answer">
+              <p>You need an API key from a supported provider. The easiest is Google Gemini (free tier available): sign up at <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com</a> and set <code>GEMINI_API_KEY</code>. For Anthropic Claude, set <code>ANTHROPIC_API_KEY</code>. For OpenAI, set <code>OPENAI_API_KEY</code>.</p>
+            </div>
+          </details>
+          <details class="faq-item">
+            <summary class="faq-question">Which providers are supported?</summary>
+            <div class="faq-answer">
+              <p>25+ providers: Google Gemini, Anthropic Claude, OpenAI, Azure OpenAI, Groq, Mistral, DeepSeek, OpenRouter, Together AI, Fireworks, Cerebras, xAI Grok, NVIDIA NIM, Cloudflare Workers AI, Vercel AI Gateway, Amazon Bedrock, and more.</p>
+            </div>
+          </details>
+          <details class="faq-item">
+            <summary class="faq-question">Can I use it on Android?</summary>
+            <div class="faq-answer">
+              <p>Yes! AIRIS runs on Termux on Android. Install Node.js, then install the npm package. All features work including file operations, session management, and themes.</p>
+            </div>
+          </details>
+          <details class="faq-item">
+            <summary class="faq-question">How do I create extensions?</summary>
+            <div class="faq-answer">
+              <p>Extensions are TypeScript files placed in <code>~/.airis/agent/extensions/</code>. See the <a href="https://github.com/sufiyan-sabeel/AIRIS-CLI/tree/main/packages/coding-agent/examples" target="_blank" rel="noopener">examples directory</a> for full SDK documentation and sample extensions.</p>
+            </div>
+          </details>
+          <details class="faq-item">
+            <summary class="faq-question">Is there a read-only mode?</summary>
+            <div class="faq-answer">
+              <p>Yes. Use <code>airis --no-tools -p "question"</code> to disable all tools, or <code>airis --tools read,grep,find,ls -p "question"</code> to allow only read-only tools.</p>
+            </div>
+          </details>
+          <details class="faq-item">
+            <summary class="faq-question">How do I update AIRIS?</summary>
+            <div class="faq-answer">
+              <p>Run <code>airis update</code> to update AIRIS and all extensions. You can also use <code>npm update -g @earendil-works/airis-coding-agent</code>.</p>
+            </div>
+          </details>
+          <details class="faq-item">
+            <summary class="faq-question">Is the npm package published?</summary>
+            <div class="faq-answer">
+              <p>The npm package <code>@earendil-works/airis-coding-agent</code> is pending publication. Until published, use the curl installer or clone from <a href="https://github.com/sufiyan-sabeel/AIRIS-CLI" target="_blank" rel="noopener">GitHub</a> and run <code>./install.sh</code> or build from source.</p>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <span class="footer-logo">◆ AIRIS</span>
+        <span class="footer-tagline">Artificial Intelligence Responsive Integrated System</span>
+      </div>
+      <div class="footer-links">
+        <a href="https://github.com/sufiyan-sabeel/AIRIS-CLI" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://github.com/sufiyan-sabeel/AIRIS-CLI/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a>
+        <a href="https://github.com/sufiyan-sabeel" target="_blank" rel="noopener">KageOS</a>
+      </div>
+      <div class="footer-copy">
+        &copy; 2026 Umaiz Sufiyan &middot; Built on Pi Agent Harness
+      </div>
+    </div>
+  </footer>
+
+  <div class="toast" id="toast">✓ Copied to clipboard</div>
+
+  <script src="script.js"></script>
+</body>
+</html>
