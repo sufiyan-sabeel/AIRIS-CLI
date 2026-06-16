@@ -14,7 +14,7 @@
 
 import type { AgentMessage } from "@earendil-works/airis-agent-core";
 import type { AssistantMessage, TextContent } from "@earendil-works/airis-ai";
-import type { ExtensionAPI, ExtensionContext } from "@earendil-works/airis-coding-agent";
+import type { ExtensionAPI, ExtensionContext } from "@sufiyan-sabeel/airis-cli";
 import { Key } from "@earendil-works/airis-tui";
 import { extractTodoItems, isSafeCommand, markCompletedSteps, type TodoItem } from "./utils.ts";
 

@@ -724,7 +724,7 @@ export function getDefaultTheme(): string {
 // ============================================================================
 
 // Use globalThis to share theme across module loaders (tsx + jiti in dev mode)
-const THEME_KEY = Symbol.for("@earendil-works/airis-coding-agent:theme");
+const THEME_KEY = Symbol.for("@sufiyan-sabeel/airis-cli:theme");
 const THEME_KEY_OLD = Symbol.for("@mariozechner/pi-coding-agent:theme");
 
 // Export theme as a getter that reads from globalThis

@@ -43,7 +43,7 @@ import {
 	type ToolCall,
 	type ToolResultMessage,
 } from "@earendil-works/airis-ai";
-import type { ExtensionAPI } from "@earendil-works/airis-coding-agent";
+import type { ExtensionAPI } from "@sufiyan-sabeel/airis-cli";
 
 // =============================================================================
 // OAuth Implementation (copied from packages/ai/src/utils/oauth/anthropic.ts)

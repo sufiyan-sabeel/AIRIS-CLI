@@ -7,7 +7,7 @@ Pi is a minimal terminal coding harness. It is designed to stay small at the cor
 Install Pi with npm:
 
 ```bash
-npm install -g --ignore-scripts @earendil-works/airis-coding-agent
+npm install -g --ignore-scripts @sufiyan-sabeel/airis-cli
 ```
 
 `--ignore-scripts` disables dependency lifecycle scripts during install. Pi does not require install scripts for normal npm installs.
@@ -21,10 +21,10 @@ curl -fsSL https://pi.dev/install.sh | sh
 To uninstall pi itself, use npm for curl and npm installs:
 
 ```bash
-npm uninstall -g @earendil-works/airis-coding-agent
+npm uninstall -g @sufiyan-sabeel/airis-cli
 ```
 
-For pnpm, Yarn, or Bun installs, use the matching global remove command: `pnpm remove -g @earendil-works/airis-coding-agent`, `yarn global remove @earendil-works/airis-coding-agent`, or `bun uninstall -g @earendil-works/airis-coding-agent`.
+For pnpm, Yarn, or Bun installs, use the matching global remove command: `pnpm remove -g @sufiyan-sabeel/airis-cli`, `yarn global remove @sufiyan-sabeel/airis-cli`, or `bun uninstall -g @sufiyan-sabeel/airis-cli`.
 
 Then run it in a project directory:
 

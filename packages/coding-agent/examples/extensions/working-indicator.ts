@@ -16,7 +16,7 @@
  *   /working-indicator reset     Restore pi's default spinner
  */
 
-import type { ExtensionAPI, ExtensionContext, WorkingIndicatorOptions } from "@earendil-works/airis-coding-agent";
+import type { ExtensionAPI, ExtensionContext, WorkingIndicatorOptions } from "@sufiyan-sabeel/airis-cli";
 
 type WorkingIndicatorMode = "dot" | "none" | "pulse" | "spinner" | "default";
 

@@ -54,14 +54,14 @@ netlify deploy --prod
 ## Install Command
 
 ```bash
-curl -fsSL https://airis-cli.netlify.app/install.sh | sh
+curl -fsSL https://airis-dev.netlify.app/install.sh | sh
 ```
 
 ## Installer Behavior
 
 - Does **not** git clone
 - Checks OS, shell, Node.js, npm
-- Installs via `npm install -g --ignore-scripts @earendil-works/airis-coding-agent`
+- Installs via `npm install -g @sufiyan-sabeel/airis-cli`
 - If npm package is not published, prints clear message and exits cleanly
 - Verifies installation with `airis --help`
 - Professional spinner/progress animation

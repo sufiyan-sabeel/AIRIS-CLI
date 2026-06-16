@@ -18,7 +18,7 @@
  */
 
 import { StringEnum } from "@earendil-works/airis-ai";
-import type { ExtensionAPI, ExtensionContext, Theme, ToolExecutionMode } from "@earendil-works/airis-coding-agent";
+import type { ExtensionAPI, ExtensionContext, Theme, ToolExecutionMode } from "@sufiyan-sabeel/airis-cli";
 import { type Component, matchesKey, Text, truncateToWidth, visibleWidth } from "@earendil-works/airis-tui";
 import { Type } from "typebox";
 

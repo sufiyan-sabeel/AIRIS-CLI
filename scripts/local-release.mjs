@@ -9,7 +9,7 @@ const packages = [
 	{ directory: "packages/ai", name: "@earendil-works/airis-ai" },
 	{ directory: "packages/tui", name: "@earendil-works/airis-tui" },
 	{ directory: "packages/agent", name: "@earendil-works/airis-agent-core" },
-	{ directory: "packages/coding-agent", name: "@earendil-works/airis-coding-agent" },
+	{ directory: "packages/coding-agent", name: "@sufiyan-sabeel/airis-cli" },
 ];
 
 function printUsage() {

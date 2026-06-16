@@ -7,7 +7,7 @@
 
 import { exec } from "node:child_process";
 import { promisify } from "node:util";
-import type { ExtensionAPI } from "@earendil-works/airis-coding-agent";
+import type { ExtensionAPI } from "@sufiyan-sabeel/airis-cli";
 
 const execAsync = promisify(exec);
 

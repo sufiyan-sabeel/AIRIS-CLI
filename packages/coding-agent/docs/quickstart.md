@@ -7,7 +7,7 @@ This page gets you from install to a useful first pi session.
 Pi is distributed as an npm package:
 
 ```bash
-npm install -g --ignore-scripts @earendil-works/airis-coding-agent
+npm install -g --ignore-scripts @sufiyan-sabeel/airis-cli
 ```
 
 `--ignore-scripts` disables dependency lifecycle scripts during install. Pi does not require install scripts for normal npm installs.
@@ -18,16 +18,16 @@ Use the package manager that installed pi. The curl installer uses npm globally,
 
 ```bash
 # curl installer or npm install -g
-npm uninstall -g @earendil-works/airis-coding-agent
+npm uninstall -g @sufiyan-sabeel/airis-cli
 
 # pnpm
-pnpm remove -g @earendil-works/airis-coding-agent
+pnpm remove -g @sufiyan-sabeel/airis-cli
 
 # Yarn
-yarn global remove @earendil-works/airis-coding-agent
+yarn global remove @sufiyan-sabeel/airis-cli
 
 # Bun
-bun uninstall -g @earendil-works/airis-coding-agent
+bun uninstall -g @sufiyan-sabeel/airis-cli
 ```
 
 Uninstalling pi leaves settings, credentials, sessions, and installed pi packages in `~/.pi/agent/`.

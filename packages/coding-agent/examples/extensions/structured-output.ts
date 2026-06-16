@@ -5,7 +5,7 @@
  * without paying for an extra follow-up LLM turn.
  */
 
-import { defineTool, type ExtensionAPI } from "@earendil-works/airis-coding-agent";
+import { defineTool, type ExtensionAPI } from "@sufiyan-sabeel/airis-cli";
 import { Text } from "@earendil-works/airis-tui";
 import { Type } from "typebox";
 

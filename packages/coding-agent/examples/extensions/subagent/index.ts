@@ -19,7 +19,7 @@ import * as path from "node:path";
 import type { AgentToolResult } from "@earendil-works/airis-agent-core";
 import type { Message } from "@earendil-works/airis-ai";
 import { StringEnum } from "@earendil-works/airis-ai";
-import { type ExtensionAPI, getMarkdownTheme, withFileMutationQueue } from "@earendil-works/airis-coding-agent";
+import { type ExtensionAPI, getMarkdownTheme, withFileMutationQueue } from "@sufiyan-sabeel/airis-cli";
 import { Container, Markdown, Spacer, Text } from "@earendil-works/airis-tui";
 import { Type } from "typebox";
 import { type AgentConfig, type AgentScope, discoverAgents } from "./agents.ts";

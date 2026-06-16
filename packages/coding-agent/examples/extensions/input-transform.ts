@@ -9,7 +9,7 @@
  *   ping                        → "pong" (instant, no LLM)
  *   time                        → current time (instant, no LLM)
  */
-import type { ExtensionAPI } from "@earendil-works/airis-coding-agent";
+import type { ExtensionAPI } from "@sufiyan-sabeel/airis-cli";
 
 export default function (pi: ExtensionAPI) {
 	pi.on("input", async (event, ctx) => {

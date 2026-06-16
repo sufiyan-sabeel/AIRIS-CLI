@@ -3,8 +3,8 @@
 	"compilerOptions": {
 		"noEmit": true,
 		"paths": {
-			"@earendil-works/airis-coding-agent": ["./src/index.ts"],
-			"@earendil-works/airis-coding-agent/hooks": ["./src/core/hooks/index.ts"],
+			"@sufiyan-sabeel/airis-cli": ["./src/index.ts"],
+			"@sufiyan-sabeel/airis-cli/hooks": ["./src/core/hooks/index.ts"],
 			"@earendil-works/airis-tui": ["../tui/src/index.ts"],
 			"@earendil-works/airis-ai": ["../ai/src/index.ts"],
 			"typebox": ["../../node_modules/typebox"]

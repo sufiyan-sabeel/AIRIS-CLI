@@ -21,7 +21,7 @@
 
 import path from "node:path";
 import { RealFSProvider, VM } from "@earendil-works/gondolin";
-import type { ExtensionAPI, ExtensionContext } from "@earendil-works/airis-coding-agent";
+import type { ExtensionAPI, ExtensionContext } from "@sufiyan-sabeel/airis-cli";
 import {
 	type BashOperations,
 	createBashTool,
@@ -42,7 +42,7 @@ import {
 	truncateHead,
 	truncateLine,
 	type WriteOperations,
-} from "@earendil-works/airis-coding-agent";
+} from "@sufiyan-sabeel/airis-cli";
 
 const GUEST_WORKSPACE = "/workspace";
 const DEFAULT_GREP_LIMIT = 100;

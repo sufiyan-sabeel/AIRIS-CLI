@@ -2,7 +2,7 @@
  * Snake game extension - play snake with /snake command
  */
 
-import type { ExtensionAPI } from "@earendil-works/airis-coding-agent";
+import type { ExtensionAPI } from "@sufiyan-sabeel/airis-cli";
 import { matchesKey, visibleWidth } from "@earendil-works/airis-tui";
 
 const GAME_WIDTH = 40;

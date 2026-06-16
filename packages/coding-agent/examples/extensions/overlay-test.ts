@@ -8,7 +8,7 @@
  * - Edge case tests (wide chars, styled text, emoji)
  */
 
-import type { ExtensionAPI, ExtensionCommandContext, Theme } from "@earendil-works/airis-coding-agent";
+import type { ExtensionAPI, ExtensionCommandContext, Theme } from "@sufiyan-sabeel/airis-cli";
 import { CURSOR_MARKER, type Focusable, matchesKey, visibleWidth } from "@earendil-works/airis-tui";
 
 export default function (pi: ExtensionAPI) {

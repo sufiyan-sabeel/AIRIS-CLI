@@ -9,7 +9,7 @@
  */
 
 import path from "node:path";
-import type { ExtensionAPI, ExtensionContext } from "@earendil-works/airis-coding-agent";
+import type { ExtensionAPI, ExtensionContext } from "@sufiyan-sabeel/airis-cli";
 
 const BRAILLE_FRAMES = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
 

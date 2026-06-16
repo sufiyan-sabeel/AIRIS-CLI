@@ -7,7 +7,7 @@
  * Usage: pi -e ./model-status.ts
  */
 
-import type { ExtensionAPI } from "@earendil-works/airis-coding-agent";
+import type { ExtensionAPI } from "@sufiyan-sabeel/airis-cli";
 
 export default function (pi: ExtensionAPI) {
 	pi.on("model_select", async (event, ctx) => {

@@ -3,7 +3,7 @@
  */
 
 import { Type } from "@earendil-works/airis-ai";
-import { defineTool, type ExtensionAPI } from "@earendil-works/airis-coding-agent";
+import { defineTool, type ExtensionAPI } from "@sufiyan-sabeel/airis-cli";
 
 const helloTool = defineTool({
 	name: "hello",

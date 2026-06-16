@@ -10,7 +10,7 @@
  * 3. Use /commands extensions to filter by source
  */
 
-import type { ExtensionAPI, SlashCommandInfo } from "@earendil-works/airis-coding-agent";
+import type { ExtensionAPI, SlashCommandInfo } from "@sufiyan-sabeel/airis-cli";
 
 export default function commandsExtension(pi: ExtensionAPI) {
 	pi.registerCommand("commands", {

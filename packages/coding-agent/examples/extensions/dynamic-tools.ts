@@ -7,7 +7,7 @@
  * - Registers additional tools at runtime via /add-echo-tool <name>
  */
 
-import type { ExtensionAPI } from "@earendil-works/airis-coding-agent";
+import type { ExtensionAPI } from "@sufiyan-sabeel/airis-cli";
 import { Type } from "typebox";
 
 const ECHO_PARAMS = Type.Object({

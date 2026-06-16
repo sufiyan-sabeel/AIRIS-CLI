@@ -19,7 +19,7 @@
 
 import * as fs from "node:fs";
 import * as path from "node:path";
-import type { ExtensionAPI } from "@earendil-works/airis-coding-agent";
+import type { ExtensionAPI } from "@sufiyan-sabeel/airis-cli";
 
 /**
  * Recursively find all .md files in a directory

@@ -11,7 +11,7 @@
  *   /followup And then?   - Sends while streaming with followUp delivery
  */
 
-import type { ExtensionAPI } from "@earendil-works/airis-coding-agent";
+import type { ExtensionAPI } from "@sufiyan-sabeel/airis-cli";
 
 export default function (pi: ExtensionAPI) {
 	// Simple command that sends a user message

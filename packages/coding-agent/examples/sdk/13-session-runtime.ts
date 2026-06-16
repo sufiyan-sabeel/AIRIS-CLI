@@ -15,7 +15,7 @@ import {
 	createAgentSessionServices,
 	getAgentDir,
 	SessionManager,
-} from "@earendil-works/airis-coding-agent";
+} from "@sufiyan-sabeel/airis-cli";
 
 const createRuntime: CreateAgentSessionRuntimeFactory = async ({ cwd, sessionManager, sessionStartEvent }) => {
 	const services = await createAgentSessionServices({ cwd });

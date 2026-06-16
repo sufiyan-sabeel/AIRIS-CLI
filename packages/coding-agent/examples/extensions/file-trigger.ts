@@ -9,7 +9,7 @@
  */
 
 import * as fs from "node:fs";
-import type { ExtensionAPI } from "@earendil-works/airis-coding-agent";
+import type { ExtensionAPI } from "@sufiyan-sabeel/airis-cli";
 
 export default function (pi: ExtensionAPI) {
 	pi.on("session_start", async (_event, ctx) => {

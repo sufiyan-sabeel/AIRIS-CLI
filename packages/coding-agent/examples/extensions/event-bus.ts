@@ -7,7 +7,7 @@
  * Usage: /emit [event-name] [data] - emit an event on the bus
  */
 
-import type { ExtensionAPI, ExtensionContext } from "@earendil-works/airis-coding-agent";
+import type { ExtensionAPI, ExtensionContext } from "@sufiyan-sabeel/airis-cli";
 
 export default function (pi: ExtensionAPI) {
 	// Store ctx for use in event handler

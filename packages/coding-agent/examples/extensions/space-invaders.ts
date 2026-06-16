@@ -3,7 +3,7 @@
  * Uses Kitty keyboard protocol for smooth movement (press/release detection)
  */
 
-import type { ExtensionAPI } from "@earendil-works/airis-coding-agent";
+import type { ExtensionAPI } from "@sufiyan-sabeel/airis-cli";
 import { isKeyRelease, Key, matchesKey, visibleWidth } from "@earendil-works/airis-tui";
 
 const GAME_WIDTH = 60;

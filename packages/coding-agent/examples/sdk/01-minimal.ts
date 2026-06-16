@@ -5,7 +5,7 @@
  * from cwd and ~/.pi/agent. Model chosen from settings or first available.
  */
 
-import { createAgentSession } from "@earendil-works/airis-coding-agent";
+import { createAgentSession } from "@sufiyan-sabeel/airis-cli";
 
 const { session } = await createAgentSession();
 

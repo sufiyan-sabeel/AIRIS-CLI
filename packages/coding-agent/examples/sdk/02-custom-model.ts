@@ -5,7 +5,7 @@
  */
 
 import { getModel } from "@earendil-works/airis-ai";
-import { AuthStorage, createAgentSession, ModelRegistry } from "@earendil-works/airis-coding-agent";
+import { AuthStorage, createAgentSession, ModelRegistry } from "@sufiyan-sabeel/airis-cli";
 
 // Set up auth storage and model registry
 const authStorage = AuthStorage.create();

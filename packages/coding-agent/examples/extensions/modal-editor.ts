@@ -9,7 +9,7 @@
  * - ctrl+c, ctrl+d, etc. work in both modes
  */
 
-import { CustomEditor, type ExtensionAPI } from "@earendil-works/airis-coding-agent";
+import { CustomEditor, type ExtensionAPI } from "@sufiyan-sabeel/airis-cli";
 import { matchesKey, truncateToWidth, visibleWidth } from "@earendil-works/airis-tui";
 
 // Normal mode key mappings: key -> escape sequence (or null for mode switch)

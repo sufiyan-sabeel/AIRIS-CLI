@@ -2,7 +2,7 @@
 #
 # AIRIS CLI – Installer
 # Artificial Intelligence Responsive Integrated System
-# curl -fsSL https://airis-cli.netlify.app/install.sh | sh
+# curl -fsSL https://airis-dev.netlify.app/install.sh | sh
 #
 # This installer does NOT git clone. It installs via npm package manager.
 # If the npm package is not yet published, it prints a clear message.
@@ -106,11 +106,11 @@ sleep 0.3
 
 # --- Step 3: Install via npm ---
 step "Installing AIRIS CLI..."
-info "Package: @earendil-works/airis-coding-agent"
+info "Package: @sufiyan-sabeel/airis-cli"
 sleep 0.5
 
 # Run npm install in background so we can show spinner
-npm install -g --ignore-scripts @earendil-works/airis-coding-agent &
+npm install -g @sufiyan-sabeel/airis-cli &
 NPM_PID=$!
 spinner $NPM_PID
 wait $NPM_PID
@@ -149,7 +149,7 @@ if command -v airis >/dev/null 2>&1; then
   success "AIRIS CLI ${AIRIS_VER} is ready"
 else
   warn "airis command not found in PATH."
-  info "Try: npx @earendil-works/airis-coding-agent --help"
+  info "Try: npx @sufiyan-sabeel/airis-cli --help"
   info "Or check your npm global bin directory."
 fi
 sleep 0.3

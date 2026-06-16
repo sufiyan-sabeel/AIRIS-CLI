@@ -1,5 +1,5 @@
 {
-	"name": "@earendil-works/airis-coding-agent",
+	"name": "@sufiyan-sabeel/airis-cli",
 	"version": "0.79.3",
 	"description": "Coding agent CLI with read, bash, edit, write tools and session management",
 	"type": "module",
@@ -89,7 +89,7 @@
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/earendil-works/pi.git",
+		"url": "git+https://github.com/sufiyan-sabeel/AIRIS-CLI.git",
 		"directory": "packages/coding-agent"
 	},
 	"engines": {

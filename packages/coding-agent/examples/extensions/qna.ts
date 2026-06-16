@@ -8,8 +8,8 @@
  */
 
 import { complete, type UserMessage } from "@earendil-works/airis-ai";
-import type { ExtensionAPI } from "@earendil-works/airis-coding-agent";
-import { BorderedLoader } from "@earendil-works/airis-coding-agent";
+import type { ExtensionAPI } from "@sufiyan-sabeel/airis-cli";
+import { BorderedLoader } from "@sufiyan-sabeel/airis-cli";
 
 const SYSTEM_PROMPT = `You are a question extractor. Given text from a conversation, extract any questions that need answering and format them for the user to fill in.
 

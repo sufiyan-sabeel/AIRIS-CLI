@@ -12,7 +12,7 @@ import {
 	getAgentDir,
 	SessionManager,
 	type Skill,
-} from "@earendil-works/airis-coding-agent";
+} from "@sufiyan-sabeel/airis-cli";
 
 // Or define custom skills inline
 const customSkill: Skill = {

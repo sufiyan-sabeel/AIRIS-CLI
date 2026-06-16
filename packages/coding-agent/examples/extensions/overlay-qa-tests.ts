@@ -19,7 +19,7 @@
  *   /overlay-streaming  - Multiple input panels with simulated streaming (Tab to cycle focus)
  */
 
-import type { ExtensionAPI, ExtensionCommandContext, Theme } from "@earendil-works/airis-coding-agent";
+import type { ExtensionAPI, ExtensionCommandContext, Theme } from "@sufiyan-sabeel/airis-cli";
 import type { Component, OverlayAnchor, OverlayHandle, OverlayOptions, TUI } from "@earendil-works/airis-tui";
 import { Input, matchesKey, truncateToWidth, visibleWidth } from "@earendil-works/airis-tui";
 import { spawn } from "child_process";

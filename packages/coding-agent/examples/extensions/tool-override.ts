@@ -21,7 +21,7 @@
  */
 
 import type { TextContent } from "@earendil-works/airis-ai";
-import { type ExtensionAPI, getAgentDir, withFileMutationQueue } from "@earendil-works/airis-coding-agent";
+import { type ExtensionAPI, getAgentDir, withFileMutationQueue } from "@sufiyan-sabeel/airis-cli";
 import { constants, readFileSync } from "fs";
 import { access, appendFile, readFile } from "fs/promises";
 import { join, resolve } from "path";

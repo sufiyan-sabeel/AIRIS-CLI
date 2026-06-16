@@ -11,20 +11,21 @@ A powerful AI coding agent CLI with read, bash, edit, write tools and session ma
 
 ## Features
 
-- 🤖 **Interactive AI Assistant** - Chat with AI models directly in your terminal
-- 📁 **File Operations** - Read, edit, and write files with AI assistance
-- 💻 **Shell Commands** - Execute bash commands with AI guidance
-- 🔄 **Session Management** - Save and resume conversations
-- 🧠 **Multi-Model Support** - Works with OpenAI, Anthropic, Google, and more
-- 🎨 **Beautiful TUI** - Rich terminal user interface with themes
-- 🔌 **Extensible** - Custom extensions and tools support
+- **Interactive AI Assistant** - Chat with AI models directly in your terminal
+- **File Operations** - Read, edit, and write files with AI assistance
+- **Shell Commands** - Execute bash commands with AI guidance
+- **Session Management** - Save, resume, fork, and export conversations
+- **Multi-Model Support** - Works with 25+ providers including OpenAI, Anthropic, Google, and more
+- **Beautiful TUI** - Rich terminal user interface with themes (dark, light, graphite, amoled)
+- **Extensible** - Custom extensions, skills, and prompt templates support
+- **Android Ready** - Full functionality on Termux
 
 ## Quick Install
 
 ### One-liner Install
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/sufiyan-sabeel/AIRIS-CLI/main/install.sh | bash
+curl -fsSL https://airis-dev.netlify.app/install.sh | sh
 ```
 
 ### Or Clone & Install
@@ -76,6 +77,12 @@ airis --continue
 
 # Resume a specific session
 airis --resume
+
+# Fork a session
+airis --fork <session_id>
+
+# Export session to HTML
+airis --export session.jsonl output.html
 ```
 
 ### Options
@@ -83,13 +90,23 @@ airis --resume
 | Option | Description |
 |--------|-------------|
 | `--provider <name>` | Provider name (default: google) |
-| `--model <pattern>` | Model pattern or ID |
+| `--model <pattern>` | Model pattern or ID (supports globs and fuzzy) |
 | `--api-key <key>` | API key (defaults to env vars) |
 | `--print, -p` | Non-interactive mode |
 | `--continue, -c` | Continue previous session |
 | `--resume, -r` | Select session to resume |
+| `--fork <id>` | Fork session into new one |
+| `--session <path>` | Use specific session file |
+| `--no-session` | Don't save session (ephemeral) |
 | `--name, -n` | Set session display name |
-| `--thinking <level>` | Set thinking level (off/low/medium/high) |
+| `--thinking <level>` | Set thinking level: off, minimal, low, medium, high, xhigh |
+| `--tools <list>` | Enable specific tools (read, bash, edit, write...) |
+| `--no-tools` | Disable all tools |
+| `--extension, -e <path>` | Load extension file |
+| `--skill <path>` | Load skill file or directory |
+| `--theme <path>` | Load theme file |
+| `--list-models [search]` | List available models |
+| `--export <file>` | Export session to HTML |
 | `--help, -h` | Show help |
 | `--version, -v` | Show version |
 
@@ -108,9 +125,36 @@ airis --provider openai --model gpt-4o-mini "Help me refactor"
 # Read-only mode
 airis --tools read,grep,find,ls -p "Review the code in src/"
 
-# Export session to HTML
-airis --export session.jsonl output.html
+# High thinking level
+airis --thinking high "Solve this complex problem"
+
+# Load extension
+airis -e ./my-extension.ts
 ```
+
+## Supported Providers
+
+25+ providers including:
+
+- **Google** - Gemini
+- **Anthropic** - Claude
+- **OpenAI** - GPT
+- **Azure OpenAI**
+- **Groq**
+- **Mistral**
+- **DeepSeek**
+- **OpenRouter**
+- **Together AI**
+- **Fireworks**
+- **Cerebras**
+- **xAI** - Grok
+- **NVIDIA NIM**
+- **Cloudflare Workers AI**
+- **Vercel AI Gateway**
+- **Amazon Bedrock**
+- And more...
+
+Run `airis --list-models` to see all available models.
 
 ## Environment Variables
 
@@ -119,6 +163,10 @@ airis --export session.jsonl output.html
 | `GEMINI_API_KEY` | Google Gemini API key |
 | `ANTHROPIC_API_KEY` | Anthropic Claude API key |
 | `OPENAI_API_KEY` | OpenAI GPT API key |
+| `GROQ_API_KEY` | Groq API key |
+| `MISTRAL_API_KEY` | Mistral API key |
+| `DEEPSEEK_API_KEY` | DeepSeek API key |
+| `OPENROUTER_API_KEY` | OpenRouter API key |
 | `AIRIS_CODING_AGENT_DIR` | Config directory (default: `~/.airis/agent`) |
 | `PI_OFFLINE` | Disable startup network operations |
 
@@ -138,6 +186,45 @@ AIRIS stores configuration in `~/.airis/agent/`:
 ├── skills/          # Custom skills
 └── prompts/         # Custom prompt templates
 ```
+
+## Themes
+
+AIRIS includes 4 built-in themes:
+
+- **dark** - Default dark theme
+- **light** - Light theme
+- **graphite** - Graphite dark theme (default)
+- **oled** - AMOLED black theme
+
+```bash
+# List themes
+airis theme list
+
+# Set theme
+airis theme set dark
+```
+
+## Commands
+
+| Command | Description |
+|---------|-------------|
+| `airis` | Launch interactive mode |
+| `airis -p "prompt"` | Non-interactive prompt mode |
+| `airis --continue` | Continue last session |
+| `airis --resume` | Pick and resume a session |
+| `airis sessions` | List recent sessions |
+| `airis --model <pattern>` | Use specific model |
+| `airis --provider <name>` | Set provider |
+| `airis --thinking <level>` | Set thinking level |
+| `airis --tools <list>` | Enable specific tools |
+| `airis --no-tools` | Disable all tools |
+| `airis --export <file>` | Export session to HTML |
+| `airis trust` | Trust current folder |
+| `airis theme set <name>` | Set theme |
+| `airis install <source>` | Install extension |
+| `airis update` | Update AIRIS and extensions |
+| `airis --list-models` | List available models |
+| `airis --version` | Show version |
 
 ## Development
 
@@ -177,7 +264,7 @@ Create custom extensions in `~/.airis/agent/extensions/`:
 
 ```typescript
 // my-extension.ts
-import type { ExtensionAPI } from "@earendil-works/airis-coding-agent";
+import type { ExtensionAPI } from "@sufiyan-sabeel/airis-cli";
 
 export default function(api: ExtensionAPI) {
   api.registerCommand("hello", {
@@ -185,6 +272,22 @@ export default function(api: ExtensionAPI) {
     handler: () => "Hello from AIRIS!"
   });
 }
+```
+
+## Android & Termux
+
+AIRIS runs fully on Android via Termux:
+
+```bash
+# Install on Termux
+pkg update && pkg install nodejs git
+npm install -g @sufiyan-sabeel/airis-cli
+
+# Set your API key
+export GEMINI_API_KEY="your-key-here"
+
+# Run
+airis
 ```
 
 ## License
@@ -198,3 +301,5 @@ Built on [Pi Agent Harness](https://github.com/earendil-works/pi) by [Mario Zech
 ---
 
 **AIRIS** - Artificial Intelligence Responsive Integrated System
+
+**Brand**: KageOS | **Creator**: Umaiz Sufiyan

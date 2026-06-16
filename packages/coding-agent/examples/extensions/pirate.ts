@@ -10,7 +10,7 @@
  * 3. When enabled, the agent will respond like a pirate
  */
 
-import type { ExtensionAPI } from "@earendil-works/airis-coding-agent";
+import type { ExtensionAPI } from "@sufiyan-sabeel/airis-cli";
 
 export default function pirateExtension(pi: ExtensionAPI) {
 	let pirateMode = false;

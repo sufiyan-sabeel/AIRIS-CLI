@@ -1,4 +1,4 @@
-import type { ExtensionAPI, ExtensionContext } from "@earendil-works/airis-coding-agent";
+import type { ExtensionAPI, ExtensionContext } from "@sufiyan-sabeel/airis-cli";
 
 const COMPACT_THRESHOLD_TOKENS = 100_000;
 

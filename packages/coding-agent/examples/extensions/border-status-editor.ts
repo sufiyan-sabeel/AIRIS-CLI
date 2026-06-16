@@ -3,7 +3,7 @@ import {
 	type ExtensionAPI,
 	type ExtensionContext,
 	type KeybindingsManager,
-} from "@earendil-works/airis-coding-agent";
+} from "@sufiyan-sabeel/airis-cli";
 import type { Component, EditorTheme, TUI } from "@earendil-works/airis-tui";
 import { truncateToWidth, visibleWidth } from "@earendil-works/airis-tui";
 

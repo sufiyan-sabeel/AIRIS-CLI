@@ -471,7 +471,7 @@ try {
 }
 
 const piConfigName: string | undefined = pkg.piConfig?.name;
-export const PACKAGE_NAME: string = pkg.name || "@earendil-works/airis-coding-agent";
+export const PACKAGE_NAME: string = pkg.name || "@sufiyan-sabeel/airis-cli";
 export const APP_NAME: string = piConfigName || "airis";
 export const APP_TITLE: string = piConfigName ? APP_NAME : "AIRIS";
 export const CONFIG_DIR_NAME: string = pkg.piConfig?.configDir || ".airis";

@@ -14,8 +14,8 @@
  */
 
 import { complete } from "@earendil-works/airis-ai";
-import type { ExtensionAPI } from "@earendil-works/airis-coding-agent";
-import { convertToLlm, serializeConversation } from "@earendil-works/airis-coding-agent";
+import type { ExtensionAPI } from "@sufiyan-sabeel/airis-cli";
+import { convertToLlm, serializeConversation } from "@sufiyan-sabeel/airis-cli";
 
 export default function (pi: ExtensionAPI) {
 	pi.on("session_before_compact", async (event, ctx) => {

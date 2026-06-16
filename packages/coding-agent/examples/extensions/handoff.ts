@@ -14,8 +14,8 @@
 
 import type { AgentMessage } from "@earendil-works/airis-agent-core";
 import { complete, type Message } from "@earendil-works/airis-ai";
-import type { ExtensionAPI, SessionEntry } from "@earendil-works/airis-coding-agent";
-import { BorderedLoader, convertToLlm, serializeConversation } from "@earendil-works/airis-coding-agent";
+import type { ExtensionAPI, SessionEntry } from "@sufiyan-sabeel/airis-cli";
+import { BorderedLoader, convertToLlm, serializeConversation } from "@sufiyan-sabeel/airis-cli";
 
 const SYSTEM_PROMPT = `You are a context transfer assistant. Given a conversation history and the user's goal for a new thread, generate a focused prompt that:
 

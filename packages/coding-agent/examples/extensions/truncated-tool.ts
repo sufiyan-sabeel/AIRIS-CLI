@@ -15,7 +15,7 @@
  */
 
 import { mkdtemp, writeFile } from "node:fs/promises";
-import type { ExtensionAPI } from "@earendil-works/airis-coding-agent";
+import type { ExtensionAPI } from "@sufiyan-sabeel/airis-cli";
 import {
 	DEFAULT_MAX_BYTES,
 	DEFAULT_MAX_LINES,
@@ -23,7 +23,7 @@ import {
 	type TruncationResult,
 	truncateHead,
 	withFileMutationQueue,
-} from "@earendil-works/airis-coding-agent";
+} from "@sufiyan-sabeel/airis-cli";
 import { Text } from "@earendil-works/airis-tui";
 import { execSync } from "child_process";
 import { tmpdir } from "os";

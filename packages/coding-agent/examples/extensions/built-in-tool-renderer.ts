@@ -25,8 +25,8 @@
  *   pi -e ./built-in-tool-renderer.ts
  */
 
-import type { BashToolDetails, EditToolDetails, ExtensionAPI, ReadToolDetails } from "@earendil-works/airis-coding-agent";
-import { createBashTool, createEditTool, createReadTool, createWriteTool } from "@earendil-works/airis-coding-agent";
+import type { BashToolDetails, EditToolDetails, ExtensionAPI, ReadToolDetails } from "@sufiyan-sabeel/airis-cli";
+import { createBashTool, createEditTool, createReadTool, createWriteTool } from "@sufiyan-sabeel/airis-cli";
 import { Text } from "@earendil-works/airis-tui";
 
 export default function (pi: ExtensionAPI) {

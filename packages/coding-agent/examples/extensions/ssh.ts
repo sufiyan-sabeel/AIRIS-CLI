@@ -14,7 +14,7 @@
  */
 
 import { spawn } from "node:child_process";
-import type { ExtensionAPI } from "@earendil-works/airis-coding-agent";
+import type { ExtensionAPI } from "@sufiyan-sabeel/airis-cli";
 import {
 	type BashOperations,
 	createBashTool,
@@ -24,7 +24,7 @@ import {
 	type EditOperations,
 	type ReadOperations,
 	type WriteOperations,
-} from "@earendil-works/airis-coding-agent";
+} from "@sufiyan-sabeel/airis-cli";
 
 function sshExec(remote: string, command: string): Promise<Buffer> {
 	return new Promise((resolve, reject) => {

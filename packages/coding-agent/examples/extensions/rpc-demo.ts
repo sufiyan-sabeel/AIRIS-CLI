@@ -17,7 +17,7 @@
  * - setEditorText() - via /rpc-prefill command
  */
 
-import type { ExtensionAPI } from "@earendil-works/airis-coding-agent";
+import type { ExtensionAPI } from "@sufiyan-sabeel/airis-cli";
 
 export default function (pi: ExtensionAPI) {
 	let turnCount = 0;

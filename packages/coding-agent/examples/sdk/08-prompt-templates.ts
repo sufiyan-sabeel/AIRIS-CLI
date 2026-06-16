@@ -11,7 +11,7 @@ import {
 	getAgentDir,
 	type PromptTemplate,
 	SessionManager,
-} from "@earendil-works/airis-coding-agent";
+} from "@sufiyan-sabeel/airis-cli";
 
 // Define custom templates
 const deployTemplate: PromptTemplate = {

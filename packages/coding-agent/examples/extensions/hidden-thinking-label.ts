@@ -18,7 +18,7 @@
  *   /thinking-label          Reset to the default label
  */
 
-import type { ExtensionAPI, ExtensionContext } from "@earendil-works/airis-coding-agent";
+import type { ExtensionAPI, ExtensionContext } from "@sufiyan-sabeel/airis-cli";
 
 const DEFAULT_LABEL = "Pondering...";
 

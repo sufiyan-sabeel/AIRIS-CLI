@@ -21,7 +21,7 @@
  */
 
 import { spawnSync } from "node:child_process";
-import type { ExtensionAPI } from "@earendil-works/airis-coding-agent";
+import type { ExtensionAPI } from "@sufiyan-sabeel/airis-cli";
 
 // Default interactive commands - editors, pagers, git ops, TUIs
 const DEFAULT_INTERACTIVE_COMMANDS = [

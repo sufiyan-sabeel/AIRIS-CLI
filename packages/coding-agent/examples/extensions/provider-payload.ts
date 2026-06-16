@@ -1,6 +1,6 @@
 import { appendFileSync } from "node:fs";
 import { join } from "node:path";
-import type { ExtensionAPI } from "@earendil-works/airis-coding-agent";
+import type { ExtensionAPI } from "@sufiyan-sabeel/airis-cli";
 
 export default function (pi: ExtensionAPI) {
 	const logFile = join(process.cwd(), ".pi", "provider-payload.log");

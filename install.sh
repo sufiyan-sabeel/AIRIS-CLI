@@ -40,26 +40,32 @@ trap 'echo -ne "\033[?25h"' EXIT
 #  ANIMATION FUNCTIONS
 # ═══════════════════════════════════════════════════════════════════════════
 
-# Spinning loader
+# Spinning loader (POSIX-compatible)
 spinner() {
-    local pid=$1
-    local delay=0.1
-    local spinstr='⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏'
-    while ps -p $pid > /dev/null 2>&1; do
-        for (( i=0; i<${#spinstr}; i++ )); do
-            echo -ne "\r\033[38;5;51m    ${spinstr:$i:1}\033[0m"
+    pid=$1
+    delay=0.1
+    spin='⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏'
+    while kill -0 "$pid" 2>/dev/null; do
+        i=0
+        while [ $i -lt ${#spin} ]; do
+            i=$((i + 1))
+            char=$(printf "$spin" | cut -c$i)
+            printf "\r    %s" "$char"
             sleep $delay
         done
     done
-    echo -ne "\r\033[38;5;51m    ✓\033[0m"
+    printf "\r    \033[38;5;51m✓\033[0m"
 }
 
-# Typing effect
+# Typing effect (POSIX-compatible)
 typing() {
-    local text="$1"
-    local delay=${2:-0.03}
-    for (( i=0; i<${#text}; i++ )); do
-        echo -ne "${text:$i:1}"
+    text="$1"
+    delay=${2:-0.03}
+    i=0
+    while [ $i -lt ${#text} ]; do
+        i=$((i + 1))
+        char=$(printf "$text" | cut -c$i)
+        printf "%s" "$char"
         sleep $delay
     done
 }

@@ -12,7 +12,7 @@ import {
 } from "../modes/interactive/components/first-time-setup.ts";
 import { detectTerminalBackgroundTheme, initTheme, setTheme } from "../modes/interactive/theme/theme.ts";
 
-const OFFICIAL_PACKAGE_NAME = "@earendil-works/airis-coding-agent";
+const OFFICIAL_PACKAGE_NAME = "@sufiyan-sabeel/airis-cli";
 const OFFICIAL_APP_NAME = "airis";
 const OFFICIAL_CONFIG_DIR_NAME = ".airis";
 

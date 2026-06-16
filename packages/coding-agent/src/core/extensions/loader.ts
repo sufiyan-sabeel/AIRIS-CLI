@@ -21,7 +21,7 @@ import * as _bundledTypeboxCompile from "typebox/compile";
 import * as _bundledTypeboxValue from "typebox/value";
 import { CONFIG_DIR_NAME, getAgentDir, isBunBinary } from "../../config.ts";
 // NOTE: This import works because loader.ts exports are NOT re-exported from index.ts,
-// avoiding a circular dependency. Extensions can import from @earendil-works/airis-coding-agent.
+// avoiding a circular dependency. Extensions can import from @sufiyan-sabeel/airis-cli.
 import * as _bundledAirisCodingAgent from "../../index.ts";
 import { resolvePath } from "../../utils/paths.ts";
 import { createEventBus, type EventBus } from "../event-bus.ts";
@@ -52,7 +52,7 @@ const VIRTUAL_MODULES: Record<string, unknown> = {
 	"@earendil-works/airis-tui": _bundledAirisTui,
 	"@earendil-works/airis-ai": _bundledAirisAi,
 	"@earendil-works/airis-ai/oauth": _bundledAirisAiOauth,
-	"@earendil-works/airis-coding-agent": _bundledAirisCodingAgent,
+	"@sufiyan-sabeel/airis-cli": _bundledAirisCodingAgent,
 	"@mariozechner/pi-agent-core": _bundledAirisAgentCore,
 	"@mariozechner/pi-tui": _bundledAirisTui,
 	"@mariozechner/pi-ai": _bundledAirisAi,
@@ -94,7 +94,7 @@ function getAliases(): Record<string, string> {
 	const piAiOauthEntry = resolveWorkspaceOrImport("ai/dist/oauth.js", "@earendil-works/airis-ai/oauth");
 
 	_aliases = {
-		"@earendil-works/airis-coding-agent": piCodingAgentEntry,
+		"@sufiyan-sabeel/airis-cli": piCodingAgentEntry,
 		"@earendil-works/airis-agent-core": piAgentCoreEntry,
 		"@earendil-works/airis-tui": piTuiEntry,
 		"@earendil-works/airis-ai": piAiEntry,

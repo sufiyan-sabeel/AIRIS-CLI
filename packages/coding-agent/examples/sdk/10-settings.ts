@@ -4,7 +4,7 @@
  * Override settings using SettingsManager.
  */
 
-import { createAgentSession, SessionManager, SettingsManager } from "@earendil-works/airis-coding-agent";
+import { createAgentSession, SessionManager, SettingsManager } from "@sufiyan-sabeel/airis-cli";
 
 const cwd = process.cwd();
 

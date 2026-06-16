@@ -9,8 +9,8 @@
  * 2. Use /tools to open the tool selector
  */
 
-import type { ExtensionAPI, ExtensionContext, ToolInfo } from "@earendil-works/airis-coding-agent";
-import { getSettingsListTheme } from "@earendil-works/airis-coding-agent";
+import type { ExtensionAPI, ExtensionContext, ToolInfo } from "@sufiyan-sabeel/airis-cli";
+import { getSettingsListTheme } from "@sufiyan-sabeel/airis-cli";
 import { Container, type SettingItem, SettingsList } from "@earendil-works/airis-tui";
 
 // State persisted to session

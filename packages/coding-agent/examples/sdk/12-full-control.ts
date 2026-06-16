@@ -13,7 +13,7 @@ import {
 	type ResourceLoader,
 	SessionManager,
 	SettingsManager,
-} from "@earendil-works/airis-coding-agent";
+} from "@sufiyan-sabeel/airis-cli";
 
 // Custom auth storage location
 const authStorage = AuthStorage.create("/tmp/my-agent/auth.json");

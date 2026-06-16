@@ -5,7 +5,7 @@
  * Useful to ensure work is committed before switching context.
  */
 
-import type { ExtensionAPI, ExtensionContext } from "@earendil-works/airis-coding-agent";
+import type { ExtensionAPI, ExtensionContext } from "@sufiyan-sabeel/airis-cli";
 
 async function checkDirtyRepo(
 	pi: ExtensionAPI,

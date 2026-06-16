@@ -9,7 +9,7 @@ import {
 	DefaultResourceLoader,
 	getAgentDir,
 	SessionManager,
-} from "@earendil-works/airis-coding-agent";
+} from "@sufiyan-sabeel/airis-cli";
 
 const cwd = process.cwd();
 const agentDir = getAgentDir();

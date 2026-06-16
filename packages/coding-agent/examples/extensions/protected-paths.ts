@@ -5,7 +5,7 @@
  * Useful for preventing accidental modifications to sensitive files.
  */
 
-import type { ExtensionAPI } from "@earendil-works/airis-coding-agent";
+import type { ExtensionAPI } from "@sufiyan-sabeel/airis-cli";
 
 export default function (pi: ExtensionAPI) {
 	const protectedPaths = [".env", ".git/", "node_modules/"];
