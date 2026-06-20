@@ -1,17 +1,17 @@
 {
-	"name": "@earendil-works/pi-coding-agent",
+	"name": "@sufiyan-sabeel/airis-cli",
 	"version": "0.79.3",
 	"lockfileVersion": 3,
 	"requires": true,
 	"packages": {
 		"": {
-			"name": "@earendil-works/pi-coding-agent",
+			"name": "@sufiyan-sabeel/airis-cli",
 			"version": "0.79.3",
 			"license": "MIT",
 			"dependencies": {
-				"@earendil-works/pi-agent-core": "^0.79.3",
-				"@earendil-works/pi-ai": "^0.79.3",
-				"@earendil-works/pi-tui": "^0.79.3",
+				"@earendil-works/airis-agent-core": "^0.79.3",
+				"@earendil-works/airis-ai": "^0.79.3",
+				"@earendil-works/airis-tui": "^0.79.3",
 				"@silvia-odwyer/photon-node": "0.3.4",
 				"chalk": "5.6.2",
 				"cross-spawn": "7.0.6",
@@ -32,7 +32,7 @@
 				"@mariozechner/clipboard": "0.3.9"
 			},
 			"bin": {
-				"pi": "dist/cli.js"
+				"airis": "dist/cli.js"
 			},
 			"engines": {
 				"node": ">=22.19.0"
@@ -473,12 +473,12 @@
 				"node": ">=6.9.0"
 			}
 		},
-		"node_modules/@earendil-works/pi-agent-core": {
+		"node_modules/@earendil-works/airis-agent-core": {
 			"version": "0.79.3",
-			"resolved": "https://registry.npmjs.org/@earendil-works/pi-agent-core/-/pi-agent-core-0.79.3.tgz",
+			"resolved": "https://registry.npmjs.org/@earendil-works/airis-agent-core/-/airis-agent-core-0.79.3.tgz",
 			"license": "MIT",
 			"dependencies": {
-				"@earendil-works/pi-ai": "^0.79.3",
+				"@earendil-works/airis-ai": "^0.79.3",
 				"ignore": "7.0.5",
 				"typebox": "1.1.38",
 				"yaml": "2.9.0"
@@ -487,9 +487,9 @@
 				"node": ">=22.19.0"
 			}
 		},
-		"node_modules/@earendil-works/pi-ai": {
+		"node_modules/@earendil-works/airis-ai": {
 			"version": "0.79.3",
-			"resolved": "https://registry.npmjs.org/@earendil-works/pi-ai/-/pi-ai-0.79.3.tgz",
+			"resolved": "https://registry.npmjs.org/@earendil-works/airis-ai/-/airis-ai-0.79.3.tgz",
 			"license": "MIT",
 			"dependencies": {
 				"@anthropic-ai/sdk": "0.91.1",
@@ -510,9 +510,9 @@
 				"node": ">=22.19.0"
 			}
 		},
-		"node_modules/@earendil-works/pi-tui": {
+		"node_modules/@earendil-works/airis-tui": {
 			"version": "0.79.3",
-			"resolved": "https://registry.npmjs.org/@earendil-works/pi-tui/-/pi-tui-0.79.3.tgz",
+			"resolved": "https://registry.npmjs.org/@earendil-works/airis-tui/-/airis-tui-0.79.3.tgz",
 			"license": "MIT",
 			"dependencies": {
 				"get-east-asian-width": "1.6.0",
@@ -627,9 +627,6 @@
 			"cpu": [
 				"arm64"
 			],
-			"libc": [
-				"glibc"
-			],
 			"optional": true
 		},
 		"node_modules/@mariozechner/clipboard-linux-arm64-musl": {
@@ -645,9 +642,6 @@
 			],
 			"cpu": [
 				"arm64"
-			],
-			"libc": [
-				"musl"
 			],
 			"optional": true
 		},
@@ -665,9 +659,6 @@
 			"cpu": [
 				"riscv64"
 			],
-			"libc": [
-				"glibc"
-			],
 			"optional": true
 		},
 		"node_modules/@mariozechner/clipboard-linux-x64-gnu": {
@@ -684,9 +675,6 @@
 			"cpu": [
 				"x64"
 			],
-			"libc": [
-				"glibc"
-			],
 			"optional": true
 		},
 		"node_modules/@mariozechner/clipboard-linux-x64-musl": {
@@ -702,9 +690,6 @@
 			],
 			"cpu": [
 				"x64"
-			],
-			"libc": [
-				"musl"
 			],
 			"optional": true
 		},
