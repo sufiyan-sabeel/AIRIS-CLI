@@ -92,7 +92,7 @@ async function testEmojiInToolResults<TApi extends Api>(llm: Model<TApi>, option
 - Heart: ❤️
 - Thinking face: 🤔
 - Rocket: 🚀
-- Mixed text: Mario Zechner wann? Wo? Bin grad äußersr eventuninformiert 🙈
+- Mixed text: Umaiz Sufiyan wann? Wo? Bin grad äußersr eventuninformiert 🙈
 - Japanese: こんにちは
 - Chinese: 你好
 - Mathematical symbols: ∑∫∂√
@@ -183,7 +183,7 @@ Unanswered Comments: 2
     },
     {
       "author": "Matthias Neumayer's  graphic link",
-      "text": "Mario Zechner wann? Wo? Bin grad äußersr eventuninformiert 🙈"
+      "text": "Umaiz Sufiyan wann? Wo? Bin grad äußersr eventuninformiert 🙈"
     }
   ]
 }`,
