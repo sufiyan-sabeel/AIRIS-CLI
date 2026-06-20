@@ -4,8 +4,6 @@
 
 A powerful AI coding agent CLI with read, bash, edit, write tools and session management.
 
-> Based on [Pi Agent Harness](https://github.com/earendil-works/pi) - All original features preserved.
-
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Node](https://img.shields.io/badge/node-%3E%3D22.19.0-green.svg)
 
