@@ -1,0 +1,80 @@
+{
+  "projectTrust": {
+    "defaultProjectTrust": "ask",
+    "requireTrustForProjectResources": true
+  },
+  "tools": {
+    "approvalMode": "on-request",
+    "unknownToolPolicy": "ask",
+    "allowReadOnlyWithoutApproval": true,
+    "allowNetworkWithoutApproval": false,
+    "allowPackageInstallWithoutApproval": false,
+    "allowedCommands": [],
+    "blockedCommands": [
+      "rm -rf /",
+      "git reset --hard",
+      "git clean -fd",
+      "chmod -R 777",
+      "curl * | sh",
+      "wget * | sh"
+    ],
+    "protectedPaths": [
+      ".git/",
+      "node_modules/",
+      "package-lock.json",
+      "npm-shrinkwrap.json"
+    ]
+  },
+  "editing": {
+    "requireReadBeforeEdit": true,
+    "preferPatchEdits": true,
+    "allowOverwrite": false,
+    "createBackupsForLargeEdits": false,
+    "maxFilesPerEditBatch": 8
+  },
+  "planning": {
+    "defaultMode": "plan-then-act",
+    "requirePlanForMultiFileChanges": true,
+    "requirePlanForDestructiveCommands": true,
+    "keepTodoListForComplexTasks": true,
+    "taskSizeThresholdFiles": 3
+  },
+  "models": {
+    "useSeparatePlanAndActModels": false,
+    "default": {
+      "provider": "",
+      "model": "",
+      "thinkingLevel": "medium"
+    },
+    "planning": {
+      "provider": "",
+      "model": "",
+      "thinkingLevel": "high"
+    },
+    "acting": {
+      "provider": "",
+      "model": "",
+      "thinkingLevel": "medium"
+    }
+  },
+  "workspace": {
+    "rulesFiles": ["AGENTS.md", ".airis/rules"],
+    "respectAgentsMd": true,
+    "preferProjectRulesOverGlobalRules": true,
+    "loadRulesOnlyWhenProjectTrusted": true
+  },
+  "memory": {
+    "enabled": false,
+    "directory": ".airis/memory",
+    "readAtTaskStart": true,
+    "updateAfterMilestones": true,
+    "files": [
+      "project-brief.md",
+      "product-context.md",
+      "active-context.md",
+      "system-patterns.md",
+      "tech-context.md",
+      "progress.md"
+    ]
+  }
+}
