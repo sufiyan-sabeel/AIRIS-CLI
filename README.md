@@ -311,7 +311,7 @@ MIT License - See [LICENSE](LICENSE) for details.
 
 ## Credits
 
-Built on [Pi Agent Harness](https://github.com/earendil-works/pi) by [Mario Zechner](https://github.com/badlogic).
+Built by Umaiz Sufiyan.
 
 ---
 
