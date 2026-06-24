@@ -8,7 +8,7 @@
 
 import { StringEnum } from "@earendil-works/airis-ai";
 import { matchesKey, Text, truncateToWidth } from "@earendil-works/airis-tui";
-import type { ExtensionAPI, ExtensionContext, Theme } from "../extensions/types.ts";
+import type { ExtensionAPI, ExtensionCommandContext, ExtensionContext, SessionStartEvent, SessionTreeEvent, Theme } from "./extensions/types.ts";
 import { Type } from "typebox";
 
 interface Todo {
@@ -98,7 +98,7 @@ class TodoListComponent {
 	}
 }
 
-export default function todoExtension(pi: ExtensionAPI): void {
+export default function todoExtension(airis: ExtensionAPI): void {
 	// In-memory state (reconstructed from session on load)
 	let todos: Todo[] = [];
 	let nextId = 1;
@@ -125,11 +125,11 @@ export default function todoExtension(pi: ExtensionAPI): void {
 	};
 
 	// Reconstruct state on session events
-	pi.on("session_start", async (_event, ctx) => reconstructState(ctx));
-	pi.on("session_tree", async (_event, ctx) => reconstructState(ctx));
+	airis.on("session_start", async (_event: SessionStartEvent, ctx: ExtensionContext) => reconstructState(ctx));
+	airis.on("session_tree", async (_event: SessionTreeEvent, ctx: ExtensionContext) => reconstructState(ctx));
 
 	// Register the todo tool for the LLM
-	pi.registerTool({
+	airis.registerTool({
 		name: "todo",
 		label: "Todo",
 		description: "Manage a todo list. Actions: list, add (text), toggle (id), clear",
@@ -277,9 +277,9 @@ export default function todoExtension(pi: ExtensionAPI): void {
 	});
 
 	// Register the /todos command for users
-	pi.registerCommand("todos", {
+	airis.registerCommand("todos", {
 		description: "Show all todos on the current branch",
-		handler: async (_args, ctx) => {
+		handler: async (_args: string, ctx: ExtensionCommandContext) => {
 			if (ctx.mode !== "tui") {
 				ctx.ui.notify("/todos requires interactive mode", "error");
 				return;

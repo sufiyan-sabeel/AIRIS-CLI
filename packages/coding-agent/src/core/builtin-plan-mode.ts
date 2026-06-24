@@ -15,7 +15,15 @@
 import type { AgentMessage } from "@earendil-works/airis-agent-core";
 import type { AssistantMessage, TextContent } from "@earendil-works/airis-ai";
 import { Key } from "@earendil-works/airis-tui";
-import type { ExtensionAPI, ExtensionContext } from "../extensions/types.ts";
+import type {
+	AgentEndEvent,
+	ContextEvent,
+	ExtensionAPI,
+	ExtensionCommandContext,
+	SessionStartEvent,
+	ToolCallEvent,
+	TurnEndEvent,
+} from "./extensions/types.ts";
 
 // Tools
 const PLAN_MODE_TOOLS = ["read", "bash", "grep", "find", "ls", "questionnaire"];
@@ -198,12 +206,12 @@ function getTextContent(message: AssistantMessage): string {
 		.join("\n");
 }
 
-export default function planModeExtension(pi: ExtensionAPI): void {
+export default function planModeExtension(airis: ExtensionAPI): void {
 	let planModeEnabled = false;
 	let executionMode = false;
 	let todoItems: TodoItem[] = [];
 
-	pi.registerFlag("plan", {
+	airis.registerFlag("plan", {
 		description: "Start in plan mode (read-only exploration)",
 		type: "boolean",
 		default: false,
@@ -242,31 +250,31 @@ export default function planModeExtension(pi: ExtensionAPI): void {
 		todoItems = [];
 
 		if (planModeEnabled) {
-			pi.setActiveTools(PLAN_MODE_TOOLS);
+			airis.setActiveTools(PLAN_MODE_TOOLS);
 			ctx.ui.notify(`Plan mode enabled. Tools: ${PLAN_MODE_TOOLS.join(", ")}`);
 		} else {
-			pi.setActiveTools(NORMAL_MODE_TOOLS);
+			airis.setActiveTools(NORMAL_MODE_TOOLS);
 			ctx.ui.notify("Plan mode disabled. Full access restored.");
 		}
 		updateStatus(ctx);
 	}
 
 	function persistState(): void {
-		pi.appendEntry("plan-mode", {
+		airis.appendEntry("plan-mode", {
 			enabled: planModeEnabled,
 			todos: todoItems,
 			executing: executionMode,
 		});
 	}
 
-	pi.registerCommand("plan", {
+	airis.registerCommand("plan", {
 		description: "Toggle plan mode (read-only exploration)",
-		handler: async (_args, ctx) => togglePlanMode(ctx),
+		handler: async (_args: string, ctx: ExtensionCommandContext) => togglePlanMode(ctx),
 	});
 
-	pi.registerCommand("todos", {
+	airis.registerCommand("todos", {
 		description: "Show current plan todo list",
-		handler: async (_args, ctx) => {
+		handler: async (_args: string, ctx: ExtensionCommandContext) => {
 			if (todoItems.length === 0) {
 				ctx.ui.notify("No todos. Create a plan first with /plan", "info");
 				return;
@@ -276,13 +284,13 @@ export default function planModeExtension(pi: ExtensionAPI): void {
 		},
 	});
 
-	pi.registerShortcut(Key.ctrlAlt("p"), {
+	airis.registerShortcut(Key.ctrlAlt("p"), {
 		description: "Toggle plan mode",
-		handler: async (ctx) => togglePlanMode(ctx),
+		handler: async (ctx: ExtensionContext) => togglePlanMode(ctx),
 	});
 
 	// Block destructive bash commands in plan mode
-	pi.on("tool_call", async (event) => {
+	airis.on("tool_call", async (event: ToolCallEvent) => {
 		if (!planModeEnabled || event.toolName !== "bash") return;
 
 		const command = event.input.command as string;
@@ -295,11 +303,11 @@ export default function planModeExtension(pi: ExtensionAPI): void {
 	});
 
 	// Filter out stale plan mode context when not in plan mode
-	pi.on("context", async (event) => {
+	airis.on("context", async (event: ContextEvent) => {
 		if (planModeEnabled) return;
 
 		return {
-			messages: event.messages.filter((m) => {
+			messages: event.messages.filter((m: AgentMessage) => {
 				const msg = m as AgentMessage & { customType?: string };
 				if (msg.customType === "plan-mode-context") return false;
 				if (msg.role !== "user") return true;
@@ -319,7 +327,7 @@ export default function planModeExtension(pi: ExtensionAPI): void {
 	});
 
 	// Inject plan/execution context before agent starts
-	pi.on("before_agent_start", async () => {
+	airis.on("before_agent_start", async () => {
 		if (planModeEnabled) {
 			return {
 				message: {
@@ -368,7 +376,7 @@ After completing a step, include a [DONE:n] tag in your response.`,
 	});
 
 	// Track progress after each turn
-	pi.on("turn_end", async (event, ctx) => {
+	airis.on("turn_end", async (event: TurnEndEvent, ctx: ExtensionContext) => {
 		if (!executionMode || todoItems.length === 0) return;
 		if (!isAssistantMessage(event.message)) return;
 
@@ -380,18 +388,18 @@ After completing a step, include a [DONE:n] tag in your response.`,
 	});
 
 	// Handle plan completion and plan mode UI
-	pi.on("agent_end", async (event, ctx) => {
+	airis.on("agent_end", async (event: AgentEndEvent, ctx: ExtensionContext) => {
 		// Check if execution is complete
 		if (executionMode && todoItems.length > 0) {
 			if (todoItems.every((t) => t.completed)) {
 				const completedList = todoItems.map((t) => `~~${t.text}~~`).join("\n");
-				pi.sendMessage(
+				airis.sendMessage(
 					{ customType: "plan-complete", content: `**Plan Complete!**\n\n${completedList}`, display: true },
 					{ triggerTurn: false },
 				);
 				executionMode = false;
 				todoItems = [];
-				pi.setActiveTools(NORMAL_MODE_TOOLS);
+				airis.setActiveTools(NORMAL_MODE_TOOLS);
 				updateStatus(ctx);
 				persistState();
 			}
@@ -412,7 +420,7 @@ After completing a step, include a [DONE:n] tag in your response.`,
 		// Show plan steps and prompt for next action
 		if (todoItems.length > 0) {
 			const todoListText = todoItems.map((t, i) => `${i + 1}. [ ] ${t.text}`).join("\n");
-			pi.sendMessage(
+			airis.sendMessage(
 				{
 					customType: "plan-todo-list",
 					content: `**Plan Steps (${todoItems.length}):**\n\n${todoListText}`,
@@ -431,28 +439,28 @@ After completing a step, include a [DONE:n] tag in your response.`,
 		if (choice?.startsWith("Execute")) {
 			planModeEnabled = false;
 			executionMode = todoItems.length > 0;
-			pi.setActiveTools(NORMAL_MODE_TOOLS);
+			airis.setActiveTools(NORMAL_MODE_TOOLS);
 			updateStatus(ctx);
 
 			const execMessage =
 				todoItems.length > 0
 					? `Execute the plan. Start with: ${todoItems[0].text}`
 					: "Execute the plan you just created.";
-			pi.sendMessage(
+			airis.sendMessage(
 				{ customType: "plan-mode-execute", content: execMessage, display: true },
 				{ triggerTurn: true },
 			);
 		} else if (choice === "Refine the plan") {
 			const refinement = await ctx.ui.editor("Refine the plan:", "");
 			if (refinement?.trim()) {
-				pi.sendUserMessage(refinement.trim());
+				airis.sendUserMessage(refinement.trim());
 			}
 		}
 	});
 
 	// Restore state on session start/resume
-	pi.on("session_start", async (_event, ctx) => {
-		if (pi.getFlag("plan") === true) {
+	airis.on("session_start", async (_event: SessionStartEvent, ctx: ExtensionContext) => {
+		if (airis.getFlag("plan") === true) {
 			planModeEnabled = true;
 		}
 
@@ -493,7 +501,7 @@ After completing a step, include a [DONE:n] tag in your response.`,
 		}
 
 		if (planModeEnabled) {
-			pi.setActiveTools(PLAN_MODE_TOOLS);
+			airis.setActiveTools(PLAN_MODE_TOOLS);
 		}
 		updateStatus(ctx);
 	});
