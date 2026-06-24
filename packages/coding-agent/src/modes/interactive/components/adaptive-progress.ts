@@ -5,7 +5,7 @@
  * Displays in the footer/status area without user interaction.
  */
 import { truncateToWidth, visibleWidth } from "@earendil-works/airis-tui";
-import { theme } from "../theme/theme.ts";
+import { theme, type ThemeColor } from "../theme/theme.ts";
 
 export interface AdaptiveTodoItem {
 	id: string;
@@ -30,7 +30,7 @@ const STATUS_ICONS: Record<string, string> = {
 	cancelled: "—",
 };
 
-const STATUS_COLORS: Record<string, keyof ReturnType<typeof theme.fg>> = {
+const STATUS_COLORS: Record<string, ThemeColor> = {
 	completed: "success",
 	in_progress: "accent",
 	pending: "dim",
@@ -123,7 +123,7 @@ export function renderTodoListPanel(todos: AdaptiveTodoItem[], terminalWidth: nu
 
 		for (const item of items) {
 			const icon = STATUS_ICONS[item.status] || "?";
-			const color = STATUS_COLORS[item.status] || "dim";
+			const color = (STATUS_COLORS[item.status] || "dim") as ThemeColor;
 			const priorityBadge = item.priority === "high" || item.priority === "critical"
 				? theme.fg("warning", " !")
 				: "";

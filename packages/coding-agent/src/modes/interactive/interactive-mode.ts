@@ -6082,7 +6082,7 @@ Type any command or just describe what you want to do.
 	}
 
 	private handleBrainCommand(): void {
-		const brain = this.session.getAdaptiveBrain();
+		const brain = this.session.adaptiveBrain;
 		const snapshot = brain.todos.getSnapshot();
 		const lastProgress = brain.getLastProgress();
 
@@ -6105,7 +6105,7 @@ Type any command or just describe what you want to do.
 				idx++;
 			}
 
-			const completed = snapshot.items.filter((i) => i.status === "completed").length;
+			const completed = snapshot.items.filter((item: { status: string }) => item.status === "completed").length;
 			const total = snapshot.items.length;
 			const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
 			brainText += `\n**Progress: ${completed}/${total} (${percent}%)**`;
@@ -6124,20 +6124,24 @@ Type any command or just describe what you want to do.
 		const entries = this.sessionManager.getEntries();
 		const messages = entries.filter((e) => e.type === "message");
 		const assistantMessages = messages.filter((e) => e.message.role === "assistant");
-		const toolCalls = entries.filter((e) => e.type === "tool_call");
 
 		let totalInput = 0;
 		let totalOutput = 0;
 		let totalCost = 0;
 		let totalCacheRead = 0;
 		let totalCacheWrite = 0;
+		let toolCallCount = 0;
 
 		for (const msg of assistantMessages) {
-			totalInput += msg.message.usage.input;
-			totalOutput += msg.message.usage.output;
-			totalCost += msg.message.usage.cost.total;
-			totalCacheRead += msg.message.usage.cacheRead;
-			totalCacheWrite += msg.message.usage.cacheWrite;
+			const assistantMsg = msg.message;
+			if (assistantMsg.role === "assistant") {
+				totalInput += assistantMsg.usage.input;
+				totalOutput += assistantMsg.usage.output;
+				totalCost += assistantMsg.usage.cost.total;
+				totalCacheRead += assistantMsg.usage.cacheRead;
+				totalCacheWrite += assistantMsg.usage.cacheWrite;
+				toolCallCount += assistantMsg.content.filter((c) => c.type === "toolCall").length;
+			}
 		}
 
 		const formatTokens = (n: number): string => {
@@ -6152,7 +6156,7 @@ Type any command or just describe what you want to do.
 		statsText += "|--------|-------|\n";
 		statsText += `| Messages | ${messages.length} |\n`;
 		statsText += `| Assistant messages | ${assistantMessages.length} |\n`;
-		statsText += `| Tool calls | ${toolCalls.length} |\n`;
+		statsText += `| Tool calls | ${toolCallCount} |\n`;
 		statsText += `| Input tokens | ${formatTokens(totalInput)} |\n`;
 		statsText += `| Output tokens | ${formatTokens(totalOutput)} |\n`;
 		statsText += `| Cache read | ${formatTokens(totalCacheRead)} |\n`;
@@ -6184,7 +6188,7 @@ Type any command or just describe what you want to do.
 		let toolsText = "**Available Tools**\n\n";
 
 		// Get tool definitions from session
-		const tools = this.session.getToolDefinitions();
+		const tools = this.session.getAllTools();
 
 		if (tools.length === 0) {
 			toolsText += "No tools available.";
@@ -6207,71 +6211,68 @@ Type any command or just describe what you want to do.
 
 	private async handlePlanCommand(text: string): Promise<void> {
 		const args = text.slice(5).trim();
+		const brain = this.session.adaptiveBrain;
+		const snapshot = brain.todos.getSnapshot();
+		const lastProgress = brain.getLastProgress();
 
-		if (args === "on" || args === "enable") {
-			this.session.setPlanMode(true);
-			this.showSuccess("Plan mode enabled. The agent will plan before executing.");
-		} else if (args === "off" || args === "disable") {
-			this.session.setPlanMode(false);
-			this.showSuccess("Plan mode disabled.");
+		let planText = "**Adaptive Brain Plan**\n\n";
+		planText += `Phase: \`${lastProgress.phase}\`\n`;
+		planText += `Summary: ${lastProgress.summary || "-"}\n`;
+
+		if (snapshot.items.length === 0) {
+			planText += "\nNo active plan. The brain creates a TODO plan automatically for complex tasks.\n";
 		} else {
-			// Show current plan
-			const plan = this.session.getPlan();
-			const isPlanMode = this.session.isPlanMode();
-
-			let planText = "**Plan Mode**\n\n";
-			planText += `Status: ${isPlanMode ? "✓ Enabled" : "Disabled"}\n`;
-			planText += `\nUse \`/plan on\` to enable or \`/plan off\` to disable.\n`;
-
-			if (plan && plan.length > 0) {
-				planText += "\n**Current Plan:**\n\n";
-				for (let i = 0; i < plan.length; i++) {
-					const step = plan[i];
-					const status = step.completed ? "✓" : step.inProgress ? "●" : "○";
-					planText += `${i + 1}. ${status} ${step.description}\n`;
-				}
-			} else {
-				planText += "\nNo plan created yet. The agent will create a plan when processing complex tasks.\n";
+			planText += `\n| # | Status | Task |\n`;
+			planText += `|---|--------|------|\n`;
+			let idx = 1;
+			for (const item of snapshot.items) {
+				const statusIcon = item.status === "completed" ? "✓" : item.status === "in_progress" ? "●" : item.status === "blocked" ? "✗" : item.status === "cancelled" ? "—" : "○";
+				planText += `| ${idx} | ${statusIcon} ${item.status} | ${item.description.slice(0, 50)} |\n`;
+				idx++;
 			}
-
-			this.chatContainer.addChild(new Spacer(1));
-			this.chatContainer.addChild(new DynamicBorder());
-			this.chatContainer.addChild(new Text(theme.bold(theme.fg("accent", "Plan Mode")), 1, 0));
-			this.chatContainer.addChild(new Spacer(1));
-			this.chatContainer.addChild(new Markdown(planText.trim(), 1, 1, this.getMarkdownThemeWithSettings()));
-			this.chatContainer.addChild(new DynamicBorder());
-			this.ui.requestRender();
 		}
+
+		if (args) {
+			planText += `\nUsage: \`/plan\` - Show current plan\n`;
+		}
+
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.chatContainer.addChild(new Text(theme.bold(theme.fg("accent", "Plan")), 1, 0));
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new Markdown(planText.trim(), 1, 1, this.getMarkdownThemeWithSettings()));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.ui.requestRender();
 	}
 
 	private handlePluginCommand(text: string): void {
 		const args = text.slice(7).trim();
 		const extensionRunner = this.session.extensionRunner;
-		const extensions = extensionRunner.getLoadedExtensions();
+		const extensionPaths = extensionRunner.getExtensionPaths();
+		const registeredTools = extensionRunner.getAllRegisteredTools();
 
 		let pluginText = "**Extensions & Plugins**\n\n";
 
 		if (args === "list" || !args) {
-			if (extensions.length === 0) {
+			if (extensionPaths.length === 0) {
 				pluginText += "No extensions loaded.\n\n";
 				pluginText += "Extensions provide additional tools and capabilities.\n";
 				pluginText += "Place extension files in your extensions directory.";
 			} else {
-				pluginText += "| Extension | Status | Commands |\n";
-				pluginText += "|-----------|--------|----------|\n";
-				for (const ext of extensions) {
-					const status = ext.enabled ? "✓ Enabled" : "○ Disabled";
-					const cmds = ext.commands?.length || 0;
-					pluginText += `| ${ext.name} | ${status} | ${cmds} |\n`;
+				pluginText += "| Extension Path | Tools Registered |\n";
+				pluginText += "|----------------|------------------|\n";
+				for (const path of extensionPaths) {
+					const toolCount = registeredTools.filter((t) => t.sourceInfo?.extensionPath === path).length;
+					pluginText += `| ${path} | ${toolCount} |\n`;
 				}
+				pluginText += `\n**Total registered tools:** ${registeredTools.length}\n`;
 			}
 		} else if (args === "reload") {
-			this.session.extensionRunner.reloadExtensions();
-			pluginText += "✓ Extensions reloaded.";
+			pluginText += "To reload extensions, use the \`/reload\` command to restart the session.";
 		} else {
 			pluginText += "Usage:\n";
 			pluginText += "- \`/plugin\` or \`/plugin list\` - List extensions\n";
-			pluginText += "- \`/plugin reload\` - Reload all extensions";
+			pluginText += "- \`/plugin reload\` - Reload extensions (use \`/reload\` instead)";
 		}
 
 		this.chatContainer.addChild(new Spacer(1));
@@ -6324,10 +6325,11 @@ Type any command or just describe what you want to do.
 			recap += "No messages in this session yet.";
 		} else {
 			// Extract topic from first message
-			if (firstUser && firstUser.message.content) {
-				const firstText = typeof firstUser.message.content === "string"
-					? firstUser.message.content
-					: firstUser.message.content.find((c) => c.type === "text")?.text || "";
+			if (firstUser && firstUser.message.role === "user") {
+				const userContent = firstUser.message.content;
+				const firstText = typeof userContent === "string"
+					? userContent
+					: Array.isArray(userContent) ? userContent.find((c: { type: string; text?: string }) => c.type === "text")?.text || "" : "";
 				const topic = firstText.slice(0, 80) + (firstText.length > 80 ? "..." : "");
 				recap += `**Topic:** ${topic}\n`;
 			}
@@ -6352,10 +6354,8 @@ Type any command or just describe what you want to do.
 			}
 
 			// Get last response snippet
-			if (lastAssistant && lastAssistant.message.content) {
-				const lastText = typeof lastAssistant.message.content === "string"
-					? lastAssistant.message.content
-					: lastAssistant.message.content.find((c) => c.type === "text")?.text || "";
+			if (lastAssistant && lastAssistant.message.role === "assistant") {
+				const lastText = lastAssistant.message.content.find((c: { type: string; text?: string }) => c.type === "text")?.text || "";
 				if (lastText) {
 					const snippet = lastText.slice(0, 120) + (lastText.length > 120 ? "..." : "");
 					recap += `\n**Last response:** ${snippet}\n`;
