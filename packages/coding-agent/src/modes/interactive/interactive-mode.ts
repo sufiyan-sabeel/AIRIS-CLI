@@ -6071,7 +6071,6 @@ Type any command or just describe what you want to do.
 		kbText += "Use \`/hotkeys\` to see current shortcuts.\n";
 		kbText += "Edit your keybindings config to customize shortcuts.\n";
 		kbText += "Run \`/reload\` after changes to apply them.";
-		}
 
 		this.chatContainer.addChild(new Spacer(1));
 		this.chatContainer.addChild(new DynamicBorder());
