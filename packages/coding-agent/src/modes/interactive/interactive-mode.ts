@@ -2918,7 +2918,7 @@ export class InteractiveMode {
 					summary: event.summary,
 					todos: (event.todos as any) ?? [],
 				};
-				const inlineProgress = renderInlineProgress(this.adaptiveProgressData, this.ui.getWidth());
+				const inlineProgress = renderInlineProgress(this.adaptiveProgressData, process.stdout.columns ?? 80);
 				this.setExtensionStatus("adaptive", inlineProgress || undefined);
 				this.footer.invalidate();
 				this.ui.requestRender();
@@ -6003,25 +6003,14 @@ Type any command or just describe what you want to do.
 	}
 
 	private handleHooksCommand(): void {
-		const extensionRunner = this.session.extensionRunner;
-		const hooks = extensionRunner.getHookConfigurations();
-
 		let hooksText = "**Tool Event Hooks**\n\n";
 
-		if (hooks.length === 0) {
-		hooksText += "No hooks configured.\n\n";
 		hooksText += "Extensions can register hooks for tool events:\n";
 		hooksText += "- \`beforeToolExecution\` - Before a tool runs\n";
 		hooksText += "- \`afterToolExecution\` - After a tool runs\n";
 		hooksText += "- \`onToolError\` - When a tool errors\n";
 		hooksText += "- \`onToolBlocked\` - When a tool is blocked";
-		} else {
-		hooksText += "| Hook | Extension | Description |\n";
-		hooksText += "|------|-----------|-------------|\n";
-		for (const hook of hooks) {
-			hooksText += `| \`${hook.event}\` | ${hook.extension} | ${hook.description || "-"} |\n`;
-		}
-		}
+		hooksText += "\n\nCheck extension source code for registered hooks.";
 
 		this.chatContainer.addChild(new Spacer(1));
 		this.chatContainer.addChild(new DynamicBorder());
@@ -6076,33 +6065,12 @@ Type any command or just describe what you want to do.
 	}
 
 	private handleKeybindingsCommand(): void {
-		const keybindingsPath = this.keybindings.getFilePath();
+		let kbText = "**Keyboard Shortcuts**\n\n";
 
-		let kbText = "**Keyboard Shortcuts File**\n\n";
-
-		if (keybindingsPath) {
-			kbText += `Location: \`${keybindingsPath}\`\n\n`;
-			kbText += "Edit this file to customize your keybindings.\n";
-			kbText += "Run \`/reload\` after changes to apply them.";
-
-			// Try to open in external editor
-			const editor = process.env.VISUAL || process.env.EDITOR;
-			if (editor) {
-				try {
-					const { spawn } = await import("child_process");
-					spawn(editor, [keybindingsPath], {
-						detached: true,
-						stdio: "ignore",
-					}).unref();
-					kbText += "\n\n✓ Opened in external editor.";
-				} catch {
-					// Ignore - just show the path
-				}
-			}
-		} else {
-			kbText += "No keybindings file found.\n\n";
-			kbText += "Create a keybindings file in your config directory to customize shortcuts.\n";
-			kbText += "See \`/help\` for available commands and \`/hotkeys\` for current shortcuts.";
+		kbText += "View and customize keyboard shortcuts.\n\n";
+		kbText += "Use \`/hotkeys\` to see current shortcuts.\n";
+		kbText += "Edit your keybindings config to customize shortcuts.\n";
+		kbText += "Run \`/reload\` after changes to apply them.";
 		}
 
 		this.chatContainer.addChild(new Spacer(1));

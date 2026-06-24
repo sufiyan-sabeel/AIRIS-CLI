@@ -1,6 +1,9 @@
 import type { Component } from "@earendil-works/airis-tui";
 import { visibleWidth } from "@earendil-works/airis-tui";
-import { theme, type Theme, type ThemeColor } from "../theme/theme.ts";
+import { theme as _theme } from "../theme/theme.ts";
+import type { Theme } from "../theme/theme.ts";
+
+const theme = _theme as Theme;
 
 export interface WelcomeHeaderInfo {
 	model?: string;
@@ -13,7 +16,7 @@ export interface WelcomeHeaderInfo {
 const NO_COLOR = !!process.env.NO_COLOR;
 
 function fg(
-	color: ThemeColor,
+	color: Parameters<Theme["fg"]>[0],
 	text: string,
 ): string {
 	if (NO_COLOR) return text;
