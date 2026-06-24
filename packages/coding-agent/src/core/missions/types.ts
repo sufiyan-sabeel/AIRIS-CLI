@@ -1,4 +1,4 @@
-import { type TypeBoxType } from "typebox";
+import { type Static } from "typebox";
 import { Type } from "typebox";
 
 export const VerificationMethod = Type.Union([
@@ -14,7 +14,7 @@ export const VerificationMethod = Type.Union([
 	Type.Literal("custom"),
 ]);
 
-export type VerificationMethod = TypeBoxType<typeof VerificationMethod>;
+export type VerificationMethod = Static<typeof VerificationMethod>;
 
 export const CriterionStatus = Type.Union([
 	Type.Literal("pass"),
@@ -22,7 +22,7 @@ export const CriterionStatus = Type.Union([
 	Type.Literal("unverified"),
 ]);
 
-export type CriterionStatus = TypeBoxType<typeof CriterionStatus>;
+export type CriterionStatus = Static<typeof CriterionStatus>;
 
 export const MissionStatus = Type.Union([
 	Type.Literal("draft"),
@@ -34,7 +34,7 @@ export const MissionStatus = Type.Union([
 	Type.Literal("cancelled"),
 ]);
 
-export type MissionStatus = TypeBoxType<typeof MissionStatus>;
+export type MissionStatus = Static<typeof MissionStatus>;
 
 export const LeaseType = Type.Union([
 	Type.Literal("directory"),
@@ -42,7 +42,7 @@ export const LeaseType = Type.Union([
 	Type.Literal("network"),
 ]);
 
-export type LeaseType = TypeBoxType<typeof LeaseType>;
+export type LeaseType = Static<typeof LeaseType>;
 
 export const LeaseStatus = Type.Union([
 	Type.Literal("active"),
@@ -50,7 +50,7 @@ export const LeaseStatus = Type.Union([
 	Type.Literal("revoked"),
 ]);
 
-export type LeaseStatus = TypeBoxType<typeof LeaseStatus>;
+export type LeaseStatus = Static<typeof LeaseStatus>;
 
 export const VerificationStrategy = Type.Object({
 	method: VerificationMethod,
@@ -64,7 +64,7 @@ export const VerificationStrategy = Type.Object({
 	customScript: Type.Optional(Type.String()),
 });
 
-export type VerificationStrategy = TypeBoxType<typeof VerificationStrategy>;
+export type VerificationStrategy = Static<typeof VerificationStrategy>;
 
 export const AcceptanceCriterion = Type.Object({
 	id: Type.String(),
@@ -73,7 +73,7 @@ export const AcceptanceCriterion = Type.Object({
 	mandatory: Type.Optional(Type.Boolean({ default: true })),
 });
 
-export type AcceptanceCriterion = TypeBoxType<typeof AcceptanceCriterion>;
+export type AcceptanceCriterion = Static<typeof AcceptanceCriterion>;
 
 export const CapabilityLease = Type.Object({
 	id: Type.String(),
@@ -85,7 +85,7 @@ export const CapabilityLease = Type.Object({
 	createdAt: Type.String(),
 });
 
-export type CapabilityLease = TypeBoxType<typeof CapabilityLease>;
+export type CapabilityLease = Static<typeof CapabilityLease>;
 
 export const MissionContract = Type.Object({
 	id: Type.String(),
@@ -108,7 +108,7 @@ export const MissionContract = Type.Object({
 	status: MissionStatus,
 });
 
-export type MissionContract = TypeBoxType<typeof MissionContract>;
+export type MissionContract = Static<typeof MissionContract>;
 
 export const EvidenceRecord = Type.Object({
 	criterionId: Type.String(),
@@ -121,7 +121,7 @@ export const EvidenceRecord = Type.Object({
 	artifactHash: Type.Optional(Type.String()),
 });
 
-export type EvidenceRecord = TypeBoxType<typeof EvidenceRecord>;
+export type EvidenceRecord = Static<typeof EvidenceRecord>;
 
 export const EvidenceReport = Type.Object({
 	missionId: Type.String(),
@@ -130,7 +130,7 @@ export const EvidenceReport = Type.Object({
 	generatedAt: Type.String(),
 });
 
-export type EvidenceReport = TypeBoxType<typeof EvidenceReport>;
+export type EvidenceReport = Static<typeof EvidenceReport>;
 
 export const FailureRecord = Type.Object({
 	id: Type.String(),
@@ -147,7 +147,7 @@ export const FailureRecord = Type.Object({
 	updatedAt: Type.String(),
 });
 
-export type FailureRecord = TypeBoxType<typeof FailureRecord>;
+export type FailureRecord = Static<typeof FailureRecord>;
 
 export const MissionState = Type.Object({
 	contract: MissionContract,
@@ -158,4 +158,4 @@ export const MissionState = Type.Object({
 	completedAt: Type.Optional(Type.String()),
 });
 
-export type MissionState = TypeBoxType<typeof MissionState>;
+export type MissionState = Static<typeof MissionState>;

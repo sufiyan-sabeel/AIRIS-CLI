@@ -20,6 +20,7 @@ import type {
 	ContextEvent,
 	ExtensionAPI,
 	ExtensionCommandContext,
+	ExtensionContext,
 	SessionStartEvent,
 	ToolCallEvent,
 	TurnEndEvent,

@@ -1,6 +1,6 @@
 import type { Component } from "@earendil-works/airis-tui";
 import { visibleWidth } from "@earendil-works/airis-tui";
-import { theme } from "../theme/theme.ts";
+import { theme, type Theme, type ThemeColor } from "../theme/theme.ts";
 
 export interface WelcomeHeaderInfo {
 	model?: string;
@@ -13,16 +13,7 @@ export interface WelcomeHeaderInfo {
 const NO_COLOR = !!process.env.NO_COLOR;
 
 function fg(
-	color:
-		| "airisOrange"
-		| "airisOrangeHighlight"
-		| "airisOrangeMuted"
-		| "accent"
-		| "muted"
-		| "dim"
-		| "text"
-		| "borderMuted"
-		| "border",
+	color: ThemeColor,
 	text: string,
 ): string {
 	if (NO_COLOR) return text;
