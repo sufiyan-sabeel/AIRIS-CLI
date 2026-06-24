@@ -90,6 +90,10 @@ const ThemeJsonSchema = Type.Object({
 		thinkingXhigh: ColorValueSchema,
 		// Bash Mode (1 color)
 		bashMode: ColorValueSchema,
+		// AIRIS Brand Colors (3 colors)
+		airisOrange: ColorValueSchema,
+		airisOrangeHighlight: ColorValueSchema,
+		airisOrangeMuted: ColorValueSchema,
 	}),
 	export: Type.Optional(
 		Type.Object({
@@ -149,7 +153,10 @@ export type ThemeColor =
 	| "thinkingMedium"
 	| "thinkingHigh"
 	| "thinkingXhigh"
-	| "bashMode";
+	| "bashMode"
+	| "airisOrange"
+	| "airisOrangeHighlight"
+	| "airisOrangeMuted";
 
 export type ThemeBg =
 	| "selectedBg"
@@ -430,12 +437,16 @@ let BUILTIN_THEMES: Record<string, ThemeJson> | undefined;
 function getBuiltinThemes(): Record<string, ThemeJson> {
 	if (!BUILTIN_THEMES) {
 		const themesDir = getThemesDir();
-		const darkPath = path.join(themesDir, "dark.json");
-		const lightPath = path.join(themesDir, "light.json");
-		BUILTIN_THEMES = {
-			dark: JSON.parse(fs.readFileSync(darkPath, "utf-8")) as ThemeJson,
-			light: JSON.parse(fs.readFileSync(lightPath, "utf-8")) as ThemeJson,
-		};
+		const themes: Record<string, ThemeJson> = {};
+		for (const file of fs.readdirSync(themesDir)) {
+			if (!file.endsWith(".json") || file === "theme-schema.json") {
+				continue;
+			}
+			const themePath = path.join(themesDir, file);
+			const themeJson = parseThemeJsonContent(themePath, fs.readFileSync(themePath, "utf-8"));
+			themes[themeJson.name] = themeJson;
+		}
+		BUILTIN_THEMES = themes;
 	}
 	return BUILTIN_THEMES;
 }
@@ -716,7 +727,7 @@ export async function detectTerminalBackgroundTheme({
 }
 
 export function getDefaultTheme(): string {
-	return detectTerminalBackgroundFromEnv().theme;
+	return "graphite";
 }
 
 // ============================================================================
@@ -813,7 +824,7 @@ function startThemeWatcher(): void {
 	stopThemeWatcher();
 
 	// Only watch if it's a custom theme (not built-in)
-	if (!currentThemeName || currentThemeName === "dark" || currentThemeName === "light") {
+	if (!currentThemeName || currentThemeName in getBuiltinThemes()) {
 		return;
 	}
 

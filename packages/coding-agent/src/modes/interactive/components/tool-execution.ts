@@ -1,4 +1,13 @@
-import { Box, type Component, Container, getCapabilities, Image, Spacer, Text, type TUI } from "@earendil-works/airis-tui";
+import {
+	Box,
+	type Component,
+	Container,
+	getCapabilities,
+	Image,
+	Spacer,
+	Text,
+	type TUI,
+} from "@earendil-works/airis-tui";
 import type { ToolDefinition, ToolRenderContext } from "../../../core/extensions/types.ts";
 import { createAllToolDefinitions, type ToolName } from "../../../core/tools/index.ts";
 import { getTextOutput as getRenderedTextOutput } from "../../../core/tools/render-utils.ts";
@@ -133,7 +142,7 @@ export class ToolExecutionComponent extends Container {
 	}
 
 	private createCallFallback(): Component {
-		return new Text(theme.fg("toolTitle", theme.bold(this.toolName)), 0, 0);
+		return new Text(`${theme.fg("accent", "[RUN]")} ${theme.fg("toolTitle", theme.bold(this.toolName))}`, 0, 0);
 	}
 
 	private createResultFallback(): Component | undefined {
@@ -363,7 +372,9 @@ export class ToolExecutionComponent extends Container {
 	}
 
 	private formatToolExecution(): string {
-		let text = theme.fg("toolTitle", theme.bold(this.toolName));
+		const state = this.isPartial ? "[RUN]" : this.result?.isError ? "[ERR]" : "[DONE]";
+		const stateColor = this.isPartial ? "accent" : this.result?.isError ? "error" : "success";
+		let text = `${theme.fg(stateColor, state)} ${theme.fg("toolTitle", theme.bold(this.toolName))}`;
 		const content = JSON.stringify(this.args, null, 2);
 		if (content) {
 			text += `\n\n${content}`;

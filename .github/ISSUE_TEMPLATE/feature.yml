@@ -1,0 +1,50 @@
+name: Feature Request
+description: Suggest a new feature or improvement
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Before you start:** Read [CONTRIBUTING.md](https://github.com/sufiyan-sabeel/AIRIS-CLI/blob/main/CONTRIBUTING.md).
+
+        Keep this short and concrete. If you want to implement it yourself, say so.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What would you like to see?
+      description: Describe the feature or improvement clearly.
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does it solve?
+      description: Explain the use case or pain point.
+    validations:
+      required: false
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Any workarounds or alternative approaches you considered.
+    validations:
+      required: false
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Affected area
+      options:
+        - Core CLI
+        - TUI
+        - AI Providers
+        - Verified Autonomy
+        - airis ship
+        - Android/Termux
+        - Documentation
+        - Other
+    validations:
+      required: false

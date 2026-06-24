@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "375643082094",
+    "project_id": "airis-app-276ef",
+    "storage_bucket": "airis-app-276ef.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:375643082094:android:aba309066da45e6563057f",
+        "android_client_info": {
+          "package_name": "com.kageos.airis"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBbBfneIXZgWHIC7J0AW4lYshfKBhXQOic"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

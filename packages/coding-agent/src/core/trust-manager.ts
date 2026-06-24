@@ -223,6 +223,16 @@ export class ProjectTrustStore {
 		});
 	}
 
+	list(): ProjectTrustStoreEntry[] {
+		return withTrustFileLock(this.trustPath, () => {
+			const data = readTrustFile(this.trustPath);
+			return Object.entries(data)
+				.filter((entry): entry is [string, boolean] => entry[1] === true || entry[1] === false)
+				.map(([path, decision]) => ({ path, decision }))
+				.sort((a, b) => a.path.localeCompare(b.path));
+		});
+	}
+
 	set(cwd: string, decision: ProjectTrustDecision): void {
 		this.setMany([{ path: cwd, decision }]);
 	}

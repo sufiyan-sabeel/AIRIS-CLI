@@ -49,6 +49,7 @@ import {
 } from "@earendil-works/airis-tui";
 import chalk from "chalk";
 import { spawn, spawnSync } from "child_process";
+// Android automation is routed via @automation/@multiauto prefixes in _handleRoute()
 import {
 	APP_NAME,
 	APP_TITLE,
@@ -61,6 +62,7 @@ import {
 } from "../../config.ts";
 import { type AgentSession, type AgentSessionEvent, parseSkillBlock } from "../../core/agent-session.ts";
 import { type AgentSessionRuntime, SessionImportFileNotFoundError } from "../../core/agent-session-runtime.ts";
+import { type AirisWelcomeInfo, createAirisWelcome } from "../../core/airis-welcome.ts";
 import type {
 	AutocompleteProviderFactory,
 	EditorFactory,
@@ -112,6 +114,9 @@ import { ExtensionEditorComponent } from "./components/extension-editor.ts";
 import { ExtensionInputComponent } from "./components/extension-input.ts";
 import { ExtensionSelectorComponent } from "./components/extension-selector.ts";
 import { FooterComponent } from "./components/footer.ts";
+import { renderInlineProgress, type AdaptiveProgressData } from "./components/adaptive-progress.ts";
+import { createToolStats, recordToolCall, setToolRunning } from "./components/tool-stats.ts";
+import { renderInlineGauge, type ContextGaugeData } from "./components/context-gauge.ts";
 import { formatKeyText, keyDisplayText, keyHint, keyText, rawKeyHint } from "./components/keybinding-hints.ts";
 import { LoginDialogComponent } from "./components/login-dialog.ts";
 import { ModelSelectorComponent } from "./components/model-selector.ts";
@@ -125,6 +130,7 @@ import { TreeSelectorComponent } from "./components/tree-selector.ts";
 import { TrustSelectorComponent } from "./components/trust-selector.ts";
 import { UserMessageComponent } from "./components/user-message.ts";
 import { UserMessageSelectorComponent } from "./components/user-message-selector.ts";
+import { WelcomeHeader, type WelcomeHeaderInfo } from "./components/welcome-header.ts";
 import {
 	detectTerminalBackgroundTheme,
 	getAvailableThemes,
@@ -261,6 +267,8 @@ export interface InteractiveModeOptions {
 	initialMessages?: string[];
 	/** Force verbose startup (overrides quietStartup setting) */
 	verbose?: boolean;
+	/** AIRIS startup welcome details prepared by the CLI entrypoint. */
+	startupWelcome?: AirisWelcomeInfo;
 }
 
 export class InteractiveMode {
@@ -339,6 +347,10 @@ export class InteractiveMode {
 	private retryLoader: Loader | undefined = undefined;
 	private retryCountdown: CountdownTimer | undefined = undefined;
 	private retryEscapeHandler?: () => void;
+
+	// Adaptive brain progress
+	private adaptiveProgressData: AdaptiveProgressData = { phase: "idle", summary: "", todos: [] };
+	private toolStats = createToolStats();
 
 	// Messages queued while compaction is running
 	private compactionQueuedMessages: CompactionQueuedMessage[] = [];
@@ -673,7 +685,22 @@ export class InteractiveMode {
 
 		// Add header with keybindings from config (unless silenced)
 		if (this.options.verbose || !this.settingsManager.getQuietStartup()) {
-			const logo = theme.bold(theme.fg("accent", APP_NAME)) + theme.fg("dim", ` v${this.version}`);
+			const welcome = this.options.startupWelcome ?? createAirisWelcome(this.sessionManager.getCwd());
+
+			// Get current model info
+			const currentModel = this.session.model;
+			const modelStr = currentModel ? currentModel.id : undefined;
+			const providerStr = currentModel ? currentModel.provider : undefined;
+
+			// Create WelcomeHeader with emblem + metadata
+			const headerInfo: WelcomeHeaderInfo = {
+				model: modelStr,
+				provider: providerStr,
+				mode: welcome.modes.map((m) => m.label).join(" · "),
+				cwd: welcome.cwd,
+				version: this.version,
+			};
+			const welcomeHeader = new WelcomeHeader(headerInfo);
 
 			// Build startup instructions using keybinding hint helpers
 			const hint = (keybinding: AppKeybinding, description: string) => keyHint(keybinding, description);
@@ -706,24 +733,32 @@ export class InteractiveMode {
 				rawKeyHint("!", "bash"),
 				hint("app.tools.expand", "more"),
 			].join(theme.fg("muted", " · "));
+			const creatorLine = theme.fg("dim", `${welcome.attribution}  |  Brand: KageOS`);
+			const safetyLine = theme.fg(
+				"warning",
+				"Safety: trust this folder before editing or running project commands; risky actions still require confirmation.",
+			);
 			const compactOnboarding = theme.fg(
 				"dim",
 				`Press ${keyText("app.tools.expand")} to show full startup help and loaded resources.`,
 			);
 			const onboarding = theme.fg(
 				"dim",
-				`AIRIS can explain its own features and look up its docs. Ask it how to use or extend AIRIS.`,
+				`${welcome.tagline}. Try ${APP_NAME} @coding "review this project" or ask how to use AIRIS.`,
 			);
 			this.builtInHeader = new ExpandableText(
-				() => `${logo}\n${compactInstructions}\n${compactOnboarding}\n\n${onboarding}`,
-				() => `${logo}\n${expandedInstructions}\n\n${onboarding}`,
+				() =>
+					`${creatorLine}\n${safetyLine}\n${compactInstructions}\n${compactOnboarding}\n\n${onboarding}`,
+				() =>
+					`${creatorLine}\n${safetyLine}\n${expandedInstructions}\n\n${onboarding}`,
 				this.getStartupExpansionState(),
 				1,
 				0,
 			);
 
-			// Setup UI layout
+			// Setup UI layout: WelcomeHeader (emblem + metadata) + ExpandableText (hints + onboarding)
 			this.headerContainer.addChild(new Spacer(1));
+			this.headerContainer.addChild(welcomeHeader);
 			this.headerContainer.addChild(this.builtInHeader);
 			this.headerContainer.addChild(new Spacer(1));
 		} else {
@@ -2671,6 +2706,111 @@ export class InteractiveMode {
 				await this.shutdown();
 				return;
 			}
+			if (text === "/help") {
+				this.handleHelpCommand();
+				this.editor.setText("");
+				return;
+			}
+			if (text === "/hooks") {
+				this.handleHooksCommand();
+				this.editor.setText("");
+				return;
+			}
+			if (text === "/ide") {
+				this.handleIdeCommand();
+				this.editor.setText("");
+				return;
+			}
+			if (text === "/keybindings") {
+				this.handleKeybindingsCommand();
+				this.editor.setText("");
+				return;
+			}
+			if (text === "/brain") {
+				this.handleBrainCommand();
+				this.editor.setText("");
+				return;
+			}
+			if (text === "/stats") {
+				this.handleStatsCommand();
+				this.editor.setText("");
+				return;
+			}
+			if (text === "/tools") {
+				this.handleToolsCommand();
+				this.editor.setText("");
+				return;
+			}
+			if (text === "/plan" || text.startsWith("/plan ")) {
+				await this.handlePlanCommand(text);
+				this.editor.setText("");
+				return;
+			}
+			if (text === "/plugin" || text.startsWith("/plugin ")) {
+				this.handlePluginCommand(text);
+				this.editor.setText("");
+				return;
+			}
+			if (text === "/powerup") {
+				this.handlePowerupCommand();
+				this.editor.setText("");
+				return;
+			}
+			if (text === "/recap") {
+				this.handleRecapCommand();
+				this.editor.setText("");
+				return;
+			}
+			if (text === "/release-notes") {
+				this.handleReleaseNotesCommand();
+				this.editor.setText("");
+				return;
+			}
+			if (text === "/reload-extensions") {
+				await this.handleReloadExtensionsCommand();
+				this.editor.setText("");
+				return;
+			}
+			if (text === "/reload-skills") {
+				await this.handleReloadSkillsCommand();
+				this.editor.setText("");
+				return;
+			}
+			if (text === "/rename" || text.startsWith("/rename ")) {
+				this.handleRenameCommand(text);
+				this.editor.setText("");
+				return;
+			}
+			if (text === "/rewind") {
+				this.handleRewindCommand();
+				this.editor.setText("");
+				return;
+			}
+			if (text === "/sandbox") {
+				this.handleSandboxCommand();
+				this.editor.setText("");
+				return;
+			}
+			if (text === "/skills") {
+				this.handleSkillsCommand();
+				this.editor.setText("");
+				return;
+			}
+			if (text === "/status") {
+				this.handleStatusCommand();
+				this.editor.setText("");
+				return;
+			}
+			if (text === "/stickers") {
+				this.handleStickersCommand();
+				this.editor.setText("");
+				return;
+			}
+			if (text === "/tasks") {
+				this.handleTasksCommand();
+				this.editor.setText("");
+				return;
+			}
 
 			// Handle bash command (! for normal, !! for excluded from context)
 			if (text.startsWith("!")) {
@@ -2771,6 +2911,19 @@ export class InteractiveMode {
 				this.updatePendingMessagesDisplay();
 				this.ui.requestRender();
 				break;
+
+			case "adaptive_progress": {
+				this.adaptiveProgressData = {
+					phase: event.phase,
+					summary: event.summary,
+					todos: (event.todos as any) ?? [],
+				};
+				const inlineProgress = renderInlineProgress(this.adaptiveProgressData, this.ui.getWidth());
+				this.setExtensionStatus("adaptive", inlineProgress || undefined);
+				this.footer.invalidate();
+				this.ui.requestRender();
+				break;
+			}
 
 			case "session_info_changed":
 				this.updateTerminalTitle();
@@ -2880,6 +3033,8 @@ export class InteractiveMode {
 				break;
 
 			case "tool_execution_start": {
+				recordToolCall(this.toolStats, event.toolName, false);
+				setToolRunning(this.toolStats, event.toolName, event.toolCallId);
 				let component = this.pendingTools.get(event.toolCallId);
 				if (!component) {
 					component = new ToolExecutionComponent(
@@ -2917,12 +3072,14 @@ export class InteractiveMode {
 				if (component) {
 					component.updateResult({ ...event.result, isError: event.isError });
 					this.pendingTools.delete(event.toolCallId);
+					setToolRunning(this.toolStats);
 					this.ui.requestRender();
 				}
 				break;
 			}
 
 			case "agent_end":
+				setToolRunning(this.toolStats);
 				if (this.settingsManager.getShowTerminalProgress()) {
 					this.ui.terminal.setProgress(false);
 				}
@@ -3647,10 +3804,10 @@ export class InteractiveMode {
 	}
 
 	private async openExternalEditor(): Promise<void> {
-		// Determine editor (respect $VISUAL, then $EDITOR)
-		const editorCmd = process.env.VISUAL || process.env.EDITOR;
+		// Determine editor (respect AIRIS setting, then $VISUAL, then $EDITOR)
+		const editorCmd = this.settingsManager.getEditor() || process.env.VISUAL || process.env.EDITOR;
 		if (!editorCmd) {
-			this.showWarning("No editor configured. Set $VISUAL or $EDITOR environment variable.");
+			this.showWarning("No editor configured. Run airis config set editor <command> or set $VISUAL/$EDITOR.");
 			return;
 		}
 
@@ -3721,6 +3878,18 @@ export class InteractiveMode {
 	showWarning(warningMessage: string): void {
 		this.chatContainer.addChild(new Spacer(1));
 		this.chatContainer.addChild(new Text(theme.fg("warning", `Warning: ${warningMessage}`), 1, 0));
+		this.ui.requestRender();
+	}
+
+	showSuccess(successMessage: string): void {
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new Text(theme.fg("success", `✓ ${successMessage}`), 1, 0));
+		this.ui.requestRender();
+	}
+
+	showInfo(infoMessage: string): void {
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new Text(theme.fg("accent", infoMessage), 1, 0));
 		this.ui.requestRender();
 	}
 
@@ -5741,6 +5910,772 @@ export class InteractiveMode {
 		} catch {
 			// Ignore, will be emitted as an event
 		}
+	}
+
+	private handleHelpCommand(): void {
+		const helpText = `
+**${APP_NAME} Commands**
+
+**Navigation & Session**
+| Command | Description |
+|---------|-------------|
+| \`/new\` | Start a new session |
+| \`/resume\` | Resume a different session |
+| \`/session\` | Show session info and stats |
+| \`/name\` | Set session display name |
+| \`/rename\` | Rename the current conversation |
+| \`/fork\` | Create a new fork from a previous message |
+| \`/clone\` | Duplicate the current session |
+| \`/tree\` | Navigate session tree |
+| \`/rewind\` | Restore to a previous point |
+| \`/recap\` | Generate a one-line session recap |
+
+**Model & Settings**
+| Command | Description |
+|---------|-------------|
+| \`/model\` | Select model (opens selector UI) |
+| \`/scoped-models\` | Enable/disable models for cycling |
+| \`/settings\` | Open settings menu |
+| \`/login\` | Configure provider authentication |
+| \`/logout\` | Remove provider authentication |
+| \`/status\` | Show status including version and model |
+
+**Context & Export**
+| Command | Description |
+|---------|-------------|
+| \`/compact\` | Manually compact session context |
+| \`/export\` | Export session (HTML or JSONL) |
+| \`/import\` | Import session from JSONL file |
+| \`/share\` | Share session as a GitHub gist |
+| \`/copy\` | Copy last agent message to clipboard |
+| \`/plan\` | Enable plan mode or view plan |
+
+**Tools & Info**
+| Command | Description |
+|---------|-------------|
+| \`/help\` | Show this help message |
+| \`/hotkeys\` | Show all keyboard shortcuts |
+| \`/keybindings\` | Open your keyboard shortcuts file |
+| \`/changelog\` | Show changelog entries |
+| \`/release-notes\` | View release notes |
+| \`/hooks\` | View hook configurations |
+| \`/ide\` | Manage IDE integrations |
+| \`/brain\` | Show adaptive brain status |
+| \`/stats\` | Show session statistics |
+| \`/tools\` | Show tool execution statistics |
+| \`/tasks\` | View background tasks |
+
+**Extensions & Skills**
+| Command | Description |
+|---------|-------------|
+| \`/plugin\` | Manage extensions and plugins |
+| \`/reload-extensions\` | Activate pending extension changes |
+| \`/skills\` | List available skills |
+| \`/reload-skills\` | Pick up skills from disk |
+
+**System**
+| Command | Description |
+|---------|-------------|
+| \`/reload\` | Reload keybindings, extensions, skills |
+| \`/trust\` | Save project trust decision |
+| \`/sandbox\` | Sandbox configuration status |
+| \`/powerup\` | Discover features through quick tips |
+| \`/stickers\` | Get a fun surprise |
+| \`/quit\` | Quit ${APP_NAME} |
+
+**Keyboard Shortcuts**
+| Key | Action |
+|-----|--------|
+| \`/\` | Open slash commands |
+| \`!\` | Run bash command |
+| \`!!\` | Run bash (excluded from context) |
+
+Type any command or just describe what you want to do.
+`;
+
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.chatContainer.addChild(new Text(theme.bold(theme.fg("accent", `${APP_NAME} Help`)), 1, 0));
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new Markdown(helpText.trim(), 1, 1, this.getMarkdownThemeWithSettings()));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.ui.requestRender();
+	}
+
+	private handleHooksCommand(): void {
+		const extensionRunner = this.session.extensionRunner;
+		const hooks = extensionRunner.getHookConfigurations();
+
+		let hooksText = "**Tool Event Hooks**\n\n";
+
+		if (hooks.length === 0) {
+		hooksText += "No hooks configured.\n\n";
+		hooksText += "Extensions can register hooks for tool events:\n";
+		hooksText += "- \`beforeToolExecution\` - Before a tool runs\n";
+		hooksText += "- \`afterToolExecution\` - After a tool runs\n";
+		hooksText += "- \`onToolError\` - When a tool errors\n";
+		hooksText += "- \`onToolBlocked\` - When a tool is blocked";
+		} else {
+		hooksText += "| Hook | Extension | Description |\n";
+		hooksText += "|------|-----------|-------------|\n";
+		for (const hook of hooks) {
+			hooksText += `| \`${hook.event}\` | ${hook.extension} | ${hook.description || "-"} |\n`;
+		}
+		}
+
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.chatContainer.addChild(new Text(theme.bold(theme.fg("accent", "Hook Configurations")), 1, 0));
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new Markdown(hooksText.trim(), 1, 1, this.getMarkdownThemeWithSettings()));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.ui.requestRender();
+	}
+
+	private handleIdeCommand(): void {
+		const cwd = this.sessionManager.getCwd();
+
+		// Detect IDE environment
+		const isVSCode = process.env.TERM_PROGRAM === "vscode" || process.env.VSCODE_INJECTION === "1";
+		const isJetBrains = !!process.env.JETBRAINS_IDE;
+		const isSublime = !!process.env.SUBLIMETEXT;
+		const isGitpod = !!process.env.GITPOD_WORKSPACE_ID;
+		const isCursor = !!process.env.CURSOR_TRACE_ID;
+		const isWindsurf = process.env.WINDSURF === "1" || !!process.env.WINDSURF_TRACE_ID;
+
+		let ideText = "**IDE Integration Status**\n\n";
+
+		ideText += "| IDE | Status |\n";
+		ideText += "|-----|--------|\n";
+		ideText += `| VS Code | ${isVSCode ? "✓ Detected" : "Not detected"} |\n`;
+		ideText += `| JetBrains | ${isJetBrains ? "✓ Detected" : "Not detected"} |\n`;
+		ideText += `| Sublime Text | ${isSublime ? "✓ Detected" : "Not detected"} |\n`;
+		ideText += `| Cursor | ${isCursor ? "✓ Detected" : "Not detected"} |\n`;
+		ideText += `| Windsurf | ${isWindsurf ? "✓ Detected" : "Not detected"} |\n`;
+		ideText += `| Gitpod | ${isGitpod ? "✓ Detected" : "Not detected"} |\n`;
+
+		ideText += "\n**Editor Configuration**\n\n";
+		const editor = process.env.VISUAL || process.env.EDITOR;
+		if (editor) {
+			ideText += `External editor: \`${editor}\`\n`;
+		} else {
+			ideText += "No external editor configured.\n";
+			ideText += "Set \`VISUAL\` or \`EDITOR\` environment variable.\n";
+		}
+
+		ideText += "\n**Working Directory**\n\n";
+		ideText += `\`${cwd}\``;
+
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.chatContainer.addChild(new Text(theme.bold(theme.fg("accent", "IDE Integrations")), 1, 0));
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new Markdown(ideText.trim(), 1, 1, this.getMarkdownThemeWithSettings()));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.ui.requestRender();
+	}
+
+	private handleKeybindingsCommand(): void {
+		const keybindingsPath = this.keybindings.getFilePath();
+
+		let kbText = "**Keyboard Shortcuts File**\n\n";
+
+		if (keybindingsPath) {
+			kbText += `Location: \`${keybindingsPath}\`\n\n`;
+			kbText += "Edit this file to customize your keybindings.\n";
+			kbText += "Run \`/reload\` after changes to apply them.";
+
+			// Try to open in external editor
+			const editor = process.env.VISUAL || process.env.EDITOR;
+			if (editor) {
+				try {
+					const { spawn } = await import("child_process");
+					spawn(editor, [keybindingsPath], {
+						detached: true,
+						stdio: "ignore",
+					}).unref();
+					kbText += "\n\n✓ Opened in external editor.";
+				} catch {
+					// Ignore - just show the path
+				}
+			}
+		} else {
+			kbText += "No keybindings file found.\n\n";
+			kbText += "Create a keybindings file in your config directory to customize shortcuts.\n";
+			kbText += "See \`/help\` for available commands and \`/hotkeys\` for current shortcuts.";
+		}
+
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.chatContainer.addChild(new Text(theme.bold(theme.fg("accent", "Keybindings")), 1, 0));
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new Markdown(kbText.trim(), 1, 1, this.getMarkdownThemeWithSettings()));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.ui.requestRender();
+	}
+
+	private handleBrainCommand(): void {
+		const brain = this.session.getAdaptiveBrain();
+		const snapshot = brain.todos.getSnapshot();
+		const lastProgress = brain.getLastProgress();
+
+		let brainText = "**Adaptive Brain Status**\n\n";
+
+		brainText += `Phase: \`${lastProgress.phase}\`\n`;
+		brainText += `Summary: ${lastProgress.summary || "-"}\n\n`;
+
+		if (snapshot.items.length === 0) {
+			brainText += "No active TODO items.\n";
+			brainText += "The brain automatically creates a TODO plan for complex multi-file tasks.";
+		} else {
+			brainText += "| # | Status | Task | Evidence |\n";
+			brainText += "|---|--------|------|----------|\n";
+			let idx = 1;
+			for (const item of snapshot.items) {
+				const statusIcon = item.status === "completed" ? "✓" : item.status === "in_progress" ? "●" : item.status === "blocked" ? "✗" : item.status === "cancelled" ? "—" : "○";
+				const evidence = item.completionEvidence.length > 0 ? item.completionEvidence[item.completionEvidence.length - 1].slice(0, 30) : "-";
+				brainText += `| ${idx} | ${statusIcon} ${item.status} | ${item.description.slice(0, 40)} | ${evidence} |\n`;
+				idx++;
+			}
+
+			const completed = snapshot.items.filter((i) => i.status === "completed").length;
+			const total = snapshot.items.length;
+			const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
+			brainText += `\n**Progress: ${completed}/${total} (${percent}%)**`;
+		}
+
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.chatContainer.addChild(new Text(theme.bold(theme.fg("accent", "Adaptive Brain")), 1, 0));
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new Markdown(brainText.trim(), 1, 1, this.getMarkdownThemeWithSettings()));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.ui.requestRender();
+	}
+
+	private handleStatsCommand(): void {
+		const entries = this.sessionManager.getEntries();
+		const messages = entries.filter((e) => e.type === "message");
+		const assistantMessages = messages.filter((e) => e.message.role === "assistant");
+		const toolCalls = entries.filter((e) => e.type === "tool_call");
+
+		let totalInput = 0;
+		let totalOutput = 0;
+		let totalCost = 0;
+		let totalCacheRead = 0;
+		let totalCacheWrite = 0;
+
+		for (const msg of assistantMessages) {
+			totalInput += msg.message.usage.input;
+			totalOutput += msg.message.usage.output;
+			totalCost += msg.message.usage.cost.total;
+			totalCacheRead += msg.message.usage.cacheRead;
+			totalCacheWrite += msg.message.usage.cacheWrite;
+		}
+
+		const formatTokens = (n: number): string => {
+			if (n < 1000) return String(n);
+			if (n < 1000000) return `${(n / 1000).toFixed(1)}k`;
+			return `${(n / 1000000).toFixed(1)}M`;
+		};
+
+		let statsText = "**Session Statistics**\n\n";
+
+		statsText += "| Metric | Value |\n";
+		statsText += "|--------|-------|\n";
+		statsText += `| Messages | ${messages.length} |\n`;
+		statsText += `| Assistant messages | ${assistantMessages.length} |\n`;
+		statsText += `| Tool calls | ${toolCalls.length} |\n`;
+		statsText += `| Input tokens | ${formatTokens(totalInput)} |\n`;
+		statsText += `| Output tokens | ${formatTokens(totalOutput)} |\n`;
+		statsText += `| Cache read | ${formatTokens(totalCacheRead)} |\n`;
+		statsText += `| Cache write | ${formatTokens(totalCacheWrite)} |\n`;
+		statsText += `| Total cost | $${totalCost.toFixed(4)} |\n`;
+
+		if (totalCacheRead > 0 || totalCacheWrite > 0) {
+			const totalPrompt = totalInput + totalCacheRead + totalCacheWrite;
+			const hitRate = totalPrompt > 0 ? ((totalCacheRead / totalPrompt) * 100).toFixed(1) : "0";
+			statsText += `| Cache hit rate | ${hitRate}% |\n`;
+		}
+
+		// Context usage
+		const contextUsage = this.session.getContextUsage();
+		if (contextUsage) {
+			statsText += `| Context usage | ${contextUsage.percent?.toFixed(1) || "?"}% |\n`;
+		}
+
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.chatContainer.addChild(new Text(theme.bold(theme.fg("accent", "Session Statistics")), 1, 0));
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new Markdown(statsText.trim(), 1, 1, this.getMarkdownThemeWithSettings()));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.ui.requestRender();
+	}
+
+	private handleToolsCommand(): void {
+		let toolsText = "**Available Tools**\n\n";
+
+		// Get tool definitions from session
+		const tools = this.session.getToolDefinitions();
+
+		if (tools.length === 0) {
+			toolsText += "No tools available.";
+		} else {
+			toolsText += "| Tool | Description |\n";
+			toolsText += "|------|-------------|\n";
+			for (const tool of tools) {
+				toolsText += `| \`${tool.name}\` | ${tool.description || "-"} |\n`;
+			}
+		}
+
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.chatContainer.addChild(new Text(theme.bold(theme.fg("accent", "Tool Definitions")), 1, 0));
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new Markdown(toolsText.trim(), 1, 1, this.getMarkdownThemeWithSettings()));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.ui.requestRender();
+	}
+
+	private async handlePlanCommand(text: string): Promise<void> {
+		const args = text.slice(5).trim();
+
+		if (args === "on" || args === "enable") {
+			this.session.setPlanMode(true);
+			this.showSuccess("Plan mode enabled. The agent will plan before executing.");
+		} else if (args === "off" || args === "disable") {
+			this.session.setPlanMode(false);
+			this.showSuccess("Plan mode disabled.");
+		} else {
+			// Show current plan
+			const plan = this.session.getPlan();
+			const isPlanMode = this.session.isPlanMode();
+
+			let planText = "**Plan Mode**\n\n";
+			planText += `Status: ${isPlanMode ? "✓ Enabled" : "Disabled"}\n`;
+			planText += `\nUse \`/plan on\` to enable or \`/plan off\` to disable.\n`;
+
+			if (plan && plan.length > 0) {
+				planText += "\n**Current Plan:**\n\n";
+				for (let i = 0; i < plan.length; i++) {
+					const step = plan[i];
+					const status = step.completed ? "✓" : step.inProgress ? "●" : "○";
+					planText += `${i + 1}. ${status} ${step.description}\n`;
+				}
+			} else {
+				planText += "\nNo plan created yet. The agent will create a plan when processing complex tasks.\n";
+			}
+
+			this.chatContainer.addChild(new Spacer(1));
+			this.chatContainer.addChild(new DynamicBorder());
+			this.chatContainer.addChild(new Text(theme.bold(theme.fg("accent", "Plan Mode")), 1, 0));
+			this.chatContainer.addChild(new Spacer(1));
+			this.chatContainer.addChild(new Markdown(planText.trim(), 1, 1, this.getMarkdownThemeWithSettings()));
+			this.chatContainer.addChild(new DynamicBorder());
+			this.ui.requestRender();
+		}
+	}
+
+	private handlePluginCommand(text: string): void {
+		const args = text.slice(7).trim();
+		const extensionRunner = this.session.extensionRunner;
+		const extensions = extensionRunner.getLoadedExtensions();
+
+		let pluginText = "**Extensions & Plugins**\n\n";
+
+		if (args === "list" || !args) {
+			if (extensions.length === 0) {
+				pluginText += "No extensions loaded.\n\n";
+				pluginText += "Extensions provide additional tools and capabilities.\n";
+				pluginText += "Place extension files in your extensions directory.";
+			} else {
+				pluginText += "| Extension | Status | Commands |\n";
+				pluginText += "|-----------|--------|----------|\n";
+				for (const ext of extensions) {
+					const status = ext.enabled ? "✓ Enabled" : "○ Disabled";
+					const cmds = ext.commands?.length || 0;
+					pluginText += `| ${ext.name} | ${status} | ${cmds} |\n`;
+				}
+			}
+		} else if (args === "reload") {
+			this.session.extensionRunner.reloadExtensions();
+			pluginText += "✓ Extensions reloaded.";
+		} else {
+			pluginText += "Usage:\n";
+			pluginText += "- \`/plugin\` or \`/plugin list\` - List extensions\n";
+			pluginText += "- \`/plugin reload\` - Reload all extensions";
+		}
+
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.chatContainer.addChild(new Text(theme.bold(theme.fg("accent", "Extensions")), 1, 0));
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new Markdown(pluginText.trim(), 1, 1, this.getMarkdownThemeWithSettings()));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.ui.requestRender();
+	}
+
+	private handlePowerupCommand(): void {
+		const tips = [
+			"**Tip: Multi-file editing**\nDescribe changes across multiple files and AIRIS will create a TODO plan automatically.",
+			"**Tip: Keyboard shortcuts**\nPress \`?\` or type \`/hotkeys\` to see all available shortcuts.",
+			"**Tip: Quick bash**\nType \`!\` followed by a command to run it without leaving the chat.",
+			"**Tip: Context management**\nAIRIS auto-compacts when context gets full. Use \`/compact\` manually if needed.",
+			"**Tip: Model switching**\nPress Ctrl+P or type \`/model\` to switch models mid-conversation.",
+			"**Tip: Forking**\nType \`/fork\` to create a branch from any previous message.",
+			"**Tip: Thinking**\nModels with reasoning support show a thinking block. Toggle with the thinking shortcut.",
+			"**Tip: Images**\nPaste images directly into the chat with Ctrl+V.",
+			"**Tip: Follow-up**\nQueue messages while AIRIS is working with the follow-up shortcut.",
+			"**Tip: Trust**\nType \`/trust\` to save your project as trusted for future sessions.",
+		];
+
+		const tip = tips[Math.floor(Math.random() * tips.length)];
+
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.chatContainer.addChild(new Text(theme.bold(theme.fg("accent", "Power-up!")), 1, 0));
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new Markdown(tip, 1, 1, this.getMarkdownThemeWithSettings()));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.ui.requestRender();
+	}
+
+	private handleRecapCommand(): void {
+		const entries = this.sessionManager.getEntries();
+		const messages = entries.filter((e) => e.type === "message");
+		const userMessages = messages.filter((e) => e.message.role === "user");
+		const assistantMessages = messages.filter((e) => e.message.role === "assistant");
+
+		// Get first and last user message
+		const firstUser = userMessages[0];
+		const lastAssistant = assistantMessages[assistantMessages.length - 1];
+
+		let recap = "**Session Recap**\n\n";
+
+		if (messages.length === 0) {
+			recap += "No messages in this session yet.";
+		} else {
+			// Extract topic from first message
+			if (firstUser && firstUser.message.content) {
+				const firstText = typeof firstUser.message.content === "string"
+					? firstUser.message.content
+					: firstUser.message.content.find((c) => c.type === "text")?.text || "";
+				const topic = firstText.slice(0, 80) + (firstText.length > 80 ? "..." : "");
+				recap += `**Topic:** ${topic}\n`;
+			}
+
+			recap += `**Messages:** ${messages.length} (${userMessages.length} user, ${assistantMessages.length} assistant)\n`;
+
+			// Get session name
+			const sessionName = this.sessionManager.getSessionName();
+			if (sessionName) {
+				recap += `**Name:** ${sessionName}\n`;
+			}
+
+			// Get duration
+			if (messages.length > 0) {
+				const first = messages[0];
+				const last = messages[messages.length - 1];
+				if (first.type === "message" && last.type === "message") {
+					const duration = last.message.timestamp - first.message.timestamp;
+					const mins = Math.floor(duration / 60000);
+					recap += `**Duration:** ${mins < 1 ? "<1 min" : `${mins} min`}\n`;
+				}
+			}
+
+			// Get last response snippet
+			if (lastAssistant && lastAssistant.message.content) {
+				const lastText = typeof lastAssistant.message.content === "string"
+					? lastAssistant.message.content
+					: lastAssistant.message.content.find((c) => c.type === "text")?.text || "";
+				if (lastText) {
+					const snippet = lastText.slice(0, 120) + (lastText.length > 120 ? "..." : "");
+					recap += `\n**Last response:** ${snippet}\n`;
+				}
+			}
+		}
+
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.chatContainer.addChild(new Text(theme.bold(theme.fg("accent", "Session Recap")), 1, 0));
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new Markdown(recap.trim(), 1, 1, this.getMarkdownThemeWithSettings()));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.ui.requestRender();
+	}
+
+	private handleReleaseNotesCommand(): void {
+		const notes = [
+			"**${APP_NAME} Updates**\n",
+			"### Latest Features\n",
+			"- **Adaptive Brain**: Automatic TODO planning for complex tasks\n",
+			"- **Explore Task**: Read-only code exploration with resource limits\n",
+			"- **Ask Question**: Native tool for clarifying requirements\n",
+			"- **Auto-compaction**: Context management with TODO preservation\n",
+			"\n### Commands\n",
+			"- \`/brain\` - View adaptive brain status\n",
+			"- \`/stats\` - Session statistics\n",
+			"- \`/plan\` - Plan mode management\n",
+			"- \`/powerup\" - Discover tips and features\n",
+			"\nFor full changelog, type \`/changelog\`.",
+		];
+
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.chatContainer.addChild(new Text(theme.bold(theme.fg("accent", "Release Notes")), 1, 0));
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new Markdown(notes.join(""), 1, 1, this.getMarkdownThemeWithSettings()));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.ui.requestRender();
+	}
+
+	private async handleReloadExtensionsCommand(): Promise<void> {
+		this.chatContainer.addChild(new Text(theme.fg("dim", "Reloading extensions..."), 1, 1));
+		this.ui.requestRender();
+
+		try {
+			await this.session.extensionRunner.reloadExtensions();
+			this.showSuccess("Extensions reloaded successfully.");
+		} catch (error) {
+			this.showError(`Failed to reload extensions: ${error instanceof Error ? error.message : "Unknown error"}`);
+		}
+	}
+
+	private async handleReloadSkillsCommand(): Promise<void> {
+		this.chatContainer.addChild(new Text(theme.fg("dim", "Reloading skills..."), 1, 1));
+		this.ui.requestRender();
+
+		try {
+			await this.session.reloadSkills();
+			this.showSuccess("Skills reloaded successfully.");
+		} catch (error) {
+			this.showError(`Failed to reload skills: ${error instanceof Error ? error.message : "Unknown error"}`);
+		}
+	}
+
+	private handleRenameCommand(text: string): void {
+		const newName = text.slice(7).trim();
+
+		if (!newName) {
+			// Show current name
+			const currentName = this.sessionManager.getSessionName();
+			this.showInfo(currentName ? `Current name: "${currentName}"` : "No name set. Use \`/rename <name>\` to set one.");
+			return;
+		}
+
+		this.sessionManager.setSessionName(newName);
+		this.showSuccess(`Session renamed to "${newName}"`);
+		this.footer.invalidate();
+		this.ui.requestRender();
+	}
+
+	private handleRewindCommand(): void {
+		const entries = this.sessionManager.getEntries();
+		const messages = entries.filter((e) => e.type === "message");
+
+		if (messages.length < 2) {
+			this.showWarning("Not enough messages to rewind.");
+			return;
+		}
+
+		// Show rewind selector
+		this.showSelector((done) => {
+			const selector = new UserMessageSelectorComponent(
+				{
+					theme: this.getMarkdownThemeWithSettings(),
+					allowEmpty: false,
+				},
+				messages,
+				(index) => {
+					done();
+					if (index > 0) {
+						this.session.rewindToIndex(index);
+						this.renderCurrentSessionState();
+						this.showSuccess(`Rewound to message ${index + 1}`);
+					}
+				},
+			);
+			return { component: selector, focus: selector };
+		});
+	}
+
+	private handleSandboxCommand(): void {
+		let sandboxText = "**Sandbox Status**\n\n";
+
+		const sandboxEnabled = this.settingsManager.getSandboxEnabled();
+		const sandboxPath = this.settingsManager.getSandboxPath();
+
+		if (sandboxEnabled) {
+			sandboxText += "Status: ✓ Enabled\n";
+			sandboxText += `Path: \`${sandboxPath || "default"}\`\n`;
+		} else {
+			sandboxText += "Status: ○ Disabled\n";
+			sandboxText += "\nSandboxing isolates tool execution for safety.\n";
+			sandboxText += "Enable in settings to restrict file and bash access.";
+		}
+
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.chatContainer.addChild(new Text(theme.bold(theme.fg("accent", "Sandbox")), 1, 0));
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new Markdown(sandboxText.trim(), 1, 1, this.getMarkdownThemeWithSettings()));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.ui.requestRender();
+	}
+
+	private handleSkillsCommand(): void {
+		const skills = this.session.skills;
+	
+		let skillsText = "**Available Skills**\n\n";
+
+		if (!skills || skills.length === 0) {
+			skillsText += "No skills loaded.\n\n";
+			skillsText += "Skills provide reusable prompts and workflows.\n";
+			skillsText += "Place skill files in your skills directory.";
+		} else {
+			skillsText += "| Skill | Description |\n";
+			skillsText += "|-------|-------------|\n";
+			for (const skill of skills) {
+				skillsText += `| \`${skill.name}\` | ${skill.description || "-"} |\n`;
+			}
+			skillsText += `\nType \`/skill:${skills[0]?.name}\` to invoke a skill.`;
+		}
+
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.chatContainer.addChild(new Text(theme.bold(theme.fg("accent", "Skills")), 1, 0));
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new Markdown(skillsText.trim(), 1, 1, this.getMarkdownThemeWithSettings()));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.ui.requestRender();
+	}
+
+	private handleStatusCommand(): void {
+		const state = this.session.state;
+		const model = state.model;
+		const contextUsage = this.session.getContextUsage();
+
+		let statusText = "**AIRIS Status**\n\n";
+
+		statusText += "| Component | Status |\n";
+		statusText += "|-----------|--------|\n";
+
+		// Version
+		const version = this.settingsManager.getVersion();
+		statusText += `| Version | ${version || "-"} |\n`;
+
+		// Model
+		if (model) {
+			statusText += `| Model | ${model.provider}/${model.id} |\n`;
+			statusText += `| Context Window | ${model.contextWindow ? `${(model.contextWindow / 1000).toFixed(0)}k` : "-"} |\n`;
+		} else {
+			statusText += `| Model | No model selected |\n`;
+		}
+
+		// Thinking
+		if (model?.reasoning) {
+			statusText += `| Thinking | ${state.thinkingLevel || "off"} |\n`;
+		}
+
+		// Context usage
+		if (contextUsage) {
+			statusText += `| Context Usage | ${contextUsage.percent?.toFixed(1) || "?"}% |\n`;
+		}
+
+		// Auto-compact
+		statusText += `| Auto-compact | ${this.session.autoCompactionEnabled ? "✓ Enabled" : "○ Disabled"} |\n`;
+
+		// Extensions
+		const extensions = this.session.extensionRunner.getLoadedExtensions();
+		statusText += `| Extensions | ${extensions.length} loaded |\n`;
+
+		// Skills
+		const skills = this.session.skills;
+		statusText += `| Skills | ${skills?.length || 0} loaded |\n`;
+
+		// Working directory
+		statusText += `| Working Directory | \`${this.sessionManager.getCwd()}\` |\n`;
+
+		// Session file
+		const sessionFile = this.sessionManager.getSessionFile();
+		if (sessionFile) {
+			statusText += `| Session | \`${sessionFile}\` |\n`;
+		}
+
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.chatContainer.addChild(new Text(theme.bold(theme.fg("accent", "Status")), 1, 0));
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new Markdown(statusText.trim(), 1, 1, this.getMarkdownThemeWithSettings()));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.ui.requestRender();
+	}
+
+	private handleStickersCommand(): void {
+		const stickers = [
+			"🎉 Here's a virtual sticker for you! 🎨",
+			"\n\n```",
+			"   _____      _            __     __",
+			"  / ____|    | |           \ \   / /",
+			" | (___   ___| |_ _   _ _ __\ \ / /__  _ _ __",
+			"  \___ \ / _ \ __| | | | '_ \\ V / _ \| | '_ \",
+			"  ____) |  __/ |_| |_| | | | | | (_) | | | | |",
+			" |_____/ \___|\__|\__,_|_| |_|_/\___/|_|_| |_|",
+			"\n```",
+			"\n\nKeep coding! 🚀",
+		];
+
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.chatContainer.addChild(new Text(theme.bold(theme.fg("accent", "Stickers")), 1, 0));
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new Markdown(stickers.join(""), 1, 1, this.getMarkdownThemeWithSettings()));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.ui.requestRender();
+	}
+
+	private handleTasksCommand(): void {
+		let tasksText = "**Background Tasks**\n\n";
+
+		// Check for running bash commands
+		if (this.session.isBashRunning) {
+			tasksText += "| Task | Status |\n";
+			tasksText += "|------|--------|\n";
+			tasksText += "| Bash command | ● Running |\n";
+		} else {
+			// Check pending bash components
+			if (this.pendingBashComponents.length > 0) {
+				tasksText += "| Task | Status |\n";
+				tasksText += "|------|--------|\n";
+				for (const comp of this.pendingBashComponents) {
+					tasksText += "| Bash command | ○ Pending |\n";
+				}
+			} else {
+				tasksText += "No background tasks running.\n";
+				tasksText += "\nBash commands run in the background when you type \`!\` while AIRIS is working.";
+			}
+		}
+
+		// Show queued messages
+		if (this.compactionQueuedMessages.length > 0) {
+			tasksText += "\n\n**Queued Messages**\n\n";
+			tasksText += "| # | Message |\n";
+			tasksText += "|---|---------|\n";
+			for (let i = 0; i < this.compactionQueuedMessages.length; i++) {
+				const msg = this.compactionQueuedMessages[i];
+				const preview = msg.text.slice(0, 40) + (msg.text.length > 40 ? "..." : "");
+				tasksText += `| ${i + 1} | ${preview} |\n`;
+			}
+		}
+
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.chatContainer.addChild(new Text(theme.bold(theme.fg("accent", "Tasks")), 1, 0));
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new Markdown(tasksText.trim(), 1, 1, this.getMarkdownThemeWithSettings()));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.ui.requestRender();
 	}
 
 	stop(): void {

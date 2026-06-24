@@ -83,6 +83,8 @@ export interface Settings {
 	defaultModel?: string;
 	defaultThinkingLevel?: "off" | "minimal" | "low" | "medium" | "high" | "xhigh";
 	transport?: TransportSetting; // default: "auto"
+	editor?: string;
+	safeMode?: boolean;
 	steeringMode?: "all" | "one-at-a-time";
 	followUpMode?: "all" | "one-at-a-time";
 	theme?: string;
@@ -665,12 +667,38 @@ export class SettingsManager {
 		return sessionDir ? normalizePath(sessionDir) : sessionDir;
 	}
 
+	setSessionDir(sessionDir: string | undefined): void {
+		this.globalSettings.sessionDir = sessionDir;
+		this.markModified("sessionDir");
+		this.save();
+	}
+
 	getDefaultProvider(): string | undefined {
 		return this.settings.defaultProvider;
 	}
 
 	getDefaultModel(): string | undefined {
 		return this.settings.defaultModel;
+	}
+
+	getEditor(): string | undefined {
+		return this.settings.editor;
+	}
+
+	setEditor(editor: string | undefined): void {
+		this.globalSettings.editor = editor;
+		this.markModified("editor");
+		this.save();
+	}
+
+	getSafeMode(): boolean {
+		return this.settings.safeMode ?? false;
+	}
+
+	setSafeMode(enabled: boolean): void {
+		this.globalSettings.safeMode = enabled;
+		this.markModified("safeMode");
+		this.save();
 	}
 
 	setDefaultProvider(provider: string): void {
@@ -901,7 +929,7 @@ export class SettingsManager {
 	}
 
 	getEnableInstallTelemetry(): boolean {
-		return this.settings.enableInstallTelemetry ?? true;
+		return this.settings.enableInstallTelemetry ?? false;
 	}
 
 	setEnableInstallTelemetry(enabled: boolean): void {

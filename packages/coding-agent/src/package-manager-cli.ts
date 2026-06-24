@@ -1,3 +1,4 @@
+import { createInterface } from "node:readline";
 import { Markdown, type MarkdownTheme } from "@earendil-works/airis-tui";
 import chalk from "chalk";
 import { selectConfig } from "./cli/config-selector.ts";
@@ -19,7 +20,7 @@ import { type AppMode, resolveProjectTrusted } from "./core/project-trust.ts";
 import { DefaultResourceLoader } from "./core/resource-loader.ts";
 import { SettingsManager } from "./core/settings-manager.ts";
 import { hasTrustRequiringProjectResources, ProjectTrustStore } from "./core/trust-manager.ts";
-import { spawnProcess } from "./utils/child-process.ts";
+import { spawnProcess, spawnProcessSync } from "./utils/child-process.ts";
 import { getLatestAirisRelease, isNewerPackageVersion } from "./utils/version-check.ts";
 import {
 	cleanupWindowsSelfUpdateQuarantine,
@@ -65,9 +66,6 @@ function reportSettingsErrors(settingsManager: SettingsManager, context: string)
 	const errors = settingsManager.drainErrors();
 	for (const { scope, error } of errors) {
 		console.error(chalk.yellow(`Warning (${context}, ${scope} settings): ${error.message}`));
-		if (error.stack) {
-			console.error(chalk.dim(error.stack));
-		}
 	}
 }
 
@@ -417,6 +415,84 @@ function prepareWindowsNpmSelfUpdate(): void {
 	quarantineWindowsNativeDependencies(packageDir);
 }
 
+function readGitOutput(args: string[]): string | undefined {
+	const result = spawnProcessSync("git", args, {
+		encoding: "utf-8",
+		stdio: ["ignore", "pipe", "pipe"],
+	});
+	return result.status === 0 ? result.stdout.trim() : undefined;
+}
+
+function getGitCheckoutRoot(): string | undefined {
+	return readGitOutput(["-C", getPackageDir(), "rev-parse", "--show-toplevel"]);
+}
+
+function promptUpdateConfirm(message: string): Promise<boolean> {
+	return new Promise((resolve) => {
+		const rl = createInterface({ input: process.stdin, output: process.stdout });
+		rl.question(`${message} [y/N] `, (answer) => {
+			rl.close();
+			resolve(answer.toLowerCase() === "y" || answer.toLowerCase() === "yes");
+		});
+	});
+}
+
+async function runGitSelfUpdate(): Promise<boolean> {
+	const root = getGitCheckoutRoot();
+	if (!root) {
+		return false;
+	}
+
+	const remote = readGitOutput(["-C", root, "remote", "get-url", "origin"]);
+	if (!remote) {
+		return false;
+	}
+
+	const status = readGitOutput(["-C", root, "status", "--porcelain"]);
+	if (status === undefined) {
+		return false;
+	}
+
+	console.log(chalk.dim(`Detected source checkout: ${root}`));
+	console.log(chalk.dim(`Remote: ${remote}`));
+	if (status.trim()) {
+		const confirmed = process.stdin.isTTY
+			? await promptUpdateConfirm("Uncommitted changes found. Continue with git pull --ff-only?")
+			: false;
+		if (!confirmed) {
+			console.error(chalk.red("Refusing update with uncommitted changes."));
+			console.error(chalk.dim("Commit, stash, or discard changes, then run airis update again."));
+			process.exitCode = 1;
+			return true;
+		}
+	}
+
+	try {
+		await new Promise<void>((resolve, reject) => {
+			const child = spawnProcess("git", ["-C", root, "pull", "--ff-only"], { stdio: "inherit" });
+			child.on("error", (error) => reject(error));
+			child.on("close", (code, signal) => {
+				if (code === 0) {
+					resolve();
+				} else if (signal) {
+					reject(new Error(`git pull --ff-only terminated by signal ${signal}`));
+				} else {
+					reject(new Error(`git pull --ff-only exited with code ${code ?? "unknown"}`));
+				}
+			});
+		});
+		console.log(chalk.green(`Updated ${APP_NAME} source checkout.`));
+		console.log(chalk.dim(`Rollback: git -C ${root} reset --hard ORIG_HEAD`));
+		return true;
+	} catch (error: unknown) {
+		const message = error instanceof Error ? error.message : String(error);
+		console.error(chalk.red(`Error: ${message}`));
+		console.error(chalk.dim(`Rollback if needed: git -C ${root} reset --hard ORIG_HEAD`));
+		process.exitCode = 1;
+		return true;
+	}
+}
+
 function parseProjectTrustOverride(args: readonly string[]): boolean | undefined {
 	let trustOverride: boolean | undefined;
 	for (const arg of args) {
@@ -689,6 +765,9 @@ export async function handlePackageCommand(
 						selfUpdatePlan.packageName,
 					);
 					if (!selfUpdateCommand) {
+						if (await runGitSelfUpdate()) {
+							return true;
+						}
 						printSelfUpdateUnavailable(selfUpdateNpmCommand, selfUpdatePlan.packageName);
 						process.exitCode = 1;
 						return true;

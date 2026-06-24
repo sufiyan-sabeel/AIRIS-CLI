@@ -8,6 +8,12 @@
 import { createInterface } from "node:readline";
 import { type ImageContent, modelsAreEqual } from "@earendil-works/airis-ai";
 import chalk from "chalk";
+import {
+	commandNeedsProjectTrustForMutation,
+	getSafeModeToolList,
+	handleAirisCommand,
+	normalizeAirisCommandAliases,
+} from "./cli/airis-commands.ts";
 import { type Args, type Mode, parseArgs, printHelp } from "./cli/args.ts";
 import { processFileArguments } from "./cli/file-processor.ts";
 import { buildInitialMessage } from "./cli/initial-message.ts";
@@ -15,22 +21,25 @@ import { listModels } from "./cli/list-models.ts";
 import { createProjectTrustContext } from "./cli/project-trust.ts";
 import { selectSession } from "./cli/session-picker.ts";
 import { shouldRunFirstTimeSetup, showFirstTimeSetup, showStartupSelector } from "./cli/startup-ui.ts";
-import { ENV_SESSION_DIR, expandTildePath, getAgentDir, getPackageDir, VERSION } from "./config.ts";
+import { APP_NAME, ENV_SESSION_DIR, expandTildePath, getAgentDir, getPackageDir, VERSION } from "./config.ts";
 import { type CreateAgentSessionRuntimeFactory, createAgentSessionRuntime } from "./core/agent-session-runtime.ts";
 import {
 	type AgentSessionRuntimeDiagnostic,
 	createAgentSessionFromServices,
 	createAgentSessionServices,
 } from "./core/agent-session-services.ts";
+import { resolveAirisTrustOnboarding } from "./core/airis-trust-onboarding.ts";
+import { type AirisWelcomeInfo, createAirisWelcome } from "./core/airis-welcome.ts";
 import { formatNoModelsAvailableMessage } from "./core/auth-guidance.ts";
 import { AuthStorage } from "./core/auth-storage.ts";
 import { exportFromFile } from "./core/export-html/index.ts";
 import type { ExtensionFactory } from "./core/extensions/types.ts";
+import { getBuiltinExtensionFactories } from "./core/builtin-extensions.ts";
 import { configureHttpDispatcher } from "./core/http-dispatcher.ts";
 import type { ModelRegistry } from "./core/model-registry.ts";
 import { resolveCliModel, resolveModelScope, type ScopedModel } from "./core/model-resolver.ts";
 import { restoreStdout, takeOverStdout } from "./core/output-guard.ts";
-import { type AppMode, resolveProjectTrusted } from "./core/project-trust.ts";
+import type { AppMode } from "./core/project-trust.ts";
 import type { CreateAgentSessionOptions } from "./core/sdk.ts";
 import {
 	formatMissingSessionCwdPrompt,
@@ -429,6 +438,16 @@ function buildSessionOptions(
 	if (parsed.tools) {
 		options.tools = [...parsed.tools];
 	}
+	const safeModeTools = getSafeModeToolList(
+		settingsManager,
+		parsed.tools !== undefined ||
+			parsed.excludeTools !== undefined ||
+			parsed.noTools === true ||
+			parsed.noBuiltinTools === true,
+	);
+	if (safeModeTools) {
+		options.tools = safeModeTools;
+	}
 	if (parsed.excludeTools) {
 		options.excludeTools = [...parsed.excludeTools];
 	}
@@ -456,6 +475,8 @@ export interface MainOptions {
 
 export async function main(args: string[], options?: MainOptions) {
 	resetTimings();
+	args = normalizeAirisCommandAliases(args);
+	const trustRequiredForMutation = commandNeedsProjectTrustForMutation(args);
 	const offlineMode = args.includes("--offline") || isTruthyEnvFlag(process.env.PI_OFFLINE);
 	if (offlineMode) {
 		process.env.PI_OFFLINE = "1";
@@ -466,8 +487,15 @@ export async function main(args: string[], options?: MainOptions) {
 		cleanupWindowsSelfUpdateQuarantine(getPackageDir());
 	}
 
+	// Note: Android automation is now handled automatically in chat via intent detection
+	// No separate CLI command needed - user can say "open settings" directly in chat
+
 	if (await handlePackageCommand(args, { extensionFactories: options?.extensionFactories })) {
 		process.exit(process.exitCode ?? 0);
+		return;
+	}
+
+	if (await handleAirisCommand(args)) {
 		return;
 	}
 
@@ -572,8 +600,11 @@ export async function main(args: string[], options?: MainOptions) {
 
 	const trustStore = new ProjectTrustStore(agentDir);
 	const sessionCwd = sessionManager.getCwd();
+	const startupWelcome: AirisWelcomeInfo = createAirisWelcome(sessionCwd);
 	const autoTrustOnReloadCwd =
-		parsed.projectTrustOverride === undefined && !hasTrustRequiringProjectResources(sessionCwd)
+		parsed.projectTrustOverride === undefined &&
+		!trustRequiredForMutation &&
+		!hasTrustRequiringProjectResources(sessionCwd)
 			? sessionCwd
 			: undefined;
 	const trustPromptMode: AppMode = parsed.help || parsed.listModels !== undefined ? "print" : appMode;
@@ -595,13 +626,14 @@ export async function main(args: string[], options?: MainOptions) {
 		const projectTrustDiagnostics: AgentSessionRuntimeDiagnostic[] = [];
 		const cachedProjectTrust = projectTrustByCwd.get(cwd);
 		const hasTrustRequiringResources = hasTrustRequiringProjectResources(cwd);
+		const requiresProjectTrust = hasTrustRequiringResources || trustRequiredForMutation;
 		const shouldResolveProjectTrust =
-			parsed.projectTrustOverride === undefined && cachedProjectTrust === undefined && hasTrustRequiringResources;
+			parsed.projectTrustOverride === undefined && cachedProjectTrust === undefined && requiresProjectTrust;
 		const projectTrusted = shouldResolveProjectTrust
 			? false
 			: (cachedProjectTrust ??
 				parsed.projectTrustOverride ??
-				(!hasTrustRequiringResources || trustStore.get(cwd) === true));
+				(!requiresProjectTrust || trustStore.get(cwd) === true));
 		const runtimeSettingsManager = SettingsManager.create(cwd, agentDir, { projectTrusted });
 		const services = await createAgentSessionServices({
 			cwd,
@@ -612,11 +644,12 @@ export async function main(args: string[], options?: MainOptions) {
 			resourceLoaderReloadOptions: shouldResolveProjectTrust
 				? {
 						resolveProjectTrust: async ({ extensionsResult }) => {
-							const trusted = await resolveProjectTrusted({
+							const trusted = await resolveAirisTrustOnboarding({
 								cwd,
 								trustStore,
 								trustOverride: parsed.projectTrustOverride,
 								defaultProjectTrust: startupSettingsManager.getDefaultProjectTrust(),
+								requireTrust: requiresProjectTrust,
 								extensionsResult,
 								projectTrustContext:
 									projectTrustContext ??
@@ -645,7 +678,7 @@ export async function main(args: string[], options?: MainOptions) {
 				noContextFiles: parsed.noContextFiles,
 				systemPrompt: parsed.systemPrompt,
 				appendSystemPrompt: parsed.appendSystemPrompt,
-				extensionFactories: options?.extensionFactories,
+				extensionFactories: [...getBuiltinExtensionFactories(), ...(options?.extensionFactories ?? [])],
 			},
 		});
 		const { settingsManager, modelRegistry, resourceLoader } = services;
@@ -658,6 +691,12 @@ export async function main(args: string[], options?: MainOptions) {
 				message: `Failed to load extension "${path}": ${error}`,
 			})),
 		];
+		if (trustRequiredForMutation && !settingsManager.isProjectTrusted()) {
+			diagnostics.push({
+				type: "warning",
+				message: `Project is not trusted. Built-in mutation tools are disabled. Run ${APP_NAME} trust or pass --approve to enable them.`,
+			});
+		}
 
 		const modelPatterns = parsed.models ?? settingsManager.getEnabledModels();
 		const scopedModels =
@@ -784,6 +823,7 @@ export async function main(args: string[], options?: MainOptions) {
 			migratedProviders,
 			modelFallbackMessage,
 			autoTrustOnReloadCwd,
+			startupWelcome,
 			initialMessage,
 			initialImages,
 			initialMessages: parsed.messages,

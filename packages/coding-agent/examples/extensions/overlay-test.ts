@@ -8,8 +8,8 @@
  * - Edge case tests (wide chars, styled text, emoji)
  */
 
-import type { ExtensionAPI, ExtensionCommandContext, Theme } from "@sufiyan-sabeel/airis-cli";
 import { CURSOR_MARKER, type Focusable, matchesKey, visibleWidth } from "@earendil-works/airis-tui";
+import type { ExtensionAPI, ExtensionCommandContext, Theme } from "@sufiyan-sabeel/airis-cli";
 
 export default function (pi: ExtensionAPI) {
 	pi.registerCommand("overlay-test", {

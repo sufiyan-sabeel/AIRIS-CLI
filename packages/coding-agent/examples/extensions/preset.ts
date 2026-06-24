@@ -41,9 +41,9 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { Api, Model } from "@earendil-works/airis-ai";
+import { Container, Key, type SelectItem, SelectList, Text } from "@earendil-works/airis-tui";
 import type { ExtensionAPI, ExtensionContext } from "@sufiyan-sabeel/airis-cli";
 import { DynamicBorder, getAgentDir } from "@sufiyan-sabeel/airis-cli";
-import { Container, Key, type SelectItem, SelectList, Text } from "@earendil-works/airis-tui";
 
 // Preset configuration
 interface Preset {

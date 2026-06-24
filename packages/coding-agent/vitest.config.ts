@@ -27,6 +27,9 @@ export default defineConfig({
 			{ find: /^@mariozechner\/pi-ai\/oauth$/, replacement: aiSrcOAuth },
 			{ find: /^@mariozechner\/pi-agent-core$/, replacement: agentSrcIndex },
 			{ find: /^@mariozechner\/pi-tui$/, replacement: tuiSrcIndex },
+			{ find: /^@earendil-works\/airis-ai$/, replacement: aiSrcIndex },
+			{ find: /^@earendil-works\/airis-agent-core$/, replacement: agentSrcIndex },
+			{ find: /^@earendil-works\/airis-tui$/, replacement: tuiSrcIndex },
 		],
 	},
 });

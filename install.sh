@@ -1,7 +1,8 @@
 #!/bin/bash
 # ╔═══════════════════════════════════════════════════════════════════════════╗
-# ║  AIRIS CLI - Installer v2.0                                            ║
+# ║  AIRIS CLI - Cross-Platform Installer v2.0                             ║
 # ║  Autonomous Intelligence & Response Interface System                    ║
+# ║  Supports: Linux, macOS, Termux, FreeBSD, Alpine, Windows (MSYS/Git)   ║
 # ╚═══════════════════════════════════════════════════════════════════════════╝
 set -e
 
@@ -266,6 +267,178 @@ display_system_info() {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════
+#  PLATFORM DETECTION
+# ═══════════════════════════════════════════════════════════════════════════
+detect_platform() {
+    local os arch variant=""
+    
+    case "$(uname -s)" in
+        Linux*)
+            os="linux"
+            # Detect Termux/Android
+            if [[ -n "$ANDROID_ROOT" ]] || [[ -d "/data/data/com.termux" ]] || [[ "$(id -un 2>/dev/null)" == *"termux"* ]]; then
+                variant="termux"
+            fi
+            ;;
+        Darwin*)    os="darwin" ;;
+        MINGW*|MSYS*|CYGWIN*)  os="windows" ;;
+        FreeBSD*)   os="freebsd" ;;
+        *)
+            echo -e "${RED}    ✗ Unsupported OS: $(uname -s)${NC}"
+            exit 1
+            ;;
+    esac
+    
+    case "$(uname -m)" in
+        x86_64|amd64)           arch="x64" ;;
+        arm64|aarch64)          arch="arm64" ;;
+        armv7l|armhf|armv6l)    arch="arm64" ;;  # Termux/Android/RPi
+        i*86)                   arch="x64" ;;     # 32-bit x86 (use x64 compat)
+        *)
+            echo -e "${RED}    ✗ Unsupported architecture: $(uname -m)${NC}"
+            exit 1
+            ;;
+    esac
+    
+    local platform="${os}-${arch}"
+    [[ -n "$variant" ]] && platform="${platform}-${variant}"
+    
+    echo "$platform"
+}
+
+# ═══════════════════════════════════════════════════════════════════════════
+#  INSTALL METHOD DETECTION
+# ═══════════════════════════════════════════════════════════════════════════
+detect_install_method() {
+    local platform os arch install_dir="/usr/local/bin"
+    
+    os=$(echo "$platform" | cut -d'-' -f1)
+    arch=$(echo "$platform" | cut -d'-' -f2)
+    
+    # Determine best install directory
+    case "$os" in
+        linux)
+            # Check if we can write to /usr/local/bin
+            if [[ -w "/usr/local/bin" ]] 2>/dev/null || [[ "$EUID" -eq 0 ]]; then
+                install_dir="/usr/local/bin"
+            elif [[ -d "$HOME/.local/bin" ]] && [[ -w "$HOME/.local/bin" ]] 2>/dev/null; then
+                install_dir="$HOME/.local/bin"
+            elif command -v termux-setup-storage &>/dev/null; then
+                # Termux
+                install_dir="$PREFIX/bin"
+            else
+                mkdir -p "$HOME/.local/bin" 2>/dev/null || true
+                install_dir="$HOME/.local/bin"
+            fi
+            ;;
+        darwin)
+            if [[ -w "/usr/local/bin" ]] 2>/dev/null; then
+                install_dir="/usr/local/bin"
+            else
+                install_dir="$HOME/.local/bin"
+            fi
+            ;;
+        freebsd)
+            install_dir="/usr/local/bin"
+            ;;
+        windows)
+            install_dir="$HOME/.local/bin"
+            mkdir -p "$install_dir" 2>/dev/null || true
+            ;;
+    esac
+    
+    echo "$install_dir"
+}
+
+# ═══════════════════════════════════════════════════════════════════════════
+#  DEPENDENCY CHECK
+# ═══════════════════════════════════════════════════════════════════════════
+check_dependencies() {
+    local missing=()
+    
+    if ! command -v curl &> /dev/null && ! command -v wget &> /dev/null; then
+        missing+=("curl or wget")
+    fi
+    
+    if ! command -v tar &> /dev/null; then
+        missing+=("tar")
+    fi
+    
+    if [[ ${#missing[@]} -gt 0 ]]; then
+        echo -e "    ${RED}${BOLD}✗ Missing dependencies: ${missing[*]}${NC}"
+        echo ""
+        echo -e "    ${GRAY}Install them with:${NC}"
+        echo -e "    ${GRAY}  • Termux:      pkg install ${missing[*]}${NC}"
+        echo -e "    ${GRAY}  • macOS:       xcode-select --install${NC}"
+        echo -e "    ${GRAY}  • Ubuntu/Debian: sudo apt install ${missing[*]}${NC}"
+        echo -e "    ${GRAY}  • Alpine:      apk add ${missing[*]}${NC}"
+        echo -e "    ${GRAY}  • FreeBSD:     pkg install ${missing[*]}${NC}"
+        echo ""
+        exit 1
+    fi
+}
+
+# ═══════════════════════════════════════════════════════════════════════════
+#  DOWNLOAD WITH RETRY
+# ═══════════════════════════════════════════════════════════════════════════
+download_file() {
+    local url="$1" output="$2" retries=3 attempt=0
+    
+    while [[ $attempt -lt $retries ]]; do
+        attempt=$((attempt + 1))
+        
+        if command -v curl &> /dev/null; then
+            if curl -fsSL --progress-bar --retry 2 --retry-delay 1 -o "$output" "$url" 2>/dev/null; then
+                verify_download "$output" "$url"
+                return $?
+            fi
+        elif command -v wget &> /dev/null; then
+            if wget -q --tries=2 --timeout=10 -O "$output" "$url" 2>/dev/null; then
+                verify_download "$output" "$url"
+                return $?
+            fi
+        fi
+        
+        if [[ $attempt -lt $retries ]]; then
+            echo -e "    ${YELLOW}⚠ Retry $attempt/$retries...${NC}"
+            sleep 1
+        fi
+    done
+    
+    return 1
+}
+
+# Verify downloaded file is a valid archive (not an HTML error page)
+verify_download() {
+    local file="$1" url="$2"
+    
+    if [[ ! -s "$file" ]]; then
+        echo -e "    ${RED}Downloaded file is empty${NC}"
+        return 1
+    fi
+    
+    # Check if file starts with gzip magic bytes (tar.gz) or PK (zip)
+    local magic
+    magic=$(head -c 4 "$file" | xxd -p 2>/dev/null || head -c 4 "$file" | od -An -tx1 | tr -d ' ')
+    case "$magic" in
+        1f8b*|504b*)
+            # Valid gzip or zip
+            return 0
+            ;;
+        *)
+            # Might be an HTML error page from GitHub
+            if head -c 100 "$file" | grep -qi '<html\|<!doctype\|404\|not found' 2>/dev/null; then
+                echo -e "    ${RED}Downloaded file appears to be an HTML error page, not a binary${NC}"
+                echo -e "    ${GRAY}  URL may be incorrect or release may not exist for this platform${NC}"
+                return 1
+            fi
+            # Could be valid, allow extraction to try
+            return 0
+            ;;
+    esac
+}
+
+# ═══════════════════════════════════════════════════════════════════════════
 #  INSTALLATION STEPS
 # ═══════════════════════════════════════════════════════════════════════════
 install_airis() {
@@ -274,46 +447,69 @@ install_airis() {
     echo -e "${NEON}    └─────────────────────────────────────────────────────────────────────┘${NC}"
     echo ""
     
-    # Step 1: Clone
-    echo -e "    ${NEON}[1/5]${NC} ${WHITE}Initializing download sequence...${NC}"
+    # Check dependencies
+    check_dependencies
+    
+    # Detect platform
+    local platform install_dir
+    platform=$(detect_platform)
+    install_dir=$(detect_install_method)
+    
+    echo -e "    ${NEON}[i]${NC} ${WHITE}Platform:${NC}   ${CYAN}$platform${NC}"
+    echo -e "    ${NEON}[i]${NC} ${WHITE}Install to:${NC} ${CYAN}$install_dir${NC}"
+    echo ""
+    
+    # Step 1: Create install directory
+    echo -e "    ${NEON}[1/5]${NC} ${WHITE}Creating install directory...${NC}"
+    echo -e "    ${DARK}─────────────────────────────────────────────────────────────────────${NC}"
+    mkdir -p "$install_dir"
+    echo -e " ${GREEN}${BOLD}✓ Directory created${NC}"
+    echo ""
+    sleep 0.3
+    
+    # Step 2: Download binary
+    echo -e "    ${NEON}[2/5]${NC} ${WHITE}Downloading AIRIS binary...${NC}"
     echo -e "    ${DARK}─────────────────────────────────────────────────────────────────────${NC}"
     
-    INSTALL_DIR="/tmp/airis-install-$$"
-    mkdir -p "$INSTALL_DIR"
-    cd "$INSTALL_DIR"
+    local version="${AIRIS_VERSION:-latest}"
+    local repo="sufiyan-sabeel/AIRIS-CLI"
+    local download_url="https://github.com/$repo/releases/download/$version/airis-$platform.tar.gz"
+    local tmp_dir="/tmp/airis-install-$$"
+    mkdir -p "$tmp_dir"
     
-    git clone --depth 1 https://github.com/sufiyan-sabeel/AIRIS-CLI.git . 2>/dev/null &
-    spinner $!
-    echo -e " ${GREEN}${BOLD}✓ Repository cloned${NC}"
+    if ! download_file "$download_url" "$tmp_dir/airis.tar.gz"; then
+        echo -e "    ${RED}${BOLD}✗ Failed to download binary${NC}"
+        echo -e "    ${GRAY}  URL: $download_url${NC}"
+        echo -e "    ${GRAY}  Check: https://github.com/$repo/releases${NC}"
+        rm -rf "$tmp_dir"
+        exit 1
+    fi
+    echo -e " ${GREEN}${BOLD}✓ Downloaded${NC}"
     echo ""
-    sleep 0.5
+    sleep 0.3
     
-    # Step 2: Dependencies
-    echo -e "    ${NEON}[2/5]${NC} ${WHITE}Fetching neural network modules...${NC}"
+    # Step 3: Extract
+    echo -e "    ${NEON}[3/5]${NC} ${WHITE}Extracting archive...${NC}"
     echo -e "    ${DARK}─────────────────────────────────────────────────────────────────────${NC}"
-    npm install --ignore-scripts --no-audit --no-fund 2>/dev/null &
-    spinner $!
-    echo -e " ${GREEN}${BOLD}✓ Dependencies resolved${NC}"
+    tar -xzf "$tmp_dir/airis.tar.gz" -C "$tmp_dir" 2>/dev/null
+    echo -e " ${GREEN}${BOLD}✓ Extracted${NC}"
     echo ""
-    sleep 0.5
+    sleep 0.3
     
-    # Step 3: Build
-    echo -e "    ${NEON}[3/5]${NC} ${WHITE}Compiling intelligence core...${NC}"
+    # Step 4: Install binary
+    echo -e "    ${NEON}[4/5]${NC} ${WHITE}Installing binary...${NC}"
     echo -e "    ${DARK}─────────────────────────────────────────────────────────────────────${NC}"
-    npm run build 2>/dev/null &
-    spinner $!
-    echo -e " ${GREEN}${BOLD}✓ Core compiled${NC}"
-    echo ""
-    sleep 0.5
     
-    # Step 4: Link
-    echo -e "    ${NEON}[4/5]${NC} ${WHITE}Establishing neural pathways...${NC}"
-    echo -e "    ${DARK}─────────────────────────────────────────────────────────────────────${NC}"
-    npm link 2>/dev/null &
-    spinner $!
-    echo -e " ${GREEN}${BOLD}✓ Pathways established${NC}"
+    # Move airis directory contents to target
+    if [[ -d "$tmp_dir/airis" ]]; then
+        mv "$tmp_dir/airis"/* "$install_dir/" 2>/dev/null
+    else
+        mv "$tmp_dir"/* "$install_dir/" 2>/dev/null
+    fi
+    chmod +x "$install_dir/airis"
+    echo -e " ${GREEN}${BOLD}✓ Installed to $install_dir/airis${NC}"
     echo ""
-    sleep 0.5
+    sleep 0.3
     
     # Step 5: Config
     echo -e "    ${NEON}[5/5]${NC} ${WHITE}Initializing config matrix...${NC}"
@@ -322,9 +518,49 @@ install_airis() {
     echo -e " ${GREEN}${BOLD}✓ Config directory created${NC}"
     echo ""
     
+    # Step 6: Verify installation
+    echo -e "    ${NEON}[✓]${NC} ${WHITE}Verifying installation...${NC}"
+    echo -e "    ${DARK}─────────────────────────────────────────────────────────────────────${NC}"
+    if command -v airis &>/dev/null || [[ -x "$install_dir/airis" ]]; then
+        local airis_cmd="${install_dir}/airis"
+        command -v airis &>/dev/null && airis_cmd="airis"
+        if "$airis_cmd" --version &>/dev/null; then
+            local installed_version
+            installed_version=$("$airis_cmd" --version 2>/dev/null || echo "unknown")
+            echo -e " ${GREEN}${BOLD}✓ airis $installed_version verified${NC}"
+        else
+            echo -e " ${YELLOW}⚠ airis installed but --version check failed (may still work)${NC}"
+        fi
+    else
+        echo -e " ${YELLOW}⚠ airis binary not found in PATH; you may need to add $install_dir to PATH${NC}"
+    fi
+    echo ""
+    
     # Cleanup
-    cd /
-    rm -rf "$INSTALL_DIR"
+    rm -rf "$tmp_dir"
+    
+    # Check PATH and suggest adding if needed
+    case ":$PATH:" in
+        *":$install_dir:"*) ;;
+        *)
+            local shell_name
+            shell_name=$(basename "${SHELL:-/bin/bash}" 2>/dev/null || echo "bash")
+            
+            echo -e "    ${YELLOW}⚠ Add $install_dir to your PATH:${NC}"
+            case "$shell_name" in
+                zsh)
+                    echo -e "    ${GRAY}  echo 'export PATH=\"\$PATH:$install_dir\"' >> ~/.zshrc${NC}"
+                    ;;
+                fish)
+                    echo -e "    ${GRAY}  fish_add_path $install_dir${NC}"
+                    ;;
+                *)
+                    echo -e "    ${GRAY}  echo 'export PATH=\"\$PATH:$install_dir\"' >> ~/.bashrc${NC}"
+                    ;;
+            esac
+            echo ""
+            ;;
+    esac
 }
 
 # ═══════════════════════════════════════════════════════════════════════════

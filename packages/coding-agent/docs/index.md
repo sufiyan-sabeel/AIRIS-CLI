@@ -1,24 +1,24 @@
-# Pi Documentation
+# AIRIS Documentation
 
-Pi is a minimal terminal coding harness. It is designed to stay small at the core while being extended through TypeScript extensions, skills, prompt templates, themes, and pi packages.
+AIRIS is a minimal terminal coding harness. It is designed to stay small at the core while being extended through TypeScript extensions, skills, prompt templates, themes, and AIRIS packages.
 
 ## Quick start
 
-Install Pi with npm:
+Install AIRIS with npm:
 
 ```bash
 npm install -g --ignore-scripts @sufiyan-sabeel/airis-cli
 ```
 
-`--ignore-scripts` disables dependency lifecycle scripts during install. Pi does not require install scripts for normal npm installs.
+`--ignore-scripts` disables dependency lifecycle scripts during install. AIRIS does not require install scripts for normal npm installs.
 
 On Linux or macOS, you can also use the installer:
 
 ```bash
-curl -fsSL https://pi.dev/install.sh | sh
+curl -fsSL https://airis-dev.netlify.app/install.sh | sh
 ```
 
-To uninstall pi itself, use npm for curl and npm installs:
+To uninstall AIRIS itself, use npm for curl and npm installs:
 
 ```bash
 npm uninstall -g @sufiyan-sabeel/airis-cli
@@ -29,10 +29,10 @@ For pnpm, Yarn, or Bun installs, use the matching global remove command: `pnpm r
 Then run it in a project directory:
 
 ```bash
-pi
+airis
 ```
 
-Authenticate with `/login` for subscription providers, or set an API key such as `ANTHROPIC_API_KEY` before starting pi.
+Authenticate with `/login` for subscription providers, or set an API key such as `ANTHROPIC_API_KEY` before starting AIRIS.
 
 For the full first-run flow, see [Quickstart](quickstart.md).
 

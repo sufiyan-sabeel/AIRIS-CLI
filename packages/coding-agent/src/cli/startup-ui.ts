@@ -1,7 +1,6 @@
 import { ProcessTerminal, setKeybindings, TUI } from "@earendil-works/airis-tui";
 import { existsSync } from "fs";
 import { APP_NAME, CONFIG_DIR_NAME, ENV_AGENT_DIR, getSettingsPath, PACKAGE_NAME } from "../config.ts";
-import { areExperimentalFeaturesEnabled } from "../core/experimental.ts";
 import { KeybindingsManager } from "../core/keybindings.ts";
 import type { SettingsManager } from "../core/settings-manager.ts";
 import { ExtensionInputComponent } from "../modes/interactive/components/extension-input.ts";
@@ -47,7 +46,6 @@ async function clearStartupTui(ui: TUI): Promise<void> {
 /**
  * First-time setup runs when all of these hold:
  * - this is the official AIRIS distribution (not a fork/rebrand)
- * - experimental features are enabled (PI_EXPERIMENTAL=1)
  * - the default agent directory is used (no custom agent dir override)
  * - setup was not completed before (settings.json does not exist)
  */
@@ -59,9 +57,6 @@ export function shouldRunFirstTimeSetup(settingsPath: string = getSettingsPath()
 			configDirName: CONFIG_DIR_NAME,
 		})
 	) {
-		return false;
-	}
-	if (!areExperimentalFeaturesEnabled()) {
 		return false;
 	}
 	if (process.env[ENV_AGENT_DIR]) {

@@ -7,8 +7,8 @@
  * Usage: /status [message] - sends a status message with custom rendering
  */
 
-import type { ExtensionAPI } from "@sufiyan-sabeel/airis-cli";
 import { Box, Text } from "@earendil-works/airis-tui";
+import type { ExtensionAPI } from "@sufiyan-sabeel/airis-cli";
 
 export default function (pi: ExtensionAPI) {
 	// Register custom renderer for "status-update" messages

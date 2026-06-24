@@ -4,8 +4,9 @@
 
 import type { ThinkingLevel } from "@earendil-works/airis-agent-core";
 import chalk from "chalk";
-import { APP_NAME, CONFIG_DIR_NAME, ENV_AGENT_DIR, ENV_SESSION_DIR } from "../config.ts";
+import { APP_NAME, CONFIG_DIR_NAME, ENV_AGENT_DIR, ENV_SESSION_DIR, VERSION } from "../config.ts";
 import type { ExtensionFlag } from "../core/extensions/types.ts";
+import { box, commandHint, section } from "./ui.ts";
 
 export type Mode = "text" | "json" | "rpc";
 
@@ -70,6 +71,9 @@ export function parseArgs(args: string[]): Args {
 
 	for (let i = 0; i < args.length; i++) {
 		const arg = args[i];
+		if (i === 0 && arg === "chat") {
+			continue;
+		}
 
 		if (arg === "--help" || arg === "-h") {
 			result.help = true;
@@ -212,29 +216,101 @@ export function parseArgs(args: string[]): Args {
 export function printHelp(extensionFlags?: ExtensionFlag[]): void {
 	const extensionFlagsText =
 		extensionFlags && extensionFlags.length > 0
-			? `\n${chalk.bold("Extension CLI Flags:")}\n${extensionFlags
+			? `\n${section("Extension CLI Flags")}\n${extensionFlags
 					.map((flag) => {
 						const value = flag.type === "string" ? " <value>" : "";
 						const description = flag.description ?? `Registered by ${flag.extensionPath}`;
-						return `  --${flag.name}${value}`.padEnd(30) + description;
+						return commandHint(`--${flag.name}${value}`, description);
 					})
 					.join("\n")}\n`
 			: "";
-	console.log(`${chalk.bold(APP_NAME)} - AI coding assistant with read, bash, edit, write tools
+	console.log(`${chalk.bold(chalk.cyan("AIRIS"))} ${chalk.dim(`v${VERSION}`)}
+Artificial Intelligence Responsive Integrated System
+Brand: KageOS | Creator: Umaiz Sufiyan
 
-${chalk.bold("Usage:")}
+${section("Usage")}
   ${APP_NAME} [options] [@files...] [messages...]
+  ${APP_NAME} <command> [args]
 
-${chalk.bold("Commands:")}
-  ${APP_NAME} install <source> [-l]     Install extension source and add to settings
-  ${APP_NAME} remove <source> [-l]      Remove extension source from settings
-  ${APP_NAME} uninstall <source> [-l]   Alias for remove
-  ${APP_NAME} update [source|self]      Update AIRIS and installed extensions
-  ${APP_NAME} list                      List installed extensions from settings
-  ${APP_NAME} config                    Open TUI to enable/disable package resources
-  ${APP_NAME} <command> --help          Show help for install/remove/uninstall/update/list
+${section("Command Categories")}
+  ${chalk.cyan("Core")}
+    ${APP_NAME}                         Launch interactive AIRIS
+    ${APP_NAME} chat                    Launch chat mode (alias)
+    ${APP_NAME} help [command]          Show help
+    ${APP_NAME} version                 Show version and brand metadata
+    ${APP_NAME} changelog               Show latest changelog entry
 
-${chalk.bold("Options:")}
+  ${chalk.cyan("AI")}
+    ${APP_NAME} -p "prompt"             Run one-shot prompt mode
+    ${APP_NAME} --provider <name>       Select provider
+    ${APP_NAME} --model <pattern>       Select model or provider/model
+    ${APP_NAME} --list-models [search]  List configured models
+
+  ${chalk.cyan("Project")}
+    ${APP_NAME} trust                   Trust current project folder
+    ${APP_NAME} trust list              List saved trust decisions
+    ${APP_NAME} trust revoke <path>     Remove a trust decision
+    ${APP_NAME} --approve               Trust project for this run
+    ${APP_NAME} --no-approve            Run without project trust
+
+  ${chalk.cyan("Verified Autonomy")}
+    ${APP_NAME} mission "task" --verified
+                                   Create a scoped mission contract
+    ${APP_NAME} mission approve <id>    Approve scope and create a temporary lease
+    ${APP_NAME} mission run <id>        Run evidence-backed verification
+    ${APP_NAME} evidence show <id>      Show structured proof-of-completion
+    ${APP_NAME} lease list              List active capability leases
+    ${APP_NAME} failures search "err"   Search failure genome records
+
+  ${chalk.cyan("Ship Workflow")}
+    ${APP_NAME} ship start "task"       Start a full development workflow
+    ${APP_NAME} ship status [id]        Show workflow status
+    ${APP_NAME} ship resume             Resume the active workflow
+    ${APP_NAME} ship cancel             Cancel the active workflow
+    ${APP_NAME} ship list               List all ship workflows
+
+  ${chalk.cyan("Sessions")}
+    ${APP_NAME} session list [--all]    List sessions
+    ${APP_NAME} session resume <id>     Resume a session
+    ${APP_NAME} session current         Show latest current-project session
+    ${APP_NAME} session clear [--yes]   Clear current-project sessions
+    ${APP_NAME} --continue, -c          Continue previous session
+    ${APP_NAME} --resume, -r            Select a session to resume
+
+  ${chalk.cyan("Files")}
+    ${APP_NAME} @file.md "prompt"       Include a file in the prompt
+    ${APP_NAME} --tools read,grep,find,ls -p "Review code"
+                                   Run read-only review mode
+
+  ${chalk.cyan("Config")}
+    ${APP_NAME} config show             Show sanitized config
+    ${APP_NAME} config get <key>        Read config value
+    ${APP_NAME} config set <key> <val>  Write config value
+    ${APP_NAME} config path             Show settings path
+    ${APP_NAME} theme list              List themes
+    ${APP_NAME} theme set graphite      Set graphite theme
+
+  ${chalk.cyan("Tools")}
+    ${APP_NAME} tools list              Detect companion CLIs
+    ${APP_NAME} tools doctor            Diagnose companion tools
+    ${APP_NAME} install <source> [-l]   Install extension source
+    ${APP_NAME} remove <source> [-l]    Remove extension source
+    ${APP_NAME} list                    List installed extensions
+
+  ${chalk.cyan("System")}
+    ${APP_NAME} doctor                  Check runtime health
+    ${APP_NAME} update [source|self]    Update AIRIS and extensions
+
+  ${chalk.cyan("Developer")}
+    ${APP_NAME} --mode json|rpc         Machine-readable modes
+    ${APP_NAME} --extension <path>      Load extension
+    ${APP_NAME} --skill <path>          Load skill
+
+  ${chalk.cyan("Experimental")}
+    ${APP_NAME} --models <patterns>     Limit model cycling
+    ${APP_NAME} --thinking <level>      Set thinking level
+
+${section("Options")}
   --provider <name>              Provider name (default: google)
   --model <pattern>              Model pattern or ID (supports "provider/id" and optional ":<thinking>")
   --api-key <key>                API key (defaults to env vars)
@@ -277,62 +353,20 @@ ${chalk.bold("Options:")}
   --help, -h                     Show this help
   --version, -v                  Show version number
 
-Extensions can register additional flags (e.g., --plan from plan-mode extension).${extensionFlagsText}
+Extensions can register additional flags (for example, --plan).${extensionFlagsText}
 
-${chalk.bold("Examples:")}
-  # Interactive mode
-  ${APP_NAME}
+${box(
+	"Examples",
+	[
+		`${APP_NAME}`,
+		`${APP_NAME} "Review this project"`,
+		`${APP_NAME} -p "Summarize package.json"`,
+		`${APP_NAME} doctor`,
+		`${APP_NAME} session list`,
+	].map((example) => chalk.cyan(example)),
+)}
 
-  # Interactive mode with initial prompt
-  ${APP_NAME} "List all .ts files in src/"
-
-  # Include files in initial message
-  ${APP_NAME} @prompt.md @image.png "What color is the sky?"
-
-  # Non-interactive mode (process and exit)
-  ${APP_NAME} -p "List all .ts files in src/"
-
-  # Multiple messages (interactive)
-  ${APP_NAME} "Read package.json" "What dependencies do we have?"
-
-  # Continue previous session
-  ${APP_NAME} --continue "What did we discuss?"
-
-  # Start a named session
-  ${APP_NAME} --name "Refactor auth module"
-
-  # Use different model
-  ${APP_NAME} --provider openai --model gpt-4o-mini "Help me refactor this code"
-
-  # Use model with provider prefix (no --provider needed)
-  ${APP_NAME} --model openai/gpt-4o "Help me refactor this code"
-
-  # Use model with thinking level shorthand
-  ${APP_NAME} --model sonnet:high "Solve this complex problem"
-
-  # Limit model cycling to specific models
-  ${APP_NAME} --models claude-sonnet,claude-haiku,gpt-4o
-
-  # Limit to a specific provider with glob pattern
-  ${APP_NAME} --models "github-copilot/*"
-
-  # Cycle models with fixed thinking levels
-  ${APP_NAME} --models sonnet:high,haiku:low
-
-  # Start with a specific thinking level
-  ${APP_NAME} --thinking high "Solve this complex problem"
-
-  # Read-only mode (no file modifications possible)
-  ${APP_NAME} --tools read,grep,find,ls -p "Review the code in src/"
-
-  # Disable one tool while keeping the rest available
-  ${APP_NAME} --exclude-tools ask_question
-
-  # Export a session file to HTML
-  ${APP_NAME} --export ~/${CONFIG_DIR_NAME}/agent/sessions/--path--/session.jsonl
-  ${APP_NAME} --export session.jsonl output.html
-
-${chalk.bold("Environment Variables:")}
+${section("Environment Variables")}
   ANTHROPIC_API_KEY                - Anthropic Claude API key
   ANTHROPIC_OAUTH_TOKEN            - Anthropic OAuth token (alternative to API key)
   ANT_LING_API_KEY                 - Ant Ling API key
@@ -379,7 +413,7 @@ ${chalk.bold("Environment Variables:")}
   PI_SHARE_VIEWER_URL              - Base URL for /share command (default: https://pi.dev/session/)
   AIRIS_CODING_AGENT               - Set to "true" when running inside AIRIS
 
-${chalk.bold("Built-in Tool Names:")}
+${section("Built-in Tool Names")}
   read   - Read file contents
   bash   - Execute bash commands
   edit   - Edit files with find/replace

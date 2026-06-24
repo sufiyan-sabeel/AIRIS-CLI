@@ -44,3 +44,19 @@ collect.sh
 
 # Local Netlify folder
 .netlify
+
+# AIRIS runtime state (missions, evidence, leases, failures)
+.airis/evidence/
+.airis/failures/
+.airis/leases.json
+.airis/missions/
+.airis/automation-guide.md
+
+# Backend runtime
+backend/db/
+
+# Tool-specific settings
+.grok/
+
+# Accidental shell output file
+h -u origin main

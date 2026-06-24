@@ -33,12 +33,17 @@ import {
 	resetApiProviders,
 	streamSimple,
 } from "@earendil-works/airis-ai";
+import { executeAndroidAction, formatResponse } from "../automation/androidBridge.ts";
+import { isAndroidAutomationRequest } from "../automation/androidIntentRouter.ts";
+import { createAskQuestionToolDefinition } from "./adaptive/ask-question.ts";
+import { AdaptiveBrainController } from "./adaptive/controller.ts";
 import { getThemeByName, theme } from "../modes/interactive/theme/theme.ts";
 import { stripFrontmatter } from "../utils/frontmatter.ts";
 import { resolvePath } from "../utils/paths.ts";
 import { sleep } from "../utils/sleep.ts";
 import { formatNoApiKeyFoundMessage, formatNoModelSelectedMessage } from "./auth-guidance.ts";
 import { type BashResult, executeBashWithOperations } from "./bash-executor.ts";
+import { logCliEvent } from "./cli-logs.ts";
 import {
 	type CompactionResult,
 	calculateContextTokens,
@@ -83,6 +88,7 @@ import type { BashExecutionMessage, CustomMessage } from "./messages.ts";
 import type { ModelRegistry } from "./model-registry.ts";
 import { expandPromptTemplate, type PromptTemplate } from "./prompt-templates.ts";
 import type { ResourceExtensionPaths, ResourceLoader } from "./resource-loader.ts";
+import { getRouteLogPrefix, parseRoute } from "./router.ts";
 import type { BranchSummaryEntry, CompactionEntry, SessionManager } from "./session-manager.ts";
 import { CURRENT_SESSION_VERSION, getLatestCompactionEntry, type SessionHeader } from "./session-manager.ts";
 import type { SettingsManager } from "./settings-manager.ts";
@@ -134,6 +140,7 @@ export type AgentSessionEvent =
 			followUp: readonly string[];
 	  }
 	| { type: "compaction_start"; reason: "manual" | "threshold" | "overflow" }
+	| { type: "adaptive_progress"; phase: string; summary: string; openTodos: number; inProgress?: string; todos?: unknown[] }
 	| { type: "session_info_changed"; name: string | undefined }
 	| { type: "thinking_level_changed"; level: ThinkingLevel }
 	| {
@@ -248,6 +255,15 @@ interface ToolDefinitionEntry {
 
 /** Standard thinking levels */
 const THINKING_LEVELS: ThinkingLevel[] = ["off", "minimal", "low", "medium", "high"];
+const TRUST_REQUIRED_BUILTIN_TOOLS = new Set(["bash", "edit", "write"]);
+const LOCAL_AUTOMATION_USAGE = {
+	input: 0,
+	output: 0,
+	cacheRead: 0,
+	cacheWrite: 0,
+	totalTokens: 0,
+	cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0 },
+} satisfies AssistantMessage["usage"];
 
 // ============================================================================
 // AgentSession Class
@@ -293,6 +309,7 @@ export class AgentSession {
 
 	private _resourceLoader: ResourceLoader;
 	private _customTools: ToolDefinition[];
+	private _adaptiveBrain: AdaptiveBrainController;
 	private _baseToolDefinitions: Map<string, ToolDefinition> = new Map();
 	private _cwd: string;
 	private _extensionRunnerRef?: { current?: ExtensionRunner };
@@ -328,8 +345,13 @@ export class AgentSession {
 		this.settingsManager = config.settingsManager;
 		this._scopedModels = config.scopedModels ?? [];
 		this._resourceLoader = config.resourceLoader;
-		this._customTools = config.customTools ?? [];
 		this._cwd = config.cwd;
+		this._adaptiveBrain = new AdaptiveBrainController(config.sessionManager, config.cwd);
+		this._customTools = [
+			...(config.customTools ?? []),
+			this._adaptiveBrain.createTodoToolDefinition() as ToolDefinition,
+			createAskQuestionToolDefinition(config.sessionManager) as ToolDefinition,
+		];
 		this._modelRegistry = config.modelRegistry;
 		this._extensionRunnerRef = config.extensionRunnerRef;
 		this._initialActiveToolNames = config.initialActiveToolNames;
@@ -439,14 +461,24 @@ export class AgentSession {
 			});
 
 			if (!hookResult) {
+				const snapshot = this._adaptiveBrain.observeToolExecution({ toolName: toolCall.name, args, result, isError });
+				this._emitAdaptiveProgress("executing", `Adaptive TODO: ${snapshot.items.filter((item) => item.status !== "completed" && item.status !== "cancelled").length} open task(s)`);
 				return undefined;
 			}
 
-			return {
-				content: hookResult.content,
+			const adaptedResult = {
+				content: hookResult.content ?? [],
 				details: hookResult.details,
 				isError: hookResult.isError ?? isError,
 			};
+			const snapshot = this._adaptiveBrain.observeToolExecution({
+				toolName: toolCall.name,
+				args,
+				result: adaptedResult,
+				isError: adaptedResult.isError,
+			});
+			this._emitAdaptiveProgress("executing", `Adaptive TODO: ${snapshot.items.filter((item) => item.status !== "completed" && item.status !== "cancelled").length} open task(s)`);
+			return adaptedResult;
 		};
 	}
 
@@ -466,6 +498,20 @@ export class AgentSession {
 			type: "queue_update",
 			steering: [...this._steeringMessages],
 			followUp: [...this._followUpMessages],
+		});
+	}
+
+	private _emitAdaptiveProgress(phase?: string, summary?: string): void {
+		const progress = this._adaptiveBrain.getLastProgress();
+		const snapshot = this._adaptiveBrain.todos.getSnapshot();
+		const inProgress = snapshot.items.find((item) => item.status === "in_progress");
+		this._emit({
+			type: "adaptive_progress",
+			phase: phase ?? progress.phase,
+			summary: summary ?? progress.summary,
+			openTodos: snapshot.items.filter((item) => item.status !== "completed" && item.status !== "cancelled").length,
+			inProgress: inProgress?.description,
+			todos: snapshot.items,
 		});
 	}
 
@@ -933,6 +979,190 @@ export class AgentSession {
 	// Prompting
 	// =========================================================================
 
+	private _createLocalAssistantMessage(text: string): AssistantMessage {
+		const currentModel = this.model;
+		return {
+			role: "assistant",
+			content: [{ type: "text", text }],
+			api: currentModel?.api ?? "local",
+			provider: currentModel?.provider ?? "airis",
+			model: currentModel?.id ?? "android-automation",
+			usage: { ...LOCAL_AUTOMATION_USAGE, cost: { ...LOCAL_AUTOMATION_USAGE.cost } },
+			stopReason: "stop",
+			timestamp: Date.now(),
+		};
+	}
+
+	private async _appendLocalMessage(message: Message): Promise<void> {
+		await this._emitExtensionEvent({ type: "message_start", message });
+		this._emit({ type: "message_start", message });
+		this.agent.state.messages = [...this.agent.state.messages, message];
+		await this._emitExtensionEvent({ type: "message_end", message });
+		this._emit({ type: "message_end", message });
+		this.sessionManager.appendMessage(message);
+	}
+
+	private async _recordLocalPromptResponse(
+		userText: string,
+		images: ImageContent[] | undefined,
+		assistantText: string,
+	): Promise<void> {
+		const userContent: (TextContent | ImageContent)[] = [{ type: "text", text: userText }];
+		if (images) {
+			userContent.push(...images);
+		}
+		await this._appendLocalMessage({ role: "user", content: userContent, timestamp: Date.now() });
+		await this._appendLocalMessage(this._createLocalAssistantMessage(assistantText));
+	}
+
+	private async _handleRoute(text: string, images: ImageContent[] | undefined): Promise<boolean> {
+		if (images && images.length > 0) {
+			return false;
+		}
+
+		const { mode, taskText } = parseRoute(text);
+
+		logCliEvent("route", { mode, taskText });
+		console.error(`[${getRouteLogPrefix(mode)}] taskText="${taskText}"`);
+
+		if (mode === "CHAT" || mode === "CODING") {
+			return false;
+		}
+
+		if (mode === "AUTOMATION") {
+			return this._handleAutomation(taskText, text, images);
+		}
+
+		if (mode === "MULTI_AUTO") {
+			return this._handleMultiAuto(taskText, text, images);
+		}
+
+		return false;
+	}
+
+	private async _handleAutomation(
+		taskText: string,
+		originalText: string,
+		images: ImageContent[] | undefined,
+	): Promise<boolean> {
+		if (!taskText) {
+			await this._recordLocalPromptResponse(
+				originalText,
+				images,
+				"AIRIS: No automation task specified after @automation.",
+			);
+			return true;
+		}
+
+		const automation = isAndroidAutomationRequest(taskText);
+		if (!automation) {
+			await this._recordLocalPromptResponse(
+				originalText,
+				images,
+				"AIRIS: Could not parse an Android automation task from your request.",
+			);
+			return true;
+		}
+
+		const { intent } = automation;
+		console.error(`[AIRIS Router] AUTOMATION intent=${intent.action} safety=${intent.safety}`);
+
+		if (intent.safety === "blocked") {
+			await this._recordLocalPromptResponse(
+				originalText,
+				images,
+				"AIRIS: Blocked - this action involves sensitive or destructive operations (passwords, payments, account changes, data deletion).",
+			);
+			return true;
+		}
+
+		if (intent.safety === "confirm" && process.env.AIRIS_AUTOMATION_CONFIRMED !== "1") {
+			await this._recordLocalPromptResponse(
+				originalText,
+				images,
+				`AIRIS: Stopped before risky action - ${intent.description}. Confirm the action before running it.`,
+			);
+			return true;
+		}
+
+		if (intent.action === "nl_execute") {
+			const nlText = (intent.params.text as string) || taskText;
+			const response = await executeAndroidAction("nl_execute", { text: nlText });
+			let assistantText = `AIRIS: ${formatResponse(response)}`;
+			if (response.data?.text && typeof response.data.text === "string") {
+				const screenText = response.data.text as string;
+				if (screenText.trim().length > 0) {
+					assistantText += `\n\nScreen content:\n${screenText.trim()}`;
+				}
+			}
+			await this._recordLocalPromptResponse(originalText, images, assistantText);
+			return true;
+		}
+
+		const response = await executeAndroidAction(intent.action, intent.params);
+		const assistantText = `AIRIS: ${formatResponse(response)}`;
+		await this._recordLocalPromptResponse(originalText, images, assistantText);
+		return true;
+	}
+
+	private async _handleMultiAuto(
+		taskText: string,
+		originalText: string,
+		images: ImageContent[] | undefined,
+	): Promise<boolean> {
+		if (!taskText) {
+			await this._recordLocalPromptResponse(
+				originalText,
+				images,
+				"AIRIS: No automation task specified after @multiauto.",
+			);
+			return true;
+		}
+
+		const automation = isAndroidAutomationRequest(taskText);
+		if (!automation) {
+			await this._recordLocalPromptResponse(
+				originalText,
+				images,
+				"AIRIS: Could not parse an Android automation task from your request.",
+			);
+			return true;
+		}
+
+		const { intent } = automation;
+		console.error(`[AIRIS Router] MULTI_AUTO intent=${intent.action} safety=${intent.safety}`);
+
+		if (intent.safety === "blocked") {
+			await this._recordLocalPromptResponse(
+				originalText,
+				images,
+				"AIRIS: Blocked - this action involves sensitive or destructive operations (passwords, payments, account changes, data deletion).",
+			);
+			return true;
+		}
+
+		if (intent.safety === "confirm" && process.env.AIRIS_AUTOMATION_CONFIRMED !== "1") {
+			await this._recordLocalPromptResponse(
+				originalText,
+				images,
+				`AIRIS: Stopped before risky action - ${intent.description}. Confirm the action before running it.`,
+			);
+			return true;
+		}
+
+		const nlText = (intent.params.text as string) || taskText;
+		const response = await executeAndroidAction("nl_execute", { text: nlText });
+		let assistantText = `AIRIS: ${formatResponse(response)}`;
+		if (response.data?.text && typeof response.data.text === "string") {
+			const screenText = response.data.text as string;
+			if (screenText.trim().length > 0) {
+				assistantText += `\n\nScreen content:\n${screenText.trim()}`;
+			}
+		}
+		await this._recordLocalPromptResponse(originalText, images, assistantText);
+		return true;
+	}
+
 	private async _runAgentPrompt(messages: AgentMessage | AgentMessage[]): Promise<void> {
 		try {
 			await this.agent.prompt(messages);
@@ -987,6 +1217,7 @@ export class AgentSession {
 		const expandPromptTemplates = options?.expandPromptTemplates ?? true;
 		const preflightResult = options?.preflightResult;
 		let messages: AgentMessage[] | undefined;
+		let adaptiveMessages: AgentMessage[] = [];
 
 		try {
 			// Handle extension commands first (execute immediately, even during streaming)
@@ -1018,6 +1249,11 @@ export class AgentSession {
 					currentText = inputResult.text;
 					currentImages = inputResult.images ?? currentImages;
 				}
+			}
+
+			if (!this.isStreaming && (await this._handleRoute(currentText, currentImages))) {
+				preflightResult?.(true);
+				return;
 			}
 
 			// Expand skill commands (/skill:name args) and prompt templates (/template args)
@@ -1076,6 +1312,14 @@ export class AgentSession {
 				}
 			}
 
+			const adaptivePreparation = await this._adaptiveBrain.prepareTurn(
+				expandedText,
+				this.agent.state.messages,
+				this.model,
+			);
+			adaptiveMessages = adaptivePreparation.customMessages;
+			this._emitAdaptiveProgress(adaptivePreparation.progress.phase, adaptivePreparation.progress.summary);
+
 			// Build messages array (custom message if any, then user message)
 			messages = [];
 
@@ -1095,6 +1339,10 @@ export class AgentSession {
 				messages.push(msg);
 			}
 			this._pendingNextTurnMessages = [];
+
+			for (const msg of adaptiveMessages) {
+				messages.push(msg);
+			}
 
 			// Emit before_agent_start extension event
 			const result = await this._extensionRunner.emitBeforeAgentStart(
@@ -1699,12 +1947,18 @@ export class AgentSession {
 				details = extensionCompaction.details;
 			} else {
 				// Generate compaction result
+				const effectiveCustomInstructions = [
+					customInstructions,
+					this._adaptiveBrain.buildCompactionInstructions(this._extractLatestUserGoal()),
+				]
+					.filter((value): value is string => !!value && value.trim().length > 0)
+					.join("\n\n");
 				const result = await compact(
 					preparation,
 					this.model,
 					apiKey,
 					headers,
-					customInstructions,
+					effectiveCustomInstructions,
 					this._compactionAbortController.signal,
 					this.thinkingLevel,
 					this.agent.streamFn,
@@ -1713,6 +1967,10 @@ export class AgentSession {
 				firstKeptEntryId = result.firstKeptEntryId;
 				tokensBefore = result.tokensBefore;
 				details = result.details;
+			}
+
+			if (!this._adaptiveBrain.validateCompactionSummary(summary)) {
+				throw new Error("Compaction summary did not preserve adaptive task state");
 			}
 
 			if (this._compactionAbortController.signal.aborted) {
@@ -1743,6 +2001,13 @@ export class AgentSession {
 				tokensBefore,
 				details,
 			};
+			this._adaptiveBrain.recordCompactionMetrics({
+				reason: "manual",
+				tokensBefore,
+				summaryLength: summary.length,
+				openTodos: this._adaptiveBrain.todos.getOpenItems().length,
+				createdAt: new Date().toISOString(),
+			});
 			this._emit({
 				type: "compaction_end",
 				reason: "manual",
@@ -1977,7 +2242,7 @@ export class AgentSession {
 					this.model,
 					apiKey,
 					headers,
-					undefined,
+					this._adaptiveBrain.buildCompactionInstructions(this._extractLatestUserGoal()),
 					this._autoCompactionAbortController.signal,
 					this.thinkingLevel,
 					this.agent.streamFn,
@@ -1986,6 +2251,10 @@ export class AgentSession {
 				firstKeptEntryId = compactResult.firstKeptEntryId;
 				tokensBefore = compactResult.tokensBefore;
 				details = compactResult.details;
+			}
+
+			if (!this._adaptiveBrain.validateCompactionSummary(summary)) {
+				throw new Error("Compaction summary did not preserve adaptive task state");
 			}
 
 			if (this._autoCompactionAbortController.signal.aborted) {
@@ -2023,6 +2292,13 @@ export class AgentSession {
 				tokensBefore,
 				details,
 			};
+			this._adaptiveBrain.recordCompactionMetrics({
+				reason,
+				tokensBefore,
+				summaryLength: summary.length,
+				openTodos: this._adaptiveBrain.todos.getOpenItems().length,
+				createdAt: new Date().toISOString(),
+			});
 			this._emit({ type: "compaction_end", reason, result, aborted: false, willRetry });
 
 			if (willRetry) {
@@ -2386,7 +2662,7 @@ export class AgentSession {
 		const autoResizeImages = this.settingsManager.getImageAutoResize();
 		const shellCommandPrefix = this.settingsManager.getShellCommandPrefix();
 		const shellPath = this.settingsManager.getShellPath();
-		const baseToolDefinitions = this._baseToolsOverride
+		const baseToolDefinitions: Record<string, ToolDefinition> = this._baseToolsOverride
 			? Object.fromEntries(
 					Object.entries(this._baseToolsOverride).map(([name, tool]) => [
 						name,
@@ -2397,6 +2673,11 @@ export class AgentSession {
 					read: { autoResizeImages },
 					bash: { commandPrefix: shellCommandPrefix, shellPath },
 				});
+		if (!this._baseToolsOverride && !this.settingsManager.isProjectTrusted()) {
+			for (const toolName of TRUST_REQUIRED_BUILTIN_TOOLS) {
+				delete baseToolDefinitions[toolName];
+			}
+		}
 
 		this._baseToolDefinitions = new Map(
 			Object.entries(baseToolDefinitions).map(([name, tool]) => [name, tool as ToolDefinition]),
@@ -2424,7 +2705,9 @@ export class AgentSession {
 
 		const defaultActiveToolNames = this._baseToolsOverride
 			? Object.keys(this._baseToolsOverride)
-			: ["read", "bash", "edit", "write"];
+			: this.settingsManager.isProjectTrusted()
+				? ["read", "bash", "edit", "write"]
+				: ["read"];
 		const baseActiveToolNames = options.activeToolNames ?? defaultActiveToolNames;
 		this._refreshToolRegistry({
 			activeToolNames: baseActiveToolNames,
@@ -3076,6 +3359,22 @@ export class AgentSession {
 	// =========================================================================
 	// Utilities
 	// =========================================================================
+
+	private _extractLatestUserGoal(): string | undefined {
+		for (let i = this.agent.state.messages.length - 1; i >= 0; i--) {
+			const message = this.agent.state.messages[i];
+			if (message.role !== "user") continue;
+			const content = message.content;
+			if (typeof content === "string") return content.trim() || undefined;
+			const text = content
+				.filter((block): block is TextContent => block.type === "text")
+				.map((block) => block.text)
+				.join("\n")
+				.trim();
+			return text || undefined;
+		}
+		return undefined;
+	}
 
 	/**
 	 * Get text content of last assistant message.

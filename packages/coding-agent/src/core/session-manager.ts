@@ -181,6 +181,8 @@ export interface SessionInfo {
 	messageCount: number;
 	firstMessage: string;
 	allMessagesText: string;
+	provider?: string;
+	model?: string;
 }
 
 export type ReadonlySessionManager = Pick<
@@ -595,6 +597,8 @@ async function buildSessionInfo(filePath: string): Promise<SessionInfo | null> {
 		const allMessages: string[] = [];
 		let name: string | undefined;
 		let lastActivityTime: number | undefined;
+		let provider: string | undefined;
+		let model: string | undefined;
 
 		const rl = createInterface({
 			input: createReadStream(filePath, { encoding: "utf8" }),
@@ -616,6 +620,11 @@ async function buildSessionInfo(filePath: string): Promise<SessionInfo | null> {
 				name = entry.name?.trim() || undefined;
 			}
 
+			if (entry.type === "model_change") {
+				provider = entry.provider;
+				model = entry.modelId;
+			}
+
 			if (entry.type !== "message") continue;
 			messageCount++;
 
@@ -625,6 +634,10 @@ async function buildSessionInfo(filePath: string): Promise<SessionInfo | null> {
 			}
 
 			const message = entry.message;
+			if (message.role === "assistant") {
+				provider = message.provider;
+				model = message.model;
+			}
 			if (!isMessageWithContent(message)) continue;
 			if (message.role !== "user" && message.role !== "assistant") continue;
 
@@ -660,6 +673,8 @@ async function buildSessionInfo(filePath: string): Promise<SessionInfo | null> {
 			messageCount,
 			firstMessage: firstMessage || "(no messages)",
 			allMessagesText: allMessages.join(" "),
+			provider,
+			model,
 		};
 	} catch {
 		return null;

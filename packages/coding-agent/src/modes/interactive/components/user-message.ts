@@ -1,4 +1,4 @@
-import { Box, Container, Markdown, type MarkdownTheme } from "@earendil-works/airis-tui";
+import { Box, Container, Markdown, type MarkdownTheme, Text } from "@earendil-works/airis-tui";
 import { getMarkdownTheme, theme } from "../theme/theme.ts";
 
 const OSC133_ZONE_START = "\x1b]133;A\x07";
@@ -14,6 +14,7 @@ export class UserMessageComponent extends Container {
 	constructor(text: string, markdownTheme: MarkdownTheme = getMarkdownTheme()) {
 		super();
 		this.contentBox = new Box(1, 1, (content: string) => theme.bg("userMessageBg", content));
+		this.contentBox.addChild(new Text(theme.bold(theme.fg("accent", "YOU")), 0, 0));
 		this.contentBox.addChild(
 			new Markdown(
 				text,

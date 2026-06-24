@@ -5,8 +5,8 @@
  * without paying for an extra follow-up LLM turn.
  */
 
-import { defineTool, type ExtensionAPI } from "@sufiyan-sabeel/airis-cli";
 import { Text } from "@earendil-works/airis-tui";
+import { defineTool, type ExtensionAPI } from "@sufiyan-sabeel/airis-cli";
 import { Type } from "typebox";
 
 interface StructuredOutputDetails {

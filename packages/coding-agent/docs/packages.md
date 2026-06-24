@@ -1,8 +1,8 @@
-> pi can help you create pi packages. Ask it to bundle your extensions, skills, prompt templates, or themes.
+> airis can help you create AIRIS packages. Ask it to bundle your extensions, skills, prompt templates, or themes.
 
-# Pi Packages
+# AIRIS Packages
 
-Pi packages bundle extensions, skills, prompt templates, and themes so you can share them through npm or git. A package can declare resources in `package.json` under the `pi` key, or use conventional directories.
+AIRIS packages bundle extensions, skills, prompt templates, and themes so you can share them through npm or git. A package can declare resources in `package.json` under the `airis` key, or use conventional directories.
 
 ## Table of Contents
 
@@ -17,39 +17,39 @@ Pi packages bundle extensions, skills, prompt templates, and themes so you can s
 
 ## Install and Manage
 
-> **Security:** Pi packages run with full system access. Extensions execute arbitrary code, and skills can instruct the model to perform any action including running executables. Review source code before installing third-party packages.
+> **Security:** AIRIS packages run with full system access. Extensions execute arbitrary code, and skills can instruct the model to perform any action including running executables. Review source code before installing third-party packages.
 
 ```bash
-pi install npm:@foo/bar@1.0.0
-pi install git:github.com/user/repo@v1
-pi install https://github.com/user/repo  # raw URLs work too
-pi install /absolute/path/to/package
-pi install ./relative/path/to/package
+airis install npm:@foo/bar@1.0.0
+airis install git:github.com/user/repo@v1
+airis install https://github.com/user/repo  # raw URLs work too
+airis install /absolute/path/to/package
+airis install ./relative/path/to/package
 
-pi remove npm:@foo/bar
-pi list                     # show installed packages from settings
-pi update                   # update pi, update packages, and reconcile pinned git refs
-pi update --extensions      # update packages and reconcile pinned git refs only
-pi update --self            # update pi only
-pi update --self --force    # reinstall pi even if current
-pi update npm:@foo/bar      # update one package
-pi update --extension npm:@foo/bar
+airis remove npm:@foo/bar
+airis list                     # show installed packages from settings
+airis update                   # update AIRIS, update packages, and reconcile pinned git refs
+airis update --extensions      # update packages and reconcile pinned git refs only
+airis update --self            # update AIRIS only
+airis update --self --force    # reinstall AIRIS even if current
+airis update npm:@foo/bar      # update one package
+airis update --extension npm:@foo/bar
 ```
 
-These commands manage pi packages, not the pi CLI installation. To uninstall pi itself, see [Quickstart](quickstart.md#uninstall).
+These commands manage AIRIS packages, not the AIRIS CLI installation. To uninstall AIRIS itself, see [Quickstart](quickstart.md#uninstall).
 
-By default, `install` and `remove` write to user settings (`~/.airis/agent/settings.json`). Use `-l` to write to project settings (`.pi/settings.json`) instead. Project settings can be shared with your team, and pi installs any missing packages automatically on startup after the project is trusted.
+By default, `install` and `remove` write to user settings (`~/.airis/agent/settings.json`). Use `-l` to write to project settings (`.airis/settings.json`) instead. Project settings can be shared with your team, and AIRIS installs any missing packages automatically on startup after the project is trusted.
 
 To try a package without installing it, use `--extension` or `-e`. This installs to a temporary directory for the current run only:
 
 ```bash
-pi -e npm:@foo/bar
-pi -e git:github.com/user/repo
+airis -e npm:@foo/bar
+airis -e git:github.com/user/repo
 ```
 
 ## Package Sources
 
-Pi accepts three source types in settings and `pi install`.
+AIRIS accepts three source types in settings and `airis install`.
 
 ### npm
 
@@ -166,9 +166,9 @@ If no `pi` manifest is present, pi auto-discovers resources from these directori
 
 Third party runtime dependencies belong in `dependencies` in `package.json`. Dependencies that do not register extensions, skills, prompt templates, or themes also belong in `dependencies`. When pi installs a package from npm or git, it runs `npm install`, so those dependencies are installed automatically.
 
-Pi bundles core packages for extensions and skills. If you import any of these, list them in `peerDependencies` with a `"*"` range and do not bundle them: `@earendil-works/airis-ai`, `@earendil-works/airis-agent-core`, `@sufiyan-sabeel/airis-cli`, `@earendil-works/airis-tui`, `typebox`.
+AIRIS bundles core packages for extensions and skills. If you import any of these, list them in `peerDependencies` with a `"*"` range and do not bundle them: `@earendil-works/airis-ai`, `@earendil-works/airis-agent-core`, `@sufiyan-sabeel/airis-cli`, `@earendil-works/airis-tui`, `typebox`.
 
-Other pi packages must be bundled in your tarball. Add them to `dependencies` and `bundledDependencies`, then reference their resources through `node_modules/` paths. Pi loads packages with separate module roots, so separate installs do not collide or share modules.
+Other AIRIS packages must be bundled in your tarball. Add them to `dependencies` and `bundledDependencies`, then reference their resources through `node_modules/` paths. AIRIS loads packages with separate module roots, so separate installs do not collide or share modules.
 
 Example:
 

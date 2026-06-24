@@ -4,12 +4,7 @@
  * Shows how to replace or modify the default system prompt.
  */
 
-import {
-	createAgentSession,
-	DefaultResourceLoader,
-	getAgentDir,
-	SessionManager,
-} from "@sufiyan-sabeel/airis-cli";
+import { createAgentSession, DefaultResourceLoader, getAgentDir, SessionManager } from "@sufiyan-sabeel/airis-cli";
 
 const cwd = process.cwd();
 const agentDir = getAgentDir();

@@ -18,8 +18,8 @@
  */
 
 import { StringEnum } from "@earendil-works/airis-ai";
-import type { ExtensionAPI, ExtensionContext, Theme, ToolExecutionMode } from "@sufiyan-sabeel/airis-cli";
 import { type Component, matchesKey, Text, truncateToWidth, visibleWidth } from "@earendil-works/airis-tui";
+import type { ExtensionAPI, ExtensionContext, Theme, ToolExecutionMode } from "@sufiyan-sabeel/airis-cli";
 import { Type } from "typebox";
 
 // Thrown from the tool on illegal actions. The agent runtime surfaces thrown
@@ -875,12 +875,13 @@ Decide the target cell first, then dump every action for the turn in one go.
 		executionMode: "sequential" as ToolExecutionMode,
 
 		async execute(_toolCallId, params, _signal, _onUpdate, _ctx) {
-			const actionDelay = ACTION_DELAYS[params.action];
+			const action = params.action as Action;
+			const actionDelay = ACTION_DELAYS[action];
 			if (actionDelay > 0) await delay(actionDelay);
 
-			let result: string;
+			let result = "";
 
-			switch (params.action) {
+			switch (action) {
 				case "move_up":
 					if (gameState.agentCursorRow > 0) gameState.agentCursorRow--;
 					result = `Moved up. Cursor: (${gameState.agentCursorRow}, ${gameState.agentCursorCol})`;

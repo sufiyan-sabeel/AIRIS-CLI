@@ -5,7 +5,6 @@
  * Multiple questions: tab bar navigation between questions
  */
 
-import type { ExtensionAPI } from "@sufiyan-sabeel/airis-cli";
 import {
 	Editor,
 	type EditorTheme,
@@ -15,6 +14,7 @@ import {
 	visibleWidth,
 	wrapTextWithAnsi,
 } from "@earendil-works/airis-tui";
+import type { ExtensionAPI } from "@sufiyan-sabeel/airis-cli";
 import { Type } from "typebox";
 
 // Types

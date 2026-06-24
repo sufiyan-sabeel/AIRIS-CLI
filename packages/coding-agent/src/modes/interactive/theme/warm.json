@@ -76,7 +76,10 @@
 		"thinkingHigh": "#d2755a",
 		"thinkingXhigh": "#d4a24e",
 
-		"bashMode": "green"
+		"bashMode": "green",
+		"airisOrange": "#E7A46F",
+		"airisOrangeHighlight": "#F3C194",
+		"airisOrangeMuted": "#C77C4D"
 	},
 	"export": {
 		"pageBg": "#262220",

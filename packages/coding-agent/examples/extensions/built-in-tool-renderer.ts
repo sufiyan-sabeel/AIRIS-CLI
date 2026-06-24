@@ -25,9 +25,9 @@
  *   pi -e ./built-in-tool-renderer.ts
  */
 
+import { Text } from "@earendil-works/airis-tui";
 import type { BashToolDetails, EditToolDetails, ExtensionAPI, ReadToolDetails } from "@sufiyan-sabeel/airis-cli";
 import { createBashTool, createEditTool, createReadTool, createWriteTool } from "@sufiyan-sabeel/airis-cli";
-import { Text } from "@earendil-works/airis-tui";
 
 export default function (pi: ExtensionAPI) {
 	const cwd = process.cwd();

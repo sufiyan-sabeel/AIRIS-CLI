@@ -15,13 +15,26 @@ export interface ResolveProjectTrustedOptions {
 	trustStore: ProjectTrustStore;
 	trustOverride?: boolean;
 	defaultProjectTrust?: DefaultProjectTrust;
+	requireTrust?: boolean;
 	extensionsResult?: LoadExtensionsResult;
 	projectTrustContext: ProjectTrustContext;
 	onExtensionError?: (message: string) => void;
 }
 
 function formatProjectTrustPrompt(cwd: string): string {
-	return `Trust project folder?\n${cwd}\n\nThis allows AIRIS to load .airis settings and resources, install missing project packages, and execute project extensions.`;
+	return [
+		"Trust this project folder?",
+		"",
+		`Folder: ${cwd}`,
+		"",
+		"Trusted means:",
+		"  - AIRIS can read and edit files in this repository",
+		"  - AIRIS can run safe checks and project-local commands",
+		"  - AIRIS can load project-local settings, skills, prompts, themes, and extensions",
+		"  - AIRIS will still ask before risky or destructive actions",
+		"",
+		"Choose a saved decision, a session-only decision, or do not trust this folder.",
+	].join("\n");
 }
 
 async function selectProjectTrustOption(
@@ -46,7 +59,7 @@ export async function resolveProjectTrusted(options: ResolveProjectTrustedOption
 	if (options.trustOverride !== undefined) {
 		return options.trustOverride;
 	}
-	if (!hasTrustRequiringProjectResources(options.cwd)) {
+	if (!options.requireTrust && !hasTrustRequiringProjectResources(options.cwd)) {
 		return true;
 	}
 

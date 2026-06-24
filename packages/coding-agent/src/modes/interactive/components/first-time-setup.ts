@@ -1,6 +1,7 @@
 import { Container, getKeybindings, Spacer, Text } from "@earendil-works/airis-tui";
 import { APP_NAME } from "../../../config.ts";
 import { type TerminalTheme, theme } from "../theme/theme.ts";
+import { getCreatorAttribution, getFullLogo, getTagline } from "./airis-logo.ts";
 import { DynamicBorder } from "./dynamic-border.ts";
 import { keyHint, rawKeyHint } from "./keybinding-hints.ts";
 
@@ -26,9 +27,21 @@ const ANALYTICS_OPTIONS: Array<{ value: boolean; label: string }> = [
 	{ value: false, label: "Don't share" },
 ];
 
-const SETUP_LOGO_LINES = ["██████", "██  ██", "████  ██", "██    ██"];
+const MODE_LINES = [
+	"normal chat        Ask questions and work with your AI assistant",
+	"@coding <task>     Repository coding/editing mode",
+	"@automation <task> Android automation mode",
+	"@multiauto <task>  Multi-step Android automation mode",
+];
 
-/** First-time setup dialog: theme choice and analytics opt-in. */
+const QUICK_START_LINES = [
+	`${APP_NAME} "Explain this project"`,
+	`${APP_NAME} @coding "review the auth flow"`,
+	`${APP_NAME} @automation "open settings"`,
+	`${APP_NAME} -p "summarize README.md"`,
+];
+
+/** First-time setup dialog: AIRIS greeting, theme choice, and analytics opt-in. */
 export class FirstTimeSetupComponent extends Container {
 	private step: "theme" | "analytics" = "theme";
 	private themeIndex: number;
@@ -50,15 +63,34 @@ export class FirstTimeSetupComponent extends Container {
 		this.clear();
 		this.addChild(new DynamicBorder());
 		this.addChild(new Spacer(1));
-		this.addChild(new Text(theme.fg("accent", SETUP_LOGO_LINES.join("\n")), 1, 0));
+		this.addChild(new Text(theme.fg("accent", getFullLogo().join("\n")), 1, 0));
+		this.addChild(new Text(theme.fg("dim", `${getCreatorAttribution()}  |  Brand: KageOS`), 1, 0));
 		this.addChild(new Spacer(1));
+		this.addChild(new Text(theme.fg("accent", theme.bold(`Welcome to ${APP_NAME.toUpperCase()}`)), 1, 0));
+		this.addChild(new Text(theme.fg("text", getTagline()), 1, 0));
+		this.addChild(new Text(theme.fg("muted", `Project: ${process.cwd()}`), 1, 0));
+		this.addChild(new Spacer(1));
+		this.addChild(new Text(theme.fg("accent", "Available modes"), 1, 0));
+		this.addChild(new Text(theme.fg("muted", MODE_LINES.map((line) => `  ${line}`).join("\n")), 1, 0));
+		this.addChild(new Spacer(1));
+		this.addChild(new Text(theme.fg("warning", "Safety"), 1, 0));
 		this.addChild(
-			new Text(theme.fg("accent", theme.bold(`Welcome to ${APP_NAME}, the minimal coding agent.`)), 1, 0),
+			new Text(
+				theme.fg(
+					"muted",
+					"AIRIS can read/edit files and run checks in trusted projects. It still asks before risky actions.",
+				),
+				1,
+				0,
+			),
 		);
+		this.addChild(new Spacer(1));
+		this.addChild(new Text(theme.fg("accent", "Quick start"), 1, 0));
+		this.addChild(new Text(theme.fg("muted", QUICK_START_LINES.map((line) => `  ${line}`).join("\n")), 1, 0));
 		this.addChild(new Spacer(1));
 
 		if (this.step === "theme") {
-			this.addChild(new Text(theme.fg("text", "Pick a theme."), 1, 0));
+			this.addChild(new Text(theme.fg("text", "Pick a theme to get started."), 1, 0));
 			this.addChild(new Text(theme.fg("muted", `Detected system appearance: ${this.options.detectedTheme}`), 1, 0));
 			this.addChild(new Spacer(1));
 			this.addOptionList(
@@ -66,12 +98,12 @@ export class FirstTimeSetupComponent extends Container {
 				this.themeIndex,
 			);
 		} else {
-			this.addChild(new Text(theme.fg("text", "Opt-in to anonymous usage data sharing?"), 1, 0));
+			this.addChild(new Text(theme.fg("text", "Help improve AIRIS by sharing anonymous usage data?"), 1, 0));
 			this.addChild(
 				new Text(
 					theme.fg(
 						"muted",
-						"Opting in stores a tracking identifier in settings.json and enables anonymous\nusage analytics. This helps us to better debug, reproduce, and resolve issues\nand bugs within AIRIS. You can observe what is shared using /privacy and make\nchanges anytime in settings.json.",
+						"Opting in stores a tracking identifier in settings.json and enables anonymous usage analytics. Change it anytime in settings.json.",
 					),
 					1,
 					0,
@@ -124,11 +156,11 @@ export class FirstTimeSetupComponent extends Container {
 
 	handleInput(keyData: string): void {
 		const kb = getKeybindings();
-		if (kb.matches(keyData, "tui.select.up") || keyData === "k") {
+		if (kb.matches(keyData, "tui.select.up")) {
 			this.moveSelection(-1);
-		} else if (kb.matches(keyData, "tui.select.down") || keyData === "j") {
+		} else if (kb.matches(keyData, "tui.select.down")) {
 			this.moveSelection(1);
-		} else if (kb.matches(keyData, "tui.select.confirm") || keyData === "\n") {
+		} else if (kb.matches(keyData, "tui.select.confirm")) {
 			if (this.step === "theme") {
 				this.step = "analytics";
 				this.update();

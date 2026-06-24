@@ -11,8 +11,8 @@
  */
 
 import { StringEnum } from "@earendil-works/airis-ai";
-import type { ExtensionAPI, ExtensionContext, Theme } from "@sufiyan-sabeel/airis-cli";
 import { matchesKey, Text, truncateToWidth } from "@earendil-works/airis-tui";
+import type { ExtensionAPI, ExtensionContext, Theme } from "@sufiyan-sabeel/airis-cli";
 import { Type } from "typebox";
 
 interface Todo {

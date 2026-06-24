@@ -44,12 +44,29 @@
 import { spawn } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { SandboxManager, type SandboxRuntimeConfig } from "@anthropic-ai/sandbox-runtime";
+import { SandboxManager } from "@anthropic-ai/sandbox-runtime";
 import type { ExtensionAPI } from "@sufiyan-sabeel/airis-cli";
 import { type BashOperations, createBashTool, getAgentDir } from "@sufiyan-sabeel/airis-cli";
 
-interface SandboxConfig extends SandboxRuntimeConfig {
+interface SandboxConfig {
 	enabled?: boolean;
+	network: {
+		allowedDomains: string[];
+		deniedDomains: string[];
+		allowUnixSockets?: string[];
+		allowAllUnixSockets?: boolean;
+		allowLocalBinding?: boolean;
+		httpProxyPort?: number;
+		socksProxyPort?: number;
+	};
+	filesystem: {
+		denyRead: string[];
+		allowWrite: string[];
+		denyWrite: string[];
+		allowGitConfig?: boolean;
+	};
+	ignoreViolations?: Record<string, string[]>;
+	enableWeakerNestedSandbox?: boolean;
 }
 
 const DEFAULT_CONFIG: SandboxConfig = {

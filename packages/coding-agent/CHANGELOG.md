@@ -4,7 +4,13 @@
 
 ### Added
 
+- Added `airis ship` command for full-lifecycle development workflows with state persistence, TODO tracking, and proof reports.
+- Added ship state machine with phases: request, contract, approval, planning, implementation, formatting, testing, verification, proof, completed.
+- Added ship state persistence in `.airis/ship/` for interrupted workflow resumption.
+- Added ship evidence and proof report generation under `.airis/evidence/`.
+- Added `airis ship start`, `status`, `resume`, `cancel`, and `list` subcommands.
 - Added first-run interactive theme detection from the terminal background.
+- Added AIRIS-branded startup welcome metadata and trust-folder onboarding wrappers inspired by the Claude reference UX.
 
 ### Fixed
 

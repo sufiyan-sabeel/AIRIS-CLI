@@ -82,6 +82,7 @@ export class AssistantMessageComponent extends Container {
 
 		if (hasVisibleContent) {
 			this.contentContainer.addChild(new Spacer(1));
+			this.contentContainer.addChild(new Text(theme.bold(theme.fg("accent", "AIRIS")), 1, 0));
 		}
 
 		// Render content in order
@@ -140,7 +141,7 @@ export class AssistantMessageComponent extends Container {
 			} else if (message.stopReason === "error") {
 				const errorMsg = message.errorMessage || "Unknown error";
 				this.contentContainer.addChild(new Spacer(1));
-				this.contentContainer.addChild(new Text(theme.fg("error", `Error: ${errorMsg}`), 1, 0));
+				this.contentContainer.addChild(new Text(theme.fg("error", `[ERR] ${errorMsg}`), 1, 0));
 			}
 		}
 	}
