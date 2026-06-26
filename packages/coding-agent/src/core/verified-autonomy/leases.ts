@@ -1,8 +1,12 @@
 import { resolve } from "node:path";
-import type { CapabilityLease, MissionContract } from "./types.ts";
 import { createLeaseId, nowIso, readLeases, writeLeases } from "./storage.ts";
+import type { CapabilityLease, MissionContract } from "./types.ts";
 
-export function createLeaseForMission(cwd: string, contract: MissionContract, durationMs = 10 * 60 * 1000): CapabilityLease {
+export function createLeaseForMission(
+	cwd: string,
+	contract: MissionContract,
+	durationMs = 10 * 60 * 1000,
+): CapabilityLease {
 	const now = Date.now();
 	const lease: CapabilityLease = {
 		schemaVersion: "airis.lease.v1",
@@ -37,12 +41,7 @@ export function getActiveMissionLease(cwd: string, missionId: string): Capabilit
 	const now = Date.now();
 	return readLeases(cwd)
 		.map((lease) => normalizeLease(lease))
-		.find(
-			(lease) =>
-				lease.missionId === missionId &&
-				!lease.revokedAt &&
-				Date.parse(lease.expiresAt) > now,
-		);
+		.find((lease) => lease.missionId === missionId && !lease.revokedAt && Date.parse(lease.expiresAt) > now);
 }
 
 export function isCommandAllowedByLease(lease: CapabilityLease, command: string): boolean {
@@ -53,7 +52,10 @@ export function isDirectoryAllowedByLease(lease: CapabilityLease, cwd: string): 
 	const resolvedCwd = resolve(cwd);
 	return lease.directories.some((directory) => {
 		const resolvedDirectory = resolve(directory);
-		return resolvedCwd === resolvedDirectory || resolvedCwd.startsWith(`${resolvedDirectory}${process.platform === "win32" ? "\\" : "/"}`);
+		return (
+			resolvedCwd === resolvedDirectory ||
+			resolvedCwd.startsWith(`${resolvedDirectory}${process.platform === "win32" ? "\\" : "/"}`)
+		);
 	});
 }
 

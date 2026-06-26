@@ -9,7 +9,9 @@ describe("Android automation intent routing", () => {
 		expect(intent?.confidencePercent).toBe(95);
 
 		expect(parseAndroidIntent("automation open settings")?.action).toBe("open_settings");
+		expect(parseAndroidIntent("droid open settings")?.action).toBe("open_settings");
 		expect(parseAndroidIntent("airis automation read screen")?.action).toBe("read_screen");
+		expect(parseAndroidIntent("airis droid read screen")?.action).toBe("read_screen");
 		expect(parseAndroidIntent("go back")?.action).toBe("back");
 		expect(parseAndroidIntent("tap center")?.action).toBe("tap_center");
 		expect(parseAndroidIntent("scroll down")?.action).toBe("scroll_down");

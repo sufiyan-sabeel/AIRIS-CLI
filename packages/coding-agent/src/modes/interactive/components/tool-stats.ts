@@ -87,11 +87,12 @@ export function renderToolStatsPanel(stats: ToolStats, terminalWidth: number): s
 
 	// Duration
 	const durationMs = Date.now() - stats.startTime;
-	const duration = durationMs < 1000
-		? `${durationMs}ms`
-		: durationMs < 60000
-			? `${(durationMs / 1000).toFixed(1)}s`
-			: `${Math.floor(durationMs / 60000)}m ${Math.floor((durationMs % 60000) / 1000)}s`;
+	const duration =
+		durationMs < 1000
+			? `${durationMs}ms`
+			: durationMs < 60000
+				? `${(durationMs / 1000).toFixed(1)}s`
+				: `${Math.floor(durationMs / 60000)}m ${Math.floor((durationMs % 60000) / 1000)}s`;
 
 	lines.push(`  ${theme.fg("dim", "Duration:")} ${theme.fg("text", duration)}`);
 	lines.push(`  ${theme.fg("dim", "Total calls:")} ${theme.fg("accent", String(stats.totalCalls))}`);
@@ -101,8 +102,7 @@ export function renderToolStatsPanel(stats: ToolStats, terminalWidth: number): s
 	lines.push("");
 
 	// Tool breakdown
-	const sorted = Object.entries(stats.byName)
-		.sort(([, a], [, b]) => b - a);
+	const sorted = Object.entries(stats.byName).sort(([, a], [, b]) => b - a);
 
 	const maxCount = sorted[0]?.[1] || 1;
 	const barMaxWidth = Math.min(20, Math.floor(width * 0.3));
@@ -113,7 +113,9 @@ export function renderToolStatsPanel(stats: ToolStats, terminalWidth: number): s
 		const bar = "█".repeat(barWidth) + "░".repeat(barMaxWidth - barWidth);
 		const nameWidth = 12;
 		const paddedName = name.padEnd(nameWidth);
-		lines.push(`  ${icon} ${theme.fg("dim", paddedName)} ${theme.fg("accent", bar)} ${theme.fg("dim", String(count))}`);
+		lines.push(
+			`  ${icon} ${theme.fg("dim", paddedName)} ${theme.fg("accent", bar)} ${theme.fg("dim", String(count))}`,
+		);
 	}
 
 	// Currently running tool
@@ -128,16 +130,26 @@ export function renderToolStatsPanel(stats: ToolStats, terminalWidth: number): s
 
 function getToolIcon(name: string): string {
 	switch (name) {
-		case "read": return "📖";
-		case "write": return "📝";
-		case "edit": return "✏️";
-		case "bash": return "🖥️";
-		case "grep": return "🔍";
-		case "find": return "🔎";
-		case "ls": return "📁";
-		case "adaptive_todo": return "📋";
-		case "ask_question": return "❓";
-		default: return "⚡";
+		case "read":
+			return "📖";
+		case "write":
+			return "📝";
+		case "edit":
+			return "✏️";
+		case "bash":
+			return "🖥️";
+		case "grep":
+			return "🔍";
+		case "find":
+			return "🔎";
+		case "ls":
+			return "📁";
+		case "adaptive_todo":
+			return "📋";
+		case "ask_question":
+			return "❓";
+		default:
+			return "⚡";
 	}
 }
 

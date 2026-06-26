@@ -8,9 +8,15 @@
 
 import { StringEnum } from "@earendil-works/airis-ai";
 import { matchesKey, Text, truncateToWidth } from "@earendil-works/airis-tui";
-import type { ExtensionAPI, ExtensionCommandContext, ExtensionContext, SessionStartEvent, SessionTreeEvent } from "./extensions/types.ts";
-import type { Theme } from "../modes/interactive/theme/theme.ts";
 import { Type } from "typebox";
+import type { Theme } from "../modes/interactive/theme/theme.ts";
+import type {
+	ExtensionAPI,
+	ExtensionCommandContext,
+	ExtensionContext,
+	SessionStartEvent,
+	SessionTreeEvent,
+} from "./extensions/types.ts";
 
 interface Todo {
 	id: number;

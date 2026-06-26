@@ -1,5 +1,5 @@
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
-import { join, dirname } from "node:path";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { dirname, join } from "node:path";
 
 export type PlanModeState = "off" | "planning" | "executing";
 
@@ -98,12 +98,7 @@ export function createPlanManager(opts: PlanManagerOptions) {
 			return plan;
 		},
 
-		updateStepStatus(
-			planId: string,
-			stepId: number,
-			status: PlanStep["status"],
-			notes?: string,
-		): Plan | undefined {
+		updateStepStatus(planId: string, stepId: number, status: PlanStep["status"], notes?: string): Plan | undefined {
 			const plan = plans.find((p) => p.id === planId);
 			if (!plan) return undefined;
 			const step = plan.steps.find((s) => s.id === stepId);
@@ -169,7 +164,13 @@ export function createPlanManager(opts: PlanManagerOptions) {
 			lines.push("");
 			for (const step of plan.steps) {
 				const icon =
-					step.status === "completed" ? "[x]" : step.status === "in-progress" ? "[>]" : step.status === "skipped" ? "[-]" : "[ ]";
+					step.status === "completed"
+						? "[x]"
+						: step.status === "in-progress"
+							? "[>]"
+							: step.status === "skipped"
+								? "[-]"
+								: "[ ]";
 				lines.push(`  ${icon} ${step.id}. ${step.description}`);
 				if (step.notes) lines.push(`       ${step.notes}`);
 			}

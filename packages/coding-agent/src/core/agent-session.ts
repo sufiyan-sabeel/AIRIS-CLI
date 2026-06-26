@@ -35,12 +35,12 @@ import {
 } from "@earendil-works/airis-ai";
 import { executeAndroidAction, formatResponse } from "../automation/androidBridge.ts";
 import { isAndroidAutomationRequest } from "../automation/androidIntentRouter.ts";
-import { createAskQuestionToolDefinition } from "./adaptive/ask-question.ts";
-import { AdaptiveBrainController } from "./adaptive/controller.ts";
 import { getThemeByName, theme } from "../modes/interactive/theme/theme.ts";
 import { stripFrontmatter } from "../utils/frontmatter.ts";
 import { resolvePath } from "../utils/paths.ts";
 import { sleep } from "../utils/sleep.ts";
+import { createAskQuestionToolDefinition } from "./adaptive/ask-question.ts";
+import { AdaptiveBrainController } from "./adaptive/controller.ts";
 import { formatNoApiKeyFoundMessage, formatNoModelSelectedMessage } from "./auth-guidance.ts";
 import { type BashResult, executeBashWithOperations } from "./bash-executor.ts";
 import { logCliEvent } from "./cli-logs.ts";
@@ -140,7 +140,14 @@ export type AgentSessionEvent =
 			followUp: readonly string[];
 	  }
 	| { type: "compaction_start"; reason: "manual" | "threshold" | "overflow" }
-	| { type: "adaptive_progress"; phase: string; summary: string; openTodos: number; inProgress?: string; todos?: unknown[] }
+	| {
+			type: "adaptive_progress";
+			phase: string;
+			summary: string;
+			openTodos: number;
+			inProgress?: string;
+			todos?: unknown[];
+	  }
 	| { type: "session_info_changed"; name: string | undefined }
 	| { type: "thinking_level_changed"; level: ThinkingLevel }
 	| {
@@ -152,7 +159,14 @@ export type AgentSessionEvent =
 			errorMessage?: string;
 	  }
 	| { type: "auto_retry_start"; attempt: number; maxAttempts: number; delayMs: number; errorMessage: string }
-	| { type: "auto_retry_end"; success: boolean; attempt: number; finalError?: string };
+	| { type: "auto_retry_end"; success: boolean; attempt: number; finalError?: string }
+	| {
+			type: "self_debug_start";
+			errorContext: import("./adaptive/self-debug.ts").ErrorContext;
+			analysis: import("./adaptive/self-debug.ts").ErrorAnalysis;
+			sessionId: string;
+	  }
+	| { type: "self_debug_end"; sessionId: string; resolved: boolean };
 
 /** Listener function for agent session events */
 export type AgentSessionEventListener = (event: AgentSessionEvent) => void;
@@ -350,6 +364,7 @@ export class AgentSession {
 		this._customTools = [
 			...(config.customTools ?? []),
 			this._adaptiveBrain.createTodoToolDefinition() as ToolDefinition,
+			this._adaptiveBrain.createSelfDebugToolDefinition() as ToolDefinition,
 			createAskQuestionToolDefinition(config.sessionManager) as ToolDefinition,
 		];
 		this._modelRegistry = config.modelRegistry;
@@ -461,8 +476,16 @@ export class AgentSession {
 			});
 
 			if (!hookResult) {
-				const snapshot = this._adaptiveBrain.observeToolExecution({ toolName: toolCall.name, args, result, isError });
-				this._emitAdaptiveProgress("executing", `Adaptive TODO: ${snapshot.items.filter((item) => item.status !== "completed" && item.status !== "cancelled").length} open task(s)`);
+				const snapshot = this._adaptiveBrain.observeToolExecution({
+					toolName: toolCall.name,
+					args,
+					result,
+					isError,
+				});
+				this._emitAdaptiveProgress(
+					"executing",
+					`Adaptive TODO: ${snapshot.items.filter((item) => item.status !== "completed" && item.status !== "cancelled").length} open task(s)`,
+				);
 				return undefined;
 			}
 
@@ -477,7 +500,10 @@ export class AgentSession {
 				result: adaptedResult,
 				isError: adaptedResult.isError,
 			});
-			this._emitAdaptiveProgress("executing", `Adaptive TODO: ${snapshot.items.filter((item) => item.status !== "completed" && item.status !== "cancelled").length} open task(s)`);
+			this._emitAdaptiveProgress(
+				"executing",
+				`Adaptive TODO: ${snapshot.items.filter((item) => item.status !== "completed" && item.status !== "cancelled").length} open task(s)`,
+			);
 			return adaptedResult;
 		};
 	}
@@ -587,6 +613,20 @@ export class AgentSession {
 						attempt: this._retryAttempt,
 					});
 					this._retryAttempt = 0;
+				}
+
+				// Trigger self-debugging for errors
+				if (assistantMsg.stopReason === "error" && assistantMsg.errorMessage) {
+					const errorContext: import("./adaptive/self-debug.ts").ErrorContext = {
+						toolName: "agent",
+						toolCallId: "",
+						args: {},
+						errorMessage: assistantMsg.errorMessage,
+						errorStack: assistantMsg.errorMessage,
+						timestamp: Date.now(),
+						cwd: this._cwd,
+					};
+					this.triggerSelfDebug(errorContext);
 				}
 			}
 		}
@@ -2846,6 +2886,48 @@ export class AgentSession {
 	 */
 	setAutoRetryEnabled(enabled: boolean): void {
 		this.settingsManager.setRetryEnabled(enabled);
+	}
+
+	// =========================================================================
+	// Self-Debug
+	// =========================================================================
+
+	/**
+	 * Trigger self-debugging for an error.
+	 * Analyzes the error and emits debug events.
+	 */
+	triggerSelfDebug(
+		errorContext: import("./adaptive/self-debug.ts").ErrorContext,
+	): import("./adaptive/self-debug.ts").ErrorAnalysis {
+		const { analysis, session } = this._adaptiveBrain.startDebugSession(errorContext);
+
+		this._emit({
+			type: "self_debug_start",
+			errorContext,
+			analysis,
+			sessionId: session.id,
+		});
+
+		return analysis;
+	}
+
+	/**
+	 * Get self-debug statistics.
+	 */
+	getSelfDebugStats(): {
+		totalErrors: number;
+		resolved: number;
+		abandoned: number;
+		byCategory: Record<string, number>;
+	} {
+		return this._adaptiveBrain.selfDebug.getStats();
+	}
+
+	/**
+	 * Get the adaptive brain controller for advanced usage.
+	 */
+	get adaptiveBrain(): import("./adaptive/controller.ts").AdaptiveBrainController {
+		return this._adaptiveBrain;
 	}
 
 	// =========================================================================

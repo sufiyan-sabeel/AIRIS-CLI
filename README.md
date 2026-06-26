@@ -7,6 +7,13 @@ A local-first AI coding agent that runs in your terminal. Chat with AI models, e
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Node.js >=22.19.0](https://img.shields.io/badge/node-%3E%3D22.19.0-green.svg)](https://nodejs.org)
 [![Runs on Android](https://img.shields.io/badge/android-termux-orange.svg)](#android--termux)
+[![CI](https://github.com/sufiyan-sabeel/AIRIS-CLI/actions/workflows/ci.yml/badge.svg)](https://github.com/sufiyan-sabeel/AIRIS-CLI/actions/workflows/ci.yml)
+[![npm audit](https://github.com/sufiyan-sabeel/AIRIS-CLI/actions/workflows/npm-audit.yml/badge.svg)](https://github.com/sufiyan-sabeel/AIRIS-CLI/actions/workflows/npm-audit.yml)
+[![Deploy to GitHub Pages](https://github.com/sufiyan-sabeel/AIRIS-CLI/actions/workflows/deploy-pages.yml/badge.svg)](https://sufiyan-sabeel.github.io/AIRIS-CLI/)
+
+## Website
+
+Visit the [AIRIS website](https://sufiyan-sabeel.github.io/AIRIS-CLI/) for documentation, guides, and interactive demos.
 
 ## What AIRIS Does
 
@@ -257,3 +264,4 @@ AIRIS adds Android/Termux support, the `airis ship` workflow, provider routing, 
 
 **AIRIS** -- Artificial Intelligence Responsive Integrated System
 **Brand:** KageOS | **Creator:** Umaiz Sufiyan
+**Built by:** Umaiz Sufiyan, KageOS

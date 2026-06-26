@@ -1,10 +1,11 @@
 import { createHash, randomBytes } from "node:crypto";
-import { existsSync, mkdirSync, readFileSync, readdirSync, renameSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { sanitizeLogText } from "../cli-logs.ts";
 import type { CapabilityLease, EvidenceReport, FailureRecord, MissionContract } from "./types.ts";
 
-const SECRET_ASSIGNMENT_RE = /\b([A-Z0-9_]*(?:API[_-]?KEY|TOKEN|SECRET|PASSWORD|AUTHORIZATION)[A-Z0-9_]*)\s*=\s*([^\s"']+)/gi;
+const SECRET_ASSIGNMENT_RE =
+	/\b([A-Z0-9_]*(?:API[_-]?KEY|TOKEN|SECRET|PASSWORD|AUTHORIZATION)[A-Z0-9_]*)\s*=\s*([^\s"']+)/gi;
 const PRIVATE_KEY_RE = /-----BEGIN [A-Z ]*PRIVATE KEY-----[\s\S]*?-----END [A-Z ]*PRIVATE KEY-----/g;
 
 export function nowIso(): string {
@@ -158,7 +159,10 @@ export function listFailureRecords(cwd: string): FailureRecord[] {
 export function isInsideDirectory(candidate: string, directory: string): boolean {
 	const resolvedCandidate = resolve(candidate);
 	const resolvedDirectory = resolve(directory);
-	return resolvedCandidate === resolvedDirectory || resolvedCandidate.startsWith(`${resolvedDirectory}${process.platform === "win32" ? "\\" : "/"}`);
+	return (
+		resolvedCandidate === resolvedDirectory ||
+		resolvedCandidate.startsWith(`${resolvedDirectory}${process.platform === "win32" ? "\\" : "/"}`)
+	);
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

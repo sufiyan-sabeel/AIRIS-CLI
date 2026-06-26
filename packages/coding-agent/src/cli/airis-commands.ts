@@ -3,6 +3,7 @@ import { homedir } from "node:os";
 import { delimiter, dirname, join, resolve } from "node:path";
 import { createInterface } from "node:readline";
 import chalk from "chalk";
+import { handleAutomationCommand } from "../automation/androidAutomationCli.ts";
 import {
 	APP_NAME,
 	CONFIG_DIR_NAME,
@@ -19,13 +20,14 @@ import {
 	VERSION,
 } from "../config.ts";
 import { getAirisLogPath, getErrorsLogPath, getSessionsLogPath, logSessionEvent } from "../core/cli-logs.ts";
-import { handleVerifiedAutonomyCommand } from "../core/verified-autonomy/cli.ts";
 import { type SessionInfo, SessionManager } from "../core/session-manager.ts";
 import { type DefaultProjectTrust, SettingsManager } from "../core/settings-manager.ts";
 import { ProjectTrustStore } from "../core/trust-manager.ts";
+import { handleVerifiedAutonomyCommand } from "../core/verified-autonomy/cli.ts";
 import { getAvailableThemesWithPaths, getThemeByName } from "../modes/interactive/theme/theme.ts";
 import { parseChangelog } from "../utils/changelog.ts";
 import { spawnProcessSync } from "../utils/child-process.ts";
+import { handleImageCommand, printImageHelp } from "../vision/image-command.ts";
 import { printHelp } from "./args.ts";
 import { box, keyValue, section, status } from "./ui.ts";
 
@@ -152,6 +154,12 @@ function printCommandHelp(command?: string): void {
 		case "doctor":
 			console.log(`Usage: ${APP_NAME} doctor\n\nCheck local AIRIS runtime health and print fix suggestions.`);
 			return;
+		case "automation":
+		case "droid":
+			console.log(
+				`Usage:\n  ${APP_NAME} droid open settings\n  ${APP_NAME} droid read screen\n  ${APP_NAME} automation tap 360 800\n\nRun Android automation through the local ADB bridge.`,
+			);
+			return;
 		case "tools":
 			console.log(
 				`Usage:\n  ${APP_NAME} tools list\n  ${APP_NAME} tools doctor\n\nDetect companion CLI tools and print paths and versions.`,
@@ -197,6 +205,9 @@ function printCommandHelp(command?: string): void {
 		case "failures":
 			console.log(`Usage: ${APP_NAME} failures search "<error>"`);
 			return;
+		case "image":
+			printImageHelp();
+			return;
 		default:
 			printHelp();
 	}
@@ -212,10 +223,37 @@ export async function handleAirisCommand(args: string[]): Promise<boolean> {
 	}
 
 	if (hasHelp(args)) {
-		if (["doctor", "tools", "config", "session", "trust", "theme", "version", "changelog", "mission", "evidence", "lease", "failures"].includes(command)) {
+		if (
+			[
+				"doctor",
+				"automation",
+				"droid",
+				"tools",
+				"config",
+				"session",
+				"trust",
+				"theme",
+				"version",
+				"changelog",
+				"mission",
+				"evidence",
+				"lease",
+				"failures",
+				"ship",
+				"image",
+			].includes(command)
+		) {
 			printCommandHelp(command);
 			return true;
 		}
+	}
+
+	if (await handleAutomationCommand(args)) {
+		return true;
+	}
+
+	if (await handleImageCommand(args)) {
+		return true;
 	}
 
 	switch (command) {
@@ -241,7 +279,7 @@ export async function handleAirisCommand(args: string[]): Promise<boolean> {
 		case "theme":
 			await handleThemeCommand(args.slice(1));
 			return true;
-			case "changelog":
+		case "changelog":
 			printChangelog();
 			return true;
 		case "mission":

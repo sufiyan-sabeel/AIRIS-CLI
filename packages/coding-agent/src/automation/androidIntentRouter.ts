@@ -348,7 +348,9 @@ function normalizeAndroidText(text: string): string {
 	return text
 		.trim()
 		.replace(/^airis\s+automation\s+/i, "")
+		.replace(/^airis\s+droid\s+/i, "")
 		.replace(/^automation\s+/i, "")
+		.replace(/^droid\s+/i, "")
 		.replace(/^airis\s+chat\s+/i, "")
 		.replace(/^chat\s+/i, "")
 		.replace(/\s+/g, " ");

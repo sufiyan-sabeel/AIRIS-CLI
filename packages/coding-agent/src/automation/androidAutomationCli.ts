@@ -10,14 +10,15 @@ const SAFE_ANDROID_ACTIONS = new Set(SAFE_ACTIONS);
 function printAutomationHelp(): void {
 	console.log(`${chalk.bold("Usage:")}
   ${APP_NAME} automation <request...>
+  ${APP_NAME} droid <request...>
 
 Run an Android automation request through the local ADB bridge.
 
 Examples:
-  ${APP_NAME} automation open settings
-  ${APP_NAME} automation read screen
-  ${APP_NAME} automation tap 360 800
-  ${APP_NAME} automation open whatsapp and search Sufiyan
+  ${APP_NAME} droid open settings
+  ${APP_NAME} droid read screen
+  ${APP_NAME} droid tap 360 800
+  ${APP_NAME} droid open whatsapp and search Sufiyan
 `);
 }
 
@@ -36,7 +37,7 @@ async function promptAutomationConfirm(message: string): Promise<boolean> {
 
 export async function handleAutomationCommand(args: string[]): Promise<boolean> {
 	const [command, ...rest] = args;
-	if (command !== "automation") {
+	if (command !== "automation" && command !== "droid") {
 		return false;
 	}
 

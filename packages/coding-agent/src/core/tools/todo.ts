@@ -1,7 +1,7 @@
 import { Text } from "@earendil-works/airis-tui";
-import { Type, type Static } from "typebox";
-import type { ToolDefinition } from "../extensions/types.ts";
+import { type Static, Type } from "typebox";
 import type { Theme } from "../../modes/interactive/theme/theme.ts";
+import type { ToolDefinition } from "../extensions/types.ts";
 import type { TodoManager, TodoPriority } from "../todo-manager.ts";
 
 const todoSchema = Type.Object({

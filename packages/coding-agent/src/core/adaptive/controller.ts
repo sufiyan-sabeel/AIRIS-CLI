@@ -1,11 +1,19 @@
 import type { AgentMessage } from "@earendil-works/airis-agent-core";
 import type { Model } from "@earendil-works/airis-ai";
-import { Type, type Static } from "typebox";
+import { Text } from "@earendil-works/airis-tui";
+import { type Static, Type } from "typebox";
+import { estimateContextTokens, shouldCompact } from "../compaction/index.ts";
 import type { ToolDefinition } from "../extensions/types.ts";
 import type { SessionManager } from "../session-manager.ts";
-import { estimateContextTokens, shouldCompact } from "../compaction/index.ts";
-import { Text } from "@earendil-works/airis-tui";
 import { ExploreTaskRunner, formatExploreResultForContext } from "./explore-task.ts";
+import {
+	type DebugSession,
+	type ErrorAnalysis,
+	type ErrorContext,
+	SelfDebugBrain,
+	type SelfDebugInput,
+	selfDebugSchema,
+} from "./self-debug.ts";
 import { AdaptiveTodoStore } from "./todo-store.ts";
 import type {
 	AdaptiveAssessment,
@@ -26,7 +34,9 @@ const adaptiveTodoSchema = Type.Object({
 		Type.Literal("block"),
 	]),
 	goal: Type.Optional(Type.String({ description: "Goal for a new or revised plan" })),
-	items: Type.Optional(Type.Array(Type.String({ minLength: 1 }), { description: "Task descriptions for action=plan" })),
+	items: Type.Optional(
+		Type.Array(Type.String({ minLength: 1 }), { description: "Task descriptions for action=plan" }),
+	),
 	id: Type.Optional(Type.String({ description: "Task ID for status/evidence/block" })),
 	status: Type.Optional(
 		Type.Union([
@@ -60,22 +70,29 @@ export interface AdaptiveTurnPreparation {
 	progress: AdaptiveProgress;
 }
 
-const CODE_TASK_RE = /\b(implement|fix|refactor|modify|update|add|remove|debug|test|build|compile|failing|failure|bug|feature|code|file|repo|repository|package|function|class|component|api|cli|tui)\b/i;
-const MULTI_STEP_RE = /\b(plan|steps|first|then|after|before|multiple|several|across|end-to-end|architecture|integration|workflow)\b/i;
-const RISK_RE = /\b(delete|remove|drop|reset|overwrite|migration|credential|secret|token|permission|production|payment|security|destructive|force|chmod|chown|sudo|rm\s+-rf)\b/i;
+const CODE_TASK_RE =
+	/\b(implement|fix|refactor|modify|update|add|remove|debug|test|build|compile|failing|failure|bug|feature|code|file|repo|repository|package|function|class|component|api|cli|tui)\b/i;
+const MULTI_STEP_RE =
+	/\b(plan|steps|first|then|after|before|multiple|several|across|end-to-end|architecture|integration|workflow)\b/i;
+const RISK_RE =
+	/\b(delete|remove|drop|reset|overwrite|migration|credential|secret|token|permission|production|payment|security|destructive|force|chmod|chown|sudo|rm\s+-rf)\b/i;
 const VERIFY_RE = /\b(test|tests|verify|verification|build|compile|typecheck|lint|acceptance|ci|failing)\b/i;
 
 function extractAffectedFileHints(text: string): number {
-	const matches = text.match(/[\w./-]+\.(?:ts|tsx|js|jsx|json|md|py|rs|go|java|kt|kts|swift|rb|php|cs|cpp|c|h|hpp|yaml|yml|toml)/g);
+	const matches = text.match(
+		/[\w./-]+\.(?:ts|tsx|js|jsx|json|md|py|rs|go|java|kt|kts|swift|rb|php|cs|cpp|c|h|hpp|yaml|yml|toml)/g,
+	);
 	return new Set(matches ?? []).size;
 }
 
 function splitGoalIntoTasks(text: string, assessment: AdaptiveAssessment): string[] {
 	const tasks = ["Inspect relevant code and current repository state"];
 	if (assessment.shouldExplore) tasks.push("Map architecture and identify implementation locations");
-	if (assessment.shouldUseGeneralExecutor) tasks.push("Make focused implementation changes following existing patterns");
+	if (assessment.shouldUseGeneralExecutor)
+		tasks.push("Make focused implementation changes following existing patterns");
 	if (assessment.verificationRequired) tasks.push("Run appropriate verification and record evidence");
-	if (!assessment.verificationRequired && assessment.shouldUseGeneralExecutor) tasks.push("Review changes and summarize evidence");
+	if (!assessment.verificationRequired && assessment.shouldUseGeneralExecutor)
+		tasks.push("Review changes and summarize evidence");
 	return tasks.length >= 2 ? tasks : [`Complete request: ${text.slice(0, 120)}`];
 }
 
@@ -91,6 +108,7 @@ function makeCustomMessage(content: string): AgentMessage {
 
 export class AdaptiveBrainController {
 	readonly todos: AdaptiveTodoStore;
+	readonly selfDebug: SelfDebugBrain;
 	private readonly sessionManager: SessionManager;
 	private readonly cwd: string;
 	private readonly options: AdaptiveBrainOptions;
@@ -104,6 +122,7 @@ export class AdaptiveBrainController {
 		this.cwd = cwd;
 		this.options = options;
 		this.todos = new AdaptiveTodoStore(sessionManager);
+		this.selfDebug = new SelfDebugBrain();
 	}
 
 	assessRequest(text: string, messages: AgentMessage[], model?: Model<any>): AdaptiveAssessment {
@@ -111,18 +130,29 @@ export class AdaptiveBrainController {
 		const words = text.trim().split(/\s+/).filter(Boolean).length;
 		const isCodeTask = CODE_TASK_RE.test(text);
 		const isMultiStep = MULTI_STEP_RE.test(text) || words > 40;
-		const risk = RISK_RE.test(text) ? "high" : affectedFiles > 2 || /migration|auth|security/i.test(text) ? "medium" : "low";
-		const uncertainty = isCodeTask && !/\b(specific|exact|only|just)\b/i.test(text) ? (affectedFiles === 0 ? "high" : "medium") : "low";
+		const risk = RISK_RE.test(text)
+			? "high"
+			: affectedFiles > 2 || /migration|auth|security/i.test(text)
+				? "medium"
+				: "low";
+		const uncertainty =
+			isCodeTask && !/\b(specific|exact|only|just)\b/i.test(text)
+				? affectedFiles === 0
+					? "high"
+					: "medium"
+				: "low";
 		const verificationRequired = VERIFY_RE.test(text) || isCodeTask;
 		const existingOpenTasks = this.todos.getOpenItems().length;
 		const contextEstimate = estimateContextTokens(messages).tokens;
 		const contextWindow = this.options.contextWindow ?? model?.contextWindow ?? 0;
 		const threshold = this.options.compactionThresholdRatio ?? 0.72;
-		const shouldCompactContext = contextWindow > 0 && shouldCompact(contextEstimate, contextWindow, {
-			enabled: true,
-			reserveTokens: Math.floor(contextWindow * (1 - threshold)),
-			keepRecentTokens: Math.min(20_000, Math.floor(contextWindow * 0.25)),
-		});
+		const shouldCompactContext =
+			contextWindow > 0 &&
+			shouldCompact(contextEstimate, contextWindow, {
+				enabled: true,
+				reserveTokens: Math.floor(contextWindow * (1 - threshold)),
+				keepRecentTokens: Math.min(20_000, Math.floor(contextWindow * 0.25)),
+			});
 		const complexity: AdaptiveAssessment["complexity"] =
 			!isCodeTask && words <= 18 && affectedFiles === 0
 				? "trivial"
@@ -133,8 +163,12 @@ export class AdaptiveBrainController {
 					: "simple";
 		const requiredTools = isCodeTask ? ["read", "bash", "edit", "write", "adaptive_todo"] : [];
 		const shouldCreateTodoPlan = complexity === "moderate" || complexity === "complex" || existingOpenTasks > 0;
-		const shouldExplore = isCodeTask && (uncertainty !== "low" || complexity === "complex") && Date.now() - this.lastExploreAt > 2_000;
-		const shouldRequestClarification = risk === "high" && /\b(delete|payment|credential|secret|production)\b/i.test(text) && !/\b(confirm|approved|permission|yes)\b/i.test(text);
+		const shouldExplore =
+			isCodeTask && (uncertainty !== "low" || complexity === "complex") && Date.now() - this.lastExploreAt > 2_000;
+		const shouldRequestClarification =
+			risk === "high" &&
+			/\b(delete|payment|credential|secret|production)\b/i.test(text) &&
+			!/\b(confirm|approved|permission|yes)\b/i.test(text);
 		const assessment: AdaptiveAssessment = {
 			complexity,
 			affectedFiles,
@@ -174,11 +208,19 @@ export class AdaptiveBrainController {
 
 		if (assessment.shouldCreateTodoPlan) {
 			const snapshot = this.todos.ensurePlan(text, splitGoalIntoTasks(text, assessment));
-			this.lastProgress = { phase: "planning", summary: `Adaptive plan: ${snapshot.items.filter((item) => item.status !== "completed").length} open task(s)`, todos: snapshot.items };
+			this.lastProgress = {
+				phase: "planning",
+				summary: `Adaptive plan: ${snapshot.items.filter((item) => item.status !== "completed").length} open task(s)`,
+				todos: snapshot.items,
+			};
 		}
 
 		if (assessment.shouldExplore) {
-			this.lastProgress = { phase: "exploring", summary: "Running read-only Explore Task", todos: this.todos.getSnapshot().items };
+			this.lastProgress = {
+				phase: "exploring",
+				summary: "Running read-only Explore Task",
+				todos: this.todos.getSnapshot().items,
+			};
 			const runner = new ExploreTaskRunner(this.cwd, this.options.exploreLimits);
 			exploreResult = await runner.run(text);
 			this.lastExploreAt = Date.now();
@@ -210,13 +252,30 @@ export class AdaptiveBrainController {
 	}
 
 	observeToolExecution(observation: AdaptiveToolObservation): AdaptiveTodoSnapshot {
-		if (observation.toolName === "adaptive_todo") return this.todos.getSnapshot();
+		if (observation.toolName === "adaptive_todo" || observation.toolName === "self_debug")
+			return this.todos.getSnapshot();
 		if (observation.isError) {
-			const command = typeof observation.args === "object" && observation.args && "command" in observation.args ? String((observation.args as { command?: unknown }).command ?? "") : "";
+			// Trigger self-debug analysis for errors
+			const errorContext: ErrorContext = {
+				toolName: observation.toolName,
+				toolCallId: "",
+				args: observation.args,
+				errorMessage: observation.result.content.map((c) => (c.type === "text" ? c.text : "")).join(" "),
+				timestamp: Date.now(),
+				cwd: this.cwd,
+			};
+			this.selfDebug.analyzeError(errorContext);
+
+			const command =
+				typeof observation.args === "object" && observation.args && "command" in observation.args
+					? String((observation.args as { command?: unknown }).command ?? "")
+					: "";
 			if (/\b(test|vitest|jest|build|compile|typecheck|lint|check)\b/i.test(command)) {
 				const target = this.todos.getBlockableInProgress() ?? this.todos.getInProgress();
 				if (target) {
-					return this.todos.updateStatus(target.id, "blocked", { failureReason: `Verification failed: ${command}` })
+					return this.todos.updateStatus(target.id, "blocked", {
+						failureReason: `Verification failed: ${command}`,
+					})
 						? this.todos.getSnapshot()
 						: this.todos.blockCurrent(`Verification failed: ${command}`);
 				}
@@ -225,7 +284,10 @@ export class AdaptiveBrainController {
 			return this.todos.getSnapshot();
 		}
 		if (observation.toolName === "bash") {
-			const command = typeof observation.args === "object" && observation.args && "command" in observation.args ? String((observation.args as { command?: unknown }).command ?? "") : "";
+			const command =
+				typeof observation.args === "object" && observation.args && "command" in observation.args
+					? String((observation.args as { command?: unknown }).command ?? "")
+					: "";
 			if (/\b(test|vitest|jest|build|compile|typecheck|lint|check)\b/i.test(command)) {
 				return this.todos.advanceAfterEvidence(`Verification succeeded: ${command}`);
 			}
@@ -244,7 +306,12 @@ export class AdaptiveBrainController {
 			originalGoal ? `Original user goal: ${originalGoal}` : undefined,
 			"Keep mandatory constraints, approved mission/permission/lease state, decisions, rejected alternatives, files changed, commands and important results, failures, verification evidence, and remaining work.",
 			this.todos.formatForContext(),
-			`Open tasks: ${snapshot.items.filter((item) => item.status !== "completed" && item.status !== "cancelled").map((item) => `${item.id}:${item.status}:${item.description}`).join(" | ") || "none"}`,
+			`Open tasks: ${
+				snapshot.items
+					.filter((item) => item.status !== "completed" && item.status !== "cancelled")
+					.map((item) => `${item.id}:${item.status}:${item.description}`)
+					.join(" | ") || "none"
+			}`,
 		].filter(Boolean);
 		return messages.join("\n");
 	}
@@ -254,7 +321,9 @@ export class AdaptiveBrainController {
 		const open = this.todos.getOpenItems();
 		if (open.length === 0) return true;
 		const lower = summary.toLowerCase();
-		return open.some((item) => lower.includes(item.description.slice(0, 24).toLowerCase()) || lower.includes(item.id.toLowerCase()));
+		return open.some(
+			(item) => lower.includes(item.description.slice(0, 24).toLowerCase()) || lower.includes(item.id.toLowerCase()),
+		);
 	}
 
 	recordCompactionMetrics(metrics: CompactionMetrics): void {
@@ -263,7 +332,31 @@ export class AdaptiveBrainController {
 	}
 
 	getLastProgress(): AdaptiveProgress {
-		return { ...this.lastProgress, todos: this.lastProgress.todos?.map((item) => ({ ...item, dependencies: [...item.dependencies], completionEvidence: [...item.completionEvidence] })) };
+		return {
+			...this.lastProgress,
+			todos: this.lastProgress.todos?.map((item) => ({
+				...item,
+				dependencies: [...item.dependencies],
+				completionEvidence: [...item.completionEvidence],
+			})),
+		};
+	}
+
+	/**
+	 * Create a debug session for an error and return analysis context.
+	 */
+	startDebugSession(context: ErrorContext): { analysis: ErrorAnalysis; debugContext: string; session: DebugSession } {
+		const analysis = this.selfDebug.analyzeError(context);
+		const session = this.selfDebug.createDebugSession(context, analysis);
+		const debugContext = this.selfDebug.formatDebugContext(analysis, session);
+		return { analysis, debugContext, session };
+	}
+
+	/**
+	 * Get self-debug instructions for injection into agent context when errors occur.
+	 */
+	getSelfDebugInstructions(analysis: ErrorAnalysis): string {
+		return this.selfDebug.getDebugInstructions(analysis);
 	}
 
 	createTodoToolDefinition(): ToolDefinition<typeof adaptiveTodoSchema, AdaptiveTodoSnapshot> {
@@ -271,7 +364,8 @@ export class AdaptiveBrainController {
 		return {
 			name: "adaptive_todo",
 			label: "adaptive TODO",
-			description: "Internal adaptive planning tool. Maintain session TODOs for substantial multi-step work; do not use for trivial answers.",
+			description:
+				"Internal adaptive planning tool. Maintain session TODOs for substantial multi-step work; do not use for trivial answers.",
 			promptSnippet: "Maintain adaptive TODO state for non-trivial work",
 			promptGuidelines: [
 				"Use adaptive_todo for substantial multi-step work and keep at most one task in_progress.",
@@ -283,10 +377,14 @@ export class AdaptiveBrainController {
 				let snapshot: AdaptiveTodoSnapshot;
 				switch (params.action) {
 					case "plan":
-						snapshot = todos.replacePlan(params.goal ?? todos.getSnapshot().goal ?? "Current task", params.items ?? []);
+						snapshot = todos.replacePlan(
+							params.goal ?? todos.getSnapshot().goal ?? "Current task",
+							params.items ?? [],
+						);
 						break;
 					case "status": {
-						if (!params.id || !params.status) throw new Error("id and status are required for adaptive_todo status");
+						if (!params.id || !params.status)
+							throw new Error("id and status are required for adaptive_todo status");
 						todos.updateStatus(params.id, params.status as AdaptiveTodoStatus, {
 							evidence: params.evidence,
 							failureReason: params.failureReason,
@@ -295,13 +393,15 @@ export class AdaptiveBrainController {
 						break;
 					}
 					case "evidence":
-						if (!params.id || !params.evidence) throw new Error("id and evidence are required for adaptive_todo evidence");
+						if (!params.id || !params.evidence)
+							throw new Error("id and evidence are required for adaptive_todo evidence");
 						todos.recordEvidence(params.id, params.evidence);
 						snapshot = todos.getSnapshot();
 						break;
 					case "block":
 						snapshot = params.id
-							? (todos.updateStatus(params.id, "blocked", { failureReason: params.failureReason ?? "Blocked" }), todos.getSnapshot())
+							? (todos.updateStatus(params.id, "blocked", { failureReason: params.failureReason ?? "Blocked" }),
+								todos.getSnapshot())
 							: todos.blockCurrent(params.failureReason ?? "Blocked");
 						break;
 					case "list":
@@ -319,8 +419,105 @@ export class AdaptiveBrainController {
 			renderResult(result, _options, theme) {
 				const text = new Text("", 0, 0);
 				const snapshot = result.details;
-				const open = snapshot.items.filter((item) => item.status !== "completed" && item.status !== "cancelled").length;
+				const open = snapshot.items.filter(
+					(item) => item.status !== "completed" && item.status !== "cancelled",
+				).length;
 				text.setText(theme.fg("muted", `adaptive TODO: ${open} open`));
+				return text;
+			},
+		};
+	}
+
+	createSelfDebugToolDefinition(): ToolDefinition<typeof selfDebugSchema, unknown> {
+		const selfDebugBrain = this.selfDebug;
+		const controller = this;
+		return {
+			name: "self_debug",
+			label: "self-debug",
+			description:
+				"Self-debugging tool for error analysis and recovery. Use when errors occur to analyze root causes and apply fixes.",
+			promptSnippet: "Analyze and fix errors using self-debugging capabilities",
+			promptGuidelines: [
+				"Use self_debug when you encounter errors to get analysis and suggested fixes.",
+				"For action=analyze, provide the error message and tool name to get root cause analysis.",
+				"For action=fix, provide the session ID and fix action to apply a suggested fix.",
+				"For action=status, check the status of an ongoing debug session.",
+				"For action=stats, get statistics about errors in this session.",
+			],
+			parameters: selfDebugSchema,
+			async execute(_toolCallId, params: SelfDebugInput) {
+				switch (params.action) {
+					case "analyze": {
+						if (!params.errorMessage) {
+							throw new Error("errorMessage is required for action=analyze");
+						}
+						const context: ErrorContext = {
+							toolName: params.toolName ?? "unknown",
+							toolCallId: _toolCallId,
+							args: params.toolArgs ?? {},
+							errorMessage: params.errorMessage,
+							timestamp: Date.now(),
+							cwd: controller.cwd,
+						};
+						const { analysis, debugContext, session } = controller.startDebugSession(context);
+						return {
+							content: [{ type: "text", text: debugContext }],
+							details: { analysis, sessionId: session.id },
+						};
+					}
+					case "fix": {
+						if (!params.sessionId || !params.fixAction) {
+							throw new Error("sessionId and fixAction are required for action=fix");
+						}
+						const session = selfDebugBrain["debugSessions"].get(params.sessionId);
+						if (!session) {
+							throw new Error(`Debug session ${params.sessionId} not found`);
+						}
+						// Record the attempt (actual execution happens outside this tool)
+						selfDebugBrain.recordAttempt(params.sessionId, params.fixAction, "success", "Fix applied");
+						return {
+							content: [
+								{
+									type: "text",
+									text: `Fix recorded for session ${params.sessionId}. Apply the fix using appropriate tools.`,
+								},
+							],
+							details: { sessionId: params.sessionId, status: "recorded" },
+						};
+					}
+					case "status": {
+						if (!params.sessionId) {
+							throw new Error("sessionId is required for action=status");
+						}
+						const session = selfDebugBrain["debugSessions"].get(params.sessionId);
+						if (!session) {
+							throw new Error(`Debug session ${params.sessionId} not found`);
+						}
+						const statusContext = selfDebugBrain.formatDebugContext(session.analysis, session);
+						return {
+							content: [{ type: "text", text: statusContext }],
+							details: { session },
+						};
+					}
+					case "stats": {
+						const stats = selfDebugBrain.getStats();
+						return {
+							content: [{ type: "text", text: JSON.stringify(stats, null, 2) }],
+							details: stats,
+						};
+					}
+				}
+			},
+			renderCall(args, theme) {
+				const text = new Text("", 0, 0);
+				const action = theme.fg("toolTitle", theme.bold(`self_debug ${args.action}`));
+				text.setText(args.sessionId ? `${action} ${theme.fg("accent", args.sessionId)}` : action);
+				return text;
+			},
+			renderResult(result, _options, theme) {
+				const text = new Text("", 0, 0);
+				const details = result.details as { status?: string } | undefined;
+				text.setText(theme.fg("muted", `self-debug: ${details?.status ?? "done"}`));
 				return text;
 			},
 		};

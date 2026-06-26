@@ -75,7 +75,24 @@ function keywordScore(path: string, content: string, keywords: string[]): number
 }
 
 function extractKeywords(goal: string): string[] {
-	const stop = new Set(["the", "and", "for", "with", "that", "this", "from", "into", "when", "must", "should", "implement", "create", "add", "make", "using"]);
+	const stop = new Set([
+		"the",
+		"and",
+		"for",
+		"with",
+		"that",
+		"this",
+		"from",
+		"into",
+		"when",
+		"must",
+		"should",
+		"implement",
+		"create",
+		"add",
+		"make",
+		"using",
+	]);
 	return goal
 		.split(/[^A-Za-z0-9_./-]+/)
 		.map((word) => word.trim())
@@ -185,7 +202,8 @@ export class ExploreTaskRunner {
 				relevantFilesAndSymbols.push({
 					path: file.path,
 					symbols: extractSymbols(content),
-					reason: file.score > 0 ? "Matches task keywords or known runtime areas" : "Nearby source/config candidate",
+					reason:
+						file.score > 0 ? "Matches task keywords or known runtime areas" : "Nearby source/config candidate",
 				});
 			} catch {
 				// ignore
@@ -212,7 +230,9 @@ export class ExploreTaskRunner {
 			unknowns.push("No clearly relevant source files found within exploration limits.");
 		}
 		if (/delete|remove|credential|secret|payment|destructive/i.test(goal)) {
-			risks.push("Task wording indicates destructive or sensitive changes; request permission before risky actions.");
+			risks.push(
+				"Task wording indicates destructive or sensitive changes; request permission before risky actions.",
+			);
 		}
 		if (truncated) {
 			unknowns.push("Exploration stopped at resource limits; further targeted reads may be needed.");
@@ -243,7 +263,9 @@ export function formatExploreResultForContext(result: ExploreTaskResult): string
 	if (result.relevantFilesAndSymbols.length > 0) {
 		lines.push("Relevant files/symbols:");
 		for (const file of result.relevantFilesAndSymbols) {
-			lines.push(`- ${file.path}${file.symbols?.length ? ` symbols=${file.symbols.join(",")}` : ""}: ${file.reason}`);
+			lines.push(
+				`- ${file.path}${file.symbols?.length ? ` symbols=${file.symbols.join(",")}` : ""}: ${file.reason}`,
+			);
 		}
 	}
 	if (result.architectureFindings.length > 0) lines.push(`Architecture: ${result.architectureFindings.join("; ")}`);
@@ -254,6 +276,8 @@ export function formatExploreResultForContext(result: ExploreTaskResult): string
 	if (result.unknownsRequiringClarification.length > 0) {
 		lines.push(`Unknowns: ${result.unknownsRequiringClarification.join("; ")}`);
 	}
-	lines.push(`Limits: ${result.metrics.toolCalls} read-only calls, ${result.metrics.filesRead} files read, ${result.metrics.runtimeMs}ms${result.metrics.truncated ? ", truncated" : ""}`);
+	lines.push(
+		`Limits: ${result.metrics.toolCalls} read-only calls, ${result.metrics.filesRead} files read, ${result.metrics.runtimeMs}ms${result.metrics.truncated ? ", truncated" : ""}`,
+	);
 	return lines.join("\n");
 }

@@ -6,6 +6,18 @@ const OSC133_ZONE_START = "\x1b]133;A\x07";
 const OSC133_ZONE_END = "\x1b]133;B\x07";
 const OSC133_ZONE_FINAL = "\x1b]133;C\x07";
 
+function formatAssistantHeader(message: AssistantMessage): string {
+	const model =
+		message.responseModel && message.responseModel !== message.model ? message.responseModel : message.model;
+	const modelLabel = model ? theme.fg("dim", `  ${model}`) : "";
+	return `${theme.bold(theme.fg("accent", "AIRIS"))}${theme.fg("muted", " response")}${modelLabel}`;
+}
+
+function formatAssistantStatus(kind: "error" | "aborted", message: string): string {
+	const label = kind === "error" ? "AIRIS error" : "AIRIS stopped";
+	return `${theme.bold(theme.fg("error", label))}${theme.fg("muted", ": ")}${theme.fg("error", message)}`;
+}
+
 /**
  * Component that renders a complete assistant message
  */
@@ -82,7 +94,7 @@ export class AssistantMessageComponent extends Container {
 
 		if (hasVisibleContent) {
 			this.contentContainer.addChild(new Spacer(1));
-			this.contentContainer.addChild(new Text(theme.bold(theme.fg("accent", "AIRIS")), 1, 0));
+			this.contentContainer.addChild(new Text(formatAssistantHeader(message), 1, 0));
 		}
 
 		// Render content in order
@@ -102,13 +114,14 @@ export class AssistantMessageComponent extends Container {
 				if (this.hideThinkingBlock) {
 					// Show static thinking label when hidden
 					this.contentContainer.addChild(
-						new Text(theme.italic(theme.fg("thinkingText", this.hiddenThinkingLabel)), 1, 0),
+						new Text(theme.italic(theme.fg("thinkingText", `reasoning: ${this.hiddenThinkingLabel}`)), 1, 0),
 					);
 					if (hasVisibleContentAfter) {
 						this.contentContainer.addChild(new Spacer(1));
 					}
 				} else {
 					// Thinking traces in thinkingText color, italic
+					this.contentContainer.addChild(new Text(theme.italic(theme.fg("thinkingText", "reasoning")), 1, 0));
 					this.contentContainer.addChild(
 						new Markdown(content.thinking.trim(), 1, 0, this.markdownTheme, {
 							color: (text: string) => theme.fg("thinkingText", text),
@@ -137,11 +150,11 @@ export class AssistantMessageComponent extends Container {
 				} else {
 					this.contentContainer.addChild(new Spacer(1));
 				}
-				this.contentContainer.addChild(new Text(theme.fg("error", abortMessage), 1, 0));
+				this.contentContainer.addChild(new Text(formatAssistantStatus("aborted", abortMessage), 1, 0));
 			} else if (message.stopReason === "error") {
 				const errorMsg = message.errorMessage || "Unknown error";
 				this.contentContainer.addChild(new Spacer(1));
-				this.contentContainer.addChild(new Text(theme.fg("error", `[ERR] ${errorMsg}`), 1, 0));
+				this.contentContainer.addChild(new Text(formatAssistantStatus("error", errorMsg), 1, 0));
 			}
 		}
 	}

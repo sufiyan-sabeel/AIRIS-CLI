@@ -1,7 +1,12 @@
-import type { FailureRecord } from "./types.ts";
 import { listFailureRecords, nowIso, preview, readFailure, sha256, writeFailure } from "./storage.ts";
+import type { FailureRecord } from "./types.ts";
 
-export function createFailureFingerprint(command: string, exitCode: number, stderr: string, workspaceSha256: string): string {
+export function createFailureFingerprint(
+	command: string,
+	exitCode: number,
+	stderr: string,
+	workspaceSha256: string,
+): string {
 	const normalizedStderr = stderr
 		.split("\n")
 		.map((line) => line.trim())

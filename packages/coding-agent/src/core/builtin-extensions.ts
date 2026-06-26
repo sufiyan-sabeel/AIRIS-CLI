@@ -6,9 +6,9 @@
  * - Todo tool: Task list management for the agent
  */
 
-import type { ExtensionFactory } from "./extensions/types.ts";
 import planModeExtension from "./builtin-plan-mode.ts";
 import todoExtension from "./builtin-todo.ts";
+import type { ExtensionFactory } from "./extensions/types.ts";
 
 /**
  * Get built-in extension factories.

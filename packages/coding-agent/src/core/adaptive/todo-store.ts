@@ -4,6 +4,7 @@ import type {
 	AdaptiveTodoItem,
 	AdaptiveTodoPriority,
 	AdaptiveTodoSnapshot,
+	AdaptiveTodoStats,
 	AdaptiveTodoStatus,
 } from "./types.ts";
 
@@ -19,7 +20,13 @@ function stableTodoId(description: string, index = 0): string {
 }
 
 function isTodoStatus(value: unknown): value is AdaptiveTodoStatus {
-	return value === "pending" || value === "in_progress" || value === "completed" || value === "blocked" || value === "cancelled";
+	return (
+		value === "pending" ||
+		value === "in_progress" ||
+		value === "completed" ||
+		value === "blocked" ||
+		value === "cancelled"
+	);
 }
 
 function isTodoPriority(value: unknown): value is AdaptiveTodoPriority {
@@ -29,14 +36,17 @@ function isTodoPriority(value: unknown): value is AdaptiveTodoPriority {
 function normalizeItem(raw: unknown): AdaptiveTodoItem | undefined {
 	if (!raw || typeof raw !== "object") return undefined;
 	const item = raw as Record<string, unknown>;
-	const description = typeof item.description === "string" ? item.description : typeof item.text === "string" ? item.text : "";
+	const description =
+		typeof item.description === "string" ? item.description : typeof item.text === "string" ? item.text : "";
 	if (!description.trim()) return undefined;
 	const createdAt = typeof item.createdAt === "string" ? item.createdAt : nowIso();
 	return {
 		id: typeof item.id === "string" && item.id ? item.id : stableTodoId(description),
 		description: description.trim(),
 		status: isTodoStatus(item.status) ? item.status : item.done === true ? "completed" : "pending",
-		dependencies: Array.isArray(item.dependencies) ? item.dependencies.filter((v): v is string => typeof v === "string") : [],
+		dependencies: Array.isArray(item.dependencies)
+			? item.dependencies.filter((v): v is string => typeof v === "string")
+			: [],
 		priority: isTodoPriority(item.priority) ? item.priority : "medium",
 		completionEvidence: Array.isArray(item.completionEvidence)
 			? item.completionEvidence.filter((v): v is string => typeof v === "string" && v.trim().length > 0)
@@ -44,6 +54,8 @@ function normalizeItem(raw: unknown): AdaptiveTodoItem | undefined {
 		failureReason: typeof item.failureReason === "string" ? item.failureReason : undefined,
 		createdAt,
 		updatedAt: typeof item.updatedAt === "string" ? item.updatedAt : createdAt,
+		startedAt: typeof item.startedAt === "string" ? item.startedAt : undefined,
+		completedAt: typeof item.completedAt === "string" ? item.completedAt : undefined,
 	};
 }
 
@@ -78,12 +90,18 @@ export class AdaptiveTodoStore {
 	getSnapshot(): AdaptiveTodoSnapshot {
 		return {
 			...this.snapshot,
-			items: this.snapshot.items.map((item) => ({ ...item, dependencies: [...item.dependencies], completionEvidence: [...item.completionEvidence] })),
+			items: this.snapshot.items.map((item) => ({
+				...item,
+				dependencies: [...item.dependencies],
+				completionEvidence: [...item.completionEvidence],
+			})),
 		};
 	}
 
 	getOpenItems(): AdaptiveTodoItem[] {
-		return this.snapshot.items.filter((item) => item.status === "pending" || item.status === "in_progress" || item.status === "blocked");
+		return this.snapshot.items.filter(
+			(item) => item.status === "pending" || item.status === "in_progress" || item.status === "blocked",
+		);
 	}
 
 	getInProgress(): AdaptiveTodoItem | undefined {
@@ -94,7 +112,14 @@ export class AdaptiveTodoStore {
 		return this.snapshot.items.find((item) => {
 			if (item.status !== "in_progress") return false;
 			const desc = item.description.toLowerCase();
-			return desc.includes("test") || desc.includes("verif") || desc.includes("build") || desc.includes("check") || desc.includes("lint") || desc.includes("compile");
+			return (
+				desc.includes("test") ||
+				desc.includes("verif") ||
+				desc.includes("build") ||
+				desc.includes("check") ||
+				desc.includes("lint") ||
+				desc.includes("compile")
+			);
 		});
 	}
 
@@ -143,6 +168,12 @@ export class AdaptiveTodoStore {
 		}
 		item.status = status;
 		item.updatedAt = nowIso();
+		if (status === "in_progress" && !item.startedAt) {
+			item.startedAt = item.updatedAt;
+		}
+		if (status === "completed" && !item.completedAt) {
+			item.completedAt = item.updatedAt;
+		}
 		if (options?.evidence) item.completionEvidence.push(options.evidence.trim());
 		item.failureReason = options?.failureReason;
 		this.snapshot.updatedAt = item.updatedAt;
@@ -166,10 +197,14 @@ export class AdaptiveTodoStore {
 		if (current) {
 			this.updateStatus(current.id, "completed", { evidence });
 		}
-		const next = this.snapshot.items.find((item) => item.status === "pending" && item.dependencies.every((dep) => {
-			const dependency = this.snapshot.items.find((candidate) => candidate.id === dep);
-			return !dependency || dependency.status === "completed";
-		}));
+		const next = this.snapshot.items.find(
+			(item) =>
+				item.status === "pending" &&
+				item.dependencies.every((dep) => {
+					const dependency = this.snapshot.items.find((candidate) => candidate.id === dep);
+					return !dependency || dependency.status === "completed";
+				}),
+		);
 		if (next) {
 			this.updateStatus(next.id, "in_progress");
 		}
@@ -194,6 +229,54 @@ export class AdaptiveTodoStore {
 			lines.push(`- ${item.id} [${item.status}] (${item.priority}) ${item.description}${evidence}${failure}`);
 		}
 		return lines.join("\n");
+	}
+
+	getStats(): AdaptiveTodoStats {
+		const items = this.snapshot.items;
+		const now = Date.now();
+		const completed = items.filter((i) => i.status === "completed");
+		const inProgress = items.filter((i) => i.status === "in_progress");
+		const pending = items.filter((i) => i.status === "pending");
+		const blocked = items.filter((i) => i.status === "blocked");
+		const cancelled = items.filter((i) => i.status === "cancelled");
+
+		let totalCompletionTimeMs = 0;
+		let completedCount = 0;
+		for (const item of completed) {
+			if (item.startedAt && item.completedAt) {
+				totalCompletionTimeMs += new Date(item.completedAt).getTime() - new Date(item.startedAt).getTime();
+				completedCount++;
+			}
+		}
+
+		let totalElapsedMs = 0;
+		for (const item of items) {
+			const start = item.startedAt ? new Date(item.startedAt).getTime() : new Date(item.createdAt).getTime();
+			const end = item.completedAt ? new Date(item.completedAt).getTime() : now;
+			totalElapsedMs += end - start;
+		}
+
+		const byPriority: Record<string, number> = { low: 0, medium: 0, high: 0, critical: 0 };
+		const byCategory: Record<string, number> = {};
+		for (const item of items) {
+			byPriority[item.priority] = (byPriority[item.priority] ?? 0) + 1;
+			const category = item.description.split(/\s+/)[0]?.toLowerCase() ?? "unknown";
+			byCategory[category] = (byCategory[category] ?? 0) + 1;
+		}
+
+		return {
+			totalTasks: items.length,
+			completedTasks: completed.length,
+			inProgressTasks: inProgress.length,
+			pendingTasks: pending.length,
+			blockedTasks: blocked.length,
+			cancelledTasks: cancelled.length,
+			completionRate: items.length > 0 ? Math.round((completed.length / items.length) * 100) : 0,
+			avgCompletionTimeMs: completedCount > 0 ? Math.round(totalCompletionTimeMs / completedCount) : 0,
+			totalElapsedMs,
+			byPriority: byPriority as Record<AdaptiveTodoPriority, number>,
+			byCategory,
+		};
 	}
 
 	private restore(): AdaptiveTodoSnapshot {

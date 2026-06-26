@@ -1,17 +1,9 @@
 import { existsSync } from "node:fs";
 import chalk from "chalk";
 import { compileMissionContract } from "./compiler.ts";
-import { createLeaseForMission, listLeases, revokeLease } from "./leases.ts";
 import { searchFailures } from "./failures.ts";
-import {
-	evidencePath,
-	missionPath,
-	nowIso,
-	readEvidence,
-	readMission,
-	stableJson,
-	writeMission,
-} from "./storage.ts";
+import { createLeaseForMission, listLeases, revokeLease } from "./leases.ts";
+import { evidencePath, missionPath, nowIso, readEvidence, readMission, stableJson, writeMission } from "./storage.ts";
 import type { EvidenceReport, MissionContract } from "./types.ts";
 import { verifyMission } from "./verifier.ts";
 
@@ -46,11 +38,18 @@ async function handleMissionCommand(args: string[], cwd: string): Promise<void> 
 	}
 
 	if (!MISSION_SUBCOMMANDS.has(subcommand)) {
-		const request = args.filter((arg) => arg !== "--verified").join(" ").trim();
+		const request = args
+			.filter((arg) => arg !== "--verified")
+			.join(" ")
+			.trim();
 		if (!request) throw new Error("Mission request is required.");
 		const contract = createMission(cwd, request);
 		printContract(contract, cwd);
-		console.log(chalk.yellow(`Mission is not approved yet. Review the contract, then run: airis mission approve ${contract.id}`));
+		console.log(
+			chalk.yellow(
+				`Mission is not approved yet. Review the contract, then run: airis mission approve ${contract.id}`,
+			),
+		);
 		if (args.includes("--verified")) {
 			console.log(chalk.dim(`After approval, run: airis mission run ${contract.id}`));
 		}
@@ -60,7 +59,7 @@ async function handleMissionCommand(args: string[], cwd: string): Promise<void> 
 	switch (subcommand) {
 		case "create": {
 			const request = rest.join(" ").trim();
-			if (!request) throw new Error("Usage: airis mission create \"<request>\"");
+			if (!request) throw new Error('Usage: airis mission create "<request>"');
 			const contract = createMission(cwd, request);
 			printContract(contract, cwd);
 			console.log(chalk.yellow(`Approve with: airis mission approve ${contract.id}`));
@@ -129,7 +128,9 @@ function handleLeaseCommand(args: string[], cwd: string): void {
 		}
 		for (const lease of leases) {
 			const active = !lease.revokedAt && Date.parse(lease.expiresAt) > Date.now();
-			console.log(`${lease.id} ${active ? chalk.green("active") : chalk.dim("inactive")} expires=${lease.expiresAt} mission=${lease.missionId ?? "-"}`);
+			console.log(
+				`${lease.id} ${active ? chalk.green("active") : chalk.dim("inactive")} expires=${lease.expiresAt} mission=${lease.missionId ?? "-"}`,
+			);
 		}
 		return;
 	}
@@ -222,7 +223,12 @@ function printEvidenceSummary(report: EvidenceReport): void {
 	console.log(`Mission ${report.missionId}: ${formatStatus(report.status)}`);
 	console.log(report.summary);
 	for (const criterion of report.criteria) {
-		const marker = criterion.status === "pass" ? chalk.green("PASS") : criterion.status === "fail" ? chalk.red("FAIL") : chalk.yellow("UNVERIFIED");
+		const marker =
+			criterion.status === "pass"
+				? chalk.green("PASS")
+				: criterion.status === "fail"
+					? chalk.red("FAIL")
+					: chalk.yellow("UNVERIFIED");
 		console.log(`  ${marker} ${criterion.criterionId} ${criterion.evidenceSource}`);
 	}
 	console.log(chalk.dim(`Evidence written to .airis/evidence/${report.missionId}.json`));

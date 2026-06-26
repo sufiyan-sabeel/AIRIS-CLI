@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 export type TodoPriority = "low" | "medium" | "high";
@@ -99,9 +99,7 @@ export function createTodoManager(opts: TodoManagerOptions) {
 		},
 
 		remove(idOrText: string): TodoItem | undefined {
-			const idx = todos.findIndex(
-				(t) => t.id === idOrText || t.text.toLowerCase().includes(idOrText.toLowerCase()),
-			);
+			const idx = todos.findIndex((t) => t.id === idOrText || t.text.toLowerCase().includes(idOrText.toLowerCase()));
 			if (idx === -1) return undefined;
 			const [removed] = todos.splice(idx, 1);
 			saveTodos(opts, todos);

@@ -20,16 +20,16 @@ function tmp(): string {
 	return mkdtempSync(join(tmpdir(), "airis-ask-question-"));
 }
 
-const BASE_CHOICES = [
+const BASE_CHOICES: [{ label: string; explanation: string; }, { label: string; explanation: string; }, { label: string; explanation: string; }] = [
 	{ label: "Extend existing runtime", explanation: "Lowest risk approach." },
 	{ label: "Create separate module", explanation: "Better isolation." },
 	{ label: "Use extension system", explanation: "Easier to disable." },
-] as const;
+];
 
 const BASE_PARAMS = {
 	title: "Select implementation approach",
 	question: "Which approach should AIRIS use for the new feature?",
-	choices: [...BASE_CHOICES],
+	choices: BASE_CHOICES,
 };
 
 function createMockContext(mode: "tui" | "print" = "print", uiCustom?: any) {
@@ -122,7 +122,7 @@ describe("Ask Question ability", () => {
 			const result = await tool.execute("call-6", BASE_PARAMS, undefined, undefined, createMockContext("print"));
 			expect(result.content).toHaveLength(1);
 			expect(result.content[0].type).toBe("text");
-			expect(result.content[0].text).toContain("Input required");
+			expect((result.content[0] as { type: string; text: string }).text).toContain("Input required");
 		});
 	});
 
@@ -215,7 +215,7 @@ describe("Ask Question ability", () => {
 				fg: (color: string, text: string) => `[${color}]${text}[/${color}]`,
 			};
 			const component = tool.renderResult!(
-				{ content: [], details: undefined },
+				{ content: [], details: undefined } as any,
 				{ expanded: false, isPartial: false },
 				mockTheme as any,
 				{} as any,

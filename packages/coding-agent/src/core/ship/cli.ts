@@ -30,9 +30,12 @@ export async function handleShipCommand(args: string[], cwd: string): Promise<bo
 
 	switch (subcommand) {
 		case "start": {
-			const request = rest.filter((a) => a !== "--verified").join(" ").trim();
+			const request = rest
+				.filter((a) => a !== "--verified")
+				.join(" ")
+				.trim();
 			if (!request) {
-				console.error(chalk.red("Usage: airis ship start \"<request>\""));
+				console.error(chalk.red('Usage: airis ship start "<request>"'));
 				return true;
 			}
 			const active = findActiveShipState(cwd);
@@ -91,10 +94,13 @@ export async function handleShipCommand(args: string[], cwd: string): Promise<bo
 			}
 			for (const state of states) {
 				const phaseColor =
-					state.phase === "completed" ? chalk.green :
-					state.phase === "failed" ? chalk.red :
-					state.phase === "cancelled" ? chalk.dim :
-					chalk.yellow;
+					state.phase === "completed"
+						? chalk.green
+						: state.phase === "failed"
+							? chalk.red
+							: state.phase === "cancelled"
+								? chalk.dim
+								: chalk.yellow;
 				console.log(`${state.id}  ${phaseColor(state.phase.padEnd(16))}  ${state.request.slice(0, 60)}`);
 			}
 			return true;
@@ -240,7 +246,9 @@ async function resumeShipWorkflow(state: ShipState, cwd: string): Promise<void> 
 				return;
 			}
 
-			const testTodo = state.todos.find((t) => t.description === "Run tests and verify build" && t.status === "pending");
+			const testTodo = state.todos.find(
+				(t) => t.description === "Run tests and verify build" && t.status === "pending",
+			);
 			if (testTodo) state = completeTodo(state, testTodo.id, cwd);
 
 			// Phase: Testing -> Verification
@@ -248,7 +256,9 @@ async function resumeShipWorkflow(state: ShipState, cwd: string): Promise<void> 
 			console.log(chalk.cyan("[verification] Running verified autonomy checks..."));
 
 			if (state.missionId) {
-				const mission = await import("../verified-autonomy/storage.ts").then((m) => m.readMission(cwd, state.missionId!));
+				const mission = await import("../verified-autonomy/storage.ts").then((m) =>
+					m.readMission(cwd, state.missionId!),
+				);
 				const approvedMission: MissionContract = {
 					...mission,
 					status: "approved",
@@ -269,19 +279,31 @@ async function resumeShipWorkflow(state: ShipState, cwd: string): Promise<void> 
 				if (allMandatoryPass) {
 					console.log(chalk.green("  All mandatory criteria passed."));
 					for (const c of report.criteria) {
-						const marker = c.status === "pass" ? chalk.green("PASS") : c.status === "fail" ? chalk.red("FAIL") : chalk.yellow("UNVERIFIED");
+						const marker =
+							c.status === "pass"
+								? chalk.green("PASS")
+								: c.status === "fail"
+									? chalk.red("FAIL")
+									: chalk.yellow("UNVERIFIED");
 						console.log(`    ${marker} ${c.criterionId}`);
 					}
 				} else {
 					console.log(chalk.yellow("  Some mandatory criteria need attention:"));
 					for (const c of report.criteria) {
-						const marker = c.status === "pass" ? chalk.green("PASS") : c.status === "fail" ? chalk.red("FAIL") : chalk.yellow("UNVERIFIED");
+						const marker =
+							c.status === "pass"
+								? chalk.green("PASS")
+								: c.status === "fail"
+									? chalk.red("FAIL")
+									: chalk.yellow("UNVERIFIED");
 						console.log(`    ${marker} ${c.criterionId}`);
 					}
 				}
 			}
 
-			const verifyTodo = state.todos.find((t) => t.description === "Generate proof report" && t.status === "pending");
+			const verifyTodo = state.todos.find(
+				(t) => t.description === "Generate proof report" && t.status === "pending",
+			);
 			if (verifyTodo) state = completeTodo(state, verifyTodo.id, cwd);
 
 			// Phase: Verification -> Proof
@@ -316,11 +338,37 @@ async function resumeShipWorkflow(state: ShipState, cwd: string): Promise<void> 
 function buildRequirementsTable(state: ShipState, cwd: string): ShipState {
 	const checks = [
 		{ id: "REQ-001", description: "Mission contract created", status: "pass" as const },
-		{ id: "REQ-002", description: "Tasks planned and tracked", status: state.todos.length > 0 ? ("pass" as const) : ("fail" as const) },
-		{ id: "REQ-003", description: "Code implementation completed", status: state.tasks.some((t) => t.description === "Implement changes" && t.status === "completed") ? ("pass" as const) : ("fail" as const) },
-		{ id: "REQ-004", description: "Formatting and type checks passed", status: state.tasks.some((t) => t.description === "Run formatting and type checks" && t.status === "completed") ? ("pass" as const) : ("fail" as const) },
-		{ id: "REQ-005", description: "Build succeeded", status: state.tasks.some((t) => t.description === "Run tests and verify build" && t.status === "completed") ? ("pass" as const) : ("fail" as const) },
-		{ id: "REQ-006", description: "Evidence report generated", status: state.evidence.length > 0 ? ("pass" as const) : ("unverified" as const) },
+		{
+			id: "REQ-002",
+			description: "Tasks planned and tracked",
+			status: state.todos.length > 0 ? ("pass" as const) : ("fail" as const),
+		},
+		{
+			id: "REQ-003",
+			description: "Code implementation completed",
+			status: state.tasks.some((t) => t.description === "Implement changes" && t.status === "completed")
+				? ("pass" as const)
+				: ("fail" as const),
+		},
+		{
+			id: "REQ-004",
+			description: "Formatting and type checks passed",
+			status: state.tasks.some((t) => t.description === "Run formatting and type checks" && t.status === "completed")
+				? ("pass" as const)
+				: ("fail" as const),
+		},
+		{
+			id: "REQ-005",
+			description: "Build succeeded",
+			status: state.tasks.some((t) => t.description === "Run tests and verify build" && t.status === "completed")
+				? ("pass" as const)
+				: ("fail" as const),
+		},
+		{
+			id: "REQ-006",
+			description: "Evidence report generated",
+			status: state.evidence.length > 0 ? ("pass" as const) : ("unverified" as const),
+		},
 		{ id: "REQ-007", description: "No secrets in output", status: "pass" as const },
 	];
 	for (const check of checks) {
@@ -337,10 +385,13 @@ function printContractSummary(contract: MissionContract): void {
 
 function printShipStatus(state: ShipState): void {
 	const phaseColor =
-		state.phase === "completed" ? chalk.green :
-		state.phase === "failed" ? chalk.red :
-		state.phase === "cancelled" ? chalk.dim :
-		chalk.cyan;
+		state.phase === "completed"
+			? chalk.green
+			: state.phase === "failed"
+				? chalk.red
+				: state.phase === "cancelled"
+					? chalk.dim
+					: chalk.cyan;
 
 	console.log(`\n${chalk.bold("Ship Workflow")} ${chalk.dim(state.id)}`);
 	console.log(`  Phase:   ${phaseColor(state.phase)}`);
@@ -350,7 +401,12 @@ function printShipStatus(state: ShipState): void {
 		const completed = state.todos.filter((t) => t.status === "completed").length;
 		console.log(`  TODOs:   ${completed}/${state.todos.length} completed`);
 		for (const todo of state.todos) {
-			const marker = todo.status === "completed" ? chalk.green("[x]") : todo.status === "in_progress" ? chalk.yellow("[~]") : chalk.dim("[ ]");
+			const marker =
+				todo.status === "completed"
+					? chalk.green("[x]")
+					: todo.status === "in_progress"
+						? chalk.yellow("[~]")
+						: chalk.dim("[ ]");
 			console.log(`    ${marker} ${todo.description}`);
 		}
 	}
@@ -358,7 +414,14 @@ function printShipStatus(state: ShipState): void {
 	if (state.tasks.length > 0) {
 		console.log(`  Tasks:`);
 		for (const task of state.tasks) {
-			const marker = task.status === "completed" ? chalk.green("[x]") : task.status === "in_progress" ? chalk.yellow("[~]") : task.status === "failed" ? chalk.red("[!]") : chalk.dim("[ ]");
+			const marker =
+				task.status === "completed"
+					? chalk.green("[x]")
+					: task.status === "in_progress"
+						? chalk.yellow("[~]")
+						: task.status === "failed"
+							? chalk.red("[!]")
+							: chalk.dim("[ ]");
 			console.log(`    ${marker} ${task.description}`);
 		}
 	}

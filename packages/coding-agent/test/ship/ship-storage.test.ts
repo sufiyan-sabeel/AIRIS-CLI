@@ -9,8 +9,8 @@ import {
 	listShipStates,
 	readShipState,
 	shipStatePath,
-	writeShipState,
 	writeEvidenceFile,
+	writeShipState,
 } from "../../src/core/ship/storage.ts";
 import type { ShipState } from "../../src/core/ship/types.ts";
 

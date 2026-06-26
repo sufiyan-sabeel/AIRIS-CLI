@@ -13,6 +13,8 @@ export interface AdaptiveTodoItem {
 	failureReason?: string;
 	createdAt: string;
 	updatedAt: string;
+	startedAt?: string;
+	completedAt?: string;
 }
 
 export interface AdaptiveTodoSnapshot {
@@ -73,6 +75,20 @@ export interface AdaptiveProgress {
 	phase: "assessing" | "planning" | "exploring" | "executing" | "compacting" | "verifying" | "blocked" | "idle";
 	summary: string;
 	todos?: AdaptiveTodoItem[];
+}
+
+export interface AdaptiveTodoStats {
+	totalTasks: number;
+	completedTasks: number;
+	inProgressTasks: number;
+	pendingTasks: number;
+	blockedTasks: number;
+	cancelledTasks: number;
+	completionRate: number;
+	avgCompletionTimeMs: number;
+	totalElapsedMs: number;
+	byPriority: Record<AdaptiveTodoPriority, number>;
+	byCategory: Record<string, number>;
 }
 
 export interface AdaptiveToolObservation {

@@ -1,5 +1,11 @@
 import { spawnProcess, spawnProcessSync, waitForChildProcess } from "../../utils/child-process.ts";
-import { getActiveMissionLease, isCommandAllowedByLease, isDirectoryAllowedByLease, normalizeCommand } from "./leases.ts";
+import { findBlockingFailure, recordFailure, resolveFailuresForCommand } from "./failures.ts";
+import {
+	getActiveMissionLease,
+	isCommandAllowedByLease,
+	isDirectoryAllowedByLease,
+	normalizeCommand,
+} from "./leases.ts";
 import {
 	nowIso,
 	preview,
@@ -11,9 +17,9 @@ import {
 	writeMission,
 } from "./storage.ts";
 import type { CommandEvidence, EvidenceCriterion, EvidenceReport, MissionContract, MissionStatus } from "./types.ts";
-import { findBlockingFailure, recordFailure, resolveFailuresForCommand } from "./failures.ts";
 
-const DESTRUCTIVE_COMMAND_RE = /(^|\s)(rm\s+-rf|rm\s+-fr|del\s+\/f|rmdir\s+\/s|format\b|mkfs\b|dd\b|git\s+reset\s+--hard|git\s+clean\s+-fd|chmod\s+-R\s+777|chown\s+-R)($|\s)/i;
+const DESTRUCTIVE_COMMAND_RE =
+	/(^|\s)(rm\s+-rf|rm\s+-fr|del\s+\/f|rmdir\s+\/s|format\b|mkfs\b|dd\b|git\s+reset\s+--hard|git\s+clean\s+-fd|chmod\s+-R\s+777|chown\s+-R)($|\s)/i;
 const MAX_CAPTURE_BYTES = 250_000;
 
 export interface VerifyMissionOptions {
@@ -30,7 +36,9 @@ interface RunCommandResult extends CommandEvidence {
 export async function verifyMission(options: VerifyMissionOptions): Promise<EvidenceReport> {
 	const contract = readMission(options.cwd, options.missionId);
 	if (contract.status !== "approved" && contract.status !== "running" && contract.status !== "partially_completed") {
-		throw new Error(`Mission ${contract.id} must be approved before verification. Current status: ${contract.status}`);
+		throw new Error(
+			`Mission ${contract.id} must be approved before verification. Current status: ${contract.status}`,
+		);
 	}
 
 	const runningContract: MissionContract = { ...contract, status: "running", updatedAt: nowIso() };
@@ -127,7 +135,8 @@ export async function verifyMission(options: VerifyMissionOptions): Promise<Evid
 				timestamp: nowIso(),
 				status: "unverified",
 				confidence: 0.9,
-				details: "Skipped repeated command because the same command already failed for the current workspace fingerprint.",
+				details:
+					"Skipped repeated command because the same command already failed for the current workspace fingerprint.",
 			});
 			continue;
 		}
@@ -195,7 +204,11 @@ function validateLeaseForCommand(
 	return undefined;
 }
 
-function unverifiedCriterion(id: string, method: EvidenceCriterion["verificationMethod"], details: string): EvidenceCriterion {
+function unverifiedCriterion(
+	id: string,
+	method: EvidenceCriterion["verificationMethod"],
+	details: string,
+): EvidenceCriterion {
 	return {
 		criterionId: id,
 		verificationMethod: method,
@@ -208,7 +221,9 @@ function unverifiedCriterion(id: string, method: EvidenceCriterion["verification
 }
 
 function computeMissionStatus(contract: MissionContract, criteria: EvidenceCriterion[]): MissionStatus {
-	const mandatoryIds = new Set(contract.acceptanceCriteria.filter((criterion) => criterion.mandatory).map((criterion) => criterion.id));
+	const mandatoryIds = new Set(
+		contract.acceptanceCriteria.filter((criterion) => criterion.mandatory).map((criterion) => criterion.id),
+	);
 	const mandatory = criteria.filter((criterion) => mandatoryIds.has(criterion.criterionId));
 	if (mandatory.some((criterion) => criterion.status === "fail")) return "failed";
 	if (mandatory.some((criterion) => criterion.status === "unverified")) return "partially_completed";
@@ -217,13 +232,20 @@ function computeMissionStatus(contract: MissionContract, criteria: EvidenceCrite
 
 function summarizeStatus(status: MissionStatus, criteria: EvidenceCriterion[]): string {
 	const failed = criteria.filter((criterion) => criterion.status === "fail").map((criterion) => criterion.criterionId);
-	const unverified = criteria.filter((criterion) => criterion.status === "unverified").map((criterion) => criterion.criterionId);
+	const unverified = criteria
+		.filter((criterion) => criterion.status === "unverified")
+		.map((criterion) => criterion.criterionId);
 	if (status === "completed") return "All mandatory acceptance criteria have verified evidence.";
 	if (failed.length > 0) return `Mission failed; failed criteria: ${failed.join(", ")}.`;
 	return `Mission partially completed; unverified criteria: ${unverified.join(", ")}.`;
 }
 
-async function runCommand(command: string, cwd: string, timeoutMs: number, signal?: AbortSignal): Promise<RunCommandResult> {
+async function runCommand(
+	command: string,
+	cwd: string,
+	timeoutMs: number,
+	signal?: AbortSignal,
+): Promise<RunCommandResult> {
 	const startedAt = nowIso();
 	const args = splitCommand(command);
 	const executable = args.shift();
@@ -232,10 +254,13 @@ async function runCommand(command: string, cwd: string, timeoutMs: number, signa
 	let stderr = "";
 	let timedOut = false;
 	const child = spawnProcess(executable, args, { cwd, stdio: ["ignore", "pipe", "pipe"] });
-	const timeout = setTimeout(() => {
-		timedOut = true;
-		child.kill("SIGTERM");
-	}, Math.max(1000, timeoutMs));
+	const timeout = setTimeout(
+		() => {
+			timedOut = true;
+			child.kill("SIGTERM");
+		},
+		Math.max(1000, timeoutMs),
+	);
 	const abort = () => {
 		timedOut = true;
 		child.kill("SIGTERM");
@@ -331,7 +356,15 @@ function blockedCommandEvidence(command: string, cwd: string, reason: string): C
 }
 
 function computeWorkspaceSha256(cwd: string): string {
-	const status = spawnProcessSync("git", ["status", "--short"], { cwd, encoding: "utf-8", stdio: ["ignore", "pipe", "pipe"] });
-	const diff = spawnProcessSync("git", ["diff", "--stat"], { cwd, encoding: "utf-8", stdio: ["ignore", "pipe", "pipe"] });
+	const status = spawnProcessSync("git", ["status", "--short"], {
+		cwd,
+		encoding: "utf-8",
+		stdio: ["ignore", "pipe", "pipe"],
+	});
+	const diff = spawnProcessSync("git", ["diff", "--stat"], {
+		cwd,
+		encoding: "utf-8",
+		stdio: ["ignore", "pipe", "pipe"],
+	});
 	return sha256(`${status.stdout ?? ""}\n${status.stderr ?? ""}\n${diff.stdout ?? ""}\n${diff.stderr ?? ""}`);
 }

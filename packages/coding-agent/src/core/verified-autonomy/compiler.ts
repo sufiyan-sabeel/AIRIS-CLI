@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
-import type { AcceptanceCriterion, MissionContract } from "./types.ts";
 import { createMissionId, nowIso } from "./storage.ts";
+import type { AcceptanceCriterion, MissionContract } from "./types.ts";
 
 const DEFAULT_CONSTRAINTS = [
 	"Preserve AIRIS branding, providers, sessions, extensions, skills and Termux support.",

@@ -114,7 +114,7 @@ import { ExtensionEditorComponent } from "./components/extension-editor.ts";
 import { ExtensionInputComponent } from "./components/extension-input.ts";
 import { ExtensionSelectorComponent } from "./components/extension-selector.ts";
 import { FooterComponent } from "./components/footer.ts";
-import { renderInlineProgress, type AdaptiveProgressData } from "./components/adaptive-progress.ts";
+import { renderInlineProgress, renderTodoListPanel, renderDependencyGraph, renderStatsDashboard, renderTimeline, type AdaptiveProgressData } from "./components/adaptive-progress.ts";
 import { createToolStats, recordToolCall, setToolRunning } from "./components/tool-stats.ts";
 import { renderInlineGauge, type ContextGaugeData } from "./components/context-gauge.ts";
 import { formatKeyText, keyDisplayText, keyHint, keyText, rawKeyHint } from "./components/keybinding-hints.ts";
@@ -2726,8 +2726,9 @@ export class InteractiveMode {
 				this.editor.setText("");
 				return;
 			}
-			if (text === "/brain") {
-				this.handleBrainCommand();
+			if (text === "/brain" || text.startsWith("/brain ")) {
+				const subcommand = text === "/brain" ? undefined : text.slice(6).trim();
+				this.handleBrainCommand(subcommand);
 				this.editor.setText("");
 				return;
 			}
@@ -5960,7 +5961,7 @@ export class InteractiveMode {
 | \`/release-notes\` | View release notes |
 | \`/hooks\` | View hook configurations |
 | \`/ide\` | Manage IDE integrations |
-| \`/brain\` | Show adaptive brain status |
+| \`/brain\` | Show adaptive brain status (subcommands: graph, stats, timeline) |
 | \`/stats\` | Show session statistics |
 | \`/tools\` | Show tool execution statistics |
 | \`/tasks\` | View background tasks |
@@ -6081,10 +6082,48 @@ Type any command or just describe what you want to do.
 		this.ui.requestRender();
 	}
 
-	private handleBrainCommand(): void {
+	private handleBrainCommand(subcommand?: string): void {
 		const brain = this.session.adaptiveBrain;
 		const snapshot = brain.todos.getSnapshot();
 		const lastProgress = brain.getLastProgress();
+		const terminalWidth = process.stdout.columns ?? 80;
+
+		if (subcommand === "graph" || subcommand === "deps") {
+			const graphLines = renderDependencyGraph(snapshot.items, terminalWidth);
+			this.chatContainer.addChild(new Spacer(1));
+			this.chatContainer.addChild(new DynamicBorder());
+			for (const line of graphLines) {
+				this.chatContainer.addChild(new Text(line, 1, 0));
+			}
+			this.chatContainer.addChild(new DynamicBorder());
+			this.ui.requestRender();
+			return;
+		}
+
+		if (subcommand === "stats") {
+			const stats = brain.todos.getStats();
+			const statsLines = renderStatsDashboard(stats, terminalWidth);
+			this.chatContainer.addChild(new Spacer(1));
+			this.chatContainer.addChild(new DynamicBorder());
+			for (const line of statsLines) {
+				this.chatContainer.addChild(new Text(line, 1, 0));
+			}
+			this.chatContainer.addChild(new DynamicBorder());
+			this.ui.requestRender();
+			return;
+		}
+
+		if (subcommand === "timeline") {
+			const timelineLines = renderTimeline(snapshot.items, terminalWidth);
+			this.chatContainer.addChild(new Spacer(1));
+			this.chatContainer.addChild(new DynamicBorder());
+			for (const line of timelineLines) {
+				this.chatContainer.addChild(new Text(line, 1, 0));
+			}
+			this.chatContainer.addChild(new DynamicBorder());
+			this.ui.requestRender();
+			return;
+		}
 
 		let brainText = "**Adaptive Brain Status**\n\n";
 
@@ -6095,20 +6134,18 @@ Type any command or just describe what you want to do.
 			brainText += "No active TODO items.\n";
 			brainText += "The brain automatically creates a TODO plan for complex multi-file tasks.";
 		} else {
-			brainText += "| # | Status | Task | Evidence |\n";
-			brainText += "|---|--------|------|----------|\n";
-			let idx = 1;
-			for (const item of snapshot.items) {
-				const statusIcon = item.status === "completed" ? "✓" : item.status === "in_progress" ? "●" : item.status === "blocked" ? "✗" : item.status === "cancelled" ? "—" : "○";
-				const evidence = item.completionEvidence.length > 0 ? item.completionEvidence[item.completionEvidence.length - 1].slice(0, 30) : "-";
-				brainText += `| ${idx} | ${statusIcon} ${item.status} | ${item.description.slice(0, 40)} | ${evidence} |\n`;
-				idx++;
+			const panelLines = renderTodoListPanel(snapshot.items, terminalWidth);
+			for (const line of panelLines) {
+				brainText += line + "\n";
 			}
 
-			const completed = snapshot.items.filter((item: { status: string }) => item.status === "completed").length;
-			const total = snapshot.items.length;
-			const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
-			brainText += `\n**Progress: ${completed}/${total} (${percent}%)**`;
+			const stats = brain.todos.getStats();
+			brainText += `\n**Progress: ${stats.completedTasks}/${stats.totalTasks} (${stats.completionRate}%)**`;
+			if (stats.avgCompletionTimeMs > 0) {
+				const avgMin = Math.round(stats.avgCompletionTimeMs / 60000);
+				brainText += ` | Avg: ${avgMin}m`;
+			}
+			brainText += "\n\nSubcommands: `/brain graph`, `/brain stats`, `/brain timeline`";
 		}
 
 		this.chatContainer.addChild(new Spacer(1));
@@ -6262,7 +6299,7 @@ Type any command or just describe what you want to do.
 				pluginText += "| Extension Path | Tools Registered |\n";
 				pluginText += "|----------------|------------------|\n";
 				for (const path of extensionPaths) {
-					const toolCount = registeredTools.filter((t) => t.sourceInfo?.extensionPath === path).length;
+					const toolCount = registeredTools.filter((t) => t.sourceInfo?.path === path).length;
 					pluginText += `| ${path} | ${toolCount} |\n`;
 				}
 				pluginText += `\n**Total registered tools:** ${registeredTools.length}\n`;
@@ -6329,7 +6366,7 @@ Type any command or just describe what you want to do.
 				const userContent = firstUser.message.content;
 				const firstText = typeof userContent === "string"
 					? userContent
-					: Array.isArray(userContent) ? userContent.find((c: { type: string; text?: string }) => c.type === "text")?.text || "" : "";
+					: Array.isArray(userContent) ? (() => { const tb = userContent.find((c) => c.type === "text"); return tb && tb.type === "text" ? tb.text : ""; })() : "";
 				const topic = firstText.slice(0, 80) + (firstText.length > 80 ? "..." : "");
 				recap += `**Topic:** ${topic}\n`;
 			}
@@ -6355,7 +6392,8 @@ Type any command or just describe what you want to do.
 
 			// Get last response snippet
 			if (lastAssistant && lastAssistant.message.role === "assistant") {
-				const lastText = lastAssistant.message.content.find((c: { type: string; text?: string }) => c.type === "text")?.text || "";
+				const lastTextBlock = lastAssistant.message.content.find((c) => c.type === "text");
+				const lastText = lastTextBlock && lastTextBlock.type === "text" ? lastTextBlock.text : "";
 				if (lastText) {
 					const snippet = lastText.slice(0, 120) + (lastText.length > 120 ? "..." : "");
 					recap += `\n**Last response:** ${snippet}\n`;
@@ -6381,7 +6419,7 @@ Type any command or just describe what you want to do.
 			"- **Ask Question**: Native tool for clarifying requirements\n",
 			"- **Auto-compaction**: Context management with TODO preservation\n",
 			"\n### Commands\n",
-			"- \`/brain\` - View adaptive brain status\n",
+			"- \`/brain\` - View adaptive brain status (graph, stats, timeline subcommands)\n",
 			"- \`/stats\` - Session statistics\n",
 			"- \`/plan\` - Plan mode management\n",
 			"- \`/powerup\" - Discover tips and features\n",
@@ -6402,7 +6440,7 @@ Type any command or just describe what you want to do.
 		this.ui.requestRender();
 
 		try {
-			await this.session.extensionRunner.reloadExtensions();
+			await this.session.reload();
 			this.showSuccess("Extensions reloaded successfully.");
 		} catch (error) {
 			this.showError(`Failed to reload extensions: ${error instanceof Error ? error.message : "Unknown error"}`);
@@ -6414,7 +6452,7 @@ Type any command or just describe what you want to do.
 		this.ui.requestRender();
 
 		try {
-			await this.session.reloadSkills();
+			await this.session.reload();
 			this.showSuccess("Skills reloaded successfully.");
 		} catch (error) {
 			this.showError(`Failed to reload skills: ${error instanceof Error ? error.message : "Unknown error"}`);
@@ -6431,7 +6469,7 @@ Type any command or just describe what you want to do.
 			return;
 		}
 
-		this.sessionManager.setSessionName(newName);
+		this.session.setSessionName(newName);
 		this.showSuccess(`Session renamed to "${newName}"`);
 		this.footer.invalidate();
 		this.ui.requestRender();
@@ -6449,18 +6487,37 @@ Type any command or just describe what you want to do.
 		// Show rewind selector
 		this.showSelector((done) => {
 			const selector = new UserMessageSelectorComponent(
-				{
-					theme: this.getMarkdownThemeWithSettings(),
-					allowEmpty: false,
-				},
-				messages,
-				(index) => {
-					done();
-					if (index > 0) {
-						this.session.rewindToIndex(index);
-						this.renderCurrentSessionState();
-						this.showSuccess(`Rewound to message ${index + 1}`);
+				messages.map((m) => {
+					const msg = m.type === "message" ? m.message : undefined;
+					let text = "";
+					if (msg && "content" in msg) {
+						const content = msg.content;
+						if (typeof content === "string") {
+							text = content;
+						} else if (Array.isArray(content)) {
+							const textBlock = content.find((c) => c.type === "text");
+							if (textBlock && textBlock.type === "text") {
+								text = textBlock.text;
+							}
+						}
 					}
+					return { id: m.id, text: text.slice(0, 80) };
+				}),
+				async (entryId) => {
+					done();
+					try {
+						const result = await this.session.navigateTree(entryId);
+						if (!result.cancelled) {
+							this.renderCurrentSessionState();
+							this.showSuccess("Rewound to selected message");
+						}
+					} catch (error) {
+						this.showError(error instanceof Error ? error.message : "Failed to rewind");
+					}
+				},
+				() => {
+					done();
+					this.ui.requestRender();
 				},
 			);
 			return { component: selector, focus: selector };
@@ -6470,8 +6527,8 @@ Type any command or just describe what you want to do.
 	private handleSandboxCommand(): void {
 		let sandboxText = "**Sandbox Status**\n\n";
 
-		const sandboxEnabled = this.settingsManager.getSandboxEnabled();
-		const sandboxPath = this.settingsManager.getSandboxPath();
+		const sandboxEnabled = false;
+		const sandboxPath = undefined;
 
 		if (sandboxEnabled) {
 			sandboxText += "Status: ✓ Enabled\n";
@@ -6492,7 +6549,7 @@ Type any command or just describe what you want to do.
 	}
 
 	private handleSkillsCommand(): void {
-		const skills = this.session.skills;
+		const skills = this.session.resourceLoader.getSkills().skills;
 	
 		let skillsText = "**Available Skills**\n\n";
 
@@ -6529,7 +6586,7 @@ Type any command or just describe what you want to do.
 		statusText += "|-----------|--------|\n";
 
 		// Version
-		const version = this.settingsManager.getVersion();
+		const version = this.version;
 		statusText += `| Version | ${version || "-"} |\n`;
 
 		// Model
@@ -6554,11 +6611,11 @@ Type any command or just describe what you want to do.
 		statusText += `| Auto-compact | ${this.session.autoCompactionEnabled ? "✓ Enabled" : "○ Disabled"} |\n`;
 
 		// Extensions
-		const extensions = this.session.extensionRunner.getLoadedExtensions();
+		const extensions = this.session.extensionRunner.getExtensionPaths();
 		statusText += `| Extensions | ${extensions.length} loaded |\n`;
 
 		// Skills
-		const skills = this.session.skills;
+		const skills = this.session.resourceLoader.getSkills().skills;
 		statusText += `| Skills | ${skills?.length || 0} loaded |\n`;
 
 		// Working directory

@@ -246,6 +246,16 @@ ${section("Command Categories")}
     ${APP_NAME} --model <pattern>       Select model or provider/model
     ${APP_NAME} --list-models [search]  List configured models
 
+  ${chalk.cyan("Vision")}
+    ${APP_NAME} image setup --model sd15
+                                   Download a local Diffusers model
+    ${APP_NAME} image generate "prompt"
+                                   Generate a PNG locally
+    ${APP_NAME} image edit --input image.png --mask mask.png --prompt "edit"
+                                   Edit a PNG locally with inpainting
+    ${APP_NAME} image models           List local image models
+    ${APP_NAME} image open-last        Open the last generated PNG
+
   ${chalk.cyan("Project")}
     ${APP_NAME} trust                   Trust current project folder
     ${APP_NAME} trust list              List saved trust decisions
@@ -289,6 +299,11 @@ ${section("Command Categories")}
     ${APP_NAME} config path             Show settings path
     ${APP_NAME} theme list              List themes
     ${APP_NAME} theme set graphite      Set graphite theme
+
+  ${chalk.cyan("Droid")}
+    ${APP_NAME} droid open settings     Run Android automation through ADB
+    ${APP_NAME} droid read screen       Read connected device screen text
+    ${APP_NAME} automation tap 360 800  Automation command alias
 
   ${chalk.cyan("Tools")}
     ${APP_NAME} tools list              Detect companion CLIs

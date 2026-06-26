@@ -1,5 +1,5 @@
 import { randomBytes } from "node:crypto";
-import { existsSync, mkdirSync, readFileSync, readdirSync, renameSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import type { ShipState } from "./types.ts";
 
@@ -74,9 +74,7 @@ export function listShipStates(cwd: string): ShipState[] {
 
 export function findActiveShipState(cwd: string): ShipState | undefined {
 	const states = listShipStates(cwd);
-	return states.find(
-		(s) => s.phase !== "completed" && s.phase !== "failed" && s.phase !== "cancelled",
-	);
+	return states.find((s) => s.phase !== "completed" && s.phase !== "failed" && s.phase !== "cancelled");
 }
 
 export function getEvidenceDir(cwd: string): string {

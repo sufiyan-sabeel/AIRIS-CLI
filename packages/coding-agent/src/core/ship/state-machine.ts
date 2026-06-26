@@ -1,6 +1,6 @@
-import { SHIP_TRANSITIONS } from "./types.ts";
-import type { ShipPhase, ShipState, ShipTask, ShipTodo } from "./types.ts";
 import { createShipId, nowIso, writeShipState } from "./storage.ts";
+import type { ShipPhase, ShipState, ShipTask, ShipTodo } from "./types.ts";
+import { SHIP_TRANSITIONS } from "./types.ts";
 
 export interface CreateShipOptions {
 	cwd: string;
@@ -119,9 +119,7 @@ export function addTodo(state: ShipState, description: string, phase: ShipPhase,
 export function completeTodo(state: ShipState, todoId: string, cwd: string): ShipState {
 	const updated: ShipState = {
 		...state,
-		todos: state.todos.map((t) =>
-			t.id === todoId ? { ...t, status: "completed" as const } : t,
-		),
+		todos: state.todos.map((t) => (t.id === todoId ? { ...t, status: "completed" as const } : t)),
 		updatedAt: nowIso(),
 	};
 	writeShipState(cwd, updated);

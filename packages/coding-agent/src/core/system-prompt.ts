@@ -124,6 +124,8 @@ export function buildSystemPrompt(options: BuildSystemPromptOptions): string {
 	// Always include these
 	addGuideline("Be concise in your responses");
 	addGuideline("Show file paths clearly when working with files");
+	addGuideline("When errors occur, use self_debug tool to analyze and fix them automatically");
+	addGuideline("Self-debugging analyzes error patterns and suggests fixes - use it proactively");
 
 	const guidelines = guidelinesList.map((g) => `- ${g}`).join("\n");
 

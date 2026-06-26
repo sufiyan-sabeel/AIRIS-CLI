@@ -84,20 +84,17 @@ export function renderContextGaugePanel(data: ContextGaugeData, terminalWidth: n
 
 	// Pressure indicator
 	const pressure = data.percent > 85 ? "CRITICAL" : data.percent > 65 ? "HIGH" : data.percent > 40 ? "NORMAL" : "LOW";
-	const pressureColor = data.percent > 85 ? "error" : data.percent > 65 ? "warning" : data.percent > 40 ? "text" : "dim";
+	const pressureColor =
+		data.percent > 85 ? "error" : data.percent > 65 ? "warning" : data.percent > 40 ? "text" : "dim";
 	lines.push(`  ${theme.fg("dim", "Pressure:")} ${theme.fg(pressureColor, pressure)}`);
 
 	// Auto-compact status
-	const compactStatus = data.autoCompactEnabled
-		? theme.fg("success", "Enabled")
-		: theme.fg("dim", "Disabled");
+	const compactStatus = data.autoCompactEnabled ? theme.fg("success", "Enabled") : theme.fg("dim", "Disabled");
 	lines.push(`  ${theme.fg("dim", "Auto-compact:")} ${compactStatus}`);
 
 	if (data.lastCompactionTime) {
 		const ago = Date.now() - data.lastCompactionTime;
-		const agoStr = ago < 60000
-			? `${Math.floor(ago / 1000)}s ago`
-			: `${Math.floor(ago / 60000)}m ago`;
+		const agoStr = ago < 60000 ? `${Math.floor(ago / 1000)}s ago` : `${Math.floor(ago / 60000)}m ago`;
 		lines.push(`  ${theme.fg("dim", "Last compact:")} ${theme.fg("dim", agoStr)}`);
 	}
 

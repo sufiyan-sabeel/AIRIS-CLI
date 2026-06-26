@@ -7,9 +7,9 @@ import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
+import { createAskQuestionToolDefinition } from "../src/core/adaptive/ask-question.ts";
 import { AdaptiveBrainController } from "../src/core/adaptive/controller.ts";
 import { ExploreTaskRunner } from "../src/core/adaptive/explore-task.ts";
-import { createAskQuestionToolDefinition } from "../src/core/adaptive/ask-question.ts";
 import { SessionManager } from "../src/core/session-manager.ts";
 
 function tmp(): string {
@@ -35,7 +35,7 @@ describe("Adaptive Agent Brain", () => {
 		const snap2 = brain.observeToolExecution({
 			toolName: "bash",
 			args: { command: "npm test" },
-			result: { content: [{ type: "text", text: "ok" }] },
+			result: { content: [{ type: "text", text: "ok" }], details: undefined },
 			isError: false,
 		});
 		expect(snap2.items.some((i) => i.completionEvidence.some((e) => e.includes("npm test")))).toBe(true);
@@ -46,7 +46,9 @@ describe("Adaptive Agent Brain", () => {
 		const file = join(dir, "agent.ts");
 		writeFileSync(file, "export function agentLoop() { return 'ok'; }\n");
 		const before = readFileSync(file, "utf8");
-		const result = await new ExploreTaskRunner(dir, { maxRuntimeMs: 2000, maxFiles: 5, maxToolCalls: 20 }).run("understand agent loop");
+		const result = await new ExploreTaskRunner(dir, { maxRuntimeMs: 2000, maxFiles: 5, maxToolCalls: 20 }).run(
+			"understand agent loop",
+		);
 		expect(readFileSync(file, "utf8")).toBe(before);
 		expect(result.metrics.toolCalls).toBeLessThanOrEqual(20);
 	});
@@ -62,7 +64,14 @@ describe("Adaptive Agent Brain", () => {
 			api: "test",
 			provider: "test",
 			model: "test",
-			usage: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, totalTokens: 0, cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0 } },
+			usage: {
+				input: 0,
+				output: 0,
+				cacheRead: 0,
+				cacheWrite: 0,
+				totalTokens: 0,
+				cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0 },
+			},
 			stopReason: "stop",
 			timestamp: Date.now(),
 		});
@@ -77,15 +86,25 @@ describe("Adaptive Agent Brain", () => {
 		const session = SessionManager.inMemory(tmp());
 		const brain = new AdaptiveBrainController(session, session.getCwd());
 		brain.todos.replacePlan("goal", ["Preserve this unfinished task"]);
-		expect(brain.validateCompactionSummary("Summary: remaining work includes Preserve this unfinished task.")).toBe(true);
-		expect(brain.validateCompactionSummary("Everything has been completed and there is nothing left to do.")).toBe(false);
+		expect(brain.validateCompactionSummary("Summary: remaining work includes Preserve this unfinished task.")).toBe(
+			true,
+		);
+		expect(brain.validateCompactionSummary("Everything has been completed and there is nothing left to do.")).toBe(
+			false,
+		);
 	});
 
 	it("continues task state after compaction", async () => {
 		const session = SessionManager.inMemory(tmp());
 		const brain = new AdaptiveBrainController(session, session.getCwd());
 		brain.todos.replacePlan("fix and ship", ["Fix bug", "Run tests"]);
-		brain.recordCompactionMetrics({ reason: "adaptive", tokensBefore: 5000, summaryLength: 200, openTodos: 2, createdAt: new Date().toISOString() });
+		brain.recordCompactionMetrics({
+			reason: "adaptive",
+			tokensBefore: 5000,
+			summaryLength: 200,
+			openTodos: 2,
+			createdAt: new Date().toISOString(),
+		});
 		await brain.prepareTurn("Run tests and ship", []);
 		expect(brain.todos.getSnapshot().items.length).toBeGreaterThanOrEqual(2);
 	});
@@ -97,10 +116,12 @@ describe("Adaptive Agent Brain", () => {
 		const snap = brain.observeToolExecution({
 			toolName: "bash",
 			args: { command: "npm test" },
-			result: { content: [{ type: "text", text: "FAILED" }] },
+			result: { content: [{ type: "text", text: "FAILED" }], details: undefined },
 			isError: true,
 		});
-		expect(snap.items.some((i) => i.status === "blocked" && i.failureReason?.includes("Verification failed"))).toBe(true);
+		expect(snap.items.some((i) => i.status === "blocked" && i.failureReason?.includes("Verification failed"))).toBe(
+			true,
+		);
 	});
 
 	it("works without special user commands", async () => {
@@ -121,7 +142,13 @@ describe("Adaptive Agent Brain", () => {
 	it("uses practical resource limits for Termux", async () => {
 		const dir = tmp();
 		writeFileSync(join(dir, "index.ts"), "export const x = 1;\n");
-		const result = await new ExploreTaskRunner(dir, { maxRuntimeMs: 1000, maxToolCalls: 8, maxFiles: 2, maxDepth: 2, maxParallel: 1 }).run("inspect index");
+		const result = await new ExploreTaskRunner(dir, {
+			maxRuntimeMs: 1000,
+			maxToolCalls: 8,
+			maxFiles: 2,
+			maxDepth: 2,
+			maxParallel: 1,
+		}).run("inspect index");
 		expect(result.metrics.toolCalls).toBeLessThanOrEqual(8);
 	});
 });
@@ -143,7 +170,22 @@ describe("Ask Question ability", () => {
 			},
 			undefined,
 			undefined,
-			{ mode: "print", hasUI: false, sessionManager: session, cwd: session.getCwd(), abort() {}, isIdle: () => true, isProjectTrusted: () => true, signal: undefined, hasPendingMessages: () => false, shutdown() {}, getContextUsage: () => undefined, compact() {}, getSystemPrompt: () => "", getSystemPromptOptions: () => ({}) } as any,
+			{
+				mode: "print",
+				hasUI: false,
+				sessionManager: session,
+				cwd: session.getCwd(),
+				abort() {},
+				isIdle: () => true,
+				isProjectTrusted: () => true,
+				signal: undefined,
+				hasPendingMessages: () => false,
+				shutdown() {},
+				getContextUsage: () => undefined,
+				compact() {},
+				getSystemPrompt: () => "",
+				getSystemPromptOptions: () => ({}),
+			} as any,
 		);
 		expect(result.details.status).toBe("input_required");
 		expect(result.details.title).toBe("Select approach");

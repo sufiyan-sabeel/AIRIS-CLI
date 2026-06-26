@@ -1,5 +1,4 @@
-import { type Static } from "typebox";
-import { Type } from "typebox";
+import { type Static, Type } from "typebox";
 
 export const VerificationMethod = Type.Union([
 	Type.Literal("test"),
@@ -16,11 +15,7 @@ export const VerificationMethod = Type.Union([
 
 export type VerificationMethod = Static<typeof VerificationMethod>;
 
-export const CriterionStatus = Type.Union([
-	Type.Literal("pass"),
-	Type.Literal("fail"),
-	Type.Literal("unverified"),
-]);
+export const CriterionStatus = Type.Union([Type.Literal("pass"), Type.Literal("fail"), Type.Literal("unverified")]);
 
 export type CriterionStatus = Static<typeof CriterionStatus>;
 
@@ -36,19 +31,11 @@ export const MissionStatus = Type.Union([
 
 export type MissionStatus = Static<typeof MissionStatus>;
 
-export const LeaseType = Type.Union([
-	Type.Literal("directory"),
-	Type.Literal("command"),
-	Type.Literal("network"),
-]);
+export const LeaseType = Type.Union([Type.Literal("directory"), Type.Literal("command"), Type.Literal("network")]);
 
 export type LeaseType = Static<typeof LeaseType>;
 
-export const LeaseStatus = Type.Union([
-	Type.Literal("active"),
-	Type.Literal("expired"),
-	Type.Literal("revoked"),
-]);
+export const LeaseStatus = Type.Union([Type.Literal("active"), Type.Literal("expired"), Type.Literal("revoked")]);
 
 export type LeaseStatus = Static<typeof LeaseStatus>;
 
@@ -137,11 +124,13 @@ export const FailureRecord = Type.Object({
 	errorFingerprint: Type.String(),
 	errorMessage: Type.String(),
 	context: Type.Optional(Type.String()),
-	attemptedFixes: Type.Array(Type.Object({
-		description: Type.String(),
-		success: Type.Boolean(),
-		timestamp: Type.String(),
-	})),
+	attemptedFixes: Type.Array(
+		Type.Object({
+			description: Type.String(),
+			success: Type.Boolean(),
+			timestamp: Type.String(),
+		}),
+	),
 	verifiedResolution: Type.Optional(Type.String()),
 	createdAt: Type.String(),
 	updatedAt: Type.String(),

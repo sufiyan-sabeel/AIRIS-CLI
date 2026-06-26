@@ -2,6 +2,19 @@
  * Core modules shared between all run modes.
  */
 
+// Self-debug system
+export {
+	type DebugAttempt,
+	type DebugSession,
+	type ErrorAnalysis,
+	type ErrorCategory,
+	type ErrorContext,
+	type ErrorPattern,
+	type ErrorSeverity,
+	type FixAction,
+	SelfDebugBrain,
+	type SuggestedFix,
+} from "./adaptive/self-debug.ts";
 export {
 	AgentSession,
 	type AgentSessionConfig,
