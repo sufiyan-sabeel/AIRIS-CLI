@@ -445,7 +445,7 @@ export class AdaptiveBrainController {
 				"For action=stats, get statistics about errors in this session.",
 			],
 			parameters: selfDebugSchema,
-			async execute(_toolCallId, params: SelfDebugInput) {
+			async execute(_toolCallId, params: SelfDebugInput, _signal, _onUpdate, _ctx) {
 				switch (params.action) {
 					case "analyze": {
 						if (!params.errorMessage) {
