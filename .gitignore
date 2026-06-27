@@ -60,3 +60,13 @@ backend/db/
 
 # Accidental shell output file
 h -u origin main
+
+# AIRIS local/runtime files
+.airis/vision/
+website_backup_*/
+design-reference/
+AIRIS-automate/
+
+# Android trash files
+.trashed-*
+**/.trashed-*
