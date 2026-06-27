@@ -16,7 +16,6 @@ import {
 	transitionTo,
 } from "../../src/core/ship/state-machine.ts";
 import { findActiveShipState, listShipStates, readShipState } from "../../src/core/ship/storage.ts";
-import type { ShipPhase } from "../../src/core/ship/types.ts";
 
 let tempDir: string | undefined;
 

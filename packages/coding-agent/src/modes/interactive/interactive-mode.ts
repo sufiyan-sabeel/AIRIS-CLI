@@ -116,7 +116,6 @@ import { ExtensionSelectorComponent } from "./components/extension-selector.ts";
 import { FooterComponent } from "./components/footer.ts";
 import { renderInlineProgress, renderTodoListPanel, renderDependencyGraph, renderStatsDashboard, renderTimeline, type AdaptiveProgressData } from "./components/adaptive-progress.ts";
 import { createToolStats, recordToolCall, setToolRunning } from "./components/tool-stats.ts";
-import { renderInlineGauge, type ContextGaugeData } from "./components/context-gauge.ts";
 import { formatKeyText, keyDisplayText, keyHint, keyText, rawKeyHint } from "./components/keybinding-hints.ts";
 import { LoginDialogComponent } from "./components/login-dialog.ts";
 import { ModelSelectorComponent } from "./components/model-selector.ts";
@@ -6136,7 +6135,7 @@ Type any command or just describe what you want to do.
 		} else {
 			const panelLines = renderTodoListPanel(snapshot.items, terminalWidth);
 			for (const line of panelLines) {
-				brainText += line + "\n";
+				brainText += `${line}\n`;
 			}
 
 			const stats = brain.todos.getStats();
@@ -6412,7 +6411,7 @@ Type any command or just describe what you want to do.
 
 	private handleReleaseNotesCommand(): void {
 		const notes = [
-			"**${APP_NAME} Updates**\n",
+			`**${APP_NAME} Updates**\n`,
 			"### Latest Features\n",
 			"- **Adaptive Brain**: Automatic TODO planning for complex tasks\n",
 			"- **Explore Task**: Read-only code exploration with resource limits\n",
@@ -6672,7 +6671,7 @@ Type any command or just describe what you want to do.
 			if (this.pendingBashComponents.length > 0) {
 				tasksText += "| Task | Status |\n";
 				tasksText += "|------|--------|\n";
-				for (const comp of this.pendingBashComponents) {
+				for (const _comp of this.pendingBashComponents) {
 					tasksText += "| Bash command | ○ Pending |\n";
 				}
 			} else {
