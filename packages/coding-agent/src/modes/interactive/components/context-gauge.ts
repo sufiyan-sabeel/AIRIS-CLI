@@ -4,7 +4,6 @@
  * Visual gauge showing context window usage with color coding.
  * Provides both inline and detailed views.
  */
-import { truncateToWidth } from "@earendil-works/airis-tui";
 import { theme } from "../theme/theme.ts";
 
 export interface ContextGaugeData {

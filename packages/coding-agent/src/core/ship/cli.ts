@@ -18,7 +18,7 @@ import {
 	transitionTo,
 } from "./state-machine.ts";
 import { findActiveShipState, readShipState, writeShipState } from "./storage.ts";
-import type { ShipPhase, ShipState } from "./types.ts";
+import type { ShipState } from "./types.ts";
 
 export async function handleShipCommand(args: string[], cwd: string): Promise<boolean> {
 	const [subcommand, ...rest] = args;

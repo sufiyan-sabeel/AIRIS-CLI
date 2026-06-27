@@ -127,7 +127,7 @@ export class AdaptiveTodoStore {
 		const timestamp = nowIso();
 		const existing = new Map(this.snapshot.items.map((item) => [item.description.trim().toLowerCase(), item]));
 		const items = descriptions
-			.map((description, index) => description.trim())
+			.map((description, _index) => description.trim())
 			.filter(Boolean)
 			.map((description, index): AdaptiveTodoItem => {
 				const previous = existing.get(description.toLowerCase());

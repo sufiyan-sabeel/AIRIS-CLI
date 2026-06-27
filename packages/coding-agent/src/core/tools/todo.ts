@@ -39,7 +39,7 @@ function formatTodoCall(args: TodoToolInput, theme: Theme): string {
 	return action;
 }
 
-function formatTodoResult(args: TodoToolInput, result: string, theme: Theme): string {
+function formatTodoResult(_args: TodoToolInput, result: string, theme: Theme): string {
 	if (result.startsWith("No tasks")) {
 		return theme.fg("muted", result);
 	}

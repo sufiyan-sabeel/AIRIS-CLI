@@ -114,7 +114,6 @@ export class AdaptiveBrainController {
 	private readonly options: AdaptiveBrainOptions;
 	private lastExploreAt = 0;
 	private lastCompactionAt = 0;
-	private lastAssessment?: AdaptiveAssessment;
 	private lastProgress: AdaptiveProgress = { phase: "idle", summary: "Adaptive brain idle" };
 
 	constructor(sessionManager: SessionManager, cwd: string, options: AdaptiveBrainOptions = {}) {
@@ -399,12 +398,13 @@ export class AdaptiveBrainController {
 						snapshot = todos.getSnapshot();
 						break;
 					case "block":
-						snapshot = params.id
-							? (todos.updateStatus(params.id, "blocked", { failureReason: params.failureReason ?? "Blocked" }),
-								todos.getSnapshot())
-							: todos.blockCurrent(params.failureReason ?? "Blocked");
+						if (params.id) {
+							todos.updateStatus(params.id, "blocked", { failureReason: params.failureReason ?? "Blocked" });
+							snapshot = todos.getSnapshot();
+						} else {
+							snapshot = todos.blockCurrent(params.failureReason ?? "Blocked");
+						}
 						break;
-					case "list":
 					default:
 						snapshot = todos.getSnapshot();
 				}
@@ -469,7 +469,7 @@ export class AdaptiveBrainController {
 						if (!params.sessionId || !params.fixAction) {
 							throw new Error("sessionId and fixAction are required for action=fix");
 						}
-						const session = selfDebugBrain["debugSessions"].get(params.sessionId);
+						const session = selfDebugBrain.getSession(params.sessionId);
 						if (!session) {
 							throw new Error(`Debug session ${params.sessionId} not found`);
 						}
@@ -489,7 +489,7 @@ export class AdaptiveBrainController {
 						if (!params.sessionId) {
 							throw new Error("sessionId is required for action=status");
 						}
-						const session = selfDebugBrain["debugSessions"].get(params.sessionId);
+						const session = selfDebugBrain.getSession(params.sessionId);
 						if (!session) {
 							throw new Error(`Debug session ${params.sessionId} not found`);
 						}

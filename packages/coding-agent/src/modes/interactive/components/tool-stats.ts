@@ -159,10 +159,10 @@ function getToolIcon(name: string): string {
 export function formatToolStatsSummary(stats: ToolStats): string {
 	if (stats.totalCalls === 0) return "";
 
-	const edits = stats.byName["edit"] || 0;
-	const writes = stats.byName["write"] || 0;
-	const reads = stats.byName["read"] || 0;
-	const bashCount = stats.byName["bash"] || 0;
+	const edits = stats.byName.edit || 0;
+	const writes = stats.byName.write || 0;
+	const reads = stats.byName.read || 0;
+	const bashCount = stats.byName.bash || 0;
 	const changes = edits + writes;
 
 	const parts: string[] = [];

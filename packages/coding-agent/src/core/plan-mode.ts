@@ -1,5 +1,5 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { join } from "node:path";
 
 export type PlanModeState = "off" | "planning" | "executing";
 
@@ -123,7 +123,7 @@ export function createPlanManager(opts: PlanManagerOptions) {
 				const idx = plan.steps.findIndex((s) => s.id === afterStepId);
 				if (idx !== -1) {
 					plan.steps.splice(idx + 1, 0, newStep);
-					plan.steps.forEach((s, i) => (s.id = i + 1));
+					for (let i = 0; i < plan.steps.length; i++) plan.steps[i].id = i + 1;
 				} else {
 					plan.steps.push(newStep);
 				}
@@ -139,7 +139,7 @@ export function createPlanManager(opts: PlanManagerOptions) {
 			const plan = plans.find((p) => p.id === planId);
 			if (!plan) return undefined;
 			plan.steps = plan.steps.filter((s) => s.id !== stepId);
-			plan.steps.forEach((s, i) => (s.id = i + 1));
+			for (let i = 0; i < plan.steps.length; i++) plan.steps[i].id = i + 1;
 			plan.updatedAt = new Date().toISOString();
 			savePlans(opts, plans);
 			return plan;

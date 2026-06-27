@@ -152,7 +152,7 @@ export class ExploreTaskRunner {
 		const walk = async (dir: string, depth: number): Promise<void> => {
 			if (!checkLimits() || depth > limits.maxDepth || candidates.length >= limits.maxFiles * 3) return;
 			toolCalls++;
-			let entries;
+			let entries: Awaited<ReturnType<typeof readdir>>;
 			try {
 				entries = await readdir(dir, { withFileTypes: true });
 			} catch {

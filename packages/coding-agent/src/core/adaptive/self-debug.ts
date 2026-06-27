@@ -9,7 +9,6 @@
  * 5. Learns from past errors to improve future debugging
  */
 
-import type { AgentMessage, AgentToolResult } from "@earendil-works/airis-agent-core";
 import { type Static, Type } from "typebox";
 
 // ============================================================================
@@ -284,6 +283,10 @@ export class SelfDebugBrain {
 		};
 		this.debugSessions.set(session.id, session);
 		return session;
+	}
+
+	getSession(sessionId: string): DebugSession | undefined {
+		return this.debugSessions.get(sessionId);
 	}
 
 	/**
