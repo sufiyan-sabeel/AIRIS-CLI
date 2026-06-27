@@ -190,7 +190,6 @@ export class AdaptiveBrainController {
 		if (affectedFiles > 0) assessment.reasons.push(`${affectedFiles} file hint(s) detected`);
 		if (risk !== "low") assessment.reasons.push(`${risk} risk`);
 		if (shouldCompactContext) assessment.reasons.push("context compaction threshold reached");
-		this.lastAssessment = assessment;
 		return assessment;
 	}
 

@@ -1,4 +1,5 @@
 import { execFile } from "node:child_process";
+import type { Dirent } from "node:fs";
 import { readdir, readFile, stat } from "node:fs/promises";
 import { extname, join, relative } from "node:path";
 import { promisify } from "node:util";
@@ -152,7 +153,7 @@ export class ExploreTaskRunner {
 		const walk = async (dir: string, depth: number): Promise<void> => {
 			if (!checkLimits() || depth > limits.maxDepth || candidates.length >= limits.maxFiles * 3) return;
 			toolCalls++;
-			let entries: Awaited<ReturnType<typeof readdir>>;
+			let entries: Dirent[];
 			try {
 				entries = await readdir(dir, { withFileTypes: true });
 			} catch {
