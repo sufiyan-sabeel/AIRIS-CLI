@@ -57,12 +57,23 @@ AIRIS is one of the few full-featured AI coding agents that runs natively on And
 ### One-liner (Linux, macOS, Termux)
 
 ```bash
-curl -fsSL https://airis-dev.netlify.app/install.sh | sh
+curl -fsSL https://sufiyan-sabeel.github.io/AIRIS-CLI/install.sh | sh
 ```
 
 ### From source
 
 ```bash
+git clone https://github.com/sufiyan-sabeel/AIRIS-CLI.git
+cd AIRIS-CLI
+npm install --ignore-scripts --no-audit --no-fund
+npm run build
+npm link
+```
+
+Do not build from an Android shared-storage path such as `/storage/emulated/0` or `/mnt/sdcard`. npm workspaces need symlinks and reliable package extraction, and shared storage can corrupt `node_modules`. On Android/Termux, clone onto the Linux filesystem instead:
+
+```bash
+cd ~
 git clone https://github.com/sufiyan-sabeel/AIRIS-CLI.git
 cd AIRIS-CLI
 npm install --ignore-scripts --no-audit --no-fund
@@ -80,7 +91,7 @@ npm install -g @sufiyan-sabeel/airis-cli
 ### Requirements
 
 - Node.js >= 22.19.0
-- npm or yarn or pnpm
+- npm
 - Git (for building from source)
 
 See [docs/installation.md](docs/installation.md) for detailed platform-specific instructions.
@@ -231,7 +242,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the contribution process, quality bar
 
 ```bash
 # Development setup
-npm install
+npm install --ignore-scripts
 npm run build
 npm run check    # Lint, format, and type check
 ./test.sh        # Run tests

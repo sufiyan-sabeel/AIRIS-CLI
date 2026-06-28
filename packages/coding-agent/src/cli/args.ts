@@ -425,7 +425,7 @@ ${section("Environment Variables")}
   PI_PACKAGE_DIR                   - Override package directory (for Nix/Guix store paths)
   PI_OFFLINE                       - Disable startup network operations when set to 1/true/yes
   PI_TELEMETRY                     - Override install telemetry when set to 1/true/yes or 0/false/no
-  PI_SHARE_VIEWER_URL              - Base URL for /share command (default: https://pi.dev/session/)
+  PI_SHARE_VIEWER_URL              - Base URL for /share command (default: https://sufiyan-sabeel.github.io/AIRIS-CLI/)
   AIRIS_CODING_AGENT               - Set to "true" when running inside AIRIS
 
 ${section("Built-in Tool Names")}

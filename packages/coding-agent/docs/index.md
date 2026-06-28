@@ -15,7 +15,7 @@ npm install -g --ignore-scripts @sufiyan-sabeel/airis-cli
 On Linux or macOS, you can also use the installer:
 
 ```bash
-curl -fsSL https://airis-dev.netlify.app/install.sh | sh
+curl -fsSL https://sufiyan-sabeel.github.io/AIRIS-CLI/install.sh | sh
 ```
 
 To uninstall AIRIS itself, use npm for curl and npm installs:

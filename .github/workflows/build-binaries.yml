@@ -40,7 +40,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
         with:
-          node-version: '22'
+          node-version: '22.19.0'
           registry-url: 'https://registry.npmjs.org'
 
       - name: Build binaries
@@ -64,23 +64,23 @@ jobs:
               --title "${RELEASE_TAG}" \
               --notes-file /tmp/release-notes.md
             gh release upload "${RELEASE_TAG}" \
-              pi-darwin-arm64.tar.gz \
-              pi-darwin-x64.tar.gz \
-              pi-linux-x64.tar.gz \
-              pi-linux-arm64.tar.gz \
-              pi-windows-x64.zip \
-              pi-windows-arm64.zip \
+              airis-darwin-arm64.tar.gz \
+              airis-darwin-x64.tar.gz \
+              airis-linux-x64.tar.gz \
+              airis-linux-arm64.tar.gz \
+              airis-windows-x64.zip \
+              airis-windows-arm64.zip \
               --clobber
           else
             gh release create "${RELEASE_TAG}" \
               --title "${RELEASE_TAG}" \
               --notes-file /tmp/release-notes.md \
-              pi-darwin-arm64.tar.gz \
-              pi-darwin-x64.tar.gz \
-              pi-linux-x64.tar.gz \
-              pi-linux-arm64.tar.gz \
-              pi-windows-x64.zip \
-              pi-windows-arm64.zip
+              airis-darwin-arm64.tar.gz \
+              airis-darwin-x64.tar.gz \
+              airis-linux-x64.tar.gz \
+              airis-linux-arm64.tar.gz \
+              airis-windows-x64.zip \
+              airis-windows-arm64.zip
           fi
 
   publish-npm:
@@ -103,7 +103,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
         with:
-          node-version: '22'
+          node-version: '22.19.0'
           registry-url: 'https://registry.npmjs.org'
           cache: npm
 

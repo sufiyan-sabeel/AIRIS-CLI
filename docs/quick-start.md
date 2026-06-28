@@ -6,7 +6,7 @@ Get AIRIS running in 5 minutes.
 
 ```bash
 # One-liner (Linux/macOS/Termux)
-curl -fsSL https://airis-dev.netlify.app/install.sh | sh
+curl -fsSL https://sufiyan-sabeel.github.io/AIRIS-CLI/install.sh | sh
 
 # Or from source
 git clone https://github.com/sufiyan-sabeel/AIRIS-CLI.git

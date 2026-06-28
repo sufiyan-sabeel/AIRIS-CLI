@@ -45,7 +45,7 @@ Common patterns are documented in [Containerization](containerization.md):
 - run the whole `pi` process inside OpenShell or Docker
 - run host pi while routing built-in tool execution into a Gondolin micro-VM
 - mount only the workspace paths the agent should access
-- avoid mounting host `~/.pi/agent` unless the container should access host sessions, settings, and credentials
+- avoid mounting host `~/.airis/agent` unless the container should access host sessions, settings, and credentials
 - pass the minimum required API keys or use short-lived credentials
 - restrict network access when the task does not need it
 - review diffs and outputs before copying results back to trusted systems

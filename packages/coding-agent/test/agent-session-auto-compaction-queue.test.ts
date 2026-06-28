@@ -21,7 +21,7 @@ vi.mock("../src/core/compaction/index.js", () => ({
 	}) => usage.totalTokens ?? usage.input + usage.output + usage.cacheRead + usage.cacheWrite,
 	collectEntriesForBranchSummary: () => ({ entries: [], commonAncestorId: null }),
 	compact: async () => ({
-		summary: "compacted",
+		summary: "compacted summary for test validation purposes long enough",
 		firstKeptEntryId: "entry-1",
 		tokensBefore: 100,
 		details: {},

@@ -100,7 +100,7 @@ describe("AgentSession compaction characterization", () => {
 				(pi) => {
 					pi.on("session_before_compact", async (event) => ({
 						compaction: {
-							summary: "summary from extension",
+							summary: "extension compaction summary for test validation purposes",
 							firstKeptEntryId: event.preparation.firstKeptEntryId,
 							tokensBefore: event.preparation.tokensBefore,
 							details: { source: "extension" },
@@ -117,7 +117,7 @@ describe("AgentSession compaction characterization", () => {
 		const result = await harness.session.compact();
 		const compactionEntries = harness.sessionManager.getEntries().filter((entry) => entry.type === "compaction");
 
-		expect(result.summary).toBe("summary from extension");
+		expect(result.summary).toBe("extension compaction summary for test validation purposes");
 		expect(compactionEntries).toHaveLength(1);
 		expect(harness.session.messages[0]?.role).toBe("compactionSummary");
 	});
@@ -141,11 +141,11 @@ describe("AgentSession compaction characterization", () => {
 		const harness = await createHarness({ withConfiguredAuth: false });
 		harnesses.push(harness);
 		seedCompactableSession(harness);
-		const getStreamCallCount = useSummaryStreamFn(harness, "summary from custom stream");
+		const getStreamCallCount = useSummaryStreamFn(harness, "custom stream compaction summary for test");
 
 		const result = await harness.session.compact();
 
-		expect(result.summary).toBe("summary from custom stream");
+		expect(result.summary).toBe("custom stream compaction summary for test");
 		expect(getStreamCallCount()).toBe(1);
 	});
 
@@ -153,7 +153,7 @@ describe("AgentSession compaction characterization", () => {
 		const harness = await createHarness({ withConfiguredAuth: false });
 		harnesses.push(harness);
 		seedCompactableSession(harness);
-		const getStreamCallCount = useSummaryStreamFn(harness, "auto summary from custom stream");
+		const getStreamCallCount = useSummaryStreamFn(harness, "auto compaction from custom stream for test");
 		const sessionInternals = harness.session as unknown as SessionWithCompactionInternals;
 
 		await sessionInternals._runAutoCompaction("threshold", false);
@@ -195,7 +195,7 @@ describe("AgentSession compaction characterization", () => {
 				(pi) => {
 					pi.on("session_before_compact", async (event) => ({
 						compaction: {
-							summary: "auto compacted",
+							summary: "auto compacted summary for test validation purposes",
 							firstKeptEntryId: event.preparation.firstKeptEntryId,
 							tokensBefore: event.preparation.tokensBefore,
 							details: {},

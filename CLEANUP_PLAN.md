@@ -27,7 +27,7 @@ Project: AIRIS-CLI at /storage/emulated/0/Download/AIRIS-CLI
 | Path | Reason |
 |------|--------|
 | `.pi/` | Contains same files as `.airis/` (same prompts, skills, extensions, git, npm) except `settings.json` vs `automation-guide.md`. Legacy directory from original upstream project. The code references `.pi/` for backwards compatibility in tests and docs. Verify no runtime code reads from root-level `.pi/` before removing. |
-| `website/` | Contains deploy-ready site for `airis-dev.netlify.app`. Slightly differs from `docs/` (modern install.sh). May be needed for deploys or README links. Verify if this is the authoritative deploy artifact. |
+| `website/` | Contains deploy-ready site for GitHub Pages (`sufiyan-sabeel.github.io/AIRIS-CLI/`). Slightly differs from `docs/` (modern install.sh). May be needed for deploys or README links. Verify if this is the authoritative deploy artifact. |
 | `.pi/settings.json` | Contains `{"androidAutomation": true}`. If `.pi/` is removed, this setting may be lost. Check if android automation reads from `.pi/` or `.airis/`. |
 | root `install.sh` | Same content as `docs/install.sh` (old v2.0). Not referenced by README (which points to website/install.sh). Could be considered duplicate but keeping for safety. |
 

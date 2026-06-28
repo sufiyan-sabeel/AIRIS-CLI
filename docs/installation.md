@@ -3,7 +3,7 @@
 ## Requirements
 
 - **Node.js** >= 22.19.0
-- **npm** or **yarn** or **pnpm** (for package installation)
+- **npm** (AIRIS uses npm workspaces and a root `package-lock.json`)
 - **Git** (for building from source)
 
 ## Linux
@@ -11,7 +11,7 @@
 ### One-liner Install
 
 ```bash
-curl -fsSL https://airis-dev.netlify.app/install.sh | sh
+curl -fsSL https://sufiyan-sabeel.github.io/AIRIS-CLI/install.sh | sh
 ```
 
 This downloads the latest prebuilt binary for your platform (x64 or arm64).
@@ -19,6 +19,19 @@ This downloads the latest prebuilt binary for your platform (x64 or arm64).
 ### From Source
 
 ```bash
+git clone https://github.com/sufiyan-sabeel/AIRIS-CLI.git
+cd AIRIS-CLI
+npm install --ignore-scripts --no-audit --no-fund
+npm run build
+npm link
+```
+
+Do not build from Android shared storage (`/storage/emulated/0`, `/sdcard`, or `/mnt/sdcard`). Those filesystems do not reliably support the symlinks and package extraction behavior npm workspaces need, which can leave dependencies such as `cross-spawn` or `@typescript/native-preview` missing.
+
+Use a Linux filesystem checkout instead:
+
+```bash
+cd ~
 git clone https://github.com/sufiyan-sabeel/AIRIS-CLI.git
 cd AIRIS-CLI
 npm install --ignore-scripts --no-audit --no-fund
@@ -85,6 +98,7 @@ airis --version
 
 - Use Termux from F-Droid, not the Google Play Store version
 - Grant storage permissions if you want to access files outside Termux
+- Keep source checkouts under `$HOME`, not under shared storage paths such as `/storage/emulated/0` or `/mnt/sdcard`
 - Some AI providers may have connectivity issues on mobile networks
 - Local models (Ollama) require significant RAM; works best on devices with 6GB+ RAM
 
@@ -94,7 +108,7 @@ airis --version
 
 ```bash
 # Inside WSL (Ubuntu)
-curl -fsSL https://airis-dev.netlify.app/install.sh | sh
+curl -fsSL https://sufiyan-sabeel.github.io/AIRIS-CLI/install.sh | sh
 ```
 
 ### Native Windows

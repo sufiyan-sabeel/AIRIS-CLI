@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const heroCopyBtn = document.getElementById('heroCopyBtn');
   if (heroCopyBtn) {
     heroCopyBtn.addEventListener('click', () => {
-      const cmd = 'curl -fsSL https://airis-dev.netlify.app/install.sh | sh';
+      const cmd = 'curl -fsSL https://sufiyan-sabeel.github.io/AIRIS-CLI/install.sh | sh';
       navigator.clipboard.writeText(cmd).then(() => {
         showToast('✓ Install command copied', 'success');
       });

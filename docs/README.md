@@ -54,7 +54,7 @@ netlify deploy --prod
 ## Install Command
 
 ```bash
-curl -fsSL https://airis-dev.netlify.app/install.sh | sh
+curl -fsSL https://sufiyan-sabeel.github.io/AIRIS-CLI/install.sh | sh
 ```
 
 ## Installer Behavior

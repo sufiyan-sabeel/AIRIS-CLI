@@ -37,10 +37,10 @@ describe("shouldRunFirstTimeSetup", () => {
 		expect(shouldRunFirstTimeSetup(settingsPath)).toBe(true);
 	});
 
-	it("returns false when experimental features are disabled", () => {
+	it("returns true when no settings.json exists (PI_EXPERIMENTAL no longer checked)", () => {
 		delete process.env.PI_EXPERIMENTAL;
 
-		expect(shouldRunFirstTimeSetup(settingsPath)).toBe(false);
+		expect(shouldRunFirstTimeSetup(settingsPath)).toBe(true);
 	});
 
 	it("returns false when a custom agent dir is set", () => {

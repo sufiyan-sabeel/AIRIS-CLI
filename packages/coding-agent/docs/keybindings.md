@@ -153,7 +153,7 @@ Used inside the scoped models selector (opened via `/scoped-models`).
 
 ## Custom Configuration
 
-Create `~/.pi/agent/keybindings.json`:
+Create `~/.airis/agent/keybindings.json`:
 
 ```json
 {

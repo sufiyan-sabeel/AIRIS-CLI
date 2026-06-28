@@ -2,7 +2,7 @@
 # ╔═══════════════════════════════════════════════════════════════════════════╗
 # ║  AIRIS CLI - Installer                                                  ║
 # ║  Artificial Intelligence Responsive Integrated System                   ║
-# ║  curl -fsSL https://airis-dev.netlify.app/install.sh | sh               ║
+# ║  curl -fsSL https://sufiyan-sabeel.github.io/AIRIS-CLI/install.sh | sh   ║
 # ╚═══════════════════════════════════════════════════════════════════════════╝
 set -e
 
@@ -194,7 +194,7 @@ main() {
         echo ""
         warn "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
         warn "  AIRIS package is not yet published."
-        warn "  Visit https://airis-dev.netlify.app for updates."
+        warn "  Visit https://sufiyan-sabeel.github.io/AIRIS-CLI/ for updates."
         warn ""
         warn "  Or install from source:"
         warn "  git clone https://github.com/sufiyan-sabeel/AIRIS-CLI.git"

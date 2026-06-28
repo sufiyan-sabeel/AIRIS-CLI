@@ -1691,15 +1691,6 @@
 			"integrity": "sha512-pZ0aQPmMmXoUvSbeuWf/Hzsc+avNw/Zd6VeE8CFgkVGWyuHPJvqeJJDeJqLve+K70LvjYIoleGcoJHPT17cWoA==",
 			"license": "MIT"
 		},
-		"node_modules/undici": {
-			"version": "8.5.0",
-			"resolved": "https://registry.npmjs.org/undici/-/undici-8.5.0.tgz",
-			"integrity": "sha512-xamtWoB1EshgjpmlXd7GGm2VfdDtw1+rD8uhry8pSNW3If6S8E0m2T2+orSKeZXEn/aPJMviCpDBA65WJt8zhg==",
-			"license": "MIT",
-			"engines": {
-				"node": ">=22.19.0"
-			}
-		},
 		"node_modules/undici-types": {
 			"version": "6.21.0",
 			"resolved": "https://registry.npmjs.org/undici-types/-/undici-types-6.21.0.tgz",
@@ -1797,6 +1788,15 @@
 			"license": "ISC",
 			"peerDependencies": {
 				"zod": "^3.25.28 || ^4"
+			}
+		},
+		"packages/coding-agent/node_modules/undici": {
+			"version": "8.5.0",
+			"resolved": "https://registry.npmjs.org/undici/-/undici-8.5.0.tgz",
+			"integrity": "sha512-xamtWoB1EshgjpmlXd7GGm2VfdDtw1+rD8uhry8pSNW3If6S8E0m2T2+orSKeZXEn/aPJMviCpDBA65WJt8zhg==",
+			"license": "MIT",
+			"engines": {
+				"node": ">=22.19.0"
 			}
 		}
 	}

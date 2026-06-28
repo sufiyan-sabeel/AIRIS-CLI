@@ -207,7 +207,7 @@ for platform in "${PLATFORMS[@]}"; do
     else
         # Unix platforms (tar.gz) - use wrapper directory for mise compatibility
         echo "Creating airis-$platform.tar.gz..."
-        mv "$platform" airis && tar -czf airis-$platform.tar.gz pi && mv airis "$platform"
+        mv "$platform" airis && tar -czf airis-$platform.tar.gz airis && mv airis "$platform"
     fi
 done
 
