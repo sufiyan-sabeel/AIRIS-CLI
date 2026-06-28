@@ -7,6 +7,7 @@ const nextConfig: NextConfig = {
     unoptimized: true,
   },
   trailingSlash: true,
+  transpilePackages: ["framer-motion"],
 };
 
 export default nextConfig;
