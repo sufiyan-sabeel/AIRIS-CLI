@@ -6,7 +6,6 @@ import {
   Code2,
   FileCode2,
   GitBranch,
-  Image,
   Layers3,
   Palette,
   ShieldCheck,
@@ -44,16 +43,10 @@ export const features: Feature[] = [
     evidence: "README: Interactive TUI with 18 themes; `airis theme list`",
   },
   {
-    title: "File operations",
-    description: "Built-in tools: read, write, edit, grep, find, and ls for project-aware file workflows.",
+    title: "File operations and shell",
+    description: "7 built-in tools: read, bash, edit, write, grep, find, and ls for project-aware file workflows and shell execution.",
     icon: FileCode2,
-    evidence: "CLI help: Built-in Tool Names (7 tools)",
-  },
-  {
-    title: "Shell execution",
-    description: "The built-in bash tool executes shell commands, with trust and approval controls around mutation-capable tools.",
-    icon: Code2,
-    evidence: "CLI help: bash tool; Project trust commands",
+    evidence: "CLI help: Built-in Tool Names (read, bash, edit, write, grep, find, ls)",
   },
   {
     title: "Session management",
@@ -65,7 +58,7 @@ export const features: Feature[] = [
     title: "30+ AI providers",
     description: "Google Gemini, Anthropic, OpenAI, Groq, Mistral, DeepSeek, OpenRouter, Ollama, and more.",
     icon: Bot,
-    evidence: "README: 30+ providers; packages/ai/src/env-api-keys.ts",
+    evidence: "README: 30+ providers; packages/ai/src/env-api-keys.ts (35+ provider IDs)",
   },
   {
     title: "Verified Autonomy",
@@ -75,9 +68,9 @@ export const features: Feature[] = [
   },
   {
     title: "Ship workflow",
-    description: "`airis ship` orchestrates request, contract, approval, planning, implementation, testing, proof, and commit.",
+    description: "`airis ship` orchestrates request, contract, approval, planning, implementation, launch, verification, proof, and commit.",
     icon: Layers3,
-    evidence: "CLI help and docs/airis-ship.md",
+    evidence: "CLI help and packages/coding-agent/src/core/ship/types.ts (11 phases)",
   },
   {
     title: "Project trust",
@@ -122,7 +115,7 @@ export type Command = {
   description: string;
   usage: string;
   examples: string[];
-  category: "Core" | "AI" | "Project" | "Verified Autonomy" | "Ship" | "Sessions" | "Image" | "Droid" | "Config" | "Tools" | "System" | "Developer";
+  category: "Core" | "AI" | "Project" | "Verified Autonomy" | "Ship" | "Sessions" | "Vision" | "Droid" | "Config" | "Tools" | "System" | "Developer" | "Experimental";
 };
 
 export const commands: Command[] = [
@@ -157,11 +150,11 @@ export const commands: Command[] = [
   { command: "airis --continue", description: "Continue previous session.", usage: "airis --continue", examples: ["airis --continue"], category: "Sessions" },
   { command: "airis --resume", description: "Select a session to resume.", usage: "airis --resume", examples: ["airis --resume"], category: "Sessions" },
   { command: "airis --fork", description: "Fork a session into a new one.", usage: "airis --fork <path|id>", examples: ["airis --fork abc123"], category: "Sessions" },
-  { command: "airis image setup", description: "Download a local Diffusers model.", usage: "airis image setup --model sd15", examples: ["airis image setup --model sd15"], category: "Image" },
-  { command: "airis image generate", description: "Generate a PNG image locally.", usage: "airis image generate \"prompt\"", examples: ["airis image generate \"a sunset over mountains\""], category: "Image" },
-  { command: "airis image edit", description: "Inpainting with mask.", usage: "airis image edit --input img.png --mask mask.png --prompt \"edit\"", examples: ["airis image edit --input photo.png --mask area.png --prompt \"add a tree\""], category: "Image" },
-  { command: "airis image models", description: "List local image models.", usage: "airis image models", examples: ["airis image models"], category: "Image" },
-  { command: "airis image open-last", description: "Open last generated PNG.", usage: "airis image open-last", examples: ["airis image open-last"], category: "Image" },
+  { command: "airis image setup", description: "Download a local Diffusers model.", usage: "airis image setup --model sd15", examples: ["airis image setup --model sd15"], category: "Vision" },
+  { command: "airis image generate", description: "Generate a PNG image locally.", usage: "airis image generate \"prompt\"", examples: ["airis image generate \"a sunset over mountains\""], category: "Vision" },
+  { command: "airis image edit", description: "Inpainting with mask.", usage: "airis image edit --input img.png --mask mask.png --prompt \"edit\"", examples: ["airis image edit --input photo.png --mask area.png --prompt \"add a tree\""], category: "Vision" },
+  { command: "airis image models", description: "List local image models.", usage: "airis image models", examples: ["airis image models"], category: "Vision" },
+  { command: "airis image open-last", description: "Open last generated PNG.", usage: "airis image open-last", examples: ["airis image open-last"], category: "Vision" },
   { command: "airis droid open", description: "Open Android settings via ADB.", usage: "airis droid open settings", examples: ["airis droid open settings"], category: "Droid" },
   { command: "airis droid read", description: "Read connected device screen text.", usage: "airis droid read screen", examples: ["airis droid read screen"], category: "Droid" },
   { command: "airis automation", description: "Run automation commands via ADB.", usage: "airis automation tap 360 800", examples: ["airis automation tap 360 800"], category: "Droid" },
@@ -181,9 +174,10 @@ export const commands: Command[] = [
   { command: "airis --mode", description: "Machine-readable output modes.", usage: "airis --mode json|rpc", examples: ["airis --mode json -p \"Summarize\""], category: "Developer" },
   { command: "airis --extension", description: "Load an extension file.", usage: "airis --extension <path>", examples: ["airis --extension ./extension.ts"], category: "Developer" },
   { command: "airis --skill", description: "Load a skill file or directory.", usage: "airis --skill <path>", examples: ["airis --skill ./skills"], category: "Developer" },
+  { command: "airis --models", description: "Limit model cycling with glob patterns.", usage: "airis --models <patterns>", examples: ["airis --models \"anthropic/*sonnet*\""], category: "Experimental" },
 ];
 
-export const commandCategories = ["All", "Core", "AI", "Project", "Verified Autonomy", "Ship", "Sessions", "Image", "Droid", "Config", "Tools", "System", "Developer"] as const;
+export const commandCategories = ["All", "Core", "AI", "Project", "Verified Autonomy", "Ship", "Sessions", "Vision", "Droid", "Config", "Tools", "System", "Developer", "Experimental"] as const;
 
 export const installSections = [
   {
@@ -200,8 +194,9 @@ export const installSections = [
     ],
   },
   {
-    platform: "Windows",
+    platform: "Windows (WSL)",
     commands: [
+      "curl -fsSL https://sufiyan-sabeel.github.io/AIRIS-CLI/install.sh | sh",
       "git clone https://github.com/sufiyan-sabeel/AIRIS-CLI.git\ncd AIRIS-CLI\nnpm install --ignore-scripts --no-audit --no-fund\nnpm run build\nnpm link",
     ],
   },
@@ -227,15 +222,17 @@ export const providers = [
   ["Cloudflare Workers AI", "CLOUDFLARE_API_KEY"],
   ["Cerebras", "CEREBRAS_API_KEY"],
   ["xAI", "XAI_API_KEY"],
+  ["GitHub Copilot", "COPILOT_GITHUB_TOKEN"],
   ["Fireworks", "FIREWORKS_API_KEY"],
   ["Together AI", "TOGETHER_API_KEY"],
+  ["HuggingFace", "HF_TOKEN"],
   ["Kimi", "KIMI_API_KEY"],
   ["MiniMax", "MINIMAX_API_KEY"],
   ["Moonshot AI", "MOONSHOT_API_KEY"],
   ["NVIDIA NIM", "NVIDIA_API_KEY"],
-  ["HuggingFace", "HF_TOKEN"],
   ["Vercel AI Gateway", "AI_GATEWAY_API_KEY"],
   ["ZAI", "ZAI_API_KEY"],
+  ["Ant Ling", "ANT_LING_API_KEY"],
   ["OpenCode", "OPENCODE_API_KEY"],
   ["Xiaomi", "XIAOMI_API_KEY"],
   ["Ollama (local)", "No key needed -- start Ollama first"],
@@ -243,14 +240,14 @@ export const providers = [
 ];
 
 export const docs = [
-  { title: "Installation Guide", href: "#installation", description: "Repository-backed install commands for Linux, macOS, Windows, and Termux." },
+  { title: "Installation Guide", href: "#installation", description: "Repository-backed install commands for Linux, macOS, Windows (WSL), and Termux." },
   { title: "Quick Start", href: "#quick-start", description: "Set an API key, launch interactive mode, run one-shot prompts, and continue sessions." },
-  { title: "Command Explorer", href: "#commands", description: "Searchable command reference with 50+ commands across 13 categories." },
+  { title: "Command Explorer", href: "#commands", description: "Searchable command reference with 50+ commands across 12 categories." },
   { title: "Ship Workflow", href: "#workflow", description: "Full-lifecycle workflow phases from request through proof report." },
-  { title: "Providers", href: "#providers", description: "26+ AI providers including local models (Ollama, LM Studio)." },
+  { title: "Providers", href: "#providers", description: "28+ AI providers including local models (Ollama, LM Studio)." },
 ];
 
-export const workflowPhases = ["Request", "Contract", "Approval", "Planning", "Implementation", "Formatting", "Testing", "Verification", "Proof", "Commit"];
+export const workflowPhases = ["Request", "Contract", "Approval", "Planning", "Implementation", "Formatting", "Testing", "Launch", "Verification", "Proof", "Commit"];
 
 export const terminalLines = [
   "$ airis",
