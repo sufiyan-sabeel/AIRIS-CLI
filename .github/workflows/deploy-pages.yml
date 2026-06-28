@@ -38,7 +38,7 @@ jobs:
 
       - name: Build with Next.js
         working-directory: website
-        run: npm run build
+        run: npx next build --no-turbopack
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
