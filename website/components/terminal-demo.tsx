@@ -28,7 +28,7 @@ export function TerminalDemo() {
           </motion.div>
         ))}
         <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 2.6, duration: 0.35 }} className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-zinc-400">
-          AIRIS v0.79.3 · Artificial Intelligence Responsive Integrated System · Brand: KageOS
+          AIRIS v0.79.3 · 30+ Providers · 18 Themes · 7 Tools · Brand: KageOS
         </motion.div>
       </div>
     </div>

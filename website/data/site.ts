@@ -1,10 +1,12 @@
 import {
   Bot,
   Braces,
+  Camera,
   ClipboardCheck,
   Code2,
   FileCode2,
   GitBranch,
+  Image,
   Layers3,
   Palette,
   ShieldCheck,
@@ -37,15 +39,15 @@ export type Feature = {
 export const features: Feature[] = [
   {
     title: "Interactive terminal UI",
-    description: "AIRIS launches an interactive terminal experience for coding conversations and project work.",
+    description: "Rich terminal interface with 18 built-in themes, split panels, and keyboard navigation.",
     icon: TerminalSquare,
-    evidence: "README: Interactive TUI; help: `airis` launch command",
+    evidence: "README: Interactive TUI with 18 themes; `airis theme list`",
   },
   {
     title: "File operations",
-    description: "Built-in tool names include read, write, edit, grep, find, and ls for project-aware file workflows.",
+    description: "Built-in tools: read, write, edit, grep, find, and ls for project-aware file workflows.",
     icon: FileCode2,
-    evidence: "CLI help: Built-in Tool Names",
+    evidence: "CLI help: Built-in Tool Names (7 tools)",
   },
   {
     title: "Shell execution",
@@ -55,51 +57,57 @@ export const features: Feature[] = [
   },
   {
     title: "Session management",
-    description: "List, resume, continue, fork, name, store, clear, and export sessions from the CLI.",
+    description: "List, resume, continue, fork, name, store, clear, and export sessions to HTML.",
     icon: GitBranch,
     evidence: "CLI help: Sessions and session options",
   },
   {
-    title: "Provider selection",
-    description: "Choose providers and models with `--provider`, `--model`, and `--list-models`.",
+    title: "30+ AI providers",
+    description: "Google Gemini, Anthropic, OpenAI, Groq, Mistral, DeepSeek, OpenRouter, Ollama, and more.",
     icon: Bot,
-    evidence: "CLI help: AI commands and provider/model options",
+    evidence: "README: 30+ providers; packages/ai/src/env-api-keys.ts",
   },
   {
     title: "Verified Autonomy",
-    description: "Mission contracts, capability leases, evidence reports, and failure search are exposed as CLI commands.",
+    description: "Mission contracts, capability leases, evidence-backed verification, and failure genome tracking.",
     icon: ClipboardCheck,
     evidence: "CLI help: Verified Autonomy section",
   },
   {
     title: "Ship workflow",
-    description: "`airis ship` starts, resumes, cancels, lists, and reports status for a full development workflow.",
+    description: "`airis ship` orchestrates request, contract, approval, planning, implementation, testing, proof, and commit.",
     icon: Layers3,
     evidence: "CLI help and docs/airis-ship.md",
   },
   {
     title: "Project trust",
-    description: "Trust commands and per-run approval flags control project-local resources and mutation tools.",
+    description: "Granular trust model: AIRIS asks before accessing project-local resources and mutation tools.",
     icon: ShieldCheck,
     evidence: "CLI help: Project section",
   },
   {
     title: "Extensions and skills",
-    description: "AIRIS can load extension files, skills, prompt templates, themes, and package sources.",
+    description: "Load custom extensions, skills, prompt templates, themes, and package sources (77 example extensions).",
     icon: Wrench,
     evidence: "CLI help: Developer, Config, Tools sections",
   },
   {
-    title: "Theme support",
-    description: "Theme listing, setting, preview, and custom theme file loading are supported.",
+    title: "18 themes",
+    description: "amber, amoled, catppuccin, classic, dark, dracula, graphite, gruvbox, light, matrix, minimal, monokai, nord, one-dark, rose-pine, solarized-dark, tokyo-night, warm.",
     icon: Palette,
-    evidence: "CLI help: theme commands and `--theme` option",
+    evidence: "README: 18 themes; `airis theme list`",
   },
   {
-    title: "Termux support",
-    description: "The repository includes Android Termux installation instructions for running AIRIS in Termux.",
+    title: "Local image generation",
+    description: "Generate images locally with Stable Diffusion models via `airis image generate`.",
+    icon: Camera,
+    evidence: "README: Image Generation section; `airis image` commands",
+  },
+  {
+    title: "Android automation",
+    description: "ADB-based device control: tap, read screen, open settings via `airis droid` commands.",
     icon: Smartphone,
-    evidence: "README and docs/installation.md",
+    evidence: "README: Android/Termux support; `airis droid` commands",
   },
   {
     title: "Machine-readable modes",
@@ -114,19 +122,20 @@ export type Command = {
   description: string;
   usage: string;
   examples: string[];
-  category: "Core" | "AI" | "Project" | "Verified Autonomy" | "Ship" | "Sessions" | "Config" | "Tools" | "System" | "Developer";
+  category: "Core" | "AI" | "Project" | "Verified Autonomy" | "Ship" | "Sessions" | "Image" | "Droid" | "Config" | "Tools" | "System" | "Developer";
 };
 
 export const commands: Command[] = [
-  { command: "airis", description: "Launch interactive AIRIS.", usage: "airis [options] [@files...] [messages...]", examples: ["airis", "airis \"Review this project\""], category: "Core" },
+  { command: "airis", description: "Launch interactive AIRIS TUI.", usage: "airis [options] [@files...] [messages...]", examples: ["airis", "airis \"Review this project\""], category: "Core" },
   { command: "airis chat", description: "Launch chat mode as an alias.", usage: "airis chat", examples: ["airis chat"], category: "Core" },
   { command: "airis help", description: "Show help, optionally for a command.", usage: "airis help [command]", examples: ["airis help", "airis help session"], category: "Core" },
   { command: "airis version", description: "Show version and brand metadata.", usage: "airis version", examples: ["airis version"], category: "Core" },
   { command: "airis changelog", description: "Show the latest changelog entry.", usage: "airis changelog", examples: ["airis changelog"], category: "Core" },
-  { command: "airis -p", description: "Run one-shot prompt mode.", usage: "airis -p \"prompt\"", examples: ["airis -p \"Summarize package.json\""], category: "AI" },
-  { command: "airis --provider", description: "Select provider.", usage: "airis --provider <name>", examples: ["airis --provider anthropic -p \"Explain this code\""], category: "AI" },
+  { command: "airis -p", description: "Run one-shot prompt mode (non-interactive).", usage: "airis -p \"prompt\"", examples: ["airis -p \"Summarize package.json\""], category: "AI" },
+  { command: "airis --provider", description: "Select AI provider.", usage: "airis --provider <name>", examples: ["airis --provider anthropic -p \"Explain this code\""], category: "AI" },
   { command: "airis --model", description: "Select model or provider/model.", usage: "airis --model <pattern>", examples: ["airis --model anthropic/*sonnet*"], category: "AI" },
   { command: "airis --list-models", description: "List configured models with optional search.", usage: "airis --list-models [search]", examples: ["airis --list-models", "airis --list-models gemini"], category: "AI" },
+  { command: "airis --thinking", description: "Set thinking level.", usage: "airis --thinking <level>", examples: ["airis --thinking high"], category: "AI" },
   { command: "airis trust", description: "Trust current project folder.", usage: "airis trust", examples: ["airis trust"], category: "Project" },
   { command: "airis trust list", description: "List saved trust decisions.", usage: "airis trust list", examples: ["airis trust list"], category: "Project" },
   { command: "airis trust revoke", description: "Remove a trust decision.", usage: "airis trust revoke <path>", examples: ["airis trust revoke ."], category: "Project" },
@@ -145,12 +154,23 @@ export const commands: Command[] = [
   { command: "airis session resume", description: "Resume a session.", usage: "airis session resume <id>", examples: ["airis session resume abc123"], category: "Sessions" },
   { command: "airis session current", description: "Show latest current-project session.", usage: "airis session current", examples: ["airis session current"], category: "Sessions" },
   { command: "airis session clear", description: "Clear current-project sessions.", usage: "airis session clear [--yes]", examples: ["airis session clear --yes"], category: "Sessions" },
+  { command: "airis --continue", description: "Continue previous session.", usage: "airis --continue", examples: ["airis --continue"], category: "Sessions" },
+  { command: "airis --resume", description: "Select a session to resume.", usage: "airis --resume", examples: ["airis --resume"], category: "Sessions" },
+  { command: "airis --fork", description: "Fork a session into a new one.", usage: "airis --fork <path|id>", examples: ["airis --fork abc123"], category: "Sessions" },
+  { command: "airis image setup", description: "Download a local Diffusers model.", usage: "airis image setup --model sd15", examples: ["airis image setup --model sd15"], category: "Image" },
+  { command: "airis image generate", description: "Generate a PNG image locally.", usage: "airis image generate \"prompt\"", examples: ["airis image generate \"a sunset over mountains\""], category: "Image" },
+  { command: "airis image edit", description: "Inpainting with mask.", usage: "airis image edit --input img.png --mask mask.png --prompt \"edit\"", examples: ["airis image edit --input photo.png --mask area.png --prompt \"add a tree\""], category: "Image" },
+  { command: "airis image models", description: "List local image models.", usage: "airis image models", examples: ["airis image models"], category: "Image" },
+  { command: "airis image open-last", description: "Open last generated PNG.", usage: "airis image open-last", examples: ["airis image open-last"], category: "Image" },
+  { command: "airis droid open", description: "Open Android settings via ADB.", usage: "airis droid open settings", examples: ["airis droid open settings"], category: "Droid" },
+  { command: "airis droid read", description: "Read connected device screen text.", usage: "airis droid read screen", examples: ["airis droid read screen"], category: "Droid" },
+  { command: "airis automation", description: "Run automation commands via ADB.", usage: "airis automation tap 360 800", examples: ["airis automation tap 360 800"], category: "Droid" },
   { command: "airis config show", description: "Show sanitized config.", usage: "airis config show", examples: ["airis config show"], category: "Config" },
   { command: "airis config get", description: "Read config value.", usage: "airis config get <key>", examples: ["airis config get theme"], category: "Config" },
   { command: "airis config set", description: "Write config value.", usage: "airis config set <key> <val>", examples: ["airis config set theme graphite"], category: "Config" },
   { command: "airis config path", description: "Show settings path.", usage: "airis config path", examples: ["airis config path"], category: "Config" },
-  { command: "airis theme list", description: "List themes.", usage: "airis theme list", examples: ["airis theme list"], category: "Config" },
-  { command: "airis theme set", description: "Set a theme.", usage: "airis theme set graphite", examples: ["airis theme set graphite"], category: "Config" },
+  { command: "airis theme list", description: "List available themes.", usage: "airis theme list", examples: ["airis theme list"], category: "Config" },
+  { command: "airis theme set", description: "Set a theme.", usage: "airis theme set <name>", examples: ["airis theme set graphite"], category: "Config" },
   { command: "airis tools list", description: "Detect companion CLIs.", usage: "airis tools list", examples: ["airis tools list"], category: "Tools" },
   { command: "airis tools doctor", description: "Diagnose companion tools.", usage: "airis tools doctor", examples: ["airis tools doctor"], category: "Tools" },
   { command: "airis install", description: "Install extension source.", usage: "airis install <source> [-l]", examples: ["airis install ./local/path"], category: "Tools" },
@@ -163,7 +183,7 @@ export const commands: Command[] = [
   { command: "airis --skill", description: "Load a skill file or directory.", usage: "airis --skill <path>", examples: ["airis --skill ./skills"], category: "Developer" },
 ];
 
-export const commandCategories = ["All", "Core", "AI", "Project", "Verified Autonomy", "Ship", "Sessions", "Config", "Tools", "System", "Developer"] as const;
+export const commandCategories = ["All", "Core", "AI", "Project", "Verified Autonomy", "Ship", "Sessions", "Image", "Droid", "Config", "Tools", "System", "Developer"] as const;
 
 export const installSections = [
   {
@@ -186,7 +206,7 @@ export const installSections = [
     ],
   },
   {
-    platform: "Termux",
+    platform: "Termux (Android)",
     commands: [
       "pkg update && pkg upgrade\npkg install nodejs git\nnpm install -g @sufiyan-sabeel/airis-cli\nairis --version",
     ],
@@ -197,27 +217,37 @@ export const providers = [
   ["Anthropic", "ANTHROPIC_API_KEY or ANTHROPIC_OAUTH_TOKEN"],
   ["OpenAI", "OPENAI_API_KEY"],
   ["Google Gemini", "GEMINI_API_KEY"],
+  ["Google Vertex AI", "GOOGLE_CLOUD_API_KEY or ADC"],
   ["Groq", "GROQ_API_KEY"],
   ["Mistral", "MISTRAL_API_KEY"],
   ["DeepSeek", "DEEPSEEK_API_KEY"],
   ["OpenRouter", "OPENROUTER_API_KEY"],
-  ["Amazon Bedrock", "AWS_PROFILE / AWS credentials / AWS_BEARER_TOKEN_BEDROCK"],
+  ["Amazon Bedrock", "AWS_PROFILE / AWS_BEARER_TOKEN_BEDROCK"],
   ["Azure OpenAI", "AZURE_OPENAI_API_KEY"],
-  ["Cloudflare", "CLOUDFLARE_API_KEY and CLOUDFLARE_ACCOUNT_ID"],
+  ["Cloudflare Workers AI", "CLOUDFLARE_API_KEY"],
   ["Cerebras", "CEREBRAS_API_KEY"],
   ["xAI", "XAI_API_KEY"],
   ["Fireworks", "FIREWORKS_API_KEY"],
   ["Together AI", "TOGETHER_API_KEY"],
-  ["Kimi For Coding", "KIMI_API_KEY"],
+  ["Kimi", "KIMI_API_KEY"],
   ["MiniMax", "MINIMAX_API_KEY"],
+  ["Moonshot AI", "MOONSHOT_API_KEY"],
   ["NVIDIA NIM", "NVIDIA_API_KEY"],
+  ["HuggingFace", "HF_TOKEN"],
+  ["Vercel AI Gateway", "AI_GATEWAY_API_KEY"],
+  ["ZAI", "ZAI_API_KEY"],
+  ["OpenCode", "OPENCODE_API_KEY"],
+  ["Xiaomi", "XIAOMI_API_KEY"],
+  ["Ollama (local)", "No key needed -- start Ollama first"],
+  ["LM Studio (local)", "No key needed -- start LM Studio first"],
 ];
 
 export const docs = [
   { title: "Installation Guide", href: "#installation", description: "Repository-backed install commands for Linux, macOS, Windows, and Termux." },
   { title: "Quick Start", href: "#quick-start", description: "Set an API key, launch interactive mode, run one-shot prompts, and continue sessions." },
-  { title: "Command Explorer", href: "#commands", description: "Searchable command reference generated from CLI help and source." },
+  { title: "Command Explorer", href: "#commands", description: "Searchable command reference with 50+ commands across 13 categories." },
   { title: "Ship Workflow", href: "#workflow", description: "Full-lifecycle workflow phases from request through proof report." },
+  { title: "Providers", href: "#providers", description: "26+ AI providers including local models (Ollama, LM Studio)." },
 ];
 
 export const workflowPhases = ["Request", "Contract", "Approval", "Planning", "Implementation", "Formatting", "Testing", "Verification", "Proof", "Commit"];
@@ -225,7 +255,8 @@ export const workflowPhases = ["Request", "Contract", "Approval", "Planning", "I
 export const terminalLines = [
   "$ airis",
   "$ airis -p \"List all TypeScript files in src/\"",
-  "$ airis ship start \"Add a help command that shows usage examples\"",
+  "$ airis ship start \"Add a help command with usage examples\"",
   "$ airis mission \"Add tests\" --verified",
-  "$ airis theme set graphite",
+  "$ airis image generate \"a sunset over mountains\"",
+  "$ airis theme set tokyo-night",
 ];
