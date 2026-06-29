@@ -83,7 +83,7 @@ function selectVariant(width: number): {
 			emblem: EMBLEM_COMPACT,
 			name: NAME_COMPACT,
 			boxWidth: Math.min(width - 4, 56),
-			showSubtitle: true,
+			showSubtitle: false,
 			showWelcome: true,
 			showMeta: true,
 			showShortcuts: true,
