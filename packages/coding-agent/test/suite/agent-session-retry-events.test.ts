@@ -244,6 +244,7 @@ describe("AgentSession retry and event characterization", () => {
 		await harness.session.prompt("hi");
 
 		expect(normalizeEventOrder(harness.events)).toEqual([
+			"adaptive_progress",
 			"agent_start",
 			"turn_start",
 			"message_start:user",
@@ -280,6 +281,7 @@ describe("AgentSession retry and event characterization", () => {
 
 		expect(toolRuns).toEqual(["hello"]);
 		expect(normalizeEventOrder(harness.events)).toEqual([
+			"adaptive_progress",
 			"agent_start",
 			"turn_start",
 			"message_start:user",

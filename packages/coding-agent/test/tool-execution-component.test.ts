@@ -439,7 +439,7 @@ describe("ToolExecutionComponent parity", () => {
 			title: "AGENTS.md",
 			path: join(process.cwd(), ".airis", "AGENTS.md"),
 			content: "Hidden resource instructions",
-			compact: "read resource .pi/AGENTS.md",
+			compact: "read resource .airis/AGENTS.md",
 			hidden: "Hidden resource instructions",
 			absent: undefined,
 		},
@@ -452,7 +452,7 @@ describe("ToolExecutionComponent parity", () => {
 			absent: undefined,
 		},
 		{
-			title: "Pi documentation",
+			title: "AIRIS documentation",
 			path: getReadmePath(),
 			content: "Hidden docs content",
 			compact: "read docs README.md",

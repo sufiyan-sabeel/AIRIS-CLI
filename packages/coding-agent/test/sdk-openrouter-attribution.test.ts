@@ -90,9 +90,7 @@ describe("createAgentSession provider attribution headers", () => {
 		} = {},
 	): Promise<Record<string, string> | undefined> {
 		const settingsManager = SettingsManager.create(cwd, agentDir);
-		if (options.telemetryEnabled === false) {
-			settingsManager.setEnableInstallTelemetry(false);
-		}
+		settingsManager.setEnableInstallTelemetry(options.telemetryEnabled !== false);
 
 		const authStorage = AuthStorage.create(join(agentDir, "auth.json"));
 		authStorage.setRuntimeApiKey(model.provider, "test-api-key");
