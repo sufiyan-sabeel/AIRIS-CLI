@@ -21,6 +21,7 @@ export const repo = {
   creator: "Umaiz Sufiyan",
   organization: "KageOS",
   url: "https://github.com/sufiyan-sabeel/AIRIS-CLI",
+  forksUrl: "https://github.com/sufiyan-sabeel/AIRIS-CLI/forks",
   packageName: "@sufiyan-sabeel/airis-cli",
   version: "0.79.3",
   license: "MIT",

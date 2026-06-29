@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, ExternalLink, Github, KeyRound, Search, Terminal, Workflow } from "lucide-react";
+import { ArrowRight, ExternalLink, GitFork, Github, KeyRound, Search, Terminal, Workflow } from "lucide-react";
 import { AirisLogo } from "@/components/logo";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
@@ -39,6 +39,7 @@ export default function Home() {
           <div className="flex items-center gap-2">
             <ThemeToggle />
             <Button asChild size="sm" variant="outline"><a href={repo.url} target="_blank" rel="noreferrer"><Github className="h-4 w-4" />GitHub</a></Button>
+            <Button asChild size="sm" variant="outline"><a href={repo.forksUrl} target="_blank" rel="noreferrer"><GitFork className="h-4 w-4" />Forks</a></Button>
           </div>
         </div>
       </header>
@@ -61,12 +62,14 @@ export default function Home() {
                 <Button asChild size="lg"><a href="#installation">Install AIRIS <ArrowRight className="h-4 w-4" /></a></Button>
                 <Button asChild size="lg" variant="outline"><a href="#commands"><Search className="h-4 w-4" /> Explore commands</a></Button>
                 <Button asChild size="lg" variant="ghost"><a href={repo.url} target="_blank" rel="noreferrer"><Github className="h-4 w-4" /> Repository</a></Button>
+                <Button asChild size="lg" variant="ghost"><a href={repo.forksUrl} target="_blank" rel="noreferrer"><GitFork className="h-4 w-4" /> Fork project</a></Button>
               </div>
-              <dl className="mt-10 grid max-w-2xl grid-cols-2 gap-3 text-sm sm:grid-cols-4">
+              <dl className="mt-10 grid max-w-2xl grid-cols-2 gap-3 text-sm sm:grid-cols-5">
                 <div className="rounded-2xl border border-border bg-card p-4"><dt className="text-muted-foreground">Creator</dt><dd className="mt-1 font-medium">{repo.creator}</dd></div>
                 <div className="rounded-2xl border border-border bg-card p-4"><dt className="text-muted-foreground">Brand</dt><dd className="mt-1 font-medium">{repo.organization}</dd></div>
                 <div className="rounded-2xl border border-border bg-card p-4"><dt className="text-muted-foreground">Version</dt><dd className="mt-1 font-medium">{repo.version}</dd></div>
                 <div className="rounded-2xl border border-border bg-card p-4"><dt className="text-muted-foreground">License</dt><dd className="mt-1 font-medium">{repo.license}</dd></div>
+                <a className="rounded-2xl border border-border bg-card p-4 transition-colors hover:bg-secondary" href={repo.forksUrl} target="_blank" rel="noreferrer"><dt className="text-muted-foreground">GitHub</dt><dd className="mt-1 flex items-center gap-1 font-medium"><GitFork className="h-3.5 w-3.5" /> Forks</dd></a>
               </dl>
             </div>
             <TerminalDemo />
@@ -175,7 +178,7 @@ export default function Home() {
       <footer className="px-4 py-12 sm:px-6 lg:px-8">
         <div className="mx-auto flex max-w-7xl flex-col gap-6 border-t border-border pt-8 md:flex-row md:items-center md:justify-between">
           <div><AirisLogo /><p className="mt-3 max-w-xl text-sm text-muted-foreground">AIRIS CLI is created by {repo.creator} for {repo.organization}. Repository license: {repo.license}. Package: {repo.packageName}.</p></div>
-          <div className="flex flex-wrap gap-3 text-sm"><a className="text-muted-foreground hover:text-foreground" href={repo.url} target="_blank" rel="noreferrer">Repository <ExternalLink className="inline h-3 w-3" /></a><a className="text-muted-foreground hover:text-foreground" href={`${repo.url}/blob/main/LICENSE`} target="_blank" rel="noreferrer">License</a><a className="text-muted-foreground hover:text-foreground" href={`${repo.url}/tree/main/docs`} target="_blank" rel="noreferrer">Documentation</a></div>
+          <div className="flex flex-wrap gap-3 text-sm"><a className="text-muted-foreground hover:text-foreground" href={repo.url} target="_blank" rel="noreferrer">Repository <ExternalLink className="inline h-3 w-3" /></a><a className="text-muted-foreground hover:text-foreground" href={repo.forksUrl} target="_blank" rel="noreferrer">Forks</a><a className="text-muted-foreground hover:text-foreground" href={`${repo.url}/blob/main/LICENSE`} target="_blank" rel="noreferrer">License</a><a className="text-muted-foreground hover:text-foreground" href={`${repo.url}/tree/main/docs`} target="_blank" rel="noreferrer">Documentation</a></div>
         </div>
       </footer>
     </div>
