@@ -19,6 +19,8 @@ export const repo = {
   name: "AIRIS CLI",
   fullName: "Artificial Intelligence Responsive Integrated System",
   creator: "Umaiz Sufiyan",
+  creatorProfile:
+    "Created by Umaiz Sufiyan, a student developer and independent builder behind KageOS. He began building AIRIS at 15 and continues developing it at 16 with a focus on AI-powered command-line tools, automation, developer productivity, and mobile-first development.",
   organization: "KageOS",
   url: "https://github.com/sufiyan-sabeel/AIRIS-CLI",
   forksUrl: "https://github.com/sufiyan-sabeel/AIRIS-CLI/forks",

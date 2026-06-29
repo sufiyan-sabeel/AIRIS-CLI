@@ -12,6 +12,7 @@ import { docs, features, installSections, providers, repo, workflowPhases } from
 
 const nav = [
   ["Features", "#features"],
+  ["Creator", "#creator"],
   ["Commands", "#commands"],
   ["Install", "#installation"],
   ["Docs", "#docs"],
@@ -73,6 +74,18 @@ export default function Home() {
               </dl>
             </div>
             <TerminalDemo />
+          </div>
+        </section>
+
+        <section id="creator" className="px-4 py-16 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-4xl">
+            <Card className="bg-card/70">
+              <CardHeader>
+                <Badge className="mb-3 w-fit">Creator</Badge>
+                <CardTitle>About the creator</CardTitle>
+                <CardDescription className="text-base leading-7">{repo.creatorProfile}</CardDescription>
+              </CardHeader>
+            </Card>
           </div>
         </section>
 

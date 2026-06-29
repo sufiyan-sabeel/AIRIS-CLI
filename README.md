@@ -17,6 +17,10 @@ A local-first AI coding agent that runs in your terminal. Chat with AI models, e
 
 Visit the [AIRIS website](https://sufiyan-sabeel.github.io/AIRIS-CLI/) for documentation, guides, and interactive demos.
 
+## About the Creator
+
+AIRIS-CLI is created by Umaiz Sufiyan, a student developer and independent builder behind KageOS. He began building AIRIS at 15 and continues developing it at 16 with a focus on AI-powered command-line tools, automation, developer productivity, and mobile-first development.
+
 ## What AIRIS Does
 
 AIRIS is a command-line AI assistant that operates directly on your local files and terminal. It reads code, executes shell commands, edits files, and manages sessions -- giving you an AI pair programmer that works where you work.

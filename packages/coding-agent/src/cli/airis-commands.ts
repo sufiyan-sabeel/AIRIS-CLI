@@ -300,6 +300,7 @@ function printVersion(): void {
 			keyValue("System", "Artificial Intelligence Responsive Integrated System"),
 			keyValue("Brand", "KageOS"),
 			keyValue("Creator", "Umaiz Sufiyan"),
+			keyValue("Role", "Student developer | KageOS"),
 			keyValue("Package", PACKAGE_NAME),
 		]),
 	);

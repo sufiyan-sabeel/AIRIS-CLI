@@ -226,7 +226,8 @@ export function printHelp(extensionFlags?: ExtensionFlag[]): void {
 			: "";
 	console.log(`${chalk.bold(chalk.cyan("AIRIS"))} ${chalk.dim(`v${VERSION}`)}
 Artificial Intelligence Responsive Integrated System
-Brand: KageOS | Creator: Umaiz Sufiyan
+Creator: Umaiz Sufiyan
+Student developer | KageOS
 
 ${section("Usage")}
   ${APP_NAME} [options] [@files...] [messages...]
