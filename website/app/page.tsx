@@ -173,6 +173,15 @@ export default function Home() {
             </div>
           </div>
         </section>
+        <section id="creator" className="px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
+          <div className="mx-auto max-w-3xl text-center">
+            <Badge className="mb-4">About the Creator</Badge>
+            <h2 className="text-3xl font-semibold tracking-[-0.05em] sm:text-5xl">Umaiz Sufiyan</h2>
+            <p className="mt-4 text-lg leading-8 text-muted-foreground">
+              Student developer and independent builder behind KageOS. He began building AIRIS at 15 and continues developing it at 16 with a focus on AI-powered command-line tools, automation, and developer productivity.
+            </p>
+          </div>
+        </section>
       </main>
 
       <footer className="px-4 py-12 sm:px-6 lg:px-8">

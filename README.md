@@ -357,6 +357,10 @@ Never include API keys, tokens, or private session data in issues, PRs, or logs.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the contribution process, quality bar, and approval workflow.
 
+## About the Creator
+
+AIRIS is created by Umaiz Sufiyan, a student developer and independent builder behind KageOS. He began building AIRIS at 15 and continues developing it at 16 with a focus on AI-powered command-line tools, automation, and developer productivity.
+
 ## License
 
 MIT License. See [LICENSE](LICENSE) for details.
