@@ -5,7 +5,7 @@ import { repo, terminalLines } from "@/data/site";
 
 export function TerminalDemo() {
   return (
-    <div className="overflow-hidden rounded-3xl border border-border bg-zinc-950 shadow-2xl shadow-blue-950/10 dark:bg-black">
+    <div className="w-full max-w-full overflow-hidden rounded-3xl border border-border bg-zinc-950 shadow-2xl shadow-blue-950/10 dark:bg-black">
       <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
         <div className="flex items-center gap-2" aria-hidden>
           <span className="h-3 w-3 rounded-full bg-red-400" />

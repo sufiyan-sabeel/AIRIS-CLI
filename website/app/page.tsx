@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowRight, ExternalLink, GitFork, Github, KeyRound, Search, Terminal, Workflow } from "lucide-react";
 import { AirisLogo } from "@/components/logo";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { MobileNav } from "@/components/mobile-nav";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -37,40 +38,41 @@ export default function Home() {
           <nav className="hidden items-center gap-6 md:flex" aria-label="Primary navigation">
             {nav.map(([label, href]) => <a key={href} href={href} className="text-sm text-muted-foreground transition-colors hover:text-foreground">{label}</a>)}
           </nav>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
+            <MobileNav />
             <ThemeToggle />
-            <Button asChild size="sm" variant="outline"><a href={repo.url} target="_blank" rel="noreferrer"><Github className="h-4 w-4" />GitHub</a></Button>
-            <Button asChild size="sm" variant="outline"><a href={repo.forksUrl} target="_blank" rel="noreferrer"><GitFork className="h-4 w-4" />Forks</a></Button>
+            <Button asChild size="sm" variant="outline" className="max-sm:px-3"><a href={repo.url} target="_blank" rel="noreferrer"><Github className="h-4 w-4" /><span className="hidden sm:inline">GitHub</span></a></Button>
+            <Button asChild size="sm" variant="outline" className="max-sm:px-3"><a href={repo.forksUrl} target="_blank" rel="noreferrer"><GitFork className="h-4 w-4" /><span className="hidden sm:inline">Forks</span></a></Button>
           </div>
         </div>
       </header>
 
       <main id="top">
-        <section className="relative overflow-hidden border-b border-border/70 px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
+        <section className="relative overflow-hidden border-b border-border/70 px-4 py-16 sm:px-6 sm:py-28 lg:px-8">
           <div className="bg-grid absolute inset-0 -z-10 opacity-60" aria-hidden />
           <div className="absolute left-1/2 top-0 -z-10 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-blue-500/10 blur-3xl" aria-hidden />
-          <div className="mx-auto grid max-w-7xl items-center gap-14 lg:grid-cols-[1.02fr_0.98fr]">
+          <div className="mx-auto grid max-w-7xl items-center gap-10 lg:gap-14 lg:grid-cols-[1.02fr_0.98fr]">
             <div>
-              <AirisLogo large className="mb-8" />
+              <AirisLogo large className="mb-8 max-w-full" />
               <Badge className="mb-5">{repo.fullName}</Badge>
-              <h1 className="max-w-4xl text-balance text-5xl font-semibold tracking-[-0.07em] sm:text-6xl lg:text-7xl">
+              <h1 className="max-w-4xl text-balance text-4xl font-semibold tracking-[-0.07em] sm:text-5xl md:text-6xl lg:text-7xl">
                 A modern AI-powered command-line development assistant.
               </h1>
-              <p className="mt-6 max-w-2xl text-balance text-lg leading-8 text-muted-foreground">
+              <p className="mt-6 max-w-2xl text-balance text-base leading-7 text-muted-foreground sm:text-lg sm:leading-8">
                 AIRIS CLI is a local-first AI coding agent that runs in your terminal. It works with local files, shell commands, sessions, verified autonomy, and the `airis ship` workflow.
               </p>
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                 <Button asChild size="lg"><a href="#installation">Install AIRIS <ArrowRight className="h-4 w-4" /></a></Button>
                 <Button asChild size="lg" variant="outline"><a href="#commands"><Search className="h-4 w-4" /> Explore commands</a></Button>
                 <Button asChild size="lg" variant="ghost"><a href={repo.url} target="_blank" rel="noreferrer"><Github className="h-4 w-4" /> Repository</a></Button>
                 <Button asChild size="lg" variant="ghost"><a href={repo.forksUrl} target="_blank" rel="noreferrer"><GitFork className="h-4 w-4" /> Fork project</a></Button>
               </div>
-              <dl className="mt-10 grid max-w-2xl grid-cols-2 gap-3 text-sm sm:grid-cols-5">
-                <div className="rounded-2xl border border-border bg-card p-4"><dt className="text-muted-foreground">Creator</dt><dd className="mt-1 font-medium">{repo.creator}</dd></div>
-                <div className="rounded-2xl border border-border bg-card p-4"><dt className="text-muted-foreground">Brand</dt><dd className="mt-1 font-medium">{repo.organization}</dd></div>
-                <div className="rounded-2xl border border-border bg-card p-4"><dt className="text-muted-foreground">Version</dt><dd className="mt-1 font-medium">{repo.version}</dd></div>
-                <div className="rounded-2xl border border-border bg-card p-4"><dt className="text-muted-foreground">License</dt><dd className="mt-1 font-medium">{repo.license}</dd></div>
-                <a className="rounded-2xl border border-border bg-card p-4 transition-colors hover:bg-secondary" href={repo.forksUrl} target="_blank" rel="noreferrer"><dt className="text-muted-foreground">GitHub</dt><dd className="mt-1 flex items-center gap-1 font-medium"><GitFork className="h-3.5 w-3.5" /> Forks</dd></a>
+              <dl className="mt-10 grid max-w-2xl grid-cols-2 gap-2 text-xs sm:gap-3 sm:text-sm md:grid-cols-3 lg:grid-cols-5">
+                <div className="rounded-2xl border border-border bg-card p-3 sm:p-4"><dt className="text-muted-foreground">Creator</dt><dd className="mt-1 font-medium">{repo.creator}</dd></div>
+                <div className="rounded-2xl border border-border bg-card p-3 sm:p-4"><dt className="text-muted-foreground">Brand</dt><dd className="mt-1 font-medium">{repo.organization}</dd></div>
+                <div className="rounded-2xl border border-border bg-card p-3 sm:p-4"><dt className="text-muted-foreground">Version</dt><dd className="mt-1 font-medium">{repo.version}</dd></div>
+                <div className="rounded-2xl border border-border bg-card p-3 sm:p-4"><dt className="text-muted-foreground">License</dt><dd className="mt-1 font-medium">{repo.license}</dd></div>
+                <a className="rounded-2xl border border-border bg-card p-3 transition-colors hover:bg-secondary sm:p-4" href={repo.forksUrl} target="_blank" rel="noreferrer"><dt className="text-muted-foreground">GitHub</dt><dd className="mt-1 flex items-center gap-1 font-medium"><GitFork className="h-3.5 w-3.5" /> Forks</dd></a>
               </dl>
             </div>
             <TerminalDemo />
@@ -181,7 +183,7 @@ export default function Home() {
             </aside>
             <div className="space-y-6">
               <Card><CardHeader><CardTitle>Docs search</CardTitle><CardDescription>Use the command explorer search for CLI reference. Browser search also works across this static documentation page.</CardDescription></CardHeader></Card>
-              <Card><CardHeader><CardTitle>Provider environment variables</CardTitle><CardDescription>Variables below are present in `airis --help` output.</CardDescription></CardHeader><CardContent><div className="grid gap-2 sm:grid-cols-2">{providers.map(([name, env]) => <div key={name} className="rounded-xl border border-border p-3 text-sm"><div className="font-medium">{name}</div><code className="text-xs text-muted-foreground">{env}</code></div>)}</div></CardContent></Card>
+              <Card><CardHeader><CardTitle>Provider environment variables</CardTitle><CardDescription>Variables below are present in `airis --help` output.</CardDescription></CardHeader><CardContent><div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">{providers.map(([name, env]) => <div key={name} className="rounded-xl border border-border p-3 text-sm"><div className="font-medium">{name}</div><code className="break-all text-xs text-muted-foreground">{env}</code></div>)}</div></CardContent></Card>
               <Card><CardHeader><CardTitle>Safety notes</CardTitle></CardHeader><CardContent className="prose-airis"><ul className="list-disc pl-5"><li>README states AIRIS runs locally with your user permissions and does not sandbox itself.</li><li>Project trust controls whether AIRIS can use project-local resources and mutation tools.</li><li>AI-generated code requires human review according to the repository README.</li></ul></CardContent></Card>
             </div>
           </div>

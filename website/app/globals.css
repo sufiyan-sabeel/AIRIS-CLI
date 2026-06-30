@@ -54,6 +54,12 @@ body {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+}
+
+img, video, pre, code {
+  max-width: 100%;
+  height: auto;
 }
 
 ::selection { background: hsl(var(--ring) / 0.22); }

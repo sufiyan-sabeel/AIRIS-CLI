@@ -33,7 +33,7 @@ export function CommandExplorer() {
         <Badge className="justify-center px-4 py-2">{filtered.length} commands</Badge>
       </div>
 
-      <div className="flex flex-wrap gap-2" aria-label="Command categories">
+      <div className="flex flex-nowrap gap-2 overflow-x-auto pb-2 md:flex-wrap" aria-label="Command categories">
         {commandCategories.map((item) => (
           <button
             key={item}

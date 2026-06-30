@@ -11,7 +11,7 @@ export function CodeBlock({ code, language = "bash" }: { code: string; language?
         </div>
         <CopyButton value={code} />
       </div>
-      <pre className="overflow-x-auto p-4 text-sm leading-7"><code data-language={language}>{code}</code></pre>
+      <pre className="overflow-x-auto p-4 text-xs leading-6 sm:text-sm sm:leading-7"><code data-language={language}>{code}</code></pre>
     </div>
   );
 }
