@@ -100,8 +100,8 @@ describe("AgentSession retry and event characterization", () => {
 		const harness = await createHarness({
 			settings: { retry: { enabled: true, maxRetries: 3, baseDelayMs: 1 } },
 			extensionFactories: [
-				(pi) => {
-					pi.on("message_end", async (event) => {
+				(airis) => {
+					airis.on("message_end", async (event) => {
 						if (event.message.role === "assistant") {
 							await new Promise((resolve) => setTimeout(resolve, 40));
 						}
@@ -135,7 +135,7 @@ describe("AgentSession retry and event characterization", () => {
 	it("does not retry non-retryable errors", async () => {
 		const harness = await createHarness({ settings: { retry: { enabled: true, maxRetries: 3, baseDelayMs: 1 } } });
 		harnesses.push(harness);
-		harness.setResponses([fauxAssistantMessage("", { stopReason: "error", errorMessage: "invalid_api_key" })]);
+		harness.setResponses([fauxAssistantMessage("", { stopReason: "error", errorMessage: "invalid_aairis_key" })]);
 
 		await harness.session.prompt("test");
 
@@ -204,11 +204,11 @@ describe("AgentSession retry and event characterization", () => {
 		const order: string[] = [];
 		const harness = await createHarness({
 			extensionFactories: [
-				(pi) => {
-					pi.on("message_start", async (event) => {
+				(airis) => {
+					airis.on("message_start", async (event) => {
 						order.push(`extension:${event.type}:${event.message.role}`);
 					});
-					pi.on("message_end", async (event) => {
+					airis.on("message_end", async (event) => {
 						order.push(`extension:${event.type}:${event.message.role}`);
 					});
 				},

@@ -32,17 +32,17 @@ Then run it in a project directory:
 airis
 ```
 
-Authenticate with `/login` for subscription providers, or set an API key such as `ANTHROPIC_API_KEY` before starting AIRIS.
+Authenticate with `/login` for subscription providers, or set an API key such as `ANTHROPIC_AAIRIS_KEY` before starting AIRIS.
 
 For the full first-run flow, see [Quickstart](quickstart.md).
 
 ## Start here
 
 - [Quickstart](quickstart.md) - install, authenticate, and run a first session.
-- [Using Pi](usage.md) - interactive mode, slash commands, context files, and CLI reference.
+- [Using AIRIS](usage.md) - interactive mode, slash commands, context files, and CLI reference.
 - [Providers](providers.md) - subscription and API-key setup for built-in providers.
 - [Security](security.md) - project trust, sandbox boundaries, and vulnerability reporting.
-- [Containerization](containerization.md) - sandbox pi with OpenShell, Gondolin, or Docker.
+- [Containerization](containerization.md) - sandbox airis with OpenShell, Gondolin, or Docker.
 - [Settings](settings.md) - global and project settings.
 - [Keybindings](keybindings.md) - default shortcuts and custom keybindings.
 - [Sessions](sessions.md) - session management, branching, and tree navigation.
@@ -54,13 +54,13 @@ For the full first-run flow, see [Quickstart](quickstart.md).
 - [Skills](skills.md) - Agent Skills for reusable on-demand capabilities.
 - [Prompt templates](prompt-templates.md) - reusable prompts that expand from slash commands.
 - [Themes](themes.md) - built-in and custom terminal themes.
-- [Pi packages](packages.md) - bundle and share extensions, skills, prompts, and themes.
+- [AIRIS packages](packages.md) - bundle and share extensions, skills, prompts, and themes.
 - [Custom models](models.md) - add model entries for supported provider APIs.
 - [Custom providers](custom-provider.md) - implement custom APIs and OAuth flows.
 
 ## Programmatic usage
 
-- [SDK](sdk.md) - embed pi in Node.js applications.
+- [SDK](sdk.md) - embed airis in Node.js applications.
 - [RPC mode](rpc.md) - integrate over stdin/stdout JSONL.
 - [JSON event stream mode](json.md) - print mode with structured events.
 - [TUI components](tui.md) - build custom terminal UI for extensions.

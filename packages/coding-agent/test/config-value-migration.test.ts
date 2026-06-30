@@ -18,7 +18,7 @@ describe("config value env var syntax migration", () => {
 	});
 
 	function createAgentDir(): string {
-		const agentDir = fs.mkdtempSync(path.join(os.tmpdir(), "pi-config-value-migration-test-"));
+		const agentDir = fs.mkdtempSync(path.join(os.tmpdir(), "airis-config-value-migration-test-"));
 		tempDirs.push(agentDir);
 		return agentDir;
 	}
@@ -43,9 +43,9 @@ describe("config value env var syntax migration", () => {
 			path.join(agentDir, "auth.json"),
 			`${JSON.stringify(
 				{
-					anthropic: { type: "api_key", key: "ANTHROPIC_API_KEY" },
-					openai: { type: "api_key", key: "$OPENAI_API_KEY" },
-					opencode: { type: "api_key", key: "public" },
+					anthropic: { type: "aairis_key", key: "ANTHROPIC_AAIRIS_KEY" },
+					openai: { type: "aairis_key", key: "$OPENAI_AAIRIS_KEY" },
+					opencode: { type: "aairis_key", key: "public" },
 					github: { type: "oauth", access: "ACCESS_TOKEN", refresh: "REFRESH_TOKEN", expires: 1 },
 				},
 				null,
@@ -61,8 +61,8 @@ describe("config value env var syntax migration", () => {
 			string,
 			Record<string, unknown>
 		>;
-		expect(migrated.anthropic.key).toBe("ANTHROPIC_API_KEY");
-		expect(migrated.openai.key).toBe("$OPENAI_API_KEY");
+		expect(migrated.anthropic.key).toBe("ANTHROPIC_AAIRIS_KEY");
+		expect(migrated.openai.key).toBe("$OPENAI_AAIRIS_KEY");
 		expect(migrated.opencode.key).toBe("public");
 		expect(migrated.github.access).toBe("ACCESS_TOKEN");
 		expect(logSpy).not.toHaveBeenCalled();
@@ -87,7 +87,7 @@ describe("config value env var syntax migration", () => {
 
 	it("leaves uppercase models.json API key and header values unchanged", async () => {
 		const agentDir = createAgentDir();
-		const envKeys = ["CUSTOM_API_KEY", "HEADER_API_KEY", "MODEL_API_KEY", "OVERRIDE_API_KEY"];
+		const envKeys = ["CUSTOM_AAIRIS_KEY", "HEADER_AAIRIS_KEY", "MODEL_AAIRIS_KEY", "OVERRIDE_AAIRIS_KEY"];
 		const savedEnv: Record<string, string | undefined> = {};
 		for (const key of envKeys) {
 			savedEnv[key] = process.env[key];
@@ -102,20 +102,20 @@ describe("config value env var syntax migration", () => {
 						providers: {
 							"custom-provider": {
 								baseUrl: "https://example.com/v1",
-								apiKey: "CUSTOM_API_KEY",
+								apiKey: "CUSTOM_AAIRIS_KEY",
 								api: "openai-completions",
 								headers: {
-									"x-api-key": "HEADER_API_KEY",
+									"x-aairis-key": "HEADER_AAIRIS_KEY",
 									"x-literal": "literal",
 								},
 								models: [
 									{
 										id: "model-a",
-										headers: { "x-model-key": "MODEL_API_KEY" },
+										headers: { "x-model-key": "MODEL_AAIRIS_KEY" },
 									},
 								],
 								modelOverrides: {
-									"model-b": { headers: { "x-override-key": "OVERRIDE_API_KEY" } },
+									"model-b": { headers: { "x-override-key": "OVERRIDE_AAIRIS_KEY" } },
 								},
 							},
 						},
@@ -141,11 +141,11 @@ describe("config value env var syntax migration", () => {
 				>;
 			};
 			const provider = migrated.providers["custom-provider"]!;
-			expect(provider.apiKey).toBe("CUSTOM_API_KEY");
-			expect(provider.headers?.["x-api-key"]).toBe("HEADER_API_KEY");
+			expect(provider.apiKey).toBe("CUSTOM_AAIRIS_KEY");
+			expect(provider.headers?.["x-aairis-key"]).toBe("HEADER_AAIRIS_KEY");
 			expect(provider.headers?.["x-literal"]).toBe("literal");
-			expect(provider.models?.[0]?.headers?.["x-model-key"]).toBe("MODEL_API_KEY");
-			expect(provider.modelOverrides?.["model-b"]?.headers?.["x-override-key"]).toBe("OVERRIDE_API_KEY");
+			expect(provider.models?.[0]?.headers?.["x-model-key"]).toBe("MODEL_AAIRIS_KEY");
+			expect(provider.modelOverrides?.["model-b"]?.headers?.["x-override-key"]).toBe("OVERRIDE_AAIRIS_KEY");
 			expect(logSpy).not.toHaveBeenCalled();
 
 			const registry = ModelRegistry.create(
@@ -154,14 +154,14 @@ describe("config value env var syntax migration", () => {
 			);
 			const model = registry.find("custom-provider", "model-a");
 			expect(model).toBeDefined();
-			expect(await registry.getApiKeyForProvider("custom-provider")).toBe("CUSTOM_API_KEY");
+			expect(await registry.getApiKeyForProvider("custom-provider")).toBe("CUSTOM_AAIRIS_KEY");
 			expect(await registry.getApiKeyAndHeaders(model!)).toMatchObject({
 				ok: true,
-				apiKey: "CUSTOM_API_KEY",
+				apiKey: "CUSTOM_AAIRIS_KEY",
 				headers: {
-					"x-api-key": "HEADER_API_KEY",
+					"x-aairis-key": "HEADER_AAIRIS_KEY",
 					"x-literal": "literal",
-					"x-model-key": "MODEL_API_KEY",
+					"x-model-key": "MODEL_AAIRIS_KEY",
 				},
 			});
 		} finally {

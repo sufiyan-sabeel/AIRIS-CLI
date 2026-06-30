@@ -100,7 +100,7 @@ Build and run:
 docker build -t airis-sandbox -f Dockerfile.airis .
 
 docker run --rm -it \
-  -e ANTHROPIC_API_KEY \
+  -e ANTHROPIC_AAIRIS_KEY \
   -v "$PWD:/workspace" \
   -v airis-agent-home:/root/.airis/agent \
   airis-sandbox

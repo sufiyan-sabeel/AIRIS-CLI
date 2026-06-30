@@ -69,7 +69,7 @@ async function handleImageInput<TApi extends string>(model: ImagesModel<TApi>, o
 }
 
 describe("Images E2E Tests", () => {
-	describe.skipIf(!process.env.OPENROUTER_API_KEY)(
+	describe.skipIf(!process.env.OPENROUTER_AAIRIS_KEY)(
 		"OpenRouter Images Provider (google/gemini-2.5-flash-image)",
 		() => {
 			const model = getImageModel("openrouter", "google/gemini-2.5-flash-image");

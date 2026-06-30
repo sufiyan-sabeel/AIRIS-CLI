@@ -10,9 +10,9 @@
 import { Box, Text } from "@earendil-works/airis-tui";
 import type { ExtensionAPI } from "@sufiyan-sabeel/airis-cli";
 
-export default function (pi: ExtensionAPI) {
+export default function (airis: ExtensionAPI) {
 	// Register custom renderer for "status-update" messages
-	pi.registerMessageRenderer("status-update", (message, { expanded }, theme) => {
+	airis.registerMessageRenderer("status-update", (message, { expanded }, theme) => {
 		const details = message.details as { level: string; timestamp: number } | undefined;
 		const level = details?.level ?? "info";
 
@@ -35,7 +35,7 @@ export default function (pi: ExtensionAPI) {
 	});
 
 	// Command to send status messages
-	pi.registerCommand("status", {
+	airis.registerCommand("status", {
 		description: "Send a status message (usage: /status [warn|error] message)",
 		handler: async (args, _ctx) => {
 			const parts = args.trim().split(/\s+/);
@@ -48,7 +48,7 @@ export default function (pi: ExtensionAPI) {
 				content = parts.slice(1).join(" ") || "Status update";
 			}
 
-			pi.sendMessage({
+			airis.sendMessage({
 				customType: "status-update",
 				content,
 				display: true,

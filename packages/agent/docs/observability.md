@@ -1,12 +1,12 @@
 <!-- Synced from jot qe0ikdqs. Edit this file in-repo going forward. -->
 
-# Pi Observability Design Notes
+# AIRIS Observability Design Notes
 
 ## Goal
 
 Make `packages/ai` and `packages/agent`/harness observable without depending on OpenTelemetry, Sentry, or any APM vendor.
 
-Pi should emit stable, structured lifecycle events. External listeners can convert those events into OTel spans, Sentry spans, logs, metrics, or custom telemetry.
+AIRIS should emit stable, structured lifecycle events. External listeners can convert those events into OTel spans, Sentry spans, logs, metrics, or custom telemetry.
 
 ## Mental model
 
@@ -30,11 +30,11 @@ interface SpanRecord {
 Example tree:
 
 ```text
-traceId=t1 spanId=s1 parent=-  name=pi.agent.prompt
-traceId=t1 spanId=s2 parent=s1 name=pi.agent.turn
-traceId=t1 spanId=s3 parent=s2 name=pi.ai.provider.request
-traceId=t1 spanId=s4 parent=s2 name=pi.agent.tool_call
-traceId=t1 spanId=s5 parent=s4 name=pi.session.append_entry
+traceId=t1 spanId=s1 parent=-  name=airis.agent.prompt
+traceId=t1 spanId=s2 parent=s1 name=airis.agent.turn
+traceId=t1 spanId=s3 parent=s2 name=airis.ai.provider.request
+traceId=t1 spanId=s4 parent=s2 name=airis.agent.tool_call
+traceId=t1 spanId=s5 parent=s4 name=airis.session.append_entry
 ```
 
 ## Async context
@@ -52,20 +52,20 @@ await Promise.all([
 
 Deep code can then read the correct current context for the active async chain.
 
-Pi must run in Node, Bun, browser, workers, and other JS runtimes, so ALS cannot be the core abstraction. It should be a runtime adapter.
+AIRIS must run in Node, Bun, browser, workers, and other JS runtimes, so ALS cannot be the core abstraction. It should be a runtime adapter.
 
 ## Core design
 
-Pi owns a small runtime-agnostic observability abstraction:
+AIRIS owns a small runtime-agnostic observability abstraction:
 
 ```ts
-export interface PiObservabilityContext {
+export interface AIRISObservabilityContext {
   traceId?: string;
   currentSpanId?: string;
   userContext?: Record<string, unknown>;
 }
 
-export interface PiObservabilityEvent {
+export interface AIRISObservabilityEvent {
   type: "start" | "end" | "error" | "event";
   name: string;
   traceId: string;
@@ -78,10 +78,10 @@ export interface PiObservabilityEvent {
   error?: { name: string; message: string };
 }
 
-export interface PiObservability {
-  getContext(): PiObservabilityContext | undefined;
-  runWithContext<T>(context: PiObservabilityContext, fn: () => T): T;
-  emit(event: PiObservabilityEvent): void;
+export interface AIRISObservability {
+  getContext(): AIRISObservabilityContext | undefined;
+  runWithContext<T>(context: AIRISObservabilityContext, fn: () => T): T;
+  emit(event: AIRISObservabilityEvent): void;
   hasSubscribers(): boolean;
 }
 ```
@@ -89,8 +89,8 @@ export interface PiObservability {
 Public API:
 
 ```ts
-export function configurePiObservability(observability: PiObservability): void;
-export function subscribePiObservability(listener: (event: PiObservabilityEvent) => void): () => void;
+export function configurePiObservability(observability: AIRISObservability): void;
+export function subscribePiObservability(listener: (event: AIRISObservabilityEvent) => void): () => void;
 export function runWithPiContext<T>(userContext: Record<string, unknown>, fn: () => T): T;
 export function traceOperation<T>(name: string, payload: Record<string, unknown>, fn: () => T): T;
 ```
@@ -147,25 +147,25 @@ For Node, diagnostics channels can be used as a passive event bus:
 
 ```ts
 import { channel } from "diagnostics_channel";
-channel("pi.observability").publish(event);
+channel("airis.observability").publish(event);
 ```
 
-Subscribers can create OTel/Sentry spans without monkey-patching pi.
+Subscribers can create OTel/Sentry spans without monkey-patching airis.
 
-## What pi emits
+## What airis emits
 
-Pi emits what happened. It does not create OTel/Sentry spans directly.
+AIRIS emits what happened. It does not create OTel/Sentry spans directly.
 
 Initial minimal event names:
 
 ```text
-pi.agent.prompt
-pi.agent.skill
-pi.agent.prompt_template
-pi.agent.compaction
-pi.agent.branch_navigation
-pi.agent.session.append_entry
-pi.ai.provider.request
+airis.agent.prompt
+airis.agent.skill
+airis.agent.prompt_template
+airis.agent.compaction
+airis.agent.branch_navigation
+airis.agent.session.append_entry
+airis.ai.provider.request
 ```
 
 Each operation emits:
@@ -179,14 +179,14 @@ error
 Later additions:
 
 ```text
-pi.agent.turn
-pi.agent.tool_call
-pi.agent.queue_update
-pi.ai.provider.retry
-pi.ai.provider.first_token
-pi.ai.provider.usage
-pi.session.read
-pi.session.write
+airis.agent.turn
+airis.agent.tool_call
+airis.agent.queue_update
+airis.ai.provider.retry
+airis.ai.provider.first_token
+airis.ai.provider.usage
+airis.session.read
+airis.session.write
 ```
 
 ## Minimal instrumentation points
@@ -206,7 +206,7 @@ Example:
 
 ```ts
 return traceOperation(
-  "pi.agent.prompt",
+  "airis.agent.prompt",
   {
     sessionId: turnState.sessionId,
     provider: turnState.model.provider,
@@ -222,7 +222,7 @@ Session write:
 
 ```ts
 return traceOperation(
-  "pi.agent.session.append_entry",
+  "airis.agent.session.append_entry",
   { entryType: entry.type },
   async () => {
     await this.unwrap(this.storage.appendEntry(entry));
@@ -242,7 +242,7 @@ Example:
 
 ```ts
 return traceOperation(
-  "pi.ai.provider.request",
+  "airis.ai.provider.request",
   {
     api: model.api,
     provider: model.provider,
@@ -298,7 +298,7 @@ Content capture can be opt-in later with explicit redaction hooks.
 
 ## Listener behavior
 
-Observability must never affect pi execution.
+Observability must never affect airis execution.
 
 Subscriber errors should be swallowed or isolated. Harness hooks are control-plane and may affect execution; observability subscribers are passive and must not.
 
@@ -322,7 +322,7 @@ Every emitted event inside that async chain includes the context:
 ```ts
 {
   type: "start",
-  name: "pi.ai.provider.request",
+  name: "airis.ai.provider.request",
   traceId: "t1",
   spanId: "s3",
   parentSpanId: "s1",
@@ -353,10 +353,10 @@ Then:
 
 ```text
 packages/ai
-  emits pi.ai.* events
+  emits airis.ai.* events
 
 packages/agent
-  emits pi.agent.* / pi.session.* events
+  emits airis.agent.* / airis.session.* events
 ```
 
 Optional later:
@@ -366,11 +366,11 @@ packages/observability-node
   AsyncLocalStorage + diagnostics_channel bridge
 
 packages/otel
-  subscribes to pi events and creates OpenTelemetry spans
+  subscribes to airis events and creates OpenTelemetry spans
 ```
 
 ## Thesis
 
-Pi defines a stable, safe event contract. Adapters define where events go.
+AIRIS defines a stable, safe event contract. Adapters define where events go.
 
 This makes ai/harness observable without binding core packages to OTel, Sentry, Node-only APIs, or monkey-patching.

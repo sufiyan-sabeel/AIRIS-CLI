@@ -35,7 +35,7 @@ describe("AgentSessionRuntime session lifecycle events", () => {
 	});
 
 	async function createRuntimeHost(extensionFactory: ExtensionFactory) {
-		const tempDir = join(tmpdir(), `pi-runtime-events-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+		const tempDir = join(tmpdir(), `airis-runtime-events-${Date.now()}-${Math.random().toString(36).slice(2)}`);
 		mkdirSync(tempDir, { recursive: true });
 
 		const faux = registerFauxProvider();
@@ -91,14 +91,14 @@ describe("AgentSessionRuntime session lifecycle events", () => {
 
 	it("emits session_before_switch and session_start for new and resume flows", async () => {
 		const events: RecordedSessionEvent[] = [];
-		const { runtimeHost } = await createRuntimeHost((pi) => {
-			pi.on("session_before_switch", (event) => {
+		const { runtimeHost } = await createRuntimeHost((airis) => {
+			airis.on("session_before_switch", (event) => {
 				events.push(event);
 			});
-			pi.on("session_shutdown", (event) => {
+			airis.on("session_shutdown", (event) => {
 				events.push(event);
 			});
-			pi.on("session_start", (event) => {
+			airis.on("session_start", (event) => {
 				events.push(event);
 			});
 		});
@@ -135,12 +135,12 @@ describe("AgentSessionRuntime session lifecycle events", () => {
 
 	it("honors session_before_switch cancellation", async () => {
 		const events: RecordedSessionEvent[] = [];
-		const { runtimeHost } = await createRuntimeHost((pi) => {
-			pi.on("session_before_switch", (event) => {
+		const { runtimeHost } = await createRuntimeHost((airis) => {
+			airis.on("session_before_switch", (event) => {
 				events.push(event);
 				return { cancel: true };
 			});
-			pi.on("session_start", (event) => {
+			airis.on("session_start", (event) => {
 				events.push(event);
 			});
 		});
@@ -159,8 +159,8 @@ describe("AgentSessionRuntime session lifecycle events", () => {
 
 	it("runs beforeSessionInvalidate after session_shutdown and before rebindSession", async () => {
 		const phases: string[] = [];
-		const { runtimeHost } = await createRuntimeHost((pi) => {
-			pi.on("session_shutdown", () => {
+		const { runtimeHost } = await createRuntimeHost((airis) => {
+			airis.on("session_shutdown", () => {
 				phases.push("session_shutdown");
 			});
 		});
@@ -186,18 +186,18 @@ describe("AgentSessionRuntime session lifecycle events", () => {
 	it("emits session_before_fork and session_start and honors cancellation", async () => {
 		const events: RecordedSessionEvent[] = [];
 		let cancelNextFork = false;
-		const { runtimeHost } = await createRuntimeHost((pi) => {
-			pi.on("session_before_fork", (event) => {
+		const { runtimeHost } = await createRuntimeHost((airis) => {
+			airis.on("session_before_fork", (event) => {
 				events.push(event);
 				if (cancelNextFork) {
 					cancelNextFork = false;
 					return { cancel: true };
 				}
 			});
-			pi.on("session_shutdown", (event) => {
+			airis.on("session_shutdown", (event) => {
 				events.push(event);
 			});
-			pi.on("session_start", (event) => {
+			airis.on("session_start", (event) => {
 				events.push(event);
 			});
 		});

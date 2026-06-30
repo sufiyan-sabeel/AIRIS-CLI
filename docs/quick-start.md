@@ -22,16 +22,16 @@ Set an API key for at least one provider:
 
 ```bash
 # Google Gemini (free tier available)
-export GEMINI_API_KEY="your-key"
+export GEMINI_AAIRIS_KEY="your-key"
 
 # OpenAI
-export OPENAI_API_KEY="your-key"
+export OPENAI_AAIRIS_KEY="your-key"
 
 # Anthropic
-export ANTHROPIC_API_KEY="your-key"
+export ANTHROPIC_AAIRIS_KEY="your-key"
 
 # Add to your shell profile for persistence
-echo 'export GEMINI_API_KEY="your-key"' >> ~/.bashrc
+echo 'export GEMINI_AAIRIS_KEY="your-key"' >> ~/.bashrc
 ```
 
 ## 3. Start AIRIS

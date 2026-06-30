@@ -1291,7 +1291,7 @@ export interface ExtensionAPI {
 	 * // Register a new provider with custom models
 	 * airis.registerProvider("my-proxy", {
 	 *   baseUrl: "https://proxy.example.com",
-	 *   apiKey: "$PROXY_API_KEY",
+	 *   apiKey: "$PROXY_AAIRIS_KEY",
 	 *   api: "anthropic-messages",
 	 *   models: [
 	 *     {
@@ -1396,7 +1396,7 @@ export interface ProviderModelConfig {
 	baseUrl?: string;
 	/** Whether the model supports extended thinking. */
 	reasoning: boolean;
-	/** Maps pi thinking levels to provider/model-specific values; null marks a level unsupported. */
+	/** Maps airis thinking levels to provider/model-specific values; null marks a level unsupported. */
 	thinkingLevelMap?: Model<Api>["thinkingLevelMap"];
 	/** Supported input types. */
 	input: ("text" | "image")[];
@@ -1413,7 +1413,7 @@ export interface ProviderModelConfig {
 }
 
 /** Extension factory function type. Supports both sync and async initialization. */
-export type ExtensionFactory = (pi: ExtensionAPI) => void | Promise<void>;
+export type ExtensionFactory = (airis: ExtensionAPI) => void | Promise<void>;
 
 // ============================================================================
 // Loaded Extension Types
@@ -1503,7 +1503,7 @@ export interface ExtensionRuntimeState {
 }
 
 /**
- * Action implementations for pi.* API methods.
+ * Action implementations for airis.* API methods.
  * Provided to runner.initialize(), copied into the shared runtime.
  */
 export interface ExtensionActions {

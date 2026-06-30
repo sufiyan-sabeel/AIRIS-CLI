@@ -40,7 +40,7 @@ const UPDATE_CHECK_CONCURRENCY = 4;
 const GIT_UPDATE_CONCURRENCY = 4;
 
 function isOfflineModeEnabled(): boolean {
-	const value = process.env.PI_OFFLINE;
+	const value = process.env.AIRIS_OFFLINE ?? process.env.AIRIS_OFFLINE;
 	if (!value) return false;
 	return value === "1" || value.toLowerCase() === "true" || value.toLowerCase() === "yes";
 }
@@ -535,8 +535,8 @@ function collectAutoThemeEntries(dir: string): string[] {
 function readAirisManifestFile(packageJsonPath: string): AirisManifest | null {
 	try {
 		const content = readFileSync(packageJsonPath, "utf-8");
-		const pkg = JSON.parse(content) as { pi?: AirisManifest };
-		return pkg.pi ?? null;
+		const pkg = JSON.parse(content) as { airis?: AirisManifest };
+		return pkg.airis ?? null;
 	} catch {
 		return null;
 	}
@@ -1067,7 +1067,7 @@ export class DefaultPackageManager implements PackageManager {
 
 		for (const entry of sources) {
 			const parsed = this.parseSource(entry.source);
-			// Pinned npm versions are fixed. Pinned git refs are configured checkout targets,
+			// AIRISnned npm versions are fixed. AIRISnned git refs are configured checkout targets,
 			// so include them to reconcile an existing clone when the configured ref changes.
 			if (parsed.type === "npm") {
 				if (!parsed.pinned) {
@@ -2171,8 +2171,8 @@ export class DefaultPackageManager implements PackageManager {
 
 		try {
 			const content = readFileSync(packageJsonPath, "utf-8");
-			const pkg = JSON.parse(content) as { pi?: AirisManifest };
-			return pkg.pi ?? null;
+			const pkg = JSON.parse(content) as { airis?: AirisManifest };
+			return pkg.airis ?? null;
 		} catch {
 			return null;
 		}

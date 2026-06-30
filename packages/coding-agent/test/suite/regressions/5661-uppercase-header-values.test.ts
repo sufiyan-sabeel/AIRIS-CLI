@@ -34,7 +34,7 @@ describe("regression #5661: uppercase models.json header values", () => {
 		const harness = await createHarness({ withConfiguredAuth: false });
 		cleanups.push(harness.cleanup);
 
-		const envKeys = ["CUSTOM_API_KEY", "BEARER"];
+		const envKeys = ["CUSTOM_AAIRIS_KEY", "BEARER"];
 		const savedEnv: Record<string, string | undefined> = {};
 		for (const key of envKeys) {
 			savedEnv[key] = process.env[key];
@@ -58,7 +58,7 @@ describe("regression #5661: uppercase models.json header values", () => {
 					providers: {
 						"my-provider": {
 							baseUrl: "https://example.com/v1",
-							apiKey: "CUSTOM_API_KEY",
+							apiKey: "CUSTOM_AAIRIS_KEY",
 							api: "openai-completions",
 							headers: { Authorization: "BEARER" },
 							models: [{ id: "my-model" }],
@@ -76,7 +76,7 @@ describe("regression #5661: uppercase models.json header values", () => {
 		const migrated = JSON.parse(readFileSync(modelsPath, "utf-8")) as {
 			providers: Record<string, { apiKey?: string; headers?: Record<string, string> }>;
 		};
-		expect(migrated.providers["my-provider"]?.apiKey).toBe("CUSTOM_API_KEY");
+		expect(migrated.providers["my-provider"]?.apiKey).toBe("CUSTOM_AAIRIS_KEY");
 		expect(migrated.providers["my-provider"]?.headers?.Authorization).toBe("BEARER");
 
 		const registry = ModelRegistry.create(AuthStorage.create(join(harness.tempDir, "auth.json")), modelsPath);
@@ -84,7 +84,7 @@ describe("regression #5661: uppercase models.json header values", () => {
 		expect(model).toBeDefined();
 		expect(await registry.getApiKeyAndHeaders(model!)).toMatchObject({
 			ok: true,
-			apiKey: "CUSTOM_API_KEY",
+			apiKey: "CUSTOM_AAIRIS_KEY",
 			headers: { Authorization: "BEARER" },
 		});
 	});

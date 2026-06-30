@@ -10,15 +10,15 @@
  * which can be cheaper/faster than the main conversation model.
  *
  * Usage:
- *   pi --extension examples/extensions/custom-compaction.ts
+ *   airis --extension examples/extensions/custom-compaction.ts
  */
 
 import { complete } from "@earendil-works/airis-ai";
 import type { ExtensionAPI } from "@sufiyan-sabeel/airis-cli";
 import { convertToLlm, serializeConversation } from "@sufiyan-sabeel/airis-cli";
 
-export default function (pi: ExtensionAPI) {
-	pi.on("session_before_compact", async (event, ctx) => {
+export default function (airis: ExtensionAPI) {
+	airis.on("session_before_compact", async (event, ctx) => {
 		ctx.ui.notify("Custom compaction extension triggered", "info");
 
 		const { preparation, branchEntries: _, signal } = event;

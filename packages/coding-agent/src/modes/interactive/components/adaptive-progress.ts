@@ -238,7 +238,9 @@ export function renderDependencyGraph(todos: AdaptiveTodoItem[], terminalWidth: 
 	}
 
 	const itemMap = new Map(todos.map((t) => [t.id, t]));
-	const roots = todos.filter((t) => t.dependencies.length === 0 || !t.dependencies.some((d: string) => itemMap.has(d)));
+	const roots = todos.filter(
+		(t) => t.dependencies.length === 0 || !t.dependencies.some((d: string) => itemMap.has(d)),
+	);
 
 	if (roots.length === 0) {
 		for (const item of todos) {

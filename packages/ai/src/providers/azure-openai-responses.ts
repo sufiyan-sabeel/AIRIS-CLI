@@ -16,7 +16,7 @@ import { clampOpenAIPromptCacheKey } from "./openai-prompt-cache.ts";
 import { convertResponsesMessages, convertResponsesTools, processResponsesStream } from "./openai-responses-shared.ts";
 import { buildBaseOptions } from "./simple-options.ts";
 
-const DEFAULT_AZURE_API_VERSION = "v1";
+const DEFAULT_AZURE_AAIRIS_VERSION = "v1";
 const AZURE_TOOL_CALL_PROVIDERS = new Set(["openai", "openai-codex", "opencode", "azure-openai-responses"]);
 
 function parseDeploymentNameMap(value: string | undefined): Map<string, string> {
@@ -181,7 +181,7 @@ function normalizeAzureBaseUrl(baseUrl: string): string {
 	const normalizedPath = url.pathname.replace(/\/+$/, "");
 
 	// Ensure Azure hosts have /openai/v1 as base path so the AzureOpenAI SDK
-	// can append /deployments/<model>/... and ?api-version=v1 correctly.
+	// can append /deployments/<model>/... and ?aairis-version=v1 correctly.
 	if (isAzureHost && (normalizedPath === "" || normalizedPath === "/" || normalizedPath === "/openai")) {
 		url.pathname = "/openai/v1";
 		url.search = "";
@@ -198,7 +198,8 @@ function resolveAzureConfig(
 	model: Model<"azure-openai-responses">,
 	options?: AzureOpenAIResponsesOptions,
 ): { baseUrl: string; apiVersion: string } {
-	const apiVersion = options?.azureApiVersion || process.env.AZURE_OPENAI_API_VERSION || DEFAULT_AZURE_API_VERSION;
+	const apiVersion =
+		options?.azureApiVersion || process.env.AZURE_OPENAI_AAIRIS_VERSION || DEFAULT_AZURE_AAIRIS_VERSION;
 
 	const baseUrl = options?.azureBaseUrl?.trim() || process.env.AZURE_OPENAI_BASE_URL?.trim() || undefined;
 	const resourceName = options?.azureResourceName || process.env.AZURE_OPENAI_RESOURCE_NAME;

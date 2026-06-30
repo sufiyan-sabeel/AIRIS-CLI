@@ -22,16 +22,16 @@ import {
 } from "../src/core/agent-session-runtime.ts";
 import { AuthStorage } from "../src/core/auth-storage.ts";
 import { SessionManager } from "../src/core/session-manager.ts";
-import { API_KEY } from "./utilities.ts";
+import { AAIRIS_KEY } from "./utilities.ts";
 
-describe.skipIf(!API_KEY)("AgentSession forking", () => {
+describe.skipIf(!AAIRIS_KEY)("AgentSession forking", () => {
 	let session: AgentSession;
 	let runtimeHost: AgentSessionRuntime;
 	let tempDir: string;
 	let sessionManager: SessionManager;
 
 	beforeEach(() => {
-		tempDir = join(tmpdir(), `pi-branching-test-${Date.now()}`);
+		tempDir = join(tmpdir(), `airis-branching-test-${Date.now()}`);
 		mkdirSync(tempDir, { recursive: true });
 	});
 
@@ -48,7 +48,7 @@ describe.skipIf(!API_KEY)("AgentSession forking", () => {
 		const model = getModel("anthropic", "claude-sonnet-4-5")!;
 		sessionManager = noSession ? SessionManager.inMemory(tempDir) : SessionManager.create(tempDir);
 		const authStorage = AuthStorage.create(join(tempDir, "auth.json"));
-		authStorage.setRuntimeApiKey("anthropic", API_KEY!);
+		authStorage.setRuntimeApiKey("anthropic", AAIRIS_KEY!);
 
 		const servicesOptions = {
 			agentDir: tempDir,

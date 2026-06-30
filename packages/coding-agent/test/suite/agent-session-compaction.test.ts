@@ -97,8 +97,8 @@ describe("AgentSession compaction characterization", () => {
 	it("manually compacts using an extension-provided summary", async () => {
 		const harness = await createHarness({
 			extensionFactories: [
-				(pi) => {
-					pi.on("session_before_compact", async (event) => ({
+				(airis) => {
+					airis.on("session_before_compact", async (event) => ({
 						compaction: {
 							summary: "extension compaction summary for test validation purposes",
 							firstKeptEntryId: event.preparation.firstKeptEntryId,
@@ -166,8 +166,8 @@ describe("AgentSession compaction characterization", () => {
 	it("cancels in-progress manual compaction when abortCompaction is called", async () => {
 		const harness = await createHarness({
 			extensionFactories: [
-				(pi) => {
-					pi.on("session_before_compact", async (event) => {
+				(airis) => {
+					airis.on("session_before_compact", async (event) => {
 						return await new Promise<{ cancel: true }>((resolve) => {
 							event.signal.addEventListener("abort", () => resolve({ cancel: true }), { once: true });
 						});
@@ -192,8 +192,8 @@ describe("AgentSession compaction characterization", () => {
 		const harness = await createHarness({
 			settings: { compaction: { keepRecentTokens: 1 } },
 			extensionFactories: [
-				(pi) => {
-					pi.on("session_before_compact", async (event) => ({
+				(airis) => {
+					airis.on("session_before_compact", async (event) => ({
 						compaction: {
 							summary: "auto compacted summary for test validation purposes",
 							firstKeptEntryId: event.preparation.firstKeptEntryId,

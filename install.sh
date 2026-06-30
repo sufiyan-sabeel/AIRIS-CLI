@@ -592,7 +592,7 @@ display_success() {
     echo -e "    ${NEON}│${NC}    ${CYAN}▸${NC} ${WHITE}airis -p \"prompt\"${NC}      ${DARK}# Quick prompt mode${NC}                   ${NEON}│${NC}"
     echo -e "    ${NEON}│${NC}                                                                     ${NEON}│${NC}"
     echo -e "    ${NEON}│${NC}    ${YELLOW}⚠${NC}  ${WHITE}Set your API key before running:${NC}                              ${NEON}│${NC}"
-    echo -e "    ${NEON}│${NC}       ${GREEN}export GEMINI_API_KEY=\"your-key-here\"${NC}                         ${NEON}│${NC}"
+    echo -e "    ${NEON}│${NC}       ${GREEN}export GEMINI_AAIRIS_KEY=\"your-key-here\"${NC}                         ${NEON}│${NC}"
     echo -e "    ${NEON}│${NC}                                                                     ${NEON}│${NC}"
     echo -e "    ${NEON}│${NC}    ${MAGENTA}◆${NC}  ${WHITE}Supported Providers:${NC}                                          ${NEON}│${NC}"
     echo -e "    ${NEON}│${NC}       ${NEON}•${NC} Google Gemini    ${NEON}•${NC} Anthropic Claude   ${NEON}•${NC} OpenAI GPT         ${NEON}│${NC}"

@@ -6,9 +6,9 @@ import { homedir } from "node:os";
 import path from "node:path";
 import { createInterface } from "node:readline";
 
-const DEFAULT_SESSIONS_DIR = path.join(homedir(), ".pi/agent/sessions");
+const DEFAULT_SESSIONS_DIR = path.join(homedir(), ".airis/agent/sessions");
 const MODELS_GENERATED_PATH = path.join(process.cwd(), "packages/ai/src/models.generated.ts");
-const MODELS_CONFIG_PATH = path.join(homedir(), ".pi/agent/models.json");
+const MODELS_CONFIG_PATH = path.join(homedir(), ".airis/agent/models.json");
 const REPORT_TIME_ZONE = "Europe/Berlin";
 const CHART_WIDTH = 40;
 

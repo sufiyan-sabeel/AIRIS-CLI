@@ -19,9 +19,9 @@ import { ModelRegistry } from "../src/core/model-registry.ts";
 import { SessionManager } from "../src/core/session-manager.ts";
 import { SettingsManager } from "../src/core/settings-manager.ts";
 import { createCodingTools } from "../src/index.ts";
-import { API_KEY, createTestResourceLoader } from "./utilities.ts";
+import { AAIRIS_KEY, createTestResourceLoader } from "./utilities.ts";
 
-describe.skipIf(!API_KEY)("AgentSession compaction e2e", () => {
+describe.skipIf(!AAIRIS_KEY)("AgentSession compaction e2e", () => {
 	let session: AgentSession;
 	let tempDir: string;
 	let sessionManager: SessionManager;
@@ -29,7 +29,7 @@ describe.skipIf(!API_KEY)("AgentSession compaction e2e", () => {
 
 	beforeEach(() => {
 		// Create temp directory for session files
-		tempDir = join(tmpdir(), `pi-compaction-test-${Date.now()}`);
+		tempDir = join(tmpdir(), `airis-compaction-test-${Date.now()}`);
 		mkdirSync(tempDir, { recursive: true });
 
 		// Track events
@@ -48,7 +48,7 @@ describe.skipIf(!API_KEY)("AgentSession compaction e2e", () => {
 	function createSession(inMemory = false) {
 		const model = getModel("anthropic", "claude-sonnet-4-5")!;
 		const agent = new Agent({
-			getApiKey: () => API_KEY,
+			getApiKey: () => AAIRIS_KEY,
 			initialState: {
 				model,
 				systemPrompt: "You are a helpful assistant. Be concise.",

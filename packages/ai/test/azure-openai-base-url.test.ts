@@ -44,16 +44,16 @@ const context: Context = {
 
 const originalAzureOpenAIBaseUrl = process.env.AZURE_OPENAI_BASE_URL;
 const originalAzureOpenAIResourceName = process.env.AZURE_OPENAI_RESOURCE_NAME;
-const originalAzureOpenAIApiVersion = process.env.AZURE_OPENAI_API_VERSION;
-const originalAzureOpenAIApiKey = process.env.AZURE_OPENAI_API_KEY;
+const originalAzureOpenAIApiVersion = process.env.AZURE_OPENAI_AAIRIS_VERSION;
+const originalAzureOpenAIApiKey = process.env.AZURE_OPENAI_AAIRIS_KEY;
 
 beforeEach(() => {
 	azureMock.constructorCalls.length = 0;
 	azureMock.lastParams = undefined;
 	delete process.env.AZURE_OPENAI_BASE_URL;
 	delete process.env.AZURE_OPENAI_RESOURCE_NAME;
-	delete process.env.AZURE_OPENAI_API_VERSION;
-	delete process.env.AZURE_OPENAI_API_KEY;
+	delete process.env.AZURE_OPENAI_AAIRIS_VERSION;
+	delete process.env.AZURE_OPENAI_AAIRIS_KEY;
 });
 
 afterEach(() => {
@@ -70,22 +70,22 @@ afterEach(() => {
 	}
 
 	if (originalAzureOpenAIApiVersion === undefined) {
-		delete process.env.AZURE_OPENAI_API_VERSION;
+		delete process.env.AZURE_OPENAI_AAIRIS_VERSION;
 	} else {
-		process.env.AZURE_OPENAI_API_VERSION = originalAzureOpenAIApiVersion;
+		process.env.AZURE_OPENAI_AAIRIS_VERSION = originalAzureOpenAIApiVersion;
 	}
 
 	if (originalAzureOpenAIApiKey === undefined) {
-		delete process.env.AZURE_OPENAI_API_KEY;
+		delete process.env.AZURE_OPENAI_AAIRIS_KEY;
 	} else {
-		process.env.AZURE_OPENAI_API_KEY = originalAzureOpenAIApiKey;
+		process.env.AZURE_OPENAI_AAIRIS_KEY = originalAzureOpenAIApiKey;
 	}
 });
 
 async function captureClientBaseUrl(baseUrl: string): Promise<string> {
 	process.env.AZURE_OPENAI_BASE_URL = baseUrl;
 	const model = getModel("azure-openai-responses", "gpt-4o-mini");
-	await streamAzureOpenAIResponses(model, context, { apiKey: "test-api-key" }).result();
+	await streamAzureOpenAIResponses(model, context, { apiKey: "test-aairis-key" }).result();
 	expect(azureMock.constructorCalls).toHaveLength(1);
 	return azureMock.constructorCalls[0].baseURL;
 }
@@ -117,7 +117,9 @@ describe("azure-openai-responses base URL normalization", () => {
 	});
 
 	it("strips query params when normalizing Azure host URLs", async () => {
-		const baseURL = await captureClientBaseUrl("https://my-resource.openai.azure.com/openai?api-version=2024-12-01");
+		const baseURL = await captureClientBaseUrl(
+			"https://my-resource.openai.azure.com/openai?aairis-version=2024-12-01",
+		);
 		expect(baseURL).toBe("https://my-resource.openai.azure.com/openai/v1");
 	});
 
@@ -129,7 +131,7 @@ describe("azure-openai-responses base URL normalization", () => {
 	it("throws on invalid URLs", async () => {
 		process.env.AZURE_OPENAI_BASE_URL = "not-a-url";
 		const model = getModel("azure-openai-responses", "gpt-4o-mini");
-		const result = await streamAzureOpenAIResponses(model, context, { apiKey: "test-api-key" }).result();
+		const result = await streamAzureOpenAIResponses(model, context, { apiKey: "test-aairis-key" }).result();
 		expect(result.stopReason).toBe("error");
 		expect(result.errorMessage).toContain("Invalid Azure OpenAI base URL");
 	});
@@ -137,7 +139,7 @@ describe("azure-openai-responses base URL normalization", () => {
 	it("clamps prompt_cache_key to OpenAI's 64-character limit", async () => {
 		const model = getModel("azure-openai-responses", "gpt-4o-mini");
 		await streamAzureOpenAIResponses(model, context, {
-			apiKey: "test-api-key",
+			apiKey: "test-aairis-key",
 			azureBaseUrl: "https://my-resource.openai.azure.com",
 			sessionId: "x".repeat(67),
 		}).result();
@@ -148,7 +150,7 @@ describe("azure-openai-responses base URL normalization", () => {
 	it("disables server-side response storage", async () => {
 		const model = getModel("azure-openai-responses", "gpt-4o-mini");
 		await streamAzureOpenAIResponses(model, context, {
-			apiKey: "test-api-key",
+			apiKey: "test-aairis-key",
 			azureBaseUrl: "https://my-resource.openai.azure.com",
 		}).result();
 
@@ -158,7 +160,7 @@ describe("azure-openai-responses base URL normalization", () => {
 	it("builds correct default URL from AZURE_OPENAI_RESOURCE_NAME", async () => {
 		process.env.AZURE_OPENAI_RESOURCE_NAME = "my-resource";
 		const model = getModel("azure-openai-responses", "gpt-4o-mini");
-		await streamAzureOpenAIResponses(model, context, { apiKey: "test-api-key" }).result();
+		await streamAzureOpenAIResponses(model, context, { apiKey: "test-aairis-key" }).result();
 		expect(azureMock.constructorCalls).toHaveLength(1);
 		expect(azureMock.constructorCalls[0].baseURL).toBe("https://my-resource.openai.azure.com/openai/v1");
 	});

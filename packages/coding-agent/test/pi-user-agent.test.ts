@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getAirisUserAgent } from "../src/utils/pi-user-agent.ts";
+import { getAirisUserAgent } from "../src/utils/airis-user-agent.ts";
 
 describe("getAirisUserAgent", () => {
 	it("formats the user agent expected by airis", () => {

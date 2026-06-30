@@ -54,7 +54,7 @@ describe("buildSystemPrompt", () => {
 			});
 
 			expect(prompt).toContain(
-				"- When reading AIRIS docs or examples, resolve docs/... under Additional docs and examples/... under Examples, not the current working directory",
+				"- When reading airis docs or examples, resolve docs/... under Additional docs and examples/... under Examples, not the current working directory",
 			);
 		});
 	});

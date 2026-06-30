@@ -1,8 +1,8 @@
-> pi can help you use the SDK. Ask it to build an integration for your use case.
+> airis can help you use the SDK. Ask it to build an integration for your use case.
 
 # SDK
 
-The SDK provides programmatic access to pi's agent capabilities. Use it to embed pi in other applications, build custom interfaces, or integrate with automated workflows.
+The SDK provides programmatic access to airis's agent capabilities. Use it to embed airis in other applications, build custom interfaces, or integrate with automated workflows.
 
 **Example use cases:**
 - Build a custom UI (web, desktop, mobile)
@@ -219,7 +219,7 @@ await session.prompt("After you're done, also check X", { streamingBehavior: "fo
 ```
 
 **Behavior:**
-- **Extension commands** (e.g., `/mycommand`): Execute immediately, even during streaming. They manage their own LLM interaction via `pi.sendMessage()`.
+- **Extension commands** (e.g., `/mycommand`): Execute immediately, even during streaming. They manage their own LLM interaction via `airis.sendMessage()`.
 - **File-based prompt templates** (from `.md` files): Expanded to their content before sending or queueing.
 - **During streaming without `streamingBehavior`**: Throws an error. Use `steer()` or `followUp()` directly, or specify the option.
 - **`preflightResult(true)`**: Means the prompt was accepted, queued, or handled immediately.
@@ -412,7 +412,7 @@ If no model is provided:
 API key resolution priority (handled by AuthStorage):
 1. Runtime overrides (via `setRuntimeApiKey`, not persisted)
 2. Stored credentials in `auth.json` (API keys or OAuth tokens)
-3. Environment variables (`ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, etc.)
+3. Environment variables (`ANTHROPIC_AAIRIS_KEY`, `OPENAI_AAIRIS_KEY`, etc.)
 4. Fallback resolver (for custom provider keys from `models.json`)
 
 ```typescript
@@ -445,7 +445,7 @@ const { session } = await createAgentSession({
 const simpleRegistry = ModelRegistry.inMemory(authStorage);
 ```
 
-> See [examples/sdk/09-api-keys-and-oauth.ts](../examples/sdk/09-api-keys-and-oauth.ts)
+> See [examples/sdk/09-aairis-keys-and-oauth.ts](../examples/sdk/09-aairis-keys-and-oauth.ts)
 
 ### System Prompt
 
@@ -474,7 +474,7 @@ Specify which built-in tools to enable:
 - `noTools: "builtin"` disables default built-ins while keeping extension and custom tools enabled
 - `excludeTools` disables specific built-in, extension, or custom tool names after any `tools` allowlist is applied
 
-The `edit` tool returns `details.diff` for Pi's TUI display and `details.patch` as a standard unified patch for SDK consumers.
+The `edit` tool returns `details.diff` for AIRIS's TUI display and `details.patch` as a standard unified patch for SDK consumers.
 
 ```typescript
 import { createAgentSession } from "@sufiyan-sabeel/airis-cli";
@@ -484,7 +484,7 @@ const { session } = await createAgentSession({
   tools: ["read", "grep", "find", "ls"],
 });
 
-// Pick specific tools
+// AIRISck specific tools
 const { session } = await createAgentSession({
   tools: ["read", "bash", "grep"],
 });
@@ -546,9 +546,9 @@ const { session } = await createAgentSession({
 });
 ```
 
-Use `defineTool()` for standalone definitions and arrays like `customTools: [myTool]`. Inline `pi.registerTool({ ... })` already infers parameter types correctly.
+Use `defineTool()` for standalone definitions and arrays like `customTools: [myTool]`. Inline `airis.registerTool({ ... })` already infers parameter types correctly.
 
-Custom tools passed via `customTools` are combined with extension-registered tools. Extensions loaded by the ResourceLoader can also register tools via `pi.registerTool()`.
+Custom tools passed via `customTools` are combined with extension-registered tools. Extensions loaded by the ResourceLoader can also register tools via `airis.registerTool()`.
 
 If you pass `tools`, include each custom or extension tool name you want enabled, for example `tools: ["read", "bash", "my_tool"]`.
 
@@ -564,7 +564,7 @@ import { createAgentSession, DefaultResourceLoader } from "@sufiyan-sabeel/airis
 const loader = new DefaultResourceLoader({
   additionalExtensionPaths: ["/path/to/my-extension.ts"],
   extensionFactories: [
-    (pi) => {
+    (airis) => {
       airis.on("agent_start", () => {
         console.log("[Inline Extension] Agent starting");
       });
@@ -578,7 +578,7 @@ const { session } = await createAgentSession({ resourceLoader: loader });
 
 Extensions can register tools, subscribe to events, add commands, and more. See [extensions.md](extensions.md) for the full API.
 
-**Event Bus:** Extensions can communicate via `pi.events`. Pass a shared `eventBus` to `DefaultResourceLoader` if you need to emit or listen from outside:
+**Event Bus:** Extensions can communicate via `airis.events`. Pass a shared `eventBus` to `DefaultResourceLoader` if you need to emit or listen from outside:
 
 ```typescript
 import { createEventBus, DefaultResourceLoader } from "@sufiyan-sabeel/airis-cli";
@@ -1075,7 +1075,7 @@ See [RPC documentation](rpc.md) for the JSON protocol.
 For subprocess-based integration without building with the SDK, use the CLI directly:
 
 ```bash
-pi --mode rpc --no-session
+airis --mode rpc --no-session
 ```
 
 See [RPC documentation](rpc.md) for the JSON protocol.

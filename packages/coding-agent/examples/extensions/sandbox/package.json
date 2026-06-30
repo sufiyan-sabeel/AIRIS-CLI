@@ -1,5 +1,5 @@
 {
-	"name": "pi-extension-sandbox",
+	"name": "airis-extension-sandbox",
 	"private": true,
 	"version": "1.9.3",
 	"type": "module",
@@ -8,7 +8,7 @@
 		"build": "echo 'nothing to build'",
 		"check": "echo 'nothing to check'"
 	},
-	"pi": {
+	"airis": {
 		"extensions": [
 			"./index.ts"
 		]

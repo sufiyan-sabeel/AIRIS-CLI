@@ -32,7 +32,7 @@ function createTinyBmp1x1Red24bpp(): Uint8Array {
 	buffer.writeUInt32LE(0, 46); // colors used
 	buffer.writeUInt32LE(0, 50); // important colors
 
-	// Pixel data (B, G, R) + 1 byte padding
+	// AIRISxel data (B, G, R) + 1 byte padding
 	buffer[54] = 0x00; // B
 	buffer[55] = 0x00; // G
 	buffer[56] = 0xff; // R

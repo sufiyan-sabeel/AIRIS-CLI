@@ -6,8 +6,8 @@
 
 import { AuthStorage, createAgentSession, ModelRegistry, SessionManager } from "@sufiyan-sabeel/airis-cli";
 
-// Default: AuthStorage uses ~/.pi/agent/auth.json
-// ModelRegistry loads built-in + custom models from ~/.pi/agent/models.json
+// Default: AuthStorage uses ~/.airis/agent/auth.json
+// ModelRegistry loads built-in + custom models from ~/.airis/agent/models.json
 const authStorage = AuthStorage.create();
 const modelRegistry = ModelRegistry.create(authStorage);
 

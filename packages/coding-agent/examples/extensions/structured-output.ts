@@ -60,6 +60,6 @@ const structuredOutputTool = defineTool({
 	},
 });
 
-export default function (pi: ExtensionAPI) {
-	pi.registerTool(structuredOutputTool);
+export default function (airis: ExtensionAPI) {
+	airis.registerTool(structuredOutputTool);
 }

@@ -20,7 +20,11 @@ function tmp(): string {
 	return mkdtempSync(join(tmpdir(), "airis-ask-question-"));
 }
 
-const BASE_CHOICES: [{ label: string; explanation: string; }, { label: string; explanation: string; }, { label: string; explanation: string; }] = [
+const BASE_CHOICES: [
+	{ label: string; explanation: string },
+	{ label: string; explanation: string },
+	{ label: string; explanation: string },
+] = [
 	{ label: "Extend existing runtime", explanation: "Lowest risk approach." },
 	{ label: "Create separate module", explanation: "Better isolation." },
 	{ label: "Use extension system", explanation: "Easier to disable." },

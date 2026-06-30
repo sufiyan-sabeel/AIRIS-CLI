@@ -48,20 +48,20 @@ const TOOL_NAMES = [
 	"git",
 	"python",
 ] as const;
-const API_KEY_ENV_NAMES = [
-	"ANTHROPIC_API_KEY",
+const AAIRIS_KEY_ENV_NAMES = [
+	"ANTHROPIC_AAIRIS_KEY",
 	"ANTHROPIC_OAUTH_TOKEN",
-	"OPENAI_API_KEY",
-	"GEMINI_API_KEY",
-	"GROQ_API_KEY",
-	"MISTRAL_API_KEY",
-	"DEEPSEEK_API_KEY",
-	"OPENROUTER_API_KEY",
-	"AI_GATEWAY_API_KEY",
-	"OPENCODE_API_KEY",
+	"OPENAI_AAIRIS_KEY",
+	"GEMINI_AAIRIS_KEY",
+	"GROQ_AAIRIS_KEY",
+	"MISTRAL_AAIRIS_KEY",
+	"DEEPSEEK_AAIRIS_KEY",
+	"OPENROUTER_AAIRIS_KEY",
+	"AI_GATEWAY_AAIRIS_KEY",
+	"OPENCODE_AAIRIS_KEY",
 	"AWS_ACCESS_KEY_ID",
 	"AWS_BEARER_TOKEN_BEDROCK",
-	"AZURE_OPENAI_API_KEY",
+	"AZURE_OPENAI_AAIRIS_KEY",
 ] as const;
 
 interface ToolStatus {
@@ -404,7 +404,7 @@ function runDoctor(): void {
 	const logsDir = dirname(getAirisLogPath());
 	const tools = detectTools();
 	const toolByName = new Map(tools.map((tool) => [tool.name, tool]));
-	const envKeys = API_KEY_ENV_NAMES.filter((name) => !!process.env[name]);
+	const envKeys = AAIRIS_KEY_ENV_NAMES.filter((name) => !!process.env[name]);
 	const storedAuthCount = readStoredAuthProviderCount();
 	const packageJsonPath = join(getPackageDir(), "package.json");
 	const checks: CheckResult[] = [
@@ -465,7 +465,7 @@ function runDoctor(): void {
 			name: "API keys",
 			status: envKeys.length > 0 || storedAuthCount > 0 ? "ok" : "warn",
 			detail: `${envKeys.length} environment key(s), ${storedAuthCount} stored provider(s)`,
-			fix: "Set a provider API key such as GEMINI_API_KEY, OPENAI_API_KEY, or ANTHROPIC_API_KEY.",
+			fix: "Set a provider API key such as GEMINI_AAIRIS_KEY, OPENAI_AAIRIS_KEY, or ANTHROPIC_AAIRIS_KEY.",
 		},
 		{
 			name: "Session storage",

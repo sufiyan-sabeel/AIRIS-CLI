@@ -10,9 +10,9 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { API_KEY, createTestSession, type TestSessionContext } from "./utilities.ts";
+import { AAIRIS_KEY, createTestSession, type TestSessionContext } from "./utilities.ts";
 
-describe.skipIf(!API_KEY)("AgentSession tree navigation e2e", () => {
+describe.skipIf(!AAIRIS_KEY)("AgentSession tree navigation e2e", () => {
 	let ctx: TestSessionContext;
 
 	beforeEach(() => {
@@ -276,7 +276,7 @@ describe.skipIf(!API_KEY)("AgentSession tree navigation e2e", () => {
 	}, 120000);
 });
 
-describe.skipIf(!API_KEY)("AgentSession tree navigation - branch scenarios", () => {
+describe.skipIf(!AAIRIS_KEY)("AgentSession tree navigation - branch scenarios", () => {
 	let ctx: TestSessionContext;
 
 	beforeEach(() => {

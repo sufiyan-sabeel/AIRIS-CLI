@@ -2,8 +2,8 @@
  * Print mode (single-shot): Send prompts, output result, exit.
  *
  * Used for:
- * - `pi -p "prompt"` - text output
- * - `pi --mode json "prompt"` - JSON event stream
+ * - `airis -p "prompt"` - text output
+ * - `airis --mode json "prompt"` - JSON event stream
  */
 
 import type { AssistantMessage, ImageContent } from "@earendil-works/airis-ai";

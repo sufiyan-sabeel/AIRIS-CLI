@@ -1,5 +1,5 @@
 /**
- * Test helper for resolving API keys from ~/.pi/agent/auth.json
+ * Test helper for resolving API keys from ~/.airis/agent/auth.json
  *
  * Supports both API key and OAuth credentials.
  * OAuth tokens are automatically refreshed if expired and saved back to auth.json.
@@ -14,7 +14,7 @@ import type { OAuthCredentials, OAuthProvider } from "../src/utils/oauth/types.t
 const AUTH_PATH = join(homedir(), ".airis", "agent", "auth.json");
 
 type ApiKeyCredential = {
-	type: "api_key";
+	type: "aairis_key";
 	key: string;
 };
 
@@ -48,7 +48,7 @@ function saveAuthStorage(storage: AuthStorage): void {
 }
 
 /**
- * Resolve API key for a provider from ~/.pi/agent/auth.json
+ * Resolve API key for a provider from ~/.airis/agent/auth.json
  *
  * For API key credentials, returns the key directly.
  * For OAuth credentials, returns the access token (refreshing if expired and saving back).
@@ -60,7 +60,7 @@ export async function resolveApiKey(provider: string): Promise<string | undefine
 
 	if (!entry) return undefined;
 
-	if (entry.type === "api_key") {
+	if (entry.type === "aairis_key") {
 		return entry.key;
 	}
 

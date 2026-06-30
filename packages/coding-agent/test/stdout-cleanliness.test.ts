@@ -16,7 +16,7 @@ afterEach(() => {
 });
 
 function createTempDir(): string {
-	const dir = mkdtempSync(join(tmpdir(), "pi-stdout-clean-"));
+	const dir = mkdtempSync(join(tmpdir(), "airis-stdout-clean-"));
 	tempDirs.push(dir);
 	return dir;
 }

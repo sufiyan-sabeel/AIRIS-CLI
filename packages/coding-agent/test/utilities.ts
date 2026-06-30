@@ -21,18 +21,18 @@ import { createCodingTools } from "../src/index.ts";
 
 /**
  * API key for authenticated tests. Tests using this should be wrapped in
- * describe.skipIf(!API_KEY)
+ * describe.skipIf(!AAIRIS_KEY)
  */
-export const API_KEY = process.env.ANTHROPIC_OAUTH_TOKEN || process.env.ANTHROPIC_API_KEY;
+export const AAIRIS_KEY = process.env.ANTHROPIC_OAUTH_TOKEN || process.env.ANTHROPIC_AAIRIS_KEY;
 
 // ============================================================================
-// OAuth API key resolution from ~/.pi/agent/auth.json
+// OAuth API key resolution from ~/.airis/agent/auth.json
 // ============================================================================
 
 const AUTH_PATH = join(homedir(), ".airis", "agent", "auth.json");
 
 type ApiKeyCredential = {
-	type: "api_key";
+	type: "aairis_key";
 	key: string;
 };
 
@@ -66,7 +66,7 @@ function saveAuthStorage(storage: AuthStorageData): void {
 }
 
 /**
- * Resolve API key for a provider from ~/.pi/agent/auth.json
+ * Resolve API key for a provider from ~/.airis/agent/auth.json
  *
  * For API key credentials, returns the key directly.
  * For OAuth credentials, returns the access token (refreshing if expired and saving back).
@@ -78,7 +78,7 @@ export async function resolveApiKey(provider: string): Promise<string | undefine
 
 	if (!entry) return undefined;
 
-	if (entry.type === "api_key") {
+	if (entry.type === "aairis_key") {
 		return entry.key;
 	}
 
@@ -106,18 +106,18 @@ export async function resolveApiKey(provider: string): Promise<string | undefine
 }
 
 /**
- * Check if a provider has credentials in ~/.pi/agent/auth.json
+ * Check if a provider has credentials in ~/.airis/agent/auth.json
  */
 export function hasAuthForProvider(provider: string): boolean {
 	const storage = loadAuthStorage();
 	return provider in storage;
 }
 
-/** Path to the real pi agent config directory */
-export const PI_AGENT_DIR = join(homedir(), ".airis", "agent");
+/** Path to the real airis agent config directory */
+export const AIRIS_AGENT_DIR = join(homedir(), ".airis", "agent");
 
 /**
- * Get an AuthStorage instance backed by ~/.pi/agent/auth.json
+ * Get an AuthStorage instance backed by ~/.airis/agent/auth.json
  * Use this for tests that need real OAuth credentials.
  */
 export function getRealAuthStorage(): AuthStorage {
@@ -232,12 +232,12 @@ export function createTestResourceLoader(options: CreateTestResourceLoaderOption
  * Use this for e2e tests that need real LLM calls.
  */
 export function createTestSession(options: TestSessionOptions = {}): TestSessionContext {
-	const tempDir = join(tmpdir(), `pi-test-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+	const tempDir = join(tmpdir(), `airis-test-${Date.now()}-${Math.random().toString(36).slice(2)}`);
 	mkdirSync(tempDir, { recursive: true });
 
 	const model = getModel("anthropic", "claude-sonnet-4-5")!;
 	const agent = new Agent({
-		getApiKey: () => API_KEY,
+		getApiKey: () => AAIRIS_KEY,
 		initialState: {
 			model,
 			systemPrompt: options.systemPrompt ?? "You are a helpful assistant. Be extremely concise.",

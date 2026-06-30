@@ -1,0 +1,129 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`WelcomeHeader > snapshot tests > matches snapshot at 36 columns > welcome-header-36 1`] = `
+"                                    
+╭────────────────────────────────╮  
+│                                │  
+│               ╲   ╿   ╱        │  
+│          ━━━━╲  ◇  ╱━━━━       │  
+│               ╱   ╽   ╲        │  
+│                                │  
+│             AIRIS              │  
+├────────────────────────────────┤  
+│    Model     mimo-v2.5-free    │  
+│       Provider  opencode       │  
+│Mode      normal · @coding · @au│  
+│ Project   /home/.../airis-cli  │  
+╰────────────────────────────────╯  
+                                    "
+`;
+
+exports[`WelcomeHeader > snapshot tests > matches snapshot at 45 columns > welcome-header-45 1`] = `
+"                                             
+╭─────────────────────────────────────────╮  
+│                                         │  
+│              Welcome back               │  
+│                                         │  
+│                     ╲   ╿   ╱           │  
+│                ━━━━╲  ◇  ╱━━━━          │  
+│                     ╱   ╽   ╲           │  
+│                                         │  
+│                  AIRIS                  │  
+│   Artificial Intelligence Responsive    │  
+│            Integrated System            │  
+├─────────────────────────────────────────┤  
+│        Model     mimo-v2.5-free         │  
+│           Provider  opencode            │  
+│Mode      normal · @coding · @automation │  
+│      Project   /home/.../airis-cli      │  
+╰─────────────────────────────────────────╯  
+                                             "
+`;
+
+exports[`WelcomeHeader > snapshot tests > matches snapshot at 50 columns > welcome-header-50 1`] = `
+"                                                  
+╭──────────────────────────────────────────────╮  
+│                                              │  
+│                 Welcome back                 │  
+│                                              │  
+│                       ╲   ╿   ╱              │  
+│                   ━━━━╲  ◇  ╱━━━━            │  
+│                       ╱   ╽   ╲              │  
+│                                              │  
+│                    AIRIS                     │  
+│      Artificial Intelligence Responsive      │  
+│              Integrated System               │  
+├──────────────────────────────────────────────┤  
+│           Model     mimo-v2.5-free           │  
+│              Provider  opencode              │  
+│   Mode      normal · @coding · @automation   │  
+│        Project   /home/.../airis-cli         │  
+╰──────────────────────────────────────────────╯  
+                                                  "
+`;
+
+exports[`WelcomeHeader > snapshot tests > matches snapshot at 60 columns > welcome-header-60 1`] = `
+"                                                            
+╭────────────────────────────────────────────────────────╮  
+│                                                        │  
+│                      Welcome back                      │  
+│                                                        │  
+│                            ╲   ╿   ╱                   │  
+│                        ━━━━╲  ◇  ╱━━━━                 │  
+│                            ╱   ╽   ╲                   │  
+│                                                        │  
+│                         AIRIS                          │  
+│           Artificial Intelligence Responsive           │  
+│                   Integrated System                    │  
+├────────────────────────────────────────────────────────┤  
+│                Model     mimo-v2.5-free                │  
+│                   Provider  opencode                   │  
+│        Mode      normal · @coding · @automation        │  
+│        Project   /home/user/projects/airis-cli         │  
+╰────────────────────────────────────────────────────────╯  
+                                                            "
+`;
+
+exports[`WelcomeHeader > snapshot tests > matches snapshot at 80 columns > welcome-header-80 1`] = `
+"                                                                                
+╭────────────────────────────────────────────────────────────────────────────╮  
+│                                                                            │  
+│                                Welcome back                                │  
+│                                                                            │  
+│                                           ╲   ╿   ╱                        │  
+│                                       ━━━━╲  ◇  ╱━━━━                      │  
+│                                           ╱   ╽   ╲                        │  
+│                                                                            │  
+│                                 A I R I S                                  │  
+│                     Artificial Intelligence Responsive                     │  
+│                             Integrated System                              │  
+├────────────────────────────────────────────────────────────────────────────┤  
+│                          Model     mimo-v2.5-free                          │  
+│                             Provider  opencode                             │  
+│                  Mode      normal · @coding · @automation                  │  
+│                  Project   /home/user/projects/airis-cli                   │  
+╰────────────────────────────────────────────────────────────────────────────╯  
+                                                                                "
+`;
+
+exports[`WelcomeHeader > snapshot tests > matches snapshot at 120 columns > welcome-header-120 1`] = `
+"                                                                                                                        
+╭────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮  
+│                                                                                                                    │  
+│                                                    Welcome back                                                    │  
+│                                                                                                                    │  
+│                                                               ╲   ╿   ╱                                            │  
+│                                                           ━━━━╲  ◇  ╱━━━━                                          │  
+│                                                               ╱   ╽   ╲                                            │  
+│                                                                                                                    │  
+│                                                     A I R I S                                                      │  
+│                                         Artificial Intelligence Responsive                                         │  
+│                                                 Integrated System                                                  │  
+├────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤  
+│                                              Model     mimo-v2.5-free                                              │  
+│                                                 Provider  opencode                                                 │  
+│                                      Mode      normal · @coding · @automation                                      │  
+│                                      Project   /home/user/projects/airis-cli                                       │  
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯  
+                                                                                                                        "
+`;

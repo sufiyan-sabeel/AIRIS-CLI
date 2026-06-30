@@ -53,11 +53,6 @@ const VIRTUAL_MODULES: Record<string, unknown> = {
 	"@earendil-works/airis-ai": _bundledAirisAi,
 	"@earendil-works/airis-ai/oauth": _bundledAirisAiOauth,
 	"@sufiyan-sabeel/airis-cli": _bundledAirisCodingAgent,
-	"@mariozechner/pi-agent-core": _bundledAirisAgentCore,
-	"@mariozechner/pi-tui": _bundledAirisTui,
-	"@mariozechner/pi-ai": _bundledAirisAi,
-	"@mariozechner/pi-ai/oauth": _bundledAirisAiOauth,
-	"@mariozechner/pi-coding-agent": _bundledAirisCodingAgent,
 };
 
 const require = createRequire(import.meta.url);
@@ -99,11 +94,6 @@ function getAliases(): Record<string, string> {
 		"@earendil-works/airis-tui": piTuiEntry,
 		"@earendil-works/airis-ai": piAiEntry,
 		"@earendil-works/airis-ai/oauth": piAiOauthEntry,
-		"@mariozechner/pi-coding-agent": piCodingAgentEntry,
-		"@mariozechner/pi-agent-core": piAgentCoreEntry,
-		"@mariozechner/pi-tui": piTuiEntry,
-		"@mariozechner/pi-ai": piAiEntry,
-		"@mariozechner/pi-ai/oauth": piAiOauthEntry,
 		typebox: typeboxEntry,
 		"typebox/compile": typeboxCompileEntry,
 		"typebox/value": typeboxValueEntry,
@@ -453,8 +443,8 @@ function readAirisManifest(packageJsonPath: string): AirisManifest | null {
 	try {
 		const content = fs.readFileSync(packageJsonPath, "utf-8");
 		const pkg = JSON.parse(content);
-		if (pkg.pi && typeof pkg.pi === "object") {
-			return pkg.pi as AirisManifest;
+		if (pkg.airis && typeof pkg.airis === "object") {
+			return pkg.airis as AirisManifest;
 		}
 		return null;
 	} catch {

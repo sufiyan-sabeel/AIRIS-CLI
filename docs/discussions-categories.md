@@ -27,4 +27,4 @@ To enable GitHub Discussions:
 - Use Issues for bugs and feature requests (with templates)
 - Use Discussions for questions, ideas, and community interaction
 - Mark accepted answers in Q&A
-- Pin important announcements
+- AIRISn important announcements

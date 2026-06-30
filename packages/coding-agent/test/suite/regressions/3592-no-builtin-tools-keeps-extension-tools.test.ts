@@ -18,7 +18,7 @@ describe("regression #3592: no-builtin-tools keeps extension tools enabled", () 
 	let agentDir: string;
 
 	beforeEach(() => {
-		tempDir = join(tmpdir(), `pi-no-builtin-tools-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+		tempDir = join(tmpdir(), `airis-no-builtin-tools-${Date.now()}-${Math.random().toString(36).slice(2)}`);
 		agentDir = join(tempDir, "agent");
 		mkdirSync(agentDir, { recursive: true });
 	});
@@ -37,9 +37,9 @@ describe("regression #3592: no-builtin-tools keeps extension tools enabled", () 
 			agentDir,
 			settingsManager,
 			extensionFactories: [
-				(pi) => {
-					pi.on("session_start", () => {
-						pi.registerTool({
+				(airis) => {
+					airis.on("session_start", () => {
+						airis.registerTool({
 							name: "dynamic_tool",
 							label: "Dynamic Tool",
 							description: "Tool registered from session_start",
@@ -78,8 +78,25 @@ describe("regression #3592: no-builtin-tools keeps extension tools enabled", () 
 				.getAllTools()
 				.map((tool) => tool.name)
 				.sort(),
-		).toEqual(["adaptive_todo", "ask_question", "bash", "dynamic_tool", "edit", "find", "grep", "ls", "read", "self_debug", "write"]);
-		expect(session.getActiveToolNames()).toEqual(["dynamic_tool"]);
+		).toEqual([
+			"adaptive_todo",
+			"ask_question",
+			"bash",
+			"dynamic_tool",
+			"edit",
+			"find",
+			"grep",
+			"ls",
+			"read",
+			"self_debug",
+			"write",
+		]);
+		expect(session.getActiveToolNames().sort()).toEqual([
+			"adaptive_todo",
+			"ask_question",
+			"dynamic_tool",
+			"self_debug",
+		]);
 		expect(session.systemPrompt).toContain("- dynamic_tool: Run dynamic test behavior");
 		expect(session.systemPrompt).not.toContain("- read:");
 		expect(session.systemPrompt).not.toContain("- bash:");
@@ -111,8 +128,10 @@ describe("regression #3592: no-builtin-tools keeps extension tools enabled", () 
 			noTools: "builtin",
 		});
 
-		expect(session.getActiveToolNames()).toEqual(["adaptive_todo", "ask_question", "self_debug"]);
-		expect(session.systemPrompt).toContain("Available tools:");
+		expect(session.getActiveToolNames().sort()).toEqual(["adaptive_todo", "ask_question", "self_debug"]);
+		expect(session.systemPrompt).toContain("- adaptive_todo:");
+		expect(session.systemPrompt).toContain("- ask_question:");
+		expect(session.systemPrompt).toContain("- self_debug:");
 		expect(session.systemPrompt).not.toContain("- read:");
 		session.dispose();
 	});

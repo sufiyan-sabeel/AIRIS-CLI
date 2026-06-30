@@ -7,26 +7,26 @@
 
 import type { ExtensionAPI } from "@sufiyan-sabeel/airis-cli";
 
-export default function (pi: ExtensionAPI) {
+export default function (airis: ExtensionAPI) {
 	const checkpoints = new Map<string, string>();
 	let currentEntryId: string | undefined;
 
 	// Track the current entry ID when user messages are saved
-	pi.on("tool_result", async (_event, ctx) => {
+	airis.on("tool_result", async (_event, ctx) => {
 		const leaf = ctx.sessionManager.getLeafEntry();
 		if (leaf) currentEntryId = leaf.id;
 	});
 
-	pi.on("turn_start", async () => {
+	airis.on("turn_start", async () => {
 		// Create a git stash entry before LLM makes changes
-		const { stdout } = await pi.exec("git", ["stash", "create"]);
+		const { stdout } = await airis.exec("git", ["stash", "create"]);
 		const ref = stdout.trim();
 		if (ref && currentEntryId) {
 			checkpoints.set(currentEntryId, ref);
 		}
 	});
 
-	pi.on("session_before_fork", async (event, ctx) => {
+	airis.on("session_before_fork", async (event, ctx) => {
 		const ref = checkpoints.get(event.entryId);
 		if (!ref) return;
 
@@ -41,12 +41,12 @@ export default function (pi: ExtensionAPI) {
 		]);
 
 		if (choice?.startsWith("Yes")) {
-			await pi.exec("git", ["stash", "apply", ref]);
+			await airis.exec("git", ["stash", "apply", ref]);
 			ctx.ui.notify("Code restored to checkpoint", "info");
 		}
 	});
 
-	pi.on("agent_end", async () => {
+	airis.on("agent_end", async () => {
 		// Clear checkpoints after agent completes
 		checkpoints.clear();
 	});

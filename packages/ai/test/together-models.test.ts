@@ -2,13 +2,13 @@ import { afterEach, describe, expect, it } from "vitest";
 import { findEnvKeys, getEnvApiKey } from "../src/env-api-keys.ts";
 import { getModel } from "../src/models.ts";
 
-const originalTogetherApiKey = process.env.TOGETHER_API_KEY;
+const originalTogetherApiKey = process.env.TOGETHER_AAIRIS_KEY;
 
 afterEach(() => {
 	if (originalTogetherApiKey === undefined) {
-		delete process.env.TOGETHER_API_KEY;
+		delete process.env.TOGETHER_AAIRIS_KEY;
 	} else {
-		process.env.TOGETHER_API_KEY = originalTogetherApiKey;
+		process.env.TOGETHER_AAIRIS_KEY = originalTogetherApiKey;
 	}
 });
 
@@ -69,10 +69,10 @@ describe("Together models", () => {
 		expect(minimax.compat?.supportsReasoningEffort).toBe(false);
 	});
 
-	it("resolves TOGETHER_API_KEY from the environment", () => {
-		process.env.TOGETHER_API_KEY = "test-together-key";
+	it("resolves TOGETHER_AAIRIS_KEY from the environment", () => {
+		process.env.TOGETHER_AAIRIS_KEY = "test-together-key";
 
-		expect(findEnvKeys("together")).toEqual(["TOGETHER_API_KEY"]);
+		expect(findEnvKeys("together")).toEqual(["TOGETHER_AAIRIS_KEY"]);
 		expect(getEnvApiKey("together")).toBe("test-together-key");
 	});
 });

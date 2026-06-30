@@ -13,10 +13,10 @@
  *   cd packages/coding-agent/examples/extensions/custom-provider && npm install
  *
  *   # With OAuth (run /login custom-anthropic first)
- *   pi -e ./packages/coding-agent/examples/extensions/custom-provider
+ *   airis -e ./packages/coding-agent/examples/extensions/custom-provider
  *
  *   # With API key
- *   CUSTOM_ANTHROPIC_API_KEY=sk-ant-... pi -e ./packages/coding-agent/examples/extensions/custom-provider
+ *   CUSTOM_ANTHROPIC_AAIRIS_KEY=sk-ant-... airis -e ./packages/coding-agent/examples/extensions/custom-provider
  *
  * Then use /model to select custom-anthropic/claude-sonnet-4-5
  */
@@ -54,7 +54,7 @@ const CLIENT_ID = decode("OWQxYzI1MGEtZTYxYi00NGQ5LTg4ZWQtNTk0NGQxOTYyZjVl");
 const AUTHORIZE_URL = "https://claude.ai/oauth/authorize";
 const TOKEN_URL = "https://console.anthropic.com/v1/oauth/token";
 const REDIRECT_URI = "https://console.anthropic.com/oauth/code/callback";
-const SCOPES = "org:create_api_key user:profile user:inference";
+const SCOPES = "org:create_aairis_key user:profile user:inference";
 
 async function generatePKCE(): Promise<{ verifier: string; challenge: string }> {
 	const array = new Uint8Array(32);
@@ -565,10 +565,10 @@ function streamCustomAnthropic(
 // Extension Entry Point
 // =============================================================================
 
-export default function (pi: ExtensionAPI) {
-	pi.registerProvider("custom-anthropic", {
+export default function (airis: ExtensionAPI) {
+	airis.registerProvider("custom-anthropic", {
 		baseUrl: "https://api.anthropic.com",
-		apiKey: "$CUSTOM_ANTHROPIC_API_KEY",
+		apiKey: "$CUSTOM_ANTHROPIC_AAIRIS_KEY",
 		api: "custom-anthropic-api",
 
 		models: [

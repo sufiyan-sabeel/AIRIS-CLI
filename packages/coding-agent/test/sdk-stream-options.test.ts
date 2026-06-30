@@ -21,7 +21,7 @@ describe("createAgentSession stream options", () => {
 	let agentDir: string;
 
 	beforeEach(() => {
-		tempDir = mkdtempSync(join(tmpdir(), "pi-sdk-stream-options-"));
+		tempDir = mkdtempSync(join(tmpdir(), "airis-sdk-stream-options-"));
 		cwd = join(tempDir, "project");
 		agentDir = join(tempDir, "agent");
 		mkdirSync(cwd, { recursive: true });
@@ -81,7 +81,7 @@ describe("createAgentSession stream options", () => {
 		const settingsManager = SettingsManager.inMemory(settings);
 
 		const authStorage = AuthStorage.create(join(agentDir, "auth.json"));
-		authStorage.setRuntimeApiKey(model.provider, "test-api-key");
+		authStorage.setRuntimeApiKey(model.provider, "test-aairis-key");
 		const modelRegistry = ModelRegistry.create(authStorage, join(agentDir, "models.json"));
 		let capturedOptions: SimpleStreamOptions | undefined;
 

@@ -22,20 +22,20 @@ describe("createAgentSession provider attribution headers", () => {
 	let originalTelemetryEnv: string | undefined;
 
 	beforeEach(() => {
-		tempDir = join(tmpdir(), `pi-sdk-attribution-test-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+		tempDir = join(tmpdir(), `airis-sdk-attribution-test-${Date.now()}-${Math.random().toString(36).slice(2)}`);
 		cwd = join(tempDir, "project");
 		agentDir = join(tempDir, "agent");
 		mkdirSync(cwd, { recursive: true });
 		mkdirSync(agentDir, { recursive: true });
-		originalTelemetryEnv = process.env.PI_TELEMETRY;
-		delete process.env.PI_TELEMETRY;
+		originalTelemetryEnv = process.env.AIRIS_TELEMETRY;
+		delete process.env.AIRIS_TELEMETRY;
 	});
 
 	afterEach(() => {
 		if (originalTelemetryEnv === undefined) {
-			delete process.env.PI_TELEMETRY;
+			delete process.env.AIRIS_TELEMETRY;
 		} else {
-			process.env.PI_TELEMETRY = originalTelemetryEnv;
+			process.env.AIRIS_TELEMETRY = originalTelemetryEnv;
 		}
 		if (tempDir && existsSync(tempDir)) {
 			rmSync(tempDir, { recursive: true, force: true });
@@ -93,7 +93,7 @@ describe("createAgentSession provider attribution headers", () => {
 		settingsManager.setEnableInstallTelemetry(options.telemetryEnabled !== false);
 
 		const authStorage = AuthStorage.create(join(agentDir, "auth.json"));
-		authStorage.setRuntimeApiKey(model.provider, "test-api-key");
+		authStorage.setRuntimeApiKey(model.provider, "test-aairis-key");
 		const modelRegistry = ModelRegistry.create(authStorage, join(agentDir, "models.json"));
 		const registeredProviders = ["capture-provider"];
 		let capturedOptions: SimpleStreamOptions | undefined;
@@ -147,7 +147,7 @@ describe("createAgentSession provider attribution headers", () => {
 	it("adds default attribution headers for OpenRouter models", async () => {
 		const headers = await captureHeaders(createModel("openrouter", "https://openrouter.ai/api/v1"));
 
-		expect(headers?.["HTTP-Referer"]).toBe("https://pi.dev");
+		expect(headers?.["HTTP-Referer"]).toBe("https://sufiyan-sabeel.github.io/AIRIS-CLI/");
 		expect(headers?.["X-OpenRouter-Title"]).toBe("airis");
 		expect(headers?.["X-OpenRouter-Categories"]).toBe("cli-agent");
 	});
@@ -165,7 +165,7 @@ describe("createAgentSession provider attribution headers", () => {
 	it("adds attribution headers for custom providers routed through OpenRouter", async () => {
 		const headers = await captureHeaders(createModel("custom-openrouter", "https://openrouter.ai/api/v1"));
 
-		expect(headers?.["HTTP-Referer"]).toBe("https://pi.dev");
+		expect(headers?.["HTTP-Referer"]).toBe("https://sufiyan-sabeel.github.io/AIRIS-CLI/");
 		expect(headers?.["X-OpenRouter-Title"]).toBe("airis");
 		expect(headers?.["X-OpenRouter-Categories"]).toBe("cli-agent");
 	});
@@ -173,7 +173,7 @@ describe("createAgentSession provider attribution headers", () => {
 	it("preserves legacy OpenRouter base URL substring attribution matching", async () => {
 		const headers = await captureHeaders(createModel("custom-openrouter", "not-a-url-openrouter.ai"));
 
-		expect(headers?.["HTTP-Referer"]).toBe("https://pi.dev");
+		expect(headers?.["HTTP-Referer"]).toBe("https://sufiyan-sabeel.github.io/AIRIS-CLI/");
 		expect(headers?.["X-OpenRouter-Title"]).toBe("airis");
 		expect(headers?.["X-OpenRouter-Categories"]).toBe("cli-agent");
 	});
@@ -232,7 +232,7 @@ describe("createAgentSession provider attribution headers", () => {
 			createModel("openrouter", "https://openrouter.ai/api/v1", "nvidia/nemotron-3-super-120b-a12b"),
 		);
 
-		expect(headers?.["HTTP-Referer"]).toBe("https://pi.dev");
+		expect(headers?.["HTTP-Referer"]).toBe("https://sufiyan-sabeel.github.io/AIRIS-CLI/");
 		expect(headers?.["X-BILLING-INVOKE-ORIGIN"]).toBeUndefined();
 	});
 

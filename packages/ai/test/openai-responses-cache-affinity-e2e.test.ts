@@ -3,7 +3,7 @@ import { getModel } from "../src/models.ts";
 import { complete } from "../src/stream.ts";
 import type { Context } from "../src/types.ts";
 
-describe.skipIf(!process.env.OPENAI_API_KEY)("openai responses cache affinity e2e", () => {
+describe.skipIf(!process.env.OPENAI_AAIRIS_KEY)("openai responses cache affinity e2e", () => {
 	it("handles direct OpenAI Responses requests with aligned cache-affinity identifiers", { retry: 2 }, async () => {
 		const model = getModel("openai", "gpt-5.4");
 		const sessionId = "0195d6e4-4cf9-7f44-a2d8-f8f7f49ee9d3";
@@ -19,7 +19,7 @@ describe.skipIf(!process.env.OPENAI_API_KEY)("openai responses cache affinity e2
 		};
 
 		const response = await complete(model, context, {
-			apiKey: process.env.OPENAI_API_KEY!,
+			apiKey: process.env.OPENAI_AAIRIS_KEY!,
 			sessionId,
 		});
 

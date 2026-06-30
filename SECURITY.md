@@ -43,7 +43,7 @@ reports and coordinate disclosure as appropriate.
 
 Security issues in the distributed packages, command-line tools, APIs, and
 repository code are in scope as well as earendil operated infrastricture
-on `pi.dev`.
+on `airis.dev`.
 
 ## Out Of Scope
 
@@ -60,10 +60,10 @@ on `pi.dev`.
   user-controlled local state on the target machine. This includes `~/.airis`,
   `~/.airis/agent/models.json`, workspace files, `AGENTS.md`, skills, extensions,
   extension configuration, dotfiles, and files synchronized through NFS, roaming
-  profiles, or dotfile managers, unless the report shows how Pi itself grants
+  profiles, or dotfile managers, unless the report shows how AIRIS itself grants
   that access.
 - Issues caused by intentionally weakened user configuration.
-- Resource/DOS claims that require trusted local input/config against the pi coding agent.
+- Resource/DOS claims that require trusted local input/config against the airis coding agent.
 - Reports about malicious model output.
 - User-approved or user-initiated local actions presented as vulnerabilities.
 
@@ -74,14 +74,14 @@ with demonstrated impact.  Reports that only show expected local-agent behavior,
 prompt injection, or a malicious trusted extension/skill are not security
 vulnerabilities under this model.
 
-For example, a report showing that malicious contents written to a trusted Pi
-configuration file cause Pi to execute commands, load attacker-controlled tools,
+For example, a report showing that malicious contents written to a trusted AIRIS
+configuration file cause AIRIS to execute commands, load attacker-controlled tools,
 send credentials to an attacker-controlled endpoint, or otherwise change behavior
 is out of scope.
 
 When possible, include the exact affected path, package version or commit SHA,
 configuration, and a proof of concept against the latest release or latest
 `main`.  For dependency reports, include evidence that the shipped dependency is
-affected and that the issue is reachable through Pi.  For exposed-secret reports,
+affected and that the issue is reachable through AIRIS.  For exposed-secret reports,
 include evidence that the credential is owned by Earendil or grants access to
 Earendil-operated infrastructure or services.

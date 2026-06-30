@@ -463,21 +463,21 @@ describe("InteractiveMode.showLoadedResources", () => {
 	function createExtensionFixtures(): ExtensionFixture[] {
 		return [
 			{
-				path: "/tmp/project/.pi/extensions/answer.ts",
-				sourceInfo: createSourceInfo("/tmp/project/.pi/extensions/answer.ts", {
+				path: "/tmp/project/.airis/extensions/answer.ts",
+				sourceInfo: createSourceInfo("/tmp/project/.airis/extensions/answer.ts", {
 					source: "local",
 					scope: "project",
 					origin: "top-level",
-					baseDir: "/tmp/project/.pi/extensions",
+					baseDir: "/tmp/project/.airis/extensions",
 				}),
 			},
 			{
-				path: "/tmp/project/.pi/extensions/local-index/index.ts",
-				sourceInfo: createSourceInfo("/tmp/project/.pi/extensions/local-index/index.ts", {
+				path: "/tmp/project/.airis/extensions/local-index/index.ts",
+				sourceInfo: createSourceInfo("/tmp/project/.airis/extensions/local-index/index.ts", {
 					source: "local",
 					scope: "project",
 					origin: "top-level",
-					baseDir: "/tmp/project/.pi/extensions",
+					baseDir: "/tmp/project/.airis/extensions",
 				}),
 			},
 			{
@@ -490,44 +490,50 @@ describe("InteractiveMode.showLoadedResources", () => {
 				}),
 			},
 			{
-				path: "/tmp/project/.pi/npm/node_modules/pi-markdown-preview/extensions/index.ts",
-				sourceInfo: createSourceInfo("/tmp/project/.pi/npm/node_modules/pi-markdown-preview/extensions/index.ts", {
-					source: "npm:pi-markdown-preview",
-					scope: "project",
-					origin: "package",
-					baseDir: "/tmp/project/.pi/npm/node_modules/pi-markdown-preview",
-				}),
-			},
-			{
-				path: "/tmp/project/.pi/npm/node_modules/@scope/pi-scoped/extensions/index.ts",
-				sourceInfo: createSourceInfo("/tmp/project/.pi/npm/node_modules/@scope/pi-scoped/extensions/index.ts", {
-					source: "npm:@scope/pi-scoped",
-					scope: "project",
-					origin: "package",
-					baseDir: "/tmp/project/.pi/npm/node_modules/@scope/pi-scoped",
-				}),
-			},
-			{
-				path: "/tmp/project/.pi/git/github.com/HazAT/pi-interactive-subagents/extensions/index.ts",
+				path: "/tmp/project/.airis/npm/node_modules/airis-markdown-preview/extensions/index.ts",
 				sourceInfo: createSourceInfo(
-					"/tmp/project/.pi/git/github.com/HazAT/pi-interactive-subagents/extensions/index.ts",
+					"/tmp/project/.airis/npm/node_modules/airis-markdown-preview/extensions/index.ts",
 					{
-						source: "git:github.com/HazAT/pi-interactive-subagents",
+						source: "npm:airis-markdown-preview",
 						scope: "project",
 						origin: "package",
-						baseDir: "/tmp/project/.pi/git/github.com/HazAT/pi-interactive-subagents",
+						baseDir: "/tmp/project/.airis/npm/node_modules/airis-markdown-preview",
 					},
 				),
 			},
 			{
-				path: "/tmp/project/.pi/git/github.com/HazAT/pi-interactive-subagents/extensions/subagents/index.ts",
+				path: "/tmp/project/.airis/npm/node_modules/@scope/airis-scoped/extensions/index.ts",
 				sourceInfo: createSourceInfo(
-					"/tmp/project/.pi/git/github.com/HazAT/pi-interactive-subagents/extensions/subagents/index.ts",
+					"/tmp/project/.airis/npm/node_modules/@scope/airis-scoped/extensions/index.ts",
 					{
-						source: "git:github.com/HazAT/pi-interactive-subagents",
+						source: "npm:@scope/airis-scoped",
 						scope: "project",
 						origin: "package",
-						baseDir: "/tmp/project/.pi/git/github.com/HazAT/pi-interactive-subagents",
+						baseDir: "/tmp/project/.airis/npm/node_modules/@scope/airis-scoped",
+					},
+				),
+			},
+			{
+				path: "/tmp/project/.airis/git/github.com/HazAT/airis-interactive-subagents/extensions/index.ts",
+				sourceInfo: createSourceInfo(
+					"/tmp/project/.airis/git/github.com/HazAT/airis-interactive-subagents/extensions/index.ts",
+					{
+						source: "git:github.com/HazAT/airis-interactive-subagents",
+						scope: "project",
+						origin: "package",
+						baseDir: "/tmp/project/.airis/git/github.com/HazAT/airis-interactive-subagents",
+					},
+				),
+			},
+			{
+				path: "/tmp/project/.airis/git/github.com/HazAT/airis-interactive-subagents/extensions/subagents/index.ts",
+				sourceInfo: createSourceInfo(
+					"/tmp/project/.airis/git/github.com/HazAT/airis-interactive-subagents/extensions/subagents/index.ts",
+					{
+						source: "git:github.com/HazAT/airis-interactive-subagents",
+						scope: "project",
+						origin: "package",
+						baseDir: "/tmp/project/.airis/git/github.com/HazAT/airis-interactive-subagents",
 					},
 				),
 			},
@@ -623,7 +629,7 @@ describe("InteractiveMode.showLoadedResources", () => {
 
 		expect(normalizeRenderedOutput(fakeThis.chatContainer)).toMatchInlineSnapshot(`
 "[Extensions]
-  @scope/pi-scoped, answer.ts, cli-extension.ts, HazAT/pi-interactive-subagents, HazAT/pi-interactive-subagents:subagents, local-index, pi-markdown-preview, user-index"`);
+  @scope/airis-scoped, answer.ts, cli-extension.ts, HazAT/airis-interactive-subagents, HazAT/airis-interactive-subagents:subagents, local-index, airis-markdown-preview, user-index"`);
 	});
 
 	test("adds more parent folders until local extension labels are unique", () => {
@@ -870,13 +876,16 @@ describe("InteractiveMode.showLoadedResources", () => {
 	test("package extensions still strip index.ts correctly (regression guard)", () => {
 		const extensions: ExtensionFixture[] = [
 			{
-				path: "/tmp/project/.pi/npm/node_modules/pi-markdown-preview/extensions/index.ts",
-				sourceInfo: createSourceInfo("/tmp/project/.pi/npm/node_modules/pi-markdown-preview/extensions/index.ts", {
-					source: "npm:pi-markdown-preview",
-					scope: "project",
-					origin: "package",
-					baseDir: "/tmp/project/.pi/npm/node_modules/pi-markdown-preview",
-				}),
+				path: "/tmp/project/.airis/npm/node_modules/airis-markdown-preview/extensions/index.ts",
+				sourceInfo: createSourceInfo(
+					"/tmp/project/.airis/npm/node_modules/airis-markdown-preview/extensions/index.ts",
+					{
+						source: "npm:airis-markdown-preview",
+						scope: "project",
+						origin: "package",
+						baseDir: "/tmp/project/.airis/npm/node_modules/airis-markdown-preview",
+					},
+				),
 			},
 		];
 
@@ -892,7 +901,7 @@ describe("InteractiveMode.showLoadedResources", () => {
 
 		expect(normalizeRenderedOutput(fakeThis.chatContainer)).toMatchInlineSnapshot(`
 "[Extensions]
-  pi-markdown-preview"`);
+  airis-markdown-preview"`);
 	});
 	test("captures mixed extension layouts in expanded output", () => {
 		const fakeThis = createShowLoadedResourcesThis({
@@ -909,14 +918,14 @@ describe("InteractiveMode.showLoadedResources", () => {
 		expect(normalizeRenderedOutput(fakeThis.chatContainer)).toMatchInlineSnapshot(`
 "[Extensions]
   project
-    /tmp/project/.pi/extensions/answer.ts
-    /tmp/project/.pi/extensions/local-index
-    git:github.com/HazAT/pi-interactive-subagents
+    /tmp/project/.airis/extensions/answer.ts
+    /tmp/project/.airis/extensions/local-index
+    git:github.com/HazAT/airis-interactive-subagents
       extensions
       extensions/subagents
-    npm:@scope/pi-scoped
+    npm:@scope/airis-scoped
       extensions
-    npm:pi-markdown-preview
+    npm:airis-markdown-preview
       extensions
   user
     /tmp/agent/extensions/user-index
@@ -926,11 +935,14 @@ describe("InteractiveMode.showLoadedResources", () => {
 
 	test("shows context paths relative to cwd while preserving full external paths", () => {
 		const home = homedir();
-		const cwd = path.join(home, "Development", "pi-mono");
+		const cwd = path.join(home, "Development", "airis-mono");
 		const fakeThis = createShowLoadedResourcesThis({
 			quietStartup: false,
 			cwd,
-			contextFiles: [{ path: path.join(home, ".airis", "agent", "AGENTS.md") }, { path: path.join(cwd, "AGENTS.md") }],
+			contextFiles: [
+				{ path: path.join(home, ".airis", "agent", "AGENTS.md") },
+				{ path: path.join(cwd, "AGENTS.md") },
+			],
 		});
 
 		(InteractiveMode as any).prototype.showLoadedResources.call(fakeThis, {
@@ -945,12 +957,15 @@ describe("InteractiveMode.showLoadedResources", () => {
 
 	test("shows full context paths when expanded", () => {
 		const home = homedir();
-		const cwd = path.join(home, "Development", "pi-mono");
+		const cwd = path.join(home, "Development", "airis-mono");
 		const fakeThis = createShowLoadedResourcesThis({
 			quietStartup: false,
 			toolOutputExpanded: true,
 			cwd,
-			contextFiles: [{ path: path.join(home, ".airis", "agent", "AGENTS.md") }, { path: path.join(cwd, "AGENTS.md") }],
+			contextFiles: [
+				{ path: path.join(home, ".airis", "agent", "AGENTS.md") },
+				{ path: path.join(cwd, "AGENTS.md") },
+			],
 		});
 
 		(InteractiveMode as any).prototype.showLoadedResources.call(fakeThis, {
@@ -960,7 +975,7 @@ describe("InteractiveMode.showLoadedResources", () => {
 		const output = renderAll(fakeThis.chatContainer).replace(/\\/g, "/");
 		expect(output).toContain("[Context]");
 		expect(output).toContain("~/.airis/agent/AGENTS.md");
-		expect(output).toContain("~/Development/pi-mono/AGENTS.md");
+		expect(output).toContain("~/Development/airis-mono/AGENTS.md");
 		expect(output).not.toContain("~/.airis/agent/AGENTS.md, AGENTS.md");
 	});
 

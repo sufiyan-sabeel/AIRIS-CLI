@@ -10,20 +10,20 @@ interface StreamCallbacks {
 }
 
 function getOpenAIClient(): OpenAI {
-  const key = process.env.OPENAI_API_KEY;
-  if (!key) throw new Error('OPENAI_API_KEY not configured');
+  const key = process.env.OPENAI_AAIRIS_KEY;
+  if (!key) throw new Error('OPENAI_AAIRIS_KEY not configured');
   return new OpenAI({ apiKey: key });
 }
 
 function getGeminiClient(): GoogleGenerativeAI {
-  const key = process.env.GEMINI_API_KEY;
-  if (!key) throw new Error('GEMINI_API_KEY not configured');
+  const key = process.env.GEMINI_AAIRIS_KEY;
+  if (!key) throw new Error('GEMINI_AAIRIS_KEY not configured');
   return new GoogleGenerativeAI(key);
 }
 
 function getGrokClient(): OpenAI {
-  const key = process.env.GROK_API_KEY;
-  if (!key) throw new Error('GROK_API_KEY not configured');
+  const key = process.env.GROK_AAIRIS_KEY;
+  if (!key) throw new Error('GROK_AAIRIS_KEY not configured');
   return new OpenAI({
     apiKey: key,
     baseURL: 'https://api.x.ai/v1'
@@ -31,8 +31,8 @@ function getGrokClient(): OpenAI {
 }
 
 function getOpenRouterClient(): OpenAI {
-  const key = process.env.OPENROUTER_API_KEY;
-  if (!key) throw new Error('OPENROUTER_API_KEY not configured');
+  const key = process.env.OPENROUTER_AAIRIS_KEY;
+  if (!key) throw new Error('OPENROUTER_AAIRIS_KEY not configured');
   return new OpenAI({
     apiKey: key,
     baseURL: 'https://openrouter.ai/api/v1'

@@ -55,7 +55,7 @@ export function maskCliArgs(args: readonly string[]): string[] {
 			maskNext = false;
 			continue;
 		}
-		if (/^--(?:api-key|token|secret|password)(?:=|$)/i.test(arg)) {
+		if (/^--(?:aairis-key|token|secret|password)(?:=|$)/i.test(arg)) {
 			const eqIndex = arg.indexOf("=");
 			masked.push(eqIndex === -1 ? arg : `${arg.slice(0, eqIndex + 1)}[redacted]`);
 			maskNext = eqIndex === -1;

@@ -8,7 +8,7 @@ AIRIS packages bundle extensions, skills, prompt templates, and themes so you ca
 
 - [Install and Manage](#install-and-manage)
 - [Package Sources](#package-sources)
-- [Creating a Pi Package](#creating-a-pi-package)
+- [Creating a AIRIS Package](#creating-a-airis-package)
 - [Package Structure](#package-structure)
 - [Dependencies](#dependencies)
 - [Package Filtering](#package-filtering)
@@ -58,7 +58,7 @@ npm:@scope/pkg@1.2.3
 npm:pkg
 ```
 
-- Versioned specs are pinned and skipped by package updates (`pi update`, `pi update --extensions`).
+- Versioned specs are pinned and skipped by package updates (`airis update`, `airis update --extensions`).
 - User installs go under `~/.airis/agent/npm/`.
 - Project installs go under `.airis/npm/`.
 - Set `npmCommand` in `settings.json` to pin npm package lookup and install operations to a specific wrapper command such as `mise` or `asdf`.
@@ -85,21 +85,21 @@ ssh://git@github.com/user/repo@v1
 - HTTPS and SSH URLs are both supported.
 - SSH URLs use your configured SSH keys automatically (respects `~/.ssh/config`).
 - For non-interactive runs (for example CI), you can set `GIT_TERMINAL_PROMPT=0` to disable credential prompts and set `GIT_SSH_COMMAND` (for example `ssh -o BatchMode=yes -o ConnectTimeout=5`) to fail fast.
-- Refs are pinned tags or commits. `pi update` and `pi update --extensions` do not move them to newer refs, but they do reconcile an existing clone to the configured ref.
-- Use `pi install git:host/user/repo@new-ref` to update settings and move an existing package to a new pinned ref.
+- Refs are pinned tags or commits. `airis update` and `airis update --extensions` do not move them to newer refs, but they do reconcile an existing clone to the configured ref.
+- Use `airis install git:host/user/repo@new-ref` to update settings and move an existing package to a new pinned ref.
 - Cloned to `~/.airis/agent/git/<host>/<path>` (global) or `.airis/git/<host>/<path>` (project).
-- When reconciliation changes the checkout, pi resets and cleans the clone, then runs `npm install` if `package.json` exists.
+- When reconciliation changes the checkout, airis resets and cleans the clone, then runs `npm install` if `package.json` exists.
 
 **SSH examples:**
 ```bash
 # git@host:path shorthand (requires git: prefix)
-pi install git:git@github.com:user/repo
+airis install git:git@github.com:user/repo
 
 # ssh:// protocol format
-pi install ssh://git@github.com/user/repo
+airis install ssh://git@github.com/user/repo
 
 # With version ref
-pi install git:git@github.com:user/repo@v1.0.0
+airis install git:git@github.com:user/repo@v1.0.0
 ```
 
 ### Local Paths
@@ -109,17 +109,17 @@ pi install git:git@github.com:user/repo@v1.0.0
 ./relative/path/to/package
 ```
 
-Local paths point to files or directories on disk and are added to settings without copying. Relative paths are resolved against the settings file they appear in. If the path is a file, it loads as a single extension. If it is a directory, pi loads resources using package rules.
+Local paths point to files or directories on disk and are added to settings without copying. Relative paths are resolved against the settings file they appear in. If the path is a file, it loads as a single extension. If it is a directory, airis loads resources using package rules.
 
-## Creating a Pi Package
+## Creating a AIRIS Package
 
-Add a `pi` manifest to `package.json` or use conventional directories. Include the `pi-package` keyword for discoverability.
+Add a `airis` manifest to `package.json` or use conventional directories. Include the `airis-package` keyword for discoverability.
 
 ```json
 {
   "name": "my-package",
-  "keywords": ["pi-package"],
-  "pi": {
+  "keywords": ["airis-package"],
+  "airis": {
     "extensions": ["./extensions"],
     "skills": ["./skills"],
     "prompts": ["./prompts"],
@@ -132,13 +132,13 @@ Paths are relative to the package root. Arrays support glob patterns and `!exclu
 
 ### Gallery Metadata
 
-The [package gallery](https://pi.dev/packages) displays packages tagged with `pi-package`. Add `video` or `image` fields to show a preview:
+The [package gallery](https://sufiyan-sabeel.github.io/AIRIS-CLI//packages) displays packages tagged with `airis-package`. Add `video` or `image` fields to show a preview:
 
 ```json
 {
   "name": "my-package",
-  "keywords": ["pi-package"],
-  "pi": {
+  "keywords": ["airis-package"],
+  "airis": {
     "extensions": ["./extensions"],
     "video": "https://example.com/demo.mp4",
     "image": "https://example.com/screenshot.png"
@@ -155,7 +155,7 @@ If both are set, video takes precedence.
 
 ### Convention Directories
 
-If no `pi` manifest is present, pi auto-discovers resources from these directories:
+If no `airis` manifest is present, airis auto-discovers resources from these directories:
 
 - `extensions/` loads `.ts` and `.js` files
 - `skills/` recursively finds `SKILL.md` folders and loads top-level `.md` files as skills
@@ -164,7 +164,7 @@ If no `pi` manifest is present, pi auto-discovers resources from these directori
 
 ## Dependencies
 
-Third party runtime dependencies belong in `dependencies` in `package.json`. Dependencies that do not register extensions, skills, prompt templates, or themes also belong in `dependencies`. When pi installs a package from npm or git, it runs `npm install`, so those dependencies are installed automatically.
+Third party runtime dependencies belong in `dependencies` in `package.json`. Dependencies that do not register extensions, skills, prompt templates, or themes also belong in `dependencies`. When airis installs a package from npm or git, it runs `npm install`, so those dependencies are installed automatically.
 
 AIRIS bundles core packages for extensions and skills. If you import any of these, list them in `peerDependencies` with a `"*"` range and do not bundle them: `@earendil-works/airis-ai`, `@earendil-works/airis-agent-core`, `@sufiyan-sabeel/airis-cli`, `@earendil-works/airis-tui`, `typebox`.
 
@@ -178,7 +178,7 @@ Example:
     "shitty-extensions": "^1.0.1"
   },
   "bundledDependencies": ["shitty-extensions"],
-  "pi": {
+  "airis": {
     "extensions": ["extensions", "node_modules/shitty-extensions/extensions"],
     "skills": ["skills", "node_modules/shitty-extensions/skills"]
   }
@@ -215,7 +215,7 @@ Filter what a package loads using the object form in settings:
 
 ## Enable and Disable Resources
 
-Use `pi config` to enable or disable extensions, skills, prompt templates, and themes from installed packages and local directories. Works for both global (`~/.airis/agent`) and project (`.airis/`) scopes.
+Use `airis config` to enable or disable extensions, skills, prompt templates, and themes from installed packages and local directories. Works for both global (`~/.airis/agent`) and project (`.airis/`) scopes.
 
 ## Scope and Deduplication
 

@@ -8,9 +8,9 @@ export interface ChangelogEntry {
 	content: string;
 }
 
-const GITHUB_REPO = "earendil-works/pi";
+const GITHUB_REPO = "sufiyan-sabeel/AIRIS-CLI";
 const CHANGELOG_LINK_BASE_PATH = "packages/coding-agent";
-const LEGACY_REPO_RE = /^https:\/\/github\.com\/(?:badlogic|earendil-works)\/pi-mono(?=\/|$)/;
+const LEGACY_REPO_RE = /^https:\/\/github\.com\/(?:badlogic|earendil-works)\/airis-mono(?=\/|$)/;
 const URL_SCHEME_RE = /^[a-z][a-z0-9+.-]*:/i;
 const INLINE_MARKDOWN_LINK_RE = /(!?\[[^\]\n]+\]\()([^\s)]+)((?:\s+[^)]*)?\))/g;
 

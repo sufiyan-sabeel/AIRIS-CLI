@@ -32,7 +32,7 @@ Use this checklist when preparing a new AIRIS release.
 
 3. **Run release script**
    ```bash
-   PI_ALLOW_LOCKFILE_CHANGE=1 npm_config_min_release_age=0 npm run release:patch
+   AIRIS_ALLOW_LOCKFILE_CHANGE=1 npm_config_min_release_age=0 npm run release:patch
    ```
 
 4. **Verify tag was pushed**

@@ -41,8 +41,8 @@ const QuestionParams = Type.Object({
 	options: Type.Array(OptionSchema, { description: "Options for the user to choose from" }),
 });
 
-export default function question(pi: ExtensionAPI) {
-	pi.registerTool({
+export default function question(airis: ExtensionAPI) {
+	airis.registerTool({
 		name: "question",
 		label: "Question",
 		description: "Ask the user a question and let them pick from options. Use when you need user input to proceed.",

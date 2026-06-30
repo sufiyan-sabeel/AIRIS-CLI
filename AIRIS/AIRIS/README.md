@@ -75,7 +75,7 @@ com.kageos.airis/
 
 - `AiProvider` - AI service abstraction
 - `AutomationBridge` - Device automation
-- `VoiceEngine` - TTS/STT (Vosk, Piper)
+- `VoiceEngine` - TTS/STT (Vosk, AIRISper)
 - `TelegramBridge` - Telegram bot control
 - `FileAccessManager` - Local file operations
 - `NotificationReader` - Notification access
@@ -149,7 +149,7 @@ No dangerous permissions requested by default. All dangerous actions require exp
 ### v4
 
 - Vosk STT integration
-- Piper TTS integration
+- AIRISper TTS integration
 - Advanced automation workflows
 - Multi-device sync
 - Plugin system

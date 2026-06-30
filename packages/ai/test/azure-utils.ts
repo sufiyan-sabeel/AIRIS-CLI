@@ -16,7 +16,7 @@ function parseDeploymentNameMap(value: string | undefined): Map<string, string> 
 }
 
 export function hasAzureOpenAICredentials(): boolean {
-	const hasKey = !!process.env.AZURE_OPENAI_API_KEY;
+	const hasKey = !!process.env.AZURE_OPENAI_AAIRIS_KEY;
 	const hasBaseUrl = !!(process.env.AZURE_OPENAI_BASE_URL || process.env.AZURE_OPENAI_RESOURCE_NAME);
 	return hasKey && hasBaseUrl;
 }

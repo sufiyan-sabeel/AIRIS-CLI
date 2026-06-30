@@ -7,8 +7,8 @@
 import type { ExtensionAPI } from "@sufiyan-sabeel/airis-cli";
 import { Text } from "@earendil-works/airis-tui";
 
-export default function (pi: ExtensionAPI) {
-	pi.registerCommand("tui", {
+export default function (airis: ExtensionAPI) {
+	airis.registerCommand("tui", {
 		description: "Show TUI stats",
 		handler: async (_args, ctx) => {
 			if (!ctx.hasUI) return;

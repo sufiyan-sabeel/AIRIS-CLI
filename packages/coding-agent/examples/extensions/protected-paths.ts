@@ -7,10 +7,10 @@
 
 import type { ExtensionAPI } from "@sufiyan-sabeel/airis-cli";
 
-export default function (pi: ExtensionAPI) {
+export default function (airis: ExtensionAPI) {
 	const protectedPaths = [".env", ".git/", "node_modules/"];
 
-	pi.on("tool_call", async (event, ctx) => {
+	airis.on("tool_call", async (event, ctx) => {
 		if (event.toolName !== "write" && event.toolName !== "edit") {
 			return undefined;
 		}

@@ -36,7 +36,7 @@ For local models (Ollama, LM Studio, vLLM), only `id` is required per model:
 
 The `apiKey` is required but Ollama ignores it, so any value works.
 
-Some OpenAI-compatible servers do not understand the `developer` role used for reasoning-capable models. For those providers, set `compat.supportsDeveloperRole` to `false` so pi sends the system prompt as a `system` message instead. If the server also does not support `reasoning_effort`, set `compat.supportsReasoningEffort` to `false` too.
+Some OpenAI-compatible servers do not understand the `developer` role used for reasoning-capable models. For those providers, set `compat.supportsDeveloperRole` to `false` so airis sends the system prompt as a `system` message instead. If the server also does not support `reasoning_effort`, set `compat.supportsReasoningEffort` to `false` too.
 
 You can set `compat` at the provider level to apply to all models, or at the model level to override a specific model. This commonly applies to Ollama, vLLM, SGLang, and similar OpenAI-compatible servers.
 
@@ -101,7 +101,7 @@ Use `google-generative-ai` with a `baseUrl` to add models from Google AI Studio,
     "my-google": {
       "baseUrl": "https://generativelanguage.googleapis.com/v1beta",
       "api": "google-generative-ai",
-      "apiKey": "$GEMINI_API_KEY",
+      "apiKey": "$GEMINI_AAIRIS_KEY",
       "models": [
         {
           "id": "gemma-4-31b-it",
@@ -152,7 +152,7 @@ The `apiKey` and `headers` fields support command execution, environment interpo
   ```
 - **Environment interpolation:** `"$ENV_VAR"` or `"${ENV_VAR}"` uses the value of the named variable. Interpolation works inside larger literals.
   ```json
-  "apiKey": "$MY_API_KEY"
+  "apiKey": "$MY_AAIRIS_KEY"
   "apiKey": "${KEY_PREFIX}_${KEY_SUFFIX}"
   ```
   `$FOO_BAR` is the variable `FOO_BAR`; use `${FOO}_BAR` when `BAR` is literal text. Missing environment variables make the value unresolved.
@@ -161,12 +161,12 @@ The `apiKey` and `headers` fields support command execution, environment interpo
   "apiKey": "$$literal-dollar-prefix"
   "apiKey": "$!literal-bang-prefix"
   ```
-- **Literal value:** Used directly. Plain uppercase strings such as `MY_API_KEY` are literals; use `$MY_API_KEY` for environment variables.
+- **Literal value:** Used directly. Plain uppercase strings such as `MY_AAIRIS_KEY` are literals; use `$MY_AAIRIS_KEY` for environment variables.
   ```json
   "apiKey": "sk-..."
   ```
 
-For `models.json`, shell commands are resolved at request time. pi intentionally does not apply built-in TTL, stale reuse, or recovery logic for arbitrary commands. Different commands need different caching and failure strategies, and pi cannot infer the right one.
+For `models.json`, shell commands are resolved at request time. airis intentionally does not apply built-in TTL, stale reuse, or recovery logic for arbitrary commands. Different commands need different caching and failure strategies, and airis cannot infer the right one.
 
 If your command is slow, expensive, rate-limited, or should keep using a previous value on transient failures, wrap it in your own script or command that implements the caching or TTL behavior you want.
 
@@ -179,10 +179,10 @@ If your command is slow, expensive, rate-limited, or should keep using a previou
   "providers": {
     "custom-proxy": {
       "baseUrl": "https://proxy.example.com/v1",
-      "apiKey": "$MY_API_KEY",
+      "apiKey": "$MY_AAIRIS_KEY",
       "api": "anthropic-messages",
       "headers": {
-        "x-portkey-api-key": "$PORTKEY_API_KEY",
+        "x-portkey-aairis-key": "$PORTKEY_AAIRIS_KEY",
         "x-secret": "!op read 'op://vault/item/secret'"
       },
       "models": [...]
@@ -199,7 +199,7 @@ If your command is slow, expensive, rate-limited, or should keep using a previou
 | `name` | No | `id` | Human-readable model label. Used for matching (`--model` patterns) and shown as secondary model detail text. |
 | `api` | No | provider's `api` | Override provider's API for this model |
 | `reasoning` | No | `false` | Supports extended thinking |
-| `thinkingLevelMap` | No | omitted | Maps pi thinking levels to provider values and marks unsupported levels (see below) |
+| `thinkingLevelMap` | No | omitted | Maps airis thinking levels to provider values and marks unsupported levels (see below) |
 | `input` | No | `["text"]` | Input types: `["text"]` or `["text", "image"]` |
 | `contextWindow` | No | `128000` | Context window size in tokens |
 | `maxTokens` | No | `16384` | Maximum output tokens |
@@ -212,7 +212,7 @@ Current behavior:
 
 ### Thinking Level Map
 
-Use `thinkingLevelMap` on a model to describe model-specific thinking controls. Keys are pi thinking levels: `off`, `minimal`, `low`, `medium`, `high`, `xhigh`.
+Use `thinkingLevelMap` on a model to describe model-specific thinking controls. Keys are airis thinking levels: `off`, `minimal`, `low`, `medium`, `high`, `xhigh`.
 
 Values are tristate:
 
@@ -275,7 +275,7 @@ To merge custom models into a built-in provider, include the `models` array:
   "providers": {
     "anthropic": {
       "baseUrl": "https://my-proxy.example.com/v1",
-      "apiKey": "$ANTHROPIC_API_KEY",
+      "apiKey": "$ANTHROPIC_AAIRIS_KEY",
       "api": "anthropic-messages",
       "models": [...]
     }
@@ -325,7 +325,7 @@ Behavior notes:
 
 For providers or proxies using `api: "anthropic-messages"`, use `compat` to control Anthropic-specific request compatibility.
 
-By default pi sends per-tool `eager_input_streaming: true`. If a proxy or Anthropic-compatible backend rejects that field, set `supportsEagerToolInputStreaming` to `false`. Pi will omit `tools[].eager_input_streaming` and send the legacy `fine-grained-tool-streaming-2025-05-14` beta header for tool-enabled requests instead.
+By default airis sends per-tool `eager_input_streaming: true`. If a proxy or Anthropic-compatible backend rejects that field, set `supportsEagerToolInputStreaming` to `false`. AIRIS will omit `tools[].eager_input_streaming` and send the legacy `fine-grained-tool-streaming-2025-05-14` beta header for tool-enabled requests instead.
 
 Some Anthropic models require adaptive thinking (`thinking.type: "adaptive"` plus `output_config.effort`) instead of the legacy budget-based thinking payload. Built-in models set this automatically. For custom providers or aliases that route to those models, set `forceAdaptiveThinking` to `true`.
 
@@ -417,7 +417,7 @@ Example:
   "providers": {
     "openrouter": {
       "baseUrl": "https://openrouter.ai/api/v1",
-      "apiKey": "$OPENROUTER_API_KEY",
+      "apiKey": "$OPENROUTER_AAIRIS_KEY",
       "api": "openai-completions",
       "models": [
         {
@@ -467,7 +467,7 @@ Vercel AI Gateway example:
   "providers": {
     "vercel-ai-gateway": {
       "baseUrl": "https://ai-gateway.vercel.sh/v1",
-      "apiKey": "$AI_GATEWAY_API_KEY",
+      "apiKey": "$AI_GATEWAY_AAIRIS_KEY",
       "api": "openai-completions",
       "models": [
         {

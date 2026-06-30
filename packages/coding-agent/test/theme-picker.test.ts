@@ -18,7 +18,7 @@ describe("theme picker", () => {
 	let tempRoot: string;
 
 	beforeEach(() => {
-		tempRoot = mkdtempSync(join(tmpdir(), "pi-theme-picker-"));
+		tempRoot = mkdtempSync(join(tmpdir(), "airis-theme-picker-"));
 		const agentDir = join(tempRoot, "agent");
 		vi.stubEnv("AIRIS_CODING_AGENT_DIR", agentDir);
 		mkdirSync(join(agentDir, "themes"), { recursive: true });

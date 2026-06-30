@@ -27,7 +27,7 @@ export function getWordSegmenter(): Intl.Segmenter {
 function couldBeEmoji(segment: string): boolean {
 	const cp = segment.codePointAt(0)!;
 	return (
-		(cp >= 0x1f000 && cp <= 0x1fbff) || // Emoji and Pictograph
+		(cp >= 0x1f000 && cp <= 0x1fbff) || // Emoji and AIRISctograph
 		(cp >= 0x2300 && cp <= 0x23ff) || // Misc technical
 		(cp >= 0x2600 && cp <= 0x27bf) || // Misc symbols, dingbats
 		(cp >= 0x2b50 && cp <= 0x2b55) || // Specific stars/circles

@@ -231,7 +231,7 @@ main() {
     echo -e "  ${CYAN}▸${NC} ${BOLD}airis -p \"hello\"${NC}     ${GRAY}Quick prompt mode${NC}"
     echo ""
     echo -e "  ${YELLOW}⚠${NC}  Set your API key before running:"
-    echo -e "     ${BOLD}export GEMINI_API_KEY=\"your-key-here\"${NC}"
+    echo -e "     ${BOLD}export GEMINI_AAIRIS_KEY=\"your-key-here\"${NC}"
     echo ""
     echo -e "  ${GRAY}GitHub: https://github.com/sufiyan-sabeel/AIRIS-CLI${NC}"
     echo -e "  ${GRAY}Brand: KageOS  |  Creator: Umaiz Sufiyan${NC}"

@@ -9,9 +9,9 @@ function toolNames(tools: Array<{ name: string }>): string[] {
 
 describe("regression #5109: exclude tools", () => {
 	const extensionFactories: ExtensionFactory[] = [
-		(pi) => {
-			pi.on("session_start", () => {
-				pi.registerTool({
+		(airis) => {
+			airis.on("session_start", () => {
+				airis.registerTool({
 					name: "ask_question",
 					label: "Ask Question",
 					description: "Ask a question",
@@ -22,7 +22,7 @@ describe("regression #5109: exclude tools", () => {
 						details: {},
 					}),
 				});
-				pi.registerTool({
+				airis.registerTool({
 					name: "dynamic_tool",
 					label: "Dynamic Tool",
 					description: "Dynamic test tool",
@@ -50,7 +50,14 @@ describe("regression #5109: exclude tools", () => {
 			expect(allToolNames).not.toContain("ask_question");
 			expect(allToolNames).toContain("bash");
 			expect(allToolNames).toContain("dynamic_tool");
-			expect(harness.session.getActiveToolNames().sort()).toEqual(["adaptive_todo", "bash", "dynamic_tool", "edit", "write"]);
+			expect(harness.session.getActiveToolNames().sort()).toEqual([
+				"adaptive_todo",
+				"bash",
+				"dynamic_tool",
+				"edit",
+				"self_debug",
+				"write",
+			]);
 			expect(harness.session.systemPrompt).not.toContain("- read:");
 			expect(harness.session.systemPrompt).not.toContain("ask_question");
 			expect(harness.session.systemPrompt).toContain("- dynamic_tool: Run dynamic test behavior");

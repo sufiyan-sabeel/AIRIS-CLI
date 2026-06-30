@@ -14,7 +14,7 @@ describe("ModelRegistry", () => {
 	let authStorage: AuthStorage;
 
 	beforeEach(() => {
-		tempDir = join(tmpdir(), `pi-test-model-registry-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+		tempDir = join(tmpdir(), `airis-test-model-registry-${Date.now()}-${Math.random().toString(36).slice(2)}`);
 		mkdirSync(tempDir, { recursive: true });
 		modelsJsonPath = join(tempDir, "models.json");
 		authStorage = AuthStorage.create(join(tempDir, "auth.json"));
@@ -533,7 +533,7 @@ describe("ModelRegistry", () => {
 			writeRawModelsJson({
 				openrouter: {
 					baseUrl: "https://my-proxy.example.com/v1",
-					apiKey: "OPENROUTER_API_KEY",
+					apiKey: "OPENROUTER_AAIRIS_KEY",
 					api: "openai-completions",
 					models: [
 						{
@@ -1177,13 +1177,13 @@ describe("ModelRegistry", () => {
 
 		test("apiKey with ! prefix executes command and uses stdout", async () => {
 			writeRawModelsJson({
-				"custom-provider": providerWithApiKey("!echo test-api-key-from-command"),
+				"custom-provider": providerWithApiKey("!echo test-aairis-key-from-command"),
 			});
 
 			const registry = ModelRegistry.create(authStorage, modelsJsonPath);
 			const apiKey = await registry.getApiKeyForProvider("custom-provider");
 
-			expect(apiKey).toBe("test-api-key-from-command");
+			expect(apiKey).toBe("test-aairis-key-from-command");
 		});
 
 		test("apiKey with ! prefix trims whitespace from command output", async () => {
@@ -1242,31 +1242,31 @@ describe("ModelRegistry", () => {
 		});
 
 		test("apiKey with $ prefix resolves to env value", async () => {
-			const originalEnv = process.env.TEST_API_KEY_12345;
-			process.env.TEST_API_KEY_12345 = "env-api-key-value";
+			const originalEnv = process.env.TEST_AAIRIS_KEY_12345;
+			process.env.TEST_AAIRIS_KEY_12345 = "env-aairis-key-value";
 
 			try {
 				writeRawModelsJson({
-					"custom-provider": providerWithApiKey("$TEST_API_KEY_12345"),
+					"custom-provider": providerWithApiKey("$TEST_AAIRIS_KEY_12345"),
 				});
 
 				const registry = ModelRegistry.create(authStorage, modelsJsonPath);
 				const apiKey = await registry.getApiKeyForProvider("custom-provider");
 
-				expect(apiKey).toBe("env-api-key-value");
+				expect(apiKey).toBe("env-aairis-key-value");
 			} finally {
 				if (originalEnv === undefined) {
-					delete process.env.TEST_API_KEY_12345;
+					delete process.env.TEST_AAIRIS_KEY_12345;
 				} else {
-					process.env.TEST_API_KEY_12345 = originalEnv;
+					process.env.TEST_AAIRIS_KEY_12345 = originalEnv;
 				}
 			}
 		});
 
 		test("apiKey with braced env syntax resolves to env value", async () => {
-			const originalEnv = process.env.TEST_BRACED_API_KEY_12345;
-			process.env.TEST_BRACED_API_KEY_12345 = "braced-env-api-key-value";
-			const bracedKey = "$" + "{TEST_BRACED_API_KEY_12345}";
+			const originalEnv = process.env.TEST_BRACED_AAIRIS_KEY_12345;
+			process.env.TEST_BRACED_AAIRIS_KEY_12345 = "braced-env-aairis-key-value";
+			const bracedKey = "$" + "{TEST_BRACED_AAIRIS_KEY_12345}";
 
 			try {
 				writeRawModelsJson({
@@ -1276,12 +1276,12 @@ describe("ModelRegistry", () => {
 				const registry = ModelRegistry.create(authStorage, modelsJsonPath);
 				const apiKey = await registry.getApiKeyForProvider("custom-provider");
 
-				expect(apiKey).toBe("braced-env-api-key-value");
+				expect(apiKey).toBe("braced-env-aairis-key-value");
 			} finally {
 				if (originalEnv === undefined) {
-					delete process.env.TEST_BRACED_API_KEY_12345;
+					delete process.env.TEST_BRACED_AAIRIS_KEY_12345;
 				} else {
-					process.env.TEST_BRACED_API_KEY_12345 = originalEnv;
+					process.env.TEST_BRACED_AAIRIS_KEY_12345 = originalEnv;
 				}
 			}
 		});
@@ -1320,71 +1320,71 @@ describe("ModelRegistry", () => {
 
 		test("apiKey with $$ prefix escapes a leading dollar", async () => {
 			writeRawModelsJson({
-				"custom-provider": providerWithApiKey("$$TEST_API_KEY_12345"),
+				"custom-provider": providerWithApiKey("$$TEST_AAIRIS_KEY_12345"),
 			});
 
 			const registry = ModelRegistry.create(authStorage, modelsJsonPath);
 			const apiKey = await registry.getApiKeyForProvider("custom-provider");
 
-			expect(apiKey).toBe("$TEST_API_KEY_12345");
+			expect(apiKey).toBe("$TEST_AAIRIS_KEY_12345");
 		});
 
 		test("apiKey with $! escapes a literal bang and still interpolates later env refs", async () => {
-			const originalEnv = process.env.TEST_API_KEY_12345;
-			process.env.TEST_API_KEY_12345 = "env-api-key-value";
+			const originalEnv = process.env.TEST_AAIRIS_KEY_12345;
+			process.env.TEST_AAIRIS_KEY_12345 = "env-aairis-key-value";
 
 			try {
 				writeRawModelsJson({
-					"custom-provider": providerWithApiKey("$!literal-$TEST_API_KEY_12345"),
+					"custom-provider": providerWithApiKey("$!literal-$TEST_AAIRIS_KEY_12345"),
 				});
 
 				const registry = ModelRegistry.create(authStorage, modelsJsonPath);
 				const apiKey = await registry.getApiKeyForProvider("custom-provider");
 
-				expect(apiKey).toBe("!literal-env-api-key-value");
+				expect(apiKey).toBe("!literal-env-aairis-key-value");
 			} finally {
 				if (originalEnv === undefined) {
-					delete process.env.TEST_API_KEY_12345;
+					delete process.env.TEST_AAIRIS_KEY_12345;
 				} else {
-					process.env.TEST_API_KEY_12345 = originalEnv;
+					process.env.TEST_AAIRIS_KEY_12345 = originalEnv;
 				}
 			}
 		});
 
 		test("plain apiKey is used directly even when it matches an env var", async () => {
-			const originalEnv = process.env.TEST_API_KEY_12345;
-			process.env.TEST_API_KEY_12345 = "env-api-key-value";
+			const originalEnv = process.env.TEST_AAIRIS_KEY_12345;
+			process.env.TEST_AAIRIS_KEY_12345 = "env-aairis-key-value";
 
 			try {
 				writeRawModelsJson({
-					"custom-provider": providerWithApiKey("TEST_API_KEY_12345"),
+					"custom-provider": providerWithApiKey("TEST_AAIRIS_KEY_12345"),
 				});
 
 				const registry = ModelRegistry.create(authStorage, modelsJsonPath);
 				const apiKey = await registry.getApiKeyForProvider("custom-provider");
 
-				expect(apiKey).toBe("TEST_API_KEY_12345");
+				expect(apiKey).toBe("TEST_AAIRIS_KEY_12345");
 			} finally {
 				if (originalEnv === undefined) {
-					delete process.env.TEST_API_KEY_12345;
+					delete process.env.TEST_AAIRIS_KEY_12345;
 				} else {
-					process.env.TEST_API_KEY_12345 = originalEnv;
+					process.env.TEST_AAIRIS_KEY_12345 = originalEnv;
 				}
 			}
 		});
 
 		test("apiKey as literal value is used directly when not an env var", async () => {
 			// Make sure this isn't an env var
-			delete process.env.literal_api_key_value;
+			delete process.env.literal_aairis_key_value;
 
 			writeRawModelsJson({
-				"custom-provider": providerWithApiKey("literal_api_key_value"),
+				"custom-provider": providerWithApiKey("literal_aairis_key_value"),
 			});
 
 			const registry = ModelRegistry.create(authStorage, modelsJsonPath);
 			const apiKey = await registry.getApiKeyForProvider("custom-provider");
 
-			expect(apiKey).toBe("literal_api_key_value");
+			expect(apiKey).toBe("literal_aairis_key_value");
 		});
 
 		test("apiKey command can use shell features like pipes", async () => {
@@ -1475,7 +1475,7 @@ describe("ModelRegistry", () => {
 			});
 
 			test("provider auth status reports apiKey environment variables from models.json", () => {
-				const envVarName = "TEST_API_KEY_STATUS_TEST_98765";
+				const envVarName = "TEST_AAIRIS_KEY_STATUS_TEST_98765";
 				const originalEnv = process.env[envVarName];
 
 				try {
@@ -1502,8 +1502,8 @@ describe("ModelRegistry", () => {
 			});
 
 			test("provider auth status reports interpolated apiKey environment variables", () => {
-				const envVarNameA = "TEST_API_KEY_STATUS_PART_A_98765";
-				const envVarNameB = "TEST_API_KEY_STATUS_PART_B_98765";
+				const envVarNameA = "TEST_AAIRIS_KEY_STATUS_PART_A_98765";
+				const envVarNameB = "TEST_AAIRIS_KEY_STATUS_PART_B_98765";
 				const originalEnvA = process.env[envVarNameA];
 				const originalEnvB = process.env[envVarNameB];
 				process.env[envVarNameA] = "left";
@@ -1538,7 +1538,7 @@ describe("ModelRegistry", () => {
 
 			test("provider auth status reports non-env apiKey values from models.json as a config key", () => {
 				writeRawModelsJson({
-					"custom-provider": providerWithApiKey("literal_api_key_value"),
+					"custom-provider": providerWithApiKey("literal_aairis_key_value"),
 				});
 
 				const registry = ModelRegistry.create(authStorage, modelsJsonPath);
@@ -1550,7 +1550,7 @@ describe("ModelRegistry", () => {
 			});
 
 			test("missing explicit env apiKey keeps provider unavailable", () => {
-				const envVarName = "TEST_API_KEY_MISSING_TEST_98765";
+				const envVarName = "TEST_AAIRIS_KEY_MISSING_TEST_98765";
 				const originalEnv = process.env[envVarName];
 				delete process.env[envVarName];
 
@@ -1591,7 +1591,7 @@ describe("ModelRegistry", () => {
 			});
 
 			test("environment variables are not cached (changes are picked up)", async () => {
-				const envVarName = "TEST_API_KEY_CACHE_TEST_98765";
+				const envVarName = "TEST_AAIRIS_KEY_CACHE_TEST_98765";
 				const originalEnv = process.env[envVarName];
 
 				try {

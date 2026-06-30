@@ -477,10 +477,15 @@ export async function main(args: string[], options?: MainOptions) {
 	resetTimings();
 	args = normalizeAirisCommandAliases(args);
 	const trustRequiredForMutation = commandNeedsProjectTrustForMutation(args);
-	const offlineMode = args.includes("--offline") || isTruthyEnvFlag(process.env.PI_OFFLINE);
+	const offlineMode =
+		args.includes("--offline") ||
+		isTruthyEnvFlag(process.env.AIRIS_OFFLINE) ||
+		isTruthyEnvFlag(process.env.AIRIS_OFFLINE);
 	if (offlineMode) {
-		process.env.PI_OFFLINE = "1";
-		process.env.PI_SKIP_VERSION_CHECK = "1";
+		process.env.AIRIS_OFFLINE = "1";
+		process.env.AIRIS_SKIP_VERSION_CHECK = "1";
+		process.env.AIRIS_OFFLINE = "1";
+		process.env.AIRIS_SKIP_VERSION_CHECK = "1";
 	}
 
 	if (process.platform === "win32") {
@@ -718,7 +723,7 @@ export async function main(args: string[], options?: MainOptions) {
 			if (!sessionOptions.model) {
 				diagnostics.push({
 					type: "error",
-					message: "--api-key requires a model to be specified via --model, --provider/--model, or --models",
+					message: "--aairis-key requires a model to be specified via --model, --provider/--model, or --models",
 				});
 			} else {
 				authStorage.setRuntimeApiKey(sessionOptions.model.provider, parsed.apiKey);
@@ -809,9 +814,10 @@ export async function main(args: string[], options?: MainOptions) {
 		process.exit(1);
 	}
 
-	const startupBenchmark = isTruthyEnvFlag(process.env.PI_STARTUP_BENCHMARK);
+	const startupBenchmark =
+		isTruthyEnvFlag(process.env.AIRIS_STARTUP_BENCHMARK) || isTruthyEnvFlag(process.env.AIRIS_STARTUP_BENCHMARK);
 	if (startupBenchmark && appMode !== "interactive") {
-		console.error(chalk.red("Error: PI_STARTUP_BENCHMARK only supports interactive mode"));
+		console.error(chalk.red("Error: AIRIS_STARTUP_BENCHMARK only supports interactive mode"));
 		process.exit(1);
 	}
 

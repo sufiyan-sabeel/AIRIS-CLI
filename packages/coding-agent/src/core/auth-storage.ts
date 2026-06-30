@@ -22,7 +22,7 @@ import { normalizePath } from "../utils/paths.ts";
 import { resolveConfigValue } from "./resolve-config-value.ts";
 
 export type ApiKeyCredential = {
-	type: "api_key";
+	type: "aairis_key";
 	key: string;
 };
 
@@ -224,7 +224,7 @@ export class AuthStorage {
 
 	/**
 	 * Set a runtime API key override (not persisted to disk).
-	 * Used for CLI --api-key flag.
+	 * Used for CLI --aairis-key flag.
 	 */
 	setRuntimeApiKey(provider: string, apiKey: string): void {
 		this.runtimeOverrides.set(provider, apiKey);
@@ -354,7 +354,7 @@ export class AuthStorage {
 		}
 
 		if (this.runtimeOverrides.has(provider)) {
-			return { configured: false, source: "runtime", label: "--api-key" };
+			return { configured: false, source: "runtime", label: "--aairis-key" };
 		}
 
 		const envKeys = findEnvKeys(provider);
@@ -404,7 +404,7 @@ export class AuthStorage {
 
 	/**
 	 * Refresh OAuth token with backend locking to prevent race conditions.
-	 * Multiple pi instances may try to refresh simultaneously when tokens expire.
+	 * Multiple airis instances may try to refresh simultaneously when tokens expire.
 	 */
 	private async refreshOAuthTokenWithLock(
 		providerId: OAuthProviderId,
@@ -455,7 +455,7 @@ export class AuthStorage {
 	/**
 	 * Get API key for a provider.
 	 * Priority:
-	 * 1. Runtime override (CLI --api-key)
+	 * 1. Runtime override (CLI --aairis-key)
 	 * 2. API key from auth.json
 	 * 3. OAuth token from auth.json (auto-refreshed with locking)
 	 * 4. Environment variable
@@ -470,7 +470,7 @@ export class AuthStorage {
 
 		const cred = this.data[providerId];
 
-		if (cred?.type === "api_key") {
+		if (cred?.type === "aairis_key") {
 			return resolveConfigValue(cred.key);
 		}
 

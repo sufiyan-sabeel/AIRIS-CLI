@@ -7,7 +7,7 @@
  * createAgentSession() applies that cwd when it builds the actual built-in tools.
  *
  * For custom tools, see 06-extensions.ts - custom tools are registered via the
- * extensions system using pi.registerTool().
+ * extensions system using airis.registerTool().
  */
 
 import { createAgentSession, SessionManager } from "@sufiyan-sabeel/airis-cli";

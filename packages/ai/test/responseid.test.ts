@@ -24,7 +24,7 @@ async function expectResponseId<TApi extends Api>(model: Model<TApi>, options: S
 }
 
 describe("responseId E2E Tests", () => {
-	describe.skipIf(!process.env.GEMINI_API_KEY)("Google Provider", () => {
+	describe.skipIf(!process.env.GEMINI_AAIRIS_KEY)("Google Provider", () => {
 		const llm = getModel("google", "gemini-2.5-flash");
 
 		it("should expose responseId", { retry: 3, timeout: 30000 }, async () => {
@@ -35,7 +35,7 @@ describe("responseId E2E Tests", () => {
 	describe("Google Vertex Provider", () => {
 		const vertexProject = process.env.GOOGLE_CLOUD_PROJECT || process.env.GCLOUD_PROJECT;
 		const vertexLocation = process.env.GOOGLE_CLOUD_LOCATION;
-		const vertexApiKey = process.env.GOOGLE_CLOUD_API_KEY;
+		const vertexApiKey = process.env.GOOGLE_CLOUD_AAIRIS_KEY;
 		const isVertexConfigured = Boolean(vertexProject && vertexLocation);
 		const vertexOptions = { project: vertexProject, location: vertexLocation } as const;
 		const llm = getModel("google-vertex", "gemini-3-flash-preview");
@@ -49,7 +49,7 @@ describe("responseId E2E Tests", () => {
 		});
 	});
 
-	describe.skipIf(!process.env.OPENAI_API_KEY)("OpenAI Completions Provider", () => {
+	describe.skipIf(!process.env.OPENAI_AAIRIS_KEY)("OpenAI Completions Provider", () => {
 		const { compat: _compat, ...baseModel } = getModel("openai", "gpt-4o-mini");
 		void _compat;
 		const llm: Model<"openai-completions"> = {
@@ -62,7 +62,7 @@ describe("responseId E2E Tests", () => {
 		});
 	});
 
-	describe.skipIf(!process.env.OPENAI_API_KEY)("OpenAI Responses Provider", () => {
+	describe.skipIf(!process.env.OPENAI_AAIRIS_KEY)("OpenAI Responses Provider", () => {
 		const llm = getModel("openai", "gpt-5-mini");
 
 		it("should expose responseId", { retry: 3, timeout: 30000 }, async () => {
@@ -70,7 +70,7 @@ describe("responseId E2E Tests", () => {
 		});
 	});
 
-	describe.skipIf(!process.env.ANTHROPIC_API_KEY)("Anthropic Provider", () => {
+	describe.skipIf(!process.env.ANTHROPIC_AAIRIS_KEY)("Anthropic Provider", () => {
 		const llm = getModel("anthropic", "claude-sonnet-4-5");
 
 		it("should expose responseId", { retry: 3, timeout: 30000 }, async () => {
@@ -88,7 +88,7 @@ describe("responseId E2E Tests", () => {
 		});
 	});
 
-	describe.skipIf(!process.env.MISTRAL_API_KEY)("Mistral Provider", () => {
+	describe.skipIf(!process.env.MISTRAL_AAIRIS_KEY)("Mistral Provider", () => {
 		const llm = getModel("mistral", "devstral-medium-latest");
 
 		it("should expose responseId", { retry: 3, timeout: 30000 }, async () => {

@@ -14,7 +14,7 @@ import { DynamicBorder } from "./dynamic-border.ts";
 export type AuthSelectorProvider = {
 	id: string;
 	name: string;
-	authType: "oauth" | "api_key";
+	authType: "oauth" | "aairis_key";
 };
 
 /**
@@ -155,7 +155,7 @@ export class OAuthSelectorComponent extends Container implements Focusable {
 			const label = credential.type === "oauth" ? "subscription configured" : "API key configured";
 			return theme.fg("muted", " • ") + theme.fg("warning", label);
 		}
-		if (provider.authType !== "api_key") return theme.fg("muted", " • unconfigured");
+		if (provider.authType !== "aairis_key") return theme.fg("muted", " • unconfigured");
 
 		const status = this.getAuthStatus(provider.id);
 		switch (status.source) {

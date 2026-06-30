@@ -38,11 +38,11 @@ This command:
   - `@earendil-works/airis-ai` → `packages/ai` (link: true)
   - `@earendil-works/airis-tui` → `packages/tui` (link: true)
   - `@sufiyan-sabeel/airis-cli` → `packages/coding-agent` (link: true)
-  - `pi-extension-custom-provider-anthropic` → `packages/coding-agent/examples/extensions/custom-provider-anthropic` (link: true)
-  - `pi-extension-custom-provider-gitlab-duo` → `packages/coding-agent/examples/extensions/custom-provider-gitlab-duo` (link: true)
-  - `pi-extension-gondolin` → `packages/coding-agent/examples/extensions/gondolin` (link: true)
-  - `pi-extension-sandbox` → `packages/coding-agent/examples/extensions/sandbox` (link: true)
-  - `pi-extension-with-deps` → `packages/coding-agent/examples/extensions/with-deps` (link: true)
+  - `airis-extension-custom-provider-anthropic` → `packages/coding-agent/examples/extensions/custom-provider-anthropic` (link: true)
+  - `airis-extension-custom-provider-gitlab-duo` → `packages/coding-agent/examples/extensions/custom-provider-gitlab-duo` (link: true)
+  - `airis-extension-gondolin` → `packages/coding-agent/examples/extensions/gondolin` (link: true)
+  - `airis-extension-sandbox` → `packages/coding-agent/examples/extensions/sandbox` (link: true)
+  - `airis-extension-with-deps` → `packages/coding-agent/examples/extensions/with-deps` (link: true)
 
 ## Validation Results
 

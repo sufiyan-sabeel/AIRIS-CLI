@@ -120,7 +120,7 @@ describe("CombinedAutocompleteProvider", () => {
 		let outsideDir = "";
 
 		beforeEach(() => {
-			rootDir = mkdtempSync(join(tmpdir(), "pi-autocomplete-root-"));
+			rootDir = mkdtempSync(join(tmpdir(), "airis-autocomplete-root-"));
 			baseDir = join(rootDir, "cwd");
 			outsideDir = join(rootDir, "outside");
 			mkdirSync(baseDir, { recursive: true });
@@ -284,7 +284,7 @@ describe("CombinedAutocompleteProvider", () => {
 			setupFolder(baseDir, {
 				dirs: [".airis", ".github", ".git"],
 				files: {
-					".pi/config.json": "{}",
+					".airis/config.json": "{}",
 					".github/workflows/ci.yml": "name: ci",
 					".git/config": "[core]",
 				},
@@ -295,7 +295,7 @@ describe("CombinedAutocompleteProvider", () => {
 			const result = await getSuggestions(provider, [line], 0, line.length);
 
 			const values = result?.items.map((item) => item.value) ?? [];
-			assert.ok(values.includes("@.pi/"));
+			assert.ok(values.includes("@.airis/"));
 			assert.ok(values.includes("@.github/"));
 			assert.ok(!values.some((value) => value === "@.git" || value.startsWith("@.git/")));
 		});
@@ -431,7 +431,7 @@ describe("CombinedAutocompleteProvider", () => {
 		let baseDir = "";
 
 		beforeEach(() => {
-			baseDir = mkdtempSync(join(tmpdir(), "pi-autocomplete-"));
+			baseDir = mkdtempSync(join(tmpdir(), "airis-autocomplete-"));
 		});
 
 		afterEach(() => {
@@ -477,7 +477,7 @@ describe("CombinedAutocompleteProvider", () => {
 		let baseDir = "";
 
 		beforeEach(() => {
-			baseDir = mkdtempSync(join(tmpdir(), "pi-autocomplete-"));
+			baseDir = mkdtempSync(join(tmpdir(), "airis-autocomplete-"));
 		});
 
 		afterEach(() => {

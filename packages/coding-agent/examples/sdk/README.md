@@ -1,6 +1,6 @@
 # SDK Examples
 
-Programmatic usage of pi-coding-agent via `createAgentSession()` and `createAgentSessionRuntime()`.
+Programmatic usage of airis-coding-agent via `createAgentSession()` and `createAgentSessionRuntime()`.
 
 The runtime example shows how to build a recreate function that closes over process-global fixed inputs and recreates cwd-bound services and sessions as the active session cwd changes.
 
@@ -16,7 +16,7 @@ The runtime example shows how to build a recreate function that closes over proc
 | `06-extensions.ts` | Logging, blocking, result modification |
 | `07-context-files.ts` | AGENTS.md context files |
 | `08-slash-commands.ts` | File-based slash commands |
-| `09-api-keys-and-oauth.ts` | API key resolution, OAuth config |
+| `09-aairis-keys-and-oauth.ts` | API key resolution, OAuth config |
 | `10-settings.ts` | Override compaction, retry, terminal settings |
 | `11-sessions.ts` | In-memory, persistent, continue, list sessions |
 | `12-full-control.ts` | Replace everything, no discovery |
@@ -32,7 +32,7 @@ npx tsx examples/sdk/01-minimal.ts
 ## Quick Reference
 
 ```typescript
-import { getModel } from "@earendil-works/pi-ai";
+import { getModel } from "@earendil-works/airis-ai";
 import {
   AuthStorage,
   createAgentSession,
@@ -40,7 +40,7 @@ import {
   ModelRegistry,
   SessionManager,
   SettingsManager,
-} from "@earendil-works/pi-coding-agent";
+} from "@sufiyan-sabeel/airis-cli";
 
 // Auth and models setup
 const authStorage = AuthStorage.create();
@@ -111,7 +111,7 @@ await session.prompt("Hello");
 | `authStorage` | `AuthStorage.create()` | Credential storage |
 | `modelRegistry` | `ModelRegistry.create(authStorage)` | Model registry |
 | `cwd` | `process.cwd()` | Working directory |
-| `agentDir` | `~/.pi/agent` | Config directory |
+| `agentDir` | `~/.airis/agent` | Config directory |
 | `model` | From settings/first available | Model to use |
 | `thinkingLevel` | From settings/"off" | off, low, medium, high |
 | `tools` | `["read", "bash", "edit", "write"]` built-ins | Allowlist tool names across built-in, extension, and custom tools |

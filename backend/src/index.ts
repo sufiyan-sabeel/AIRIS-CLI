@@ -32,10 +32,10 @@ async function main(): Promise<void> {
       timestamp: new Date().toISOString(),
       firebase: isFirebaseInitialized() ? 'configured' : 'dev-mode',
       providers: {
-        openai: !!process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY !== 'sk-your-openai-key',
-        gemini: !!process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY !== 'your-gemini-key',
-        grok: !!process.env.GROK_API_KEY && process.env.GROK_API_KEY !== 'xai-your-grok-key',
-        openrouter: !!process.env.OPENROUTER_API_KEY && process.env.OPENROUTER_API_KEY !== 'sk-or-your-openrouter-key'
+        openai: !!process.env.OPENAI_AAIRIS_KEY && process.env.OPENAI_AAIRIS_KEY !== 'sk-your-openai-key',
+        gemini: !!process.env.GEMINI_AAIRIS_KEY && process.env.GEMINI_AAIRIS_KEY !== 'your-gemini-key',
+        grok: !!process.env.GROK_AAIRIS_KEY && process.env.GROK_AAIRIS_KEY !== 'xai-your-grok-key',
+        openrouter: !!process.env.OPENROUTER_AAIRIS_KEY && process.env.OPENROUTER_AAIRIS_KEY !== 'sk-or-your-openrouter-key'
       }
     });
   });
@@ -79,10 +79,10 @@ async function main(): Promise<void> {
     console.log(`[Server] System: http://localhost:${PORT}/api/system/health`);
     console.log(`[Server] Firebase: ${isFirebaseInitialized() ? 'configured' : 'dev-mode'}`);
     console.log(`[Server] Providers:`, {
-      openai: !!process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY !== 'sk-your-openai-key',
-      gemini: !!process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY !== 'your-gemini-key',
-      grok: !!process.env.GROK_API_KEY && process.env.GROK_API_KEY !== 'xai-your-grok-key',
-      openrouter: !!process.env.OPENROUTER_API_KEY && process.env.OPENROUTER_API_KEY !== 'sk-or-your-openrouter-key'
+      openai: !!process.env.OPENAI_AAIRIS_KEY && process.env.OPENAI_AAIRIS_KEY !== 'sk-your-openai-key',
+      gemini: !!process.env.GEMINI_AAIRIS_KEY && process.env.GEMINI_AAIRIS_KEY !== 'your-gemini-key',
+      grok: !!process.env.GROK_AAIRIS_KEY && process.env.GROK_AAIRIS_KEY !== 'xai-your-grok-key',
+      openrouter: !!process.env.OPENROUTER_AAIRIS_KEY && process.env.OPENROUTER_AAIRIS_KEY !== 'sk-or-your-openrouter-key'
     });
   });
 

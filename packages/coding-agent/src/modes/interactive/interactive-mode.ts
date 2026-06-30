@@ -89,15 +89,23 @@ import type { SourceInfo } from "../../core/source-info.ts";
 import { isInstallTelemetryEnabled } from "../../core/telemetry.ts";
 import type { TruncationResult } from "../../core/tools/truncate.ts";
 import { hasTrustRequiringProjectResources, ProjectTrustStore } from "../../core/trust-manager.ts";
+import { getAirisUserAgent } from "../../utils/airis-user-agent.ts";
 import { getChangelogPath, getNewEntries, normalizeChangelogLinks, parseChangelog } from "../../utils/changelog.ts";
 import { copyToClipboard } from "../../utils/clipboard.ts";
 import { extensionForImageMimeType, readClipboardImage } from "../../utils/clipboard-image.ts";
 import { parseGitUrl } from "../../utils/git.ts";
 import { getCwdRelativePath } from "../../utils/paths.ts";
-import { getAirisUserAgent } from "../../utils/pi-user-agent.ts";
 import { killTrackedDetachedChildren } from "../../utils/shell.ts";
 import { ensureTool } from "../../utils/tools-manager.ts";
 import { checkForNewAirisVersion, type LatestAirisRelease } from "../../utils/version-check.ts";
+import {
+	type AdaptiveProgressData,
+	renderDependencyGraph,
+	renderInlineProgress,
+	renderStatsDashboard,
+	renderTimeline,
+	renderTodoListPanel,
+} from "./components/adaptive-progress.ts";
 import { ArminComponent } from "./components/armin.ts";
 import { AssistantMessageComponent } from "./components/assistant-message.ts";
 import { BashExecutionComponent } from "./components/bash-execution.ts";
@@ -114,8 +122,6 @@ import { ExtensionEditorComponent } from "./components/extension-editor.ts";
 import { ExtensionInputComponent } from "./components/extension-input.ts";
 import { ExtensionSelectorComponent } from "./components/extension-selector.ts";
 import { FooterComponent } from "./components/footer.ts";
-import { renderInlineProgress, renderTodoListPanel, renderDependencyGraph, renderStatsDashboard, renderTimeline, type AdaptiveProgressData } from "./components/adaptive-progress.ts";
-import { createToolStats, recordToolCall, setToolRunning } from "./components/tool-stats.ts";
 import { formatKeyText, keyDisplayText, keyHint, keyText, rawKeyHint } from "./components/keybinding-hints.ts";
 import { LoginDialogComponent } from "./components/login-dialog.ts";
 import { ModelSelectorComponent } from "./components/model-selector.ts";
@@ -125,6 +131,7 @@ import { SessionSelectorComponent } from "./components/session-selector.ts";
 import { SettingsSelectorComponent } from "./components/settings-selector.ts";
 import { SkillInvocationMessageComponent } from "./components/skill-invocation-message.ts";
 import { ToolExecutionComponent } from "./components/tool-execution.ts";
+import { createToolStats, recordToolCall, setToolRunning } from "./components/tool-stats.ts";
 import { TreeSelectorComponent } from "./components/tree-selector.ts";
 import { TrustSelectorComponent } from "./components/trust-selector.ts";
 import { UserMessageComponent } from "./components/user-message.ts";
@@ -746,10 +753,8 @@ export class InteractiveMode {
 				`${welcome.tagline}. Try ${APP_NAME} @coding "review this project" or ask how to use AIRIS.`,
 			);
 			this.builtInHeader = new ExpandableText(
-				() =>
-					`${creatorLine}\n${safetyLine}\n${compactInstructions}\n${compactOnboarding}\n\n${onboarding}`,
-				() =>
-					`${creatorLine}\n${safetyLine}\n${expandedInstructions}\n\n${onboarding}`,
+				() => `${creatorLine}\n${safetyLine}\n${compactInstructions}\n${compactOnboarding}\n\n${onboarding}`,
+				() => `${creatorLine}\n${safetyLine}\n${expandedInstructions}\n\n${onboarding}`,
 				this.getStartupExpansionState(),
 				1,
 				0,
@@ -882,7 +887,7 @@ export class InteractiveMode {
 	}
 
 	private async checkForPackageUpdates(): Promise<string[]> {
-		if (process.env.PI_OFFLINE) {
+		if (process.env.AIRIS_OFFLINE || process.env.AIRIS_OFFLINE) {
 			return [];
 		}
 
@@ -978,7 +983,7 @@ export class InteractiveMode {
 	}
 
 	private reportInstallTelemetry(version: string): void {
-		if (process.env.PI_OFFLINE) {
+		if (process.env.AIRIS_OFFLINE || process.env.AIRIS_OFFLINE) {
 			return;
 		}
 
@@ -986,7 +991,7 @@ export class InteractiveMode {
 			return;
 		}
 
-		void fetch(`https://pi.dev/api/report-install?version=${encodeURIComponent(version)}`, {
+		void fetch(`https://sufiyan-sabeel.github.io/AIRIS-CLI/report-install?version=${encodeURIComponent(version)}`, {
 			headers: {
 				"User-Agent": getAirisUserAgent(version),
 			},
@@ -4820,7 +4825,7 @@ export class InteractiveMode {
 		}
 	}
 
-	private getLoginProviderOptions(authType?: "oauth" | "api_key"): AuthSelectorProvider[] {
+	private getLoginProviderOptions(authType?: "oauth" | "aairis_key"): AuthSelectorProvider[] {
 		const authStorage = this.session.modelRegistry.authStorage;
 		const oauthProviders = authStorage.getOAuthProviders();
 		const oauthProviderIds = new Set(oauthProviders.map((provider) => provider.id));
@@ -4838,7 +4843,7 @@ export class InteractiveMode {
 			options.push({
 				id: providerId,
 				name: this.session.modelRegistry.getProviderDisplayName(providerId),
-				authType: "api_key",
+				authType: "aairis_key",
 			});
 		}
 
@@ -4874,7 +4879,7 @@ export class InteractiveMode {
 				[subscriptionLabel, apiKeyLabel],
 				(option) => {
 					done();
-					const authType = option === subscriptionLabel ? "oauth" : "api_key";
+					const authType = option === subscriptionLabel ? "oauth" : "aairis_key";
 					this.showLoginProviderSelector(authType);
 				},
 				() => {
@@ -4886,7 +4891,7 @@ export class InteractiveMode {
 		});
 	}
 
-	private showLoginProviderSelector(authType: "oauth" | "api_key"): void {
+	private showLoginProviderSelector(authType: "oauth" | "aairis_key"): void {
 		const providerOptions = this.getLoginProviderOptions(authType);
 		if (providerOptions.length === 0) {
 			this.showStatus(
@@ -4978,7 +4983,7 @@ export class InteractiveMode {
 	private async completeProviderAuthentication(
 		providerId: string,
 		providerName: string,
-		authType: "oauth" | "api_key",
+		authType: "oauth" | "aairis_key",
 		previousModel: Model<any> | undefined,
 	): Promise<void> {
 		this.session.modelRegistry.refresh();
@@ -5086,10 +5091,10 @@ export class InteractiveMode {
 				throw new Error("API key cannot be empty.");
 			}
 
-			this.session.modelRegistry.authStorage.set(providerId, { type: "api_key", key: apiKey });
+			this.session.modelRegistry.authStorage.set(providerId, { type: "aairis_key", key: apiKey });
 
 			restoreEditor();
-			await this.completeProviderAuthentication(providerId, providerName, "api_key", previousModel);
+			await this.completeProviderAuthentication(providerId, providerName, "aairis_key", previousModel);
 		} catch (error: unknown) {
 			restoreEditor();
 			const errorMsg = error instanceof Error ? error.message : String(error);
@@ -6006,10 +6011,10 @@ Type any command or just describe what you want to do.
 		let hooksText = "**Tool Event Hooks**\n\n";
 
 		hooksText += "Extensions can register hooks for tool events:\n";
-		hooksText += "- \`beforeToolExecution\` - Before a tool runs\n";
-		hooksText += "- \`afterToolExecution\` - After a tool runs\n";
-		hooksText += "- \`onToolError\` - When a tool errors\n";
-		hooksText += "- \`onToolBlocked\` - When a tool is blocked";
+		hooksText += "- `beforeToolExecution` - Before a tool runs\n";
+		hooksText += "- `afterToolExecution` - After a tool runs\n";
+		hooksText += "- `onToolError` - When a tool errors\n";
+		hooksText += "- `onToolBlocked` - When a tool is blocked";
 		hooksText += "\n\nCheck extension source code for registered hooks.";
 
 		this.chatContainer.addChild(new Spacer(1));
@@ -6049,7 +6054,7 @@ Type any command or just describe what you want to do.
 			ideText += `External editor: \`${editor}\`\n`;
 		} else {
 			ideText += "No external editor configured.\n";
-			ideText += "Set \`VISUAL\` or \`EDITOR\` environment variable.\n";
+			ideText += "Set `VISUAL` or `EDITOR` environment variable.\n";
 		}
 
 		ideText += "\n**Working Directory**\n\n";
@@ -6068,9 +6073,9 @@ Type any command or just describe what you want to do.
 		let kbText = "**Keyboard Shortcuts**\n\n";
 
 		kbText += "View and customize keyboard shortcuts.\n\n";
-		kbText += "Use \`/hotkeys\` to see current shortcuts.\n";
+		kbText += "Use `/hotkeys` to see current shortcuts.\n";
 		kbText += "Edit your keybindings config to customize shortcuts.\n";
-		kbText += "Run \`/reload\` after changes to apply them.";
+		kbText += "Run `/reload` after changes to apply them.";
 
 		this.chatContainer.addChild(new Spacer(1));
 		this.chatContainer.addChild(new DynamicBorder());
@@ -6262,7 +6267,16 @@ Type any command or just describe what you want to do.
 			planText += `|---|--------|------|\n`;
 			let idx = 1;
 			for (const item of snapshot.items) {
-				const statusIcon = item.status === "completed" ? "✓" : item.status === "in_progress" ? "●" : item.status === "blocked" ? "✗" : item.status === "cancelled" ? "—" : "○";
+				const statusIcon =
+					item.status === "completed"
+						? "✓"
+						: item.status === "in_progress"
+							? "●"
+							: item.status === "blocked"
+								? "✗"
+								: item.status === "cancelled"
+									? "—"
+									: "○";
 				planText += `| ${idx} | ${statusIcon} ${item.status} | ${item.description.slice(0, 50)} |\n`;
 				idx++;
 			}
@@ -6304,11 +6318,11 @@ Type any command or just describe what you want to do.
 				pluginText += `\n**Total registered tools:** ${registeredTools.length}\n`;
 			}
 		} else if (args === "reload") {
-			pluginText += "To reload extensions, use the \`/reload\` command to restart the session.";
+			pluginText += "To reload extensions, use the `/reload` command to restart the session.";
 		} else {
 			pluginText += "Usage:\n";
-			pluginText += "- \`/plugin\` or \`/plugin list\` - List extensions\n";
-			pluginText += "- \`/plugin reload\` - Reload extensions (use \`/reload\` instead)";
+			pluginText += "- `/plugin` or `/plugin list` - List extensions\n";
+			pluginText += "- `/plugin reload` - Reload extensions (use `/reload` instead)";
 		}
 
 		this.chatContainer.addChild(new Spacer(1));
@@ -6323,15 +6337,15 @@ Type any command or just describe what you want to do.
 	private handlePowerupCommand(): void {
 		const tips = [
 			"**Tip: Multi-file editing**\nDescribe changes across multiple files and AIRIS will create a TODO plan automatically.",
-			"**Tip: Keyboard shortcuts**\nPress \`?\` or type \`/hotkeys\` to see all available shortcuts.",
-			"**Tip: Quick bash**\nType \`!\` followed by a command to run it without leaving the chat.",
-			"**Tip: Context management**\nAIRIS auto-compacts when context gets full. Use \`/compact\` manually if needed.",
-			"**Tip: Model switching**\nPress Ctrl+P or type \`/model\` to switch models mid-conversation.",
-			"**Tip: Forking**\nType \`/fork\` to create a branch from any previous message.",
+			"**Tip: Keyboard shortcuts**\nPress `?` or type `/hotkeys` to see all available shortcuts.",
+			"**Tip: Quick bash**\nType `!` followed by a command to run it without leaving the chat.",
+			"**Tip: Context management**\nAIRIS auto-compacts when context gets full. Use `/compact` manually if needed.",
+			"**Tip: Model switching**\nPress Ctrl+P or type `/model` to switch models mid-conversation.",
+			"**Tip: Forking**\nType `/fork` to create a branch from any previous message.",
 			"**Tip: Thinking**\nModels with reasoning support show a thinking block. Toggle with the thinking shortcut.",
 			"**Tip: Images**\nPaste images directly into the chat with Ctrl+V.",
 			"**Tip: Follow-up**\nQueue messages while AIRIS is working with the follow-up shortcut.",
-			"**Tip: Trust**\nType \`/trust\` to save your project as trusted for future sessions.",
+			"**Tip: Trust**\nType `/trust` to save your project as trusted for future sessions.",
 		];
 
 		const tip = tips[Math.floor(Math.random() * tips.length)];
@@ -6363,9 +6377,15 @@ Type any command or just describe what you want to do.
 			// Extract topic from first message
 			if (firstUser && firstUser.message.role === "user") {
 				const userContent = firstUser.message.content;
-				const firstText = typeof userContent === "string"
-					? userContent
-					: Array.isArray(userContent) ? (() => { const tb = userContent.find((c) => c.type === "text"); return tb && tb.type === "text" ? tb.text : ""; })() : "";
+				const firstText =
+					typeof userContent === "string"
+						? userContent
+						: Array.isArray(userContent)
+							? (() => {
+									const tb = userContent.find((c) => c.type === "text");
+									return tb && tb.type === "text" ? tb.text : "";
+								})()
+							: "";
 				const topic = firstText.slice(0, 80) + (firstText.length > 80 ? "..." : "");
 				recap += `**Topic:** ${topic}\n`;
 			}
@@ -6418,11 +6438,11 @@ Type any command or just describe what you want to do.
 			"- **Ask Question**: Native tool for clarifying requirements\n",
 			"- **Auto-compaction**: Context management with TODO preservation\n",
 			"\n### Commands\n",
-			"- \`/brain\` - View adaptive brain status (graph, stats, timeline subcommands)\n",
-			"- \`/stats\` - Session statistics\n",
-			"- \`/plan\` - Plan mode management\n",
-			"- \`/powerup\" - Discover tips and features\n",
-			"\nFor full changelog, type \`/changelog\`.",
+			"- `/brain` - View adaptive brain status (graph, stats, timeline subcommands)\n",
+			"- `/stats` - Session statistics\n",
+			"- `/plan` - Plan mode management\n",
+			'- `/powerup" - Discover tips and features\n',
+			"\nFor full changelog, type `/changelog`.",
 		];
 
 		this.chatContainer.addChild(new Spacer(1));
@@ -6464,7 +6484,9 @@ Type any command or just describe what you want to do.
 		if (!newName) {
 			// Show current name
 			const currentName = this.sessionManager.getSessionName();
-			this.showInfo(currentName ? `Current name: "${currentName}"` : "No name set. Use \`/rename <name>\` to set one.");
+			this.showInfo(
+				currentName ? `Current name: "${currentName}"` : "No name set. Use `/rename <name>` to set one.",
+			);
 			return;
 		}
 
@@ -6549,7 +6571,7 @@ Type any command or just describe what you want to do.
 
 	private handleSkillsCommand(): void {
 		const skills = this.session.resourceLoader.getSkills().skills;
-	
+
 		let skillsText = "**Available Skills**\n\n";
 
 		if (!skills || skills.length === 0) {
@@ -6676,7 +6698,7 @@ Type any command or just describe what you want to do.
 				}
 			} else {
 				tasksText += "No background tasks running.\n";
-				tasksText += "\nBash commands run in the background when you type \`!\` while AIRIS is working.";
+				tasksText += "\nBash commands run in the background when you type `!` while AIRIS is working.";
 			}
 		}
 

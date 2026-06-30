@@ -45,7 +45,7 @@
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/earendil-works/pi.git",
+		"url": "git+https://github.com/sufiyan-sabeel/AIRIS-CLI.git",
 		"directory": "packages/agent"
 	},
 	"engines": {

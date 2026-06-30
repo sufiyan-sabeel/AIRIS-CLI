@@ -207,7 +207,7 @@ async function handleToolWithTextAndImageResult<TApi extends Api>(
 }
 
 describe("Tool Results with Images", () => {
-	describe.skipIf(!process.env.GEMINI_API_KEY)("Google Provider (gemini-2.5-flash)", () => {
+	describe.skipIf(!process.env.GEMINI_AAIRIS_KEY)("Google Provider (gemini-2.5-flash)", () => {
 		const llm = getModel("google", "gemini-2.5-flash");
 
 		it("should handle tool result with only image", { retry: 3, timeout: 30000 }, async () => {
@@ -219,7 +219,7 @@ describe("Tool Results with Images", () => {
 		});
 	});
 
-	describe.skipIf(!process.env.OPENAI_API_KEY)("OpenAI Completions Provider (gpt-4o-mini)", () => {
+	describe.skipIf(!process.env.OPENAI_AAIRIS_KEY)("OpenAI Completions Provider (gpt-4o-mini)", () => {
 		const { compat: _compat, ...baseModel } = getModel("openai", "gpt-4o-mini");
 		void _compat;
 		const llm: Model<"openai-completions"> = {
@@ -236,7 +236,7 @@ describe("Tool Results with Images", () => {
 		});
 	});
 
-	describe.skipIf(!process.env.OPENAI_API_KEY)("OpenAI Responses Provider (gpt-5-mini)", () => {
+	describe.skipIf(!process.env.OPENAI_AAIRIS_KEY)("OpenAI Responses Provider (gpt-5-mini)", () => {
 		const llm = getModel("openai", "gpt-5-mini");
 
 		it("should handle tool result with only image", { retry: 3, timeout: 30000 }, async () => {
@@ -262,7 +262,7 @@ describe("Tool Results with Images", () => {
 		});
 	});
 
-	describe.skipIf(!process.env.ANTHROPIC_API_KEY)("Anthropic Provider (claude-haiku-4-5)", () => {
+	describe.skipIf(!process.env.ANTHROPIC_AAIRIS_KEY)("Anthropic Provider (claude-haiku-4-5)", () => {
 		const model = getModel("anthropic", "claude-haiku-4-5");
 
 		it("should handle tool result with only image", { retry: 3, timeout: 30000 }, async () => {
@@ -274,7 +274,7 @@ describe("Tool Results with Images", () => {
 		});
 	});
 
-	describe.skipIf(!process.env.OPENROUTER_API_KEY)("OpenRouter Provider (glm-4.5v)", () => {
+	describe.skipIf(!process.env.OPENROUTER_AAIRIS_KEY)("OpenRouter Provider (glm-4.5v)", () => {
 		const llm = getModel("openrouter", "z-ai/glm-4.5v");
 
 		it("should handle tool result with only image", { retry: 3, timeout: 30000 }, async () => {
@@ -286,7 +286,7 @@ describe("Tool Results with Images", () => {
 		});
 	});
 
-	describe.skipIf(!process.env.MISTRAL_API_KEY)("Mistral Provider (pixtral-12b)", () => {
+	describe.skipIf(!process.env.MISTRAL_AAIRIS_KEY)("Mistral Provider (pixtral-12b)", () => {
 		const llm = getModel("mistral", "pixtral-12b");
 
 		it("should handle tool result with only image", { retry: 5, timeout: 30000 }, async () => {
@@ -298,7 +298,7 @@ describe("Tool Results with Images", () => {
 		});
 	});
 
-	describe.skipIf(!process.env.TOGETHER_API_KEY)("Together AI Provider (Kimi-K2.6)", () => {
+	describe.skipIf(!process.env.TOGETHER_AAIRIS_KEY)("Together AI Provider (Kimi-K2.6)", () => {
 		const llm = getModel("together", "moonshotai/Kimi-K2.6");
 		const options = { reasoningEffort: "high" } satisfies StreamOptionsWithExtras;
 
@@ -311,7 +311,7 @@ describe("Tool Results with Images", () => {
 		});
 	});
 
-	describe.skipIf(!process.env.XIAOMI_API_KEY)("Xiaomi MiMo (API billing) Provider (mimo-v2.5-pro)", () => {
+	describe.skipIf(!process.env.XIAOMI_AAIRIS_KEY)("Xiaomi MiMo (API billing) Provider (mimo-v2.5-pro)", () => {
 		const llm = getModel("xiaomi", "mimo-v2.5-pro");
 
 		it("should handle tool result with only image", { retry: 3, timeout: 30000 }, async () => {
@@ -330,7 +330,7 @@ describe("Tool Results with Images", () => {
 		});
 	});
 
-	describe.skipIf(!process.env.XIAOMI_TOKEN_PLAN_CN_API_KEY)(
+	describe.skipIf(!process.env.XIAOMI_TOKEN_PLAN_CN_AAIRIS_KEY)(
 		"Xiaomi MiMo Token Plan (CN) Provider (mimo-v2.5-pro)",
 		() => {
 			const llm = getModel("xiaomi-token-plan-cn", "mimo-v2.5-pro");
@@ -347,7 +347,7 @@ describe("Tool Results with Images", () => {
 		},
 	);
 
-	describe.skipIf(!process.env.XIAOMI_TOKEN_PLAN_AMS_API_KEY)(
+	describe.skipIf(!process.env.XIAOMI_TOKEN_PLAN_AMS_AAIRIS_KEY)(
 		"Xiaomi MiMo Token Plan (AMS) Provider (mimo-v2.5-pro)",
 		() => {
 			const llm = getModel("xiaomi-token-plan-ams", "mimo-v2.5-pro");
@@ -364,7 +364,7 @@ describe("Tool Results with Images", () => {
 		},
 	);
 
-	describe.skipIf(!process.env.XIAOMI_TOKEN_PLAN_SGP_API_KEY)(
+	describe.skipIf(!process.env.XIAOMI_TOKEN_PLAN_SGP_AAIRIS_KEY)(
 		"Xiaomi MiMo Token Plan (SGP) Provider (mimo-v2.5-pro)",
 		() => {
 			const llm = getModel("xiaomi-token-plan-sgp", "mimo-v2.5-pro");
@@ -381,7 +381,7 @@ describe("Tool Results with Images", () => {
 		},
 	);
 
-	describe.skipIf(!process.env.KIMI_API_KEY)("Kimi For Coding Provider (kimi-for-coding)", () => {
+	describe.skipIf(!process.env.KIMI_AAIRIS_KEY)("Kimi For Coding Provider (kimi-for-coding)", () => {
 		const llm = getModel("kimi-coding", "kimi-for-coding");
 
 		it("should handle tool result with only image", { retry: 3, timeout: 30000 }, async () => {
@@ -393,7 +393,7 @@ describe("Tool Results with Images", () => {
 		});
 	});
 
-	describe.skipIf(!process.env.AI_GATEWAY_API_KEY)("Vercel AI Gateway Provider (google/gemini-2.5-flash)", () => {
+	describe.skipIf(!process.env.AI_GATEWAY_AAIRIS_KEY)("Vercel AI Gateway Provider (google/gemini-2.5-flash)", () => {
 		const llm = getModel("vercel-ai-gateway", "google/gemini-2.5-flash");
 
 		it("should handle tool result with only image", { retry: 3, timeout: 30000 }, async () => {
@@ -418,7 +418,7 @@ describe("Tool Results with Images", () => {
 	});
 
 	// =========================================================================
-	// OAuth-based providers (credentials from ~/.pi/agent/oauth.json)
+	// OAuth-based providers (credentials from ~/.airis/agent/oauth.json)
 	// =========================================================================
 
 	describe("Anthropic OAuth Provider (claude-sonnet-4-5)", () => {

@@ -39,7 +39,7 @@ Type `/` in the editor to open command completion. Extensions can register custo
 | `/model` | Switch models |
 | `/scoped-models` | Enable/disable models for Ctrl+P cycling |
 | `/settings` | Thinking level, theme, message delivery, transport |
-| `/resume` | Pick from previous sessions |
+| `/resume` | AIRISck from previous sessions |
 | `/new` | Start a new session |
 | `/name <name>` | Set session display name |
 | `/session` | Show session file, ID, messages, tokens, and cost |
@@ -53,7 +53,7 @@ Type `/` in the editor to open command completion. Extensions can register custo
 | `/reload` | Reload keybindings, extensions, skills, prompts, and context files |
 | `/hotkeys` | Show all keyboard shortcuts |
 | `/changelog` | Display version history |
-| `/quit` | Quit pi |
+| `/quit` | Quit airis |
 
 ## Message Queue
 
@@ -73,12 +73,12 @@ Configure delivery in [Settings](settings.md) with `steeringMode` and `followUpM
 Sessions are saved automatically to `~/.airis/agent/sessions/`, organized by working directory.
 
 ```bash
-pi -c                  # Continue most recent session
-pi -r                  # Browse and select a session
-pi --no-session        # Ephemeral mode; do not save
-pi --name "my task"    # Set session display name at startup
-pi --session <path|id> # Use a specific session file or session ID
-pi --fork <path|id>    # Fork a session into a new session file
+airis -c                  # Continue most recent session
+airis -r                  # Browse and select a session
+airis --no-session        # Ephemeral mode; do not save
+airis --name "my task"    # Set session display name at startup
+airis --session <path|id> # Use a specific session file or session ID
+airis --fork <path|id>    # Fork a session into a new session file
 ```
 
 Useful session commands:
@@ -93,7 +93,7 @@ See [Sessions](sessions.md) and [Compaction](compaction.md) for details.
 
 ## Context Files
 
-Pi loads `AGENTS.md` or `CLAUDE.md` at startup from:
+AIRIS loads `AGENTS.md` or `CLAUDE.md` at startup from:
 
 - `~/.airis/agent/AGENTS.md` for global instructions
 - parent directories, walking up from the current working directory
@@ -112,17 +112,17 @@ Append to the default prompt without replacing it with `APPEND_SYSTEM.md` in eit
 
 ### Project Trust
 
-On interactive startup, pi asks before trusting a project folder that contains project-local settings, resources, or project `.agents/skills` and has no saved decision for the folder or a parent folder in `~/.airis/agent/trust.json`. Trusting a project allows pi to load `.airis/settings.json` and `.airis` resources, install missing project packages, and execute project extensions.
+On interactive startup, airis asks before trusting a project folder that contains project-local settings, resources, or project `.agents/skills` and has no saved decision for the folder or a parent folder in `~/.airis/agent/trust.json`. Trusting a project allows airis to load `.airis/settings.json` and `.airis` resources, install missing project packages, and execute project extensions.
 
-Before the trust decision, pi loads only context files, user/global extensions, and CLI `-e` extensions so they can handle the `project_trust` event. Project-local extensions, project package-managed extensions, and project settings are loaded only after the project is trusted. This split also applies when switching to a session from a different cwd whose trust has not been resolved in the current process.
+Before the trust decision, airis loads only context files, user/global extensions, and CLI `-e` extensions so they can handle the `project_trust` event. Project-local extensions, project package-managed extensions, and project settings are loaded only after the project is trusted. This split also applies when switching to a session from a different cwd whose trust has not been resolved in the current process.
 
 Non-interactive modes (`-p`, `--mode json`, and `--mode rpc`) do not show a trust prompt. Without an applicable saved trust decision, they use `defaultProjectTrust` from global settings: `ask` (default) and `never` ignore those project resources, while `always` trusts them. Pass `--approve`/`-a` or `--no-approve`/`-na` to override project trust for one run.
 
 If no extension or saved decision applies, `defaultProjectTrust` controls the fallback behavior. Set it to `"ask"`, `"always"`, or `"never"` in `~/.airis/agent/settings.json`, or change it with `/settings`.
 
-`pi config` and package commands use the same project trust flow, except `pi update` never prompts. Pass `--approve` to trust project-local settings for one command or `--no-approve` to ignore them.
+`airis config` and package commands use the same project trust flow, except `airis update` never prompts. Pass `--approve` to trust project-local settings for one command or `--no-approve` to ignore them.
 
-Use `/trust` in interactive mode to save a project trust decision for future sessions, including trust for the immediate parent folder. It writes `~/.airis/agent/trust.json` only; the current session is not reloaded, so restart pi for changes to take effect.
+Use `/trust` in interactive mode to save a project trust decision for future sessions, including trust for the immediate parent folder. It writes `~/.airis/agent/trust.json` only; the current session is not reloaded, so restart airis for changes to take effect.
 
 
 ## Exporting and Sharing Sessions
@@ -131,29 +131,29 @@ Use `/export [file]` to write a session to HTML.
 
 Use `/share` to upload a private GitHub gist with a shareable HTML link.
 
-If you use pi for open source work and want to publish sessions for model, prompt, tool, and evaluation research, see [`badlogic/pi-share-hf`](https://github.com/badlogic/pi-share-hf). It publishes sessions to Hugging Face datasets.
+If you use airis for open source work and want to publish sessions for model, prompt, tool, and evaluation research, see [`sufiyan-sabeel/AIRIS-CLI-share-hf`](https://github.com/sufiyan-sabeel/AIRIS-CLI-share-hf). It publishes sessions to Hugging Face datasets.
 
 ## CLI Reference
 
 ```bash
-pi [options] [@files...] [messages...]
+airis [options] [@files...] [messages...]
 ```
 
 ### Package Commands
 
 ```bash
-pi install <source> [-l]     # Install package, -l for project-local
-pi remove <source> [-l]      # Remove package
-pi uninstall <source> [-l]   # Alias for remove
-pi update [source|self|pi]   # Update pi and packages; reconcile pinned git refs
-pi update --extensions       # Update packages only; reconcile pinned git refs
-pi update --self             # Update pi only
-pi update --extension <src>  # Update one package
-pi list                      # List installed packages
-pi config                    # Enable/disable package resources
+airis install <source> [-l]     # Install package, -l for project-local
+airis remove <source> [-l]      # Remove package
+airis uninstall <source> [-l]   # Alias for remove
+airis update [source|self|airis]   # Update airis and packages; reconcile pinned git refs
+airis update --extensions       # Update packages only; reconcile pinned git refs
+airis update --self             # Update airis only
+airis update --extension <src>  # Update one package
+airis list                      # List installed packages
+airis config                    # Enable/disable package resources
 ```
 
-These commands manage pi packages, not the pi CLI installation. To uninstall pi itself, see [Quickstart](quickstart.md#uninstall). `pi config` and project package commands accept `--approve`/`--no-approve` to trust or ignore project-local settings for one command. `pi update` never prompts for project trust.
+These commands manage airis packages, not the airis CLI installation. To uninstall airis itself, see [Quickstart](quickstart.md#uninstall). `airis config` and project package commands accept `--approve`/`--no-approve` to trust or ignore project-local settings for one command. `airis update` never prompts for project trust.
 
 See [AIRIS Packages](packages.md) for package sources and security notes.
 
@@ -167,10 +167,10 @@ See [AIRIS Packages](packages.md) for package sources and security notes.
 | `--mode rpc` | RPC mode over stdin/stdout; see [RPC mode](rpc.md) |
 | `--export <in> [out]` | Export a session to HTML |
 
-In print mode, pi also reads piped stdin and merges it into the initial prompt:
+In print mode, airis also reads piped stdin and merges it into the initial prompt:
 
 ```bash
-cat README.md | pi -p "Summarize this text"
+cat README.md | airis -p "Summarize this text"
 ```
 
 ### Model Options
@@ -179,7 +179,7 @@ cat README.md | pi -p "Summarize this text"
 |--------|-------------|
 | `--provider <name>` | Provider, such as `anthropic`, `openai`, or `google` |
 | `--model <pattern>` | Model pattern or ID; supports `provider/id` and optional `:<thinking>` |
-| `--api-key <key>` | API key, overriding environment variables |
+| `--aairis-key <key>` | API key, overriding environment variables |
 | `--thinking <level>` | `off`, `minimal`, `low`, `medium`, `high`, `xhigh` |
 | `--models <patterns>` | Comma-separated patterns for Ctrl+P cycling |
 | `--list-models [search]` | List available models |
@@ -224,7 +224,7 @@ Built-in tools: `read`, `bash`, `edit`, `write`, `grep`, `find`, `ls`.
 Combine `--no-*` with explicit flags to load exactly what you need, ignoring settings. Example:
 
 ```bash
-pi --no-extensions -e ./my-extension.ts
+airis --no-extensions -e ./my-extension.ts
 ```
 
 ### Other Options
@@ -244,56 +244,56 @@ pi --no-extensions -e ./my-extension.ts
 Prefix files with `@` to include them in the message:
 
 ```bash
-pi @prompt.md "Answer this"
-pi -p @screenshot.png "What's in this image?"
-pi @code.ts @test.ts "Review these files"
+airis @prompt.md "Answer this"
+airis -p @screenshot.png "What's in this image?"
+airis @code.ts @test.ts "Review these files"
 ```
 
 ### Examples
 
 ```bash
 # Interactive with initial prompt
-pi "List all .ts files in src/"
+airis "List all .ts files in src/"
 
 # Non-interactive
-pi -p "Summarize this codebase"
+airis -p "Summarize this codebase"
 
 # Non-interactive with piped stdin
-cat README.md | pi -p "Summarize this text"
+cat README.md | airis -p "Summarize this text"
 
 # Named one-shot session
-pi --name "release audit" -p "Audit this repository"
+airis --name "release audit" -p "Audit this repository"
 
 # Different model
-pi --provider openai --model gpt-4o "Help me refactor"
+airis --provider openai --model gpt-4o "Help me refactor"
 
 # Model with provider prefix
-pi --model openai/gpt-4o "Help me refactor"
+airis --model openai/gpt-4o "Help me refactor"
 
 # Model with thinking level shorthand
-pi --model sonnet:high "Solve this complex problem"
+airis --model sonnet:high "Solve this complex problem"
 
 # Limit model cycling
-pi --models "claude-*,gpt-4o"
+airis --models "claude-*,gpt-4o"
 
 # Read-only mode
-pi --tools read,grep,find,ls -p "Review the code"
+airis --tools read,grep,find,ls -p "Review the code"
 
 # Disable one extension or built-in tool while keeping the rest available
-pi --exclude-tools ask_question
+airis --exclude-tools ask_question
 ```
 
 ### Environment Variables
 
 | Variable | Description |
 |----------|-------------|
-| `PI_CODING_AGENT_DIR` | Override config directory; default is `~/.airis/agent` |
-| `PI_CODING_AGENT_SESSION_DIR` | Override session storage directory; overridden by `--session-dir` |
-| `PI_PACKAGE_DIR` | Override package directory, useful for Nix/Guix store paths |
-| `PI_OFFLINE` | Disable startup network operations, including update checks, package update checks, and install/update telemetry |
-| `PI_SKIP_VERSION_CHECK` | Skip the AIRIS version update check at startup. This prevents the GitHub Pages latest-version request |
-| `PI_TELEMETRY` | Override install/update telemetry and provider attribution headers: `1`/`true`/`yes` or `0`/`false`/`no`. This does not disable update checks |
-| `PI_CACHE_RETENTION` | Set to `long` for extended prompt cache where supported |
+| `AIRIS_CODING_AGENT_DIR` | Override config directory; default is `~/.airis/agent` |
+| `AIRIS_CODING_AGENT_SESSION_DIR` | Override session storage directory; overridden by `--session-dir` |
+| `AIRIS_PACKAGE_DIR` | Override package directory, useful for Nix/Guix store paths |
+| `AIRIS_OFFLINE` | Disable startup network operations, including update checks, package update checks, and install/update telemetry |
+| `AIRIS_SKIP_VERSION_CHECK` | Skip the AIRIS version update check at startup. This prevents the `airis-dev.netlify.app` latest-version request |
+| `AIRIS_TELEMETRY` | Override install/update telemetry and provider attribution headers: `1`/`true`/`yes` or `0`/`false`/`no`. This does not disable update checks |
+| `AIRIS_CACHE_RETENTION` | Set to `long` for extended prompt cache where supported |
 | `VISUAL`, `EDITOR` | External editor for Ctrl+G |
 
 ## Design Principles
@@ -302,4 +302,4 @@ AIRIS keeps the core small and pushes workflow-specific behavior into extensions
 
 It intentionally does not include built-in MCP, sub-agents, permission popups, plan mode, to-dos, or background bash. You can build or install those workflows as extensions or packages, or use external tools such as containers and tmux.
 
-For the full rationale, read the [blog post](https://mariozechner.at/posts/2025-11-30-pi-coding-agent/).
+For the full rationale, read the [blog post](https://mariozechner.at/posts/2025-11-30-airis-coding-agent/).

@@ -466,7 +466,7 @@ describe("Markdown component", () => {
 		});
 
 		it("should wrap long unbroken tokens inside table cells (not only at line start)", () => {
-			// Pin to no-hyperlinks so width checks work on plain text without OSC 8 sequences.
+			// AIRISn to no-hyperlinks so width checks work on plain text without OSC 8 sequences.
 			setCapabilities({ images: null, trueColor: false, hyperlinks: false });
 			const url = "https://example.com/this/is/a/very/long/url/that/should/wrap";
 			const markdown = new Markdown(

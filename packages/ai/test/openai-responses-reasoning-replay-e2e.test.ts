@@ -14,7 +14,7 @@ const testTool: Tool<typeof testToolSchema> = {
 	parameters: testToolSchema,
 };
 
-describe.skipIf(!process.env.OPENAI_API_KEY || !process.env.ANTHROPIC_API_KEY)(
+describe.skipIf(!process.env.OPENAI_AAIRIS_KEY || !process.env.ANTHROPIC_AAIRIS_KEY)(
 	"OpenAI Responses reasoning replay e2e",
 	() => {
 		it("skips reasoning-only history after an aborted turn", { retry: 2 }, async () => {
@@ -22,7 +22,7 @@ describe.skipIf(!process.env.OPENAI_API_KEY || !process.env.ANTHROPIC_API_KEY)(
 
 			const apiKey = getEnvApiKey("openai");
 			if (!apiKey) {
-				throw new Error("Missing OPENAI_API_KEY");
+				throw new Error("Missing OPENAI_AAIRIS_KEY");
 			}
 
 			const userMessage: Message = {
@@ -95,7 +95,7 @@ describe.skipIf(!process.env.OPENAI_API_KEY || !process.env.ANTHROPIC_API_KEY)(
 
 			const apiKey = getEnvApiKey("openai");
 			if (!apiKey) {
-				throw new Error("Missing OPENAI_API_KEY");
+				throw new Error("Missing OPENAI_AAIRIS_KEY");
 			}
 
 			const userMessage: Message = {

@@ -85,7 +85,7 @@ async function testTokensOnAbort<TApi extends Api>(llm: Model<TApi>, options: St
 }
 
 describe("Token Statistics on Abort", () => {
-	describe.skipIf(!process.env.GEMINI_API_KEY)("Google Provider", () => {
+	describe.skipIf(!process.env.GEMINI_AAIRIS_KEY)("Google Provider", () => {
 		const llm = getModel("google", "gemini-2.5-flash");
 
 		it("should include token stats when aborted mid-stream", { retry: 3, timeout: 30000 }, async () => {
@@ -93,7 +93,7 @@ describe("Token Statistics on Abort", () => {
 		});
 	});
 
-	describe.skipIf(!process.env.OPENAI_API_KEY)("OpenAI Completions Provider", () => {
+	describe.skipIf(!process.env.OPENAI_AAIRIS_KEY)("OpenAI Completions Provider", () => {
 		const { compat: _compat, ...baseModel } = getModel("openai", "gpt-4o-mini")!;
 		void _compat;
 		const llm: Model<"openai-completions"> = {
@@ -106,7 +106,7 @@ describe("Token Statistics on Abort", () => {
 		});
 	});
 
-	describe.skipIf(!process.env.OPENAI_API_KEY)("OpenAI Responses Provider", () => {
+	describe.skipIf(!process.env.OPENAI_AAIRIS_KEY)("OpenAI Responses Provider", () => {
 		const llm = getModel("openai", "gpt-5.4-mini");
 
 		it("should include token stats when aborted mid-stream", { retry: 3, timeout: 30000 }, async () => {
@@ -124,7 +124,7 @@ describe("Token Statistics on Abort", () => {
 		});
 	});
 
-	describe.skipIf(!process.env.ANTHROPIC_API_KEY)("Anthropic Provider", () => {
+	describe.skipIf(!process.env.ANTHROPIC_AAIRIS_KEY)("Anthropic Provider", () => {
 		const llm = getModel("anthropic", "claude-sonnet-4-6");
 
 		it("should include token stats when aborted mid-stream", { retry: 3, timeout: 30000 }, async () => {
@@ -132,7 +132,7 @@ describe("Token Statistics on Abort", () => {
 		});
 	});
 
-	describe.skipIf(!process.env.XAI_API_KEY)("xAI Provider", () => {
+	describe.skipIf(!process.env.XAI_AAIRIS_KEY)("xAI Provider", () => {
 		const llm = getModel("xai", "grok-3-fast");
 
 		it("should include token stats when aborted mid-stream", { retry: 3, timeout: 30000 }, async () => {
@@ -140,7 +140,7 @@ describe("Token Statistics on Abort", () => {
 		});
 	});
 
-	describe.skipIf(!process.env.GROQ_API_KEY)("Groq Provider", () => {
+	describe.skipIf(!process.env.GROQ_AAIRIS_KEY)("Groq Provider", () => {
 		const llm = getModel("groq", "openai/gpt-oss-20b");
 
 		it("should include token stats when aborted mid-stream", { retry: 3, timeout: 30000 }, async () => {
@@ -148,7 +148,7 @@ describe("Token Statistics on Abort", () => {
 		});
 	});
 
-	describe.skipIf(!process.env.CEREBRAS_API_KEY)("Cerebras Provider", () => {
+	describe.skipIf(!process.env.CEREBRAS_AAIRIS_KEY)("Cerebras Provider", () => {
 		const preferredCerebrasModelIds: string[] = ["gpt-oss-120b", "zai-glm-4.7", "llama3.1-8b"];
 		const cerebrasModels = getModels("cerebras");
 		const llm = cerebrasModels.find((model) => preferredCerebrasModelIds.includes(model.id)) ?? cerebrasModels[0];
@@ -186,7 +186,7 @@ describe("Token Statistics on Abort", () => {
 		});
 	});
 
-	describe.skipIf(!process.env.TOGETHER_API_KEY)("Together AI Provider", () => {
+	describe.skipIf(!process.env.TOGETHER_AAIRIS_KEY)("Together AI Provider", () => {
 		const llm = getModel("together", "moonshotai/Kimi-K2.6");
 
 		it("should include token stats when aborted mid-stream", { retry: 3, timeout: 30000 }, async () => {
@@ -194,7 +194,7 @@ describe("Token Statistics on Abort", () => {
 		});
 	});
 
-	describe.skipIf(!process.env.ZAI_API_KEY)("zAI Provider", () => {
+	describe.skipIf(!process.env.ZAI_AAIRIS_KEY)("zAI Provider", () => {
 		const llm = getModel("zai", "glm-4.5-air");
 
 		it("should include token stats when aborted mid-stream", { retry: 3, timeout: 30000 }, async () => {
@@ -202,7 +202,7 @@ describe("Token Statistics on Abort", () => {
 		});
 	});
 
-	describe.skipIf(!process.env.MISTRAL_API_KEY)("Mistral Provider", () => {
+	describe.skipIf(!process.env.MISTRAL_AAIRIS_KEY)("Mistral Provider", () => {
 		const llm = getModel("mistral", "devstral-medium-latest");
 
 		it("should include token stats when aborted mid-stream", { retry: 3, timeout: 30000 }, async () => {
@@ -210,7 +210,7 @@ describe("Token Statistics on Abort", () => {
 		});
 	});
 
-	describe.skipIf(!process.env.MINIMAX_API_KEY)("MiniMax Provider", () => {
+	describe.skipIf(!process.env.MINIMAX_AAIRIS_KEY)("MiniMax Provider", () => {
 		const llm = getModel("minimax", "MiniMax-M2.7");
 
 		it("should include token stats when aborted mid-stream", { retry: 3, timeout: 30000 }, async () => {
@@ -218,7 +218,7 @@ describe("Token Statistics on Abort", () => {
 		});
 	});
 
-	describe.skipIf(!process.env.KIMI_API_KEY)("Kimi For Coding Provider", () => {
+	describe.skipIf(!process.env.KIMI_AAIRIS_KEY)("Kimi For Coding Provider", () => {
 		const llm = getModel("kimi-coding", "kimi-for-coding");
 
 		it("should include token stats when aborted mid-stream", { retry: 3, timeout: 30000 }, async () => {
@@ -226,7 +226,7 @@ describe("Token Statistics on Abort", () => {
 		});
 	});
 
-	describe.skipIf(!process.env.AI_GATEWAY_API_KEY)("Vercel AI Gateway Provider", () => {
+	describe.skipIf(!process.env.AI_GATEWAY_AAIRIS_KEY)("Vercel AI Gateway Provider", () => {
 		const llm = getModel("vercel-ai-gateway", "google/gemini-2.5-flash");
 
 		it("should include token stats when aborted mid-stream", { retry: 3, timeout: 30000 }, async () => {
@@ -234,7 +234,7 @@ describe("Token Statistics on Abort", () => {
 		});
 	});
 
-	describe.skipIf(!process.env.XIAOMI_API_KEY)("Xiaomi MiMo (API billing) Provider", () => {
+	describe.skipIf(!process.env.XIAOMI_AAIRIS_KEY)("Xiaomi MiMo (API billing) Provider", () => {
 		const llm = getModel("xiaomi", "mimo-v2.5-pro");
 
 		// FIXME(xiaomi): Xiaomi's Anthropic-compatible stream does not populate
@@ -247,7 +247,7 @@ describe("Token Statistics on Abort", () => {
 		});
 	});
 
-	describe.skipIf(!process.env.XIAOMI_TOKEN_PLAN_CN_API_KEY)("Xiaomi MiMo Token Plan (CN) Provider", () => {
+	describe.skipIf(!process.env.XIAOMI_TOKEN_PLAN_CN_AAIRIS_KEY)("Xiaomi MiMo Token Plan (CN) Provider", () => {
 		const llm = getModel("xiaomi-token-plan-cn", "mimo-v2.5-pro");
 
 		// FIXME(xiaomi): see the API-billing block above — same upstream streaming
@@ -257,7 +257,7 @@ describe("Token Statistics on Abort", () => {
 		});
 	});
 
-	describe.skipIf(!process.env.XIAOMI_TOKEN_PLAN_AMS_API_KEY)("Xiaomi MiMo Token Plan (AMS) Provider", () => {
+	describe.skipIf(!process.env.XIAOMI_TOKEN_PLAN_AMS_AAIRIS_KEY)("Xiaomi MiMo Token Plan (AMS) Provider", () => {
 		const llm = getModel("xiaomi-token-plan-ams", "mimo-v2.5-pro");
 
 		// FIXME(xiaomi): see the API-billing block above — same upstream streaming
@@ -267,7 +267,7 @@ describe("Token Statistics on Abort", () => {
 		});
 	});
 
-	describe.skipIf(!process.env.XIAOMI_TOKEN_PLAN_SGP_API_KEY)("Xiaomi MiMo Token Plan (SGP) Provider", () => {
+	describe.skipIf(!process.env.XIAOMI_TOKEN_PLAN_SGP_AAIRIS_KEY)("Xiaomi MiMo Token Plan (SGP) Provider", () => {
 		const llm = getModel("xiaomi-token-plan-sgp", "mimo-v2.5-pro");
 
 		// FIXME(xiaomi): see the API-billing block above — same upstream streaming
@@ -278,7 +278,7 @@ describe("Token Statistics on Abort", () => {
 	});
 
 	// =========================================================================
-	// OAuth-based providers (credentials from ~/.pi/agent/oauth.json)
+	// OAuth-based providers (credentials from ~/.airis/agent/oauth.json)
 	// =========================================================================
 
 	describe("Anthropic OAuth Provider", () => {

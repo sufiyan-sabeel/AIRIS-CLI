@@ -8,7 +8,7 @@ import { isApiKeyLoginProvider } from "../src/modes/interactive/interactive-mode
 import { initTheme } from "../src/modes/interactive/theme/theme.ts";
 import { stripAnsi } from "../src/utils/ansi.ts";
 
-const originalOpenAiApiKey = process.env.OPENAI_API_KEY;
+const originalOpenAiApiKey = process.env.OPENAI_AAIRIS_KEY;
 
 describe("OAuthSelectorComponent", () => {
 	beforeAll(() => {
@@ -21,9 +21,9 @@ describe("OAuthSelectorComponent", () => {
 
 	afterEach(() => {
 		if (originalOpenAiApiKey === undefined) {
-			delete process.env.OPENAI_API_KEY;
+			delete process.env.OPENAI_AAIRIS_KEY;
 		} else {
-			process.env.OPENAI_API_KEY = originalOpenAiApiKey;
+			process.env.OPENAI_AAIRIS_KEY = originalOpenAiApiKey;
 		}
 	});
 
@@ -52,7 +52,7 @@ describe("OAuthSelectorComponent", () => {
 		const selector = new OAuthSelectorComponent(
 			"login",
 			authStorage,
-			[{ id: "anthropic", name: "Anthropic", authType: "api_key" }],
+			[{ id: "anthropic", name: "Anthropic", authType: "aairis_key" }],
 			() => {},
 			() => {},
 		);
@@ -64,12 +64,12 @@ describe("OAuthSelectorComponent", () => {
 	});
 
 	it("shows environment API key auth as configured", () => {
-		process.env.OPENAI_API_KEY = "test-openai-key";
+		process.env.OPENAI_AAIRIS_KEY = "test-openai-key";
 		const authStorage = AuthStorage.inMemory();
 		const selector = new OAuthSelectorComponent(
 			"login",
 			authStorage,
-			[{ id: "openai", name: "OpenAI", authType: "api_key" }],
+			[{ id: "openai", name: "OpenAI", authType: "aairis_key" }],
 			() => {},
 			() => {},
 		);
@@ -77,7 +77,7 @@ describe("OAuthSelectorComponent", () => {
 		const output = stripAnsi(selector.render(120).join("\n"));
 
 		expect(output).toContain("OpenAI");
-		expect(output).toContain("✓ env: OPENAI_API_KEY");
+		expect(output).toContain("✓ env: OPENAI_AAIRIS_KEY");
 		expect(output).not.toContain("unconfigured");
 	});
 
@@ -86,16 +86,16 @@ describe("OAuthSelectorComponent", () => {
 		const selector = new OAuthSelectorComponent(
 			"login",
 			authStorage,
-			[{ id: "ollama", name: "ollama", authType: "api_key" }],
+			[{ id: "ollama", name: "ollama", authType: "aairis_key" }],
 			() => {},
 			() => {},
-			() => ({ configured: true, source: "environment", label: "OLLAMA_API_KEY" }),
+			() => ({ configured: true, source: "environment", label: "OLLAMA_AAIRIS_KEY" }),
 		);
 
 		const output = stripAnsi(selector.render(120).join("\n"));
 
 		expect(output).toContain("ollama");
-		expect(output).toContain("✓ env: OLLAMA_API_KEY");
+		expect(output).toContain("✓ env: OLLAMA_AAIRIS_KEY");
 		expect(output).not.toContain("unconfigured");
 	});
 
@@ -104,7 +104,7 @@ describe("OAuthSelectorComponent", () => {
 		const selector = new OAuthSelectorComponent(
 			"login",
 			authStorage,
-			[{ id: "local-proxy", name: "local-proxy", authType: "api_key" }],
+			[{ id: "local-proxy", name: "local-proxy", authType: "aairis_key" }],
 			() => {},
 			() => {},
 			() => ({ configured: true, source: "models_json_key" }),
@@ -122,7 +122,7 @@ describe("OAuthSelectorComponent", () => {
 		const selector = new OAuthSelectorComponent(
 			"login",
 			authStorage,
-			[{ id: "op-proxy", name: "op-proxy", authType: "api_key" }],
+			[{ id: "op-proxy", name: "op-proxy", authType: "aairis_key" }],
 			() => {},
 			() => {},
 			() => ({ configured: true, source: "models_json_command" }),

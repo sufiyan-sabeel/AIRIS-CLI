@@ -1,5 +1,5 @@
 import { compare, valid } from "semver";
-import { getAirisUserAgent } from "./pi-user-agent.ts";
+import { getAirisUserAgent } from "./airis-user-agent.ts";
 
 const LATEST_VERSION_URL = "https://api.github.com/repos/sufiyan-sabeel/AIRIS-CLI/releases/latest";
 const DEFAULT_VERSION_CHECK_TIMEOUT_MS = 10000;
@@ -31,7 +31,14 @@ export async function getLatestAirisRelease(
 	currentVersion: string,
 	options: { timeoutMs?: number } = {},
 ): Promise<LatestAirisRelease | undefined> {
-	if (process.env.PI_SKIP_VERSION_CHECK || process.env.PI_OFFLINE) return undefined;
+	if (
+		process.env.AIRIS_SKIP_VERSION_CHECK ||
+		process.env.AIRIS_OFFLINE ||
+		process.env.AIRIS_SKIP_VERSION_CHECK ||
+		process.env.AIRIS_OFFLINE
+	) {
+		return undefined;
+	}
 
 	const response = await fetch(LATEST_VERSION_URL, {
 		headers: {

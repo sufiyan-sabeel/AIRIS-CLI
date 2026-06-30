@@ -17,18 +17,18 @@ Project: AIRIS-CLI at /storage/emulated/0/Download/AIRIS-CLI
 | `docs/` | 80K | Outdated duplicate of `website/` directory. `docs/install.sh` is identical to root `install.sh` (old v2.0 with ANSI effects). `website/` contains the modern deployed version. `docs/` is not referenced by any AIRIS source, build, or CI script. Only reference is itself. |
 | `.netlify/` | 14K | Stale Netlify deploy functions internal artifacts. Not referenced in source. |
 | `website/.netlify/` | -- | Duplicate stale Netlify artifacts nested inside website/. |
-| `airis-test.bat` | -- | Duplicate of `pi-test.bat`. Both call `pi-test.ps1` internally. Redundant wrapper. |
-| `airis-test.ps1` | -- | Byte-identical to `pi-test.ps1`. Completely redundant copy. |
-| `airis-test.sh` | -- | Nearly identical to `pi-test.sh`. Both are test harness scripts for the same `airis` tool. `pi-test.*` is canonical (referenced in `AGENTS.md`). |
-| `packages/agent/test/scratch/simple.ts` | -- | Scratch/test file with only 59 lines, uses old `.pi/` paths instead of `.airis/`, not referenced by any test runner or import. |
+| `airis-test.bat` | -- | Duplicate of `airis-test.bat`. Both call `airis-test.ps1` internally. Redundant wrapper. |
+| `airis-test.ps1` | -- | Byte-identical to `airis-test.ps1`. Completely redundant copy. |
+| `airis-test.sh` | -- | Nearly identical to `airis-test.sh`. Both are test harness scripts for the same `airis` tool. `airis-test.*` is canonical (referenced in `AGENTS.md`). |
+| `packages/agent/test/scratch/simple.ts` | -- | Scratch/test file with only 59 lines, uses old `.airis/` paths instead of `.airis/`, not referenced by any test runner or import. |
 
 ## REVIEW_REQUIRED
 
 | Path | Reason |
 |------|--------|
-| `.pi/` | Contains same files as `.airis/` (same prompts, skills, extensions, git, npm) except `settings.json` vs `automation-guide.md`. Legacy directory from original upstream project. The code references `.pi/` for backwards compatibility in tests and docs. Verify no runtime code reads from root-level `.pi/` before removing. |
-| `website/` | Contains deploy-ready site for GitHub Pages (`sufiyan-sabeel.github.io/AIRIS-CLI/`). Slightly differs from `docs/` (modern install.sh). May be needed for deploys or README links. Verify if this is the authoritative deploy artifact. |
-| `.pi/settings.json` | Contains `{"androidAutomation": true}`. If `.pi/` is removed, this setting may be lost. Check if android automation reads from `.pi/` or `.airis/`. |
+| `.airis/` | Contains same files as `.airis/` (same prompts, skills, extensions, git, npm) except `settings.json` vs `automation-guide.md`. Legacy directory from original upstream project. The code references `.airis/` for backwards compatibility in tests and docs. Verify no runtime code reads from root-level `.airis/` before removing. |
+| `website/` | Contains deploy-ready site for `airis-dev.netlify.app`. Slightly differs from `docs/` (modern install.sh). May be needed for deploys or README links. Verify if this is the authoritative deploy artifact. |
+| `.airis/settings.json` | Contains `{"androidAutomation": true}`. If `.airis/` is removed, this setting may be lost. Check if android automation reads from `.airis/` or `.airis/`. |
 | root `install.sh` | Same content as `docs/install.sh` (old v2.0). Not referenced by README (which points to website/install.sh). Could be considered duplicate but keeping for safety. |
 
 ## KEEP
@@ -45,7 +45,7 @@ Project: AIRIS-CLI at /storage/emulated/0/Download/AIRIS-CLI
 - `.github/`, `.husky/`, `.kilo/` - CI/CD and git hooks
 - `.git/` - Git repository
 - `website/` - (REVIEW_REQUIRED, but will keep during initial cleanup)
-- `.pi/` - (REVIEW_REQUIRED, but will keep during initial cleanup)
+- `.airis/` - (REVIEW_REQUIRED, but will keep during initial cleanup)
 
 ## Notes
 

@@ -128,7 +128,7 @@ echo -e "${CYAN}${BOLD}    │                    🚀 QUICK START              
 echo -e "${CYAN}${BOLD}    ├─────────────────────────────────────────────────────────────┤${NC}"
 echo -e "${CYAN}    │${NC}                                                             ${CYAN}│${NC}"
 echo -e "${CYAN}    │${NC}  ${WHITE}1. Set your API key:${NC}                                      ${CYAN}│${NC}"
-echo -e "${CYAN}    │${NC}     ${YELLOW}export GEMINI_API_KEY=\"your-key-here\"${NC}                    ${CYAN}│${NC}"
+echo -e "${CYAN}    │${NC}     ${YELLOW}export GEMINI_AAIRIS_KEY=\"your-key-here\"${NC}                    ${CYAN}│${NC}"
 echo -e "${CYAN}    │${NC}                                                             ${CYAN}│${NC}"
 echo -e "${CYAN}    │${NC}  ${WHITE}2. Run AIRIS:${NC}                                             ${CYAN}│${NC}"
 echo -e "${CYAN}    │${NC}     ${GREEN}airis${NC}                      ${GRAY}# Interactive mode${NC}           ${CYAN}│${NC}"
@@ -156,9 +156,9 @@ FOOTER
 echo -e "${NC}"
 
 # Reminder about API key
-if [ -z "$GEMINI_API_KEY" ] && [ -z "$ANTHROPIC_API_KEY" ] && [ -z "$OPENAI_API_KEY" ]; then
+if [ -z "$GEMINI_AAIRIS_KEY" ] && [ -z "$ANTHROPIC_AAIRIS_KEY" ] && [ -z "$OPENAI_AAIRIS_KEY" ]; then
     echo -e "${YELLOW}${BOLD}    ⚠️  Reminder: Set your API key before running AIRIS${NC}"
-    echo -e "${GRAY}       export GEMINI_API_KEY=\"your-key-here\"${NC}"
+    echo -e "${GRAY}       export GEMINI_AAIRIS_KEY=\"your-key-here\"${NC}"
     echo ""
 fi
 

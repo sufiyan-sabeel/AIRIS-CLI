@@ -12,10 +12,10 @@ import type { AssistantMessage } from "@earendil-works/airis-ai";
 import { truncateToWidth, visibleWidth } from "@earendil-works/airis-tui";
 import type { ExtensionAPI } from "@sufiyan-sabeel/airis-cli";
 
-export default function (pi: ExtensionAPI) {
+export default function (airis: ExtensionAPI) {
 	let enabled = false;
 
-	pi.registerCommand("footer", {
+	airis.registerCommand("footer", {
 		description: "Toggle custom footer",
 		handler: async (_args, ctx) => {
 			enabled = !enabled;

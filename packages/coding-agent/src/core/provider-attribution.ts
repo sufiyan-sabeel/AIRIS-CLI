@@ -4,7 +4,7 @@ import { isInstallTelemetryEnabled } from "./telemetry.ts";
 
 const OPENROUTER_HOST = "openrouter.ai";
 const NVIDIA_NIM_HOST = "integrate.api.nvidia.com";
-const CLOUDFLARE_API_HOST = "api.cloudflare.com";
+const CLOUDFLARE_AAIRIS_HOST = "api.cloudflare.com";
 const CLOUDFLARE_AI_GATEWAY_HOST = "gateway.ai.cloudflare.com";
 const OPENCODE_HOST = "opencode.ai";
 
@@ -28,7 +28,7 @@ function isCloudflareModel(model: Model<Api>): boolean {
 	return (
 		model.provider === "cloudflare-workers-ai" ||
 		model.provider === "cloudflare-ai-gateway" ||
-		matchesHost(model.baseUrl, CLOUDFLARE_API_HOST) ||
+		matchesHost(model.baseUrl, CLOUDFLARE_AAIRIS_HOST) ||
 		matchesHost(model.baseUrl, CLOUDFLARE_AI_GATEWAY_HOST)
 	);
 }
@@ -43,7 +43,7 @@ function getDefaultAttributionHeaders(
 
 	if (isOpenRouterModel(model)) {
 		return {
-			"HTTP-Referer": "https://pi.dev",
+			"HTTP-Referer": "https://sufiyan-sabeel.github.io/AIRIS-CLI/",
 			"X-OpenRouter-Title": "airis",
 			"X-OpenRouter-Categories": "cli-agent",
 		};

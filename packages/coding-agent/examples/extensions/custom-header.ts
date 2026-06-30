@@ -2,14 +2,14 @@
  * Custom Header Extension
  *
  * Demonstrates ctx.ui.setHeader() for replacing the built-in header
- * (logo + keybinding hints) with a custom component showing the pi mascot.
+ * (logo + keybinding hints) with a custom component showing the airis mascot.
  */
 
 import type { ExtensionAPI, Theme } from "@sufiyan-sabeel/airis-cli";
 import { VERSION } from "@sufiyan-sabeel/airis-cli";
 
 // --- PI MASCOT ---
-// Based on pi_mascot.ts - the pi agent character
+// Based on airis_mascot.ts - the airis agent character
 function getPiMascot(theme: Theme): string[] {
 	// --- COLORS ---
 	// 3b1b Blue: R=80, G=180, B=230
@@ -44,9 +44,9 @@ function getPiMascot(theme: Theme): string[] {
 	return ["", lineEyes, lineBar, lineLeg, lineLeg, lineLeg, lineLeg, ""];
 }
 
-export default function (pi: ExtensionAPI) {
+export default function (airis: ExtensionAPI) {
 	// Set custom header immediately on load (if UI is available)
-	pi.on("session_start", async (_event, ctx) => {
+	airis.on("session_start", async (_event, ctx) => {
 		if (ctx.mode === "tui") {
 			ctx.ui.setHeader((_tui, theme) => {
 				return {
@@ -63,7 +63,7 @@ export default function (pi: ExtensionAPI) {
 	});
 
 	// Command to restore built-in header
-	pi.registerCommand("builtin-header", {
+	airis.registerCommand("builtin-header", {
 		description: "Restore built-in header with keybinding hints",
 		handler: async (_args, ctx) => {
 			ctx.ui.setHeader(undefined);

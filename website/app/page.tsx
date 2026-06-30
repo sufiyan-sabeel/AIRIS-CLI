@@ -117,11 +117,11 @@ export default function Home() {
               <h2 className="text-3xl font-semibold tracking-[-0.05em] sm:text-5xl">Start from the terminal you already use.</h2>
               <p className="mt-4 text-lg leading-8 text-muted-foreground">The README verifies interactive mode, one-shot prompt mode, and continuing the last session after setting a provider API key.</p>
               <div className="mt-8 grid gap-3 sm:grid-cols-2">
-                <Card><CardHeader><KeyRound className="mb-2 h-5 w-5 text-blue-500" /><CardTitle>Provider key</CardTitle><CardDescription>Use a supported environment variable such as `GEMINI_API_KEY`, `OPENAI_API_KEY`, or `ANTHROPIC_API_KEY`.</CardDescription></CardHeader></Card>
+                <Card><CardHeader><KeyRound className="mb-2 h-5 w-5 text-blue-500" /><CardTitle>Provider key</CardTitle><CardDescription>Use a supported environment variable such as `GEMINI_AAIRIS_KEY`, `OPENAI_AAIRIS_KEY`, or `ANTHROPIC_AAIRIS_KEY`.</CardDescription></CardHeader></Card>
                 <Card><CardHeader><Terminal className="mb-2 h-5 w-5 text-blue-500" /><CardTitle>CLI modes</CardTitle><CardDescription>Use interactive mode with `airis`, or one-shot prompt mode with `airis -p`.</CardDescription></CardHeader></Card>
               </div>
             </div>
-            <CodeBlock code={'export GEMINI_API_KEY="your-key"\n# or: export OPENAI_API_KEY="your-key"\n# or: export ANTHROPIC_API_KEY="your-key"\n\nairis\nairis -p "List all TypeScript files in src/"\nairis --continue'} />
+            <CodeBlock code={'export GEMINI_AAIRIS_KEY="your-key"\n# or: export OPENAI_AAIRIS_KEY="your-key"\n# or: export ANTHROPIC_AAIRIS_KEY="your-key"\n\nairis\nairis -p "List all TypeScript files in src/"\nairis --continue'} />
           </div>
         </section>
 

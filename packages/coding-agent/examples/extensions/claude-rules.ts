@@ -6,13 +6,13 @@
  * specific rules when needed.
  *
  * Best practices for .claude/rules/:
- * - Keep rules focused: Each file should cover one topic (e.g., testing.md, api-design.md)
+ * - Keep rules focused: Each file should cover one topic (e.g., testing.md, aairis-design.md)
  * - Use descriptive filenames: The filename should indicate what the rules cover
  * - Use conditional rules sparingly: Only add paths frontmatter when rules truly apply to specific file types
  * - Organize with subdirectories: Group related rules (e.g., frontend/, backend/)
  *
  * Usage:
- * 1. Copy this file to ~/.pi/agent/extensions/ or your project's .pi/extensions/
+ * 1. Copy this file to ~/.airis/agent/extensions/ or your project's .airis/extensions/
  * 2. Create .claude/rules/ folder in your project root
  * 3. Add .md files with your rules
  */
@@ -46,12 +46,12 @@ function findMarkdownFiles(dir: string, basePath: string = ""): string[] {
 	return results;
 }
 
-export default function claudeRulesExtension(pi: ExtensionAPI) {
+export default function claudeRulesExtension(airis: ExtensionAPI) {
 	let ruleFiles: string[] = [];
 	let rulesDir: string = "";
 
 	// Scan for rules on session start
-	pi.on("session_start", async (_event, ctx) => {
+	airis.on("session_start", async (_event, ctx) => {
 		rulesDir = path.join(ctx.cwd, ".claude", "rules");
 		ruleFiles = findMarkdownFiles(rulesDir);
 
@@ -61,7 +61,7 @@ export default function claudeRulesExtension(pi: ExtensionAPI) {
 	});
 
 	// Append available rules to system prompt
-	pi.on("before_agent_start", async (event) => {
+	airis.on("before_agent_start", async (event) => {
 		if (ruleFiles.length === 0) {
 			return;
 		}

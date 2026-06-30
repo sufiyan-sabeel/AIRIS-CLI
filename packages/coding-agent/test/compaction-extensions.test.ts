@@ -24,15 +24,15 @@ import { createSyntheticSourceInfo } from "../src/core/source-info.ts";
 import { createCodingTools } from "../src/index.ts";
 import { createTestResourceLoader } from "./utilities.ts";
 
-const API_KEY = process.env.ANTHROPIC_OAUTH_TOKEN || process.env.ANTHROPIC_API_KEY;
+const AAIRIS_KEY = process.env.ANTHROPIC_OAUTH_TOKEN || process.env.ANTHROPIC_AAIRIS_KEY;
 
-describe.skipIf(!API_KEY)("Compaction extensions", () => {
+describe.skipIf(!AAIRIS_KEY)("Compaction extensions", () => {
 	let session: AgentSession;
 	let tempDir: string;
 	let capturedEvents: SessionEvent[];
 
 	beforeEach(() => {
-		tempDir = join(tmpdir(), `pi-compaction-extensions-test-${Date.now()}`);
+		tempDir = join(tmpdir(), `airis-compaction-extensions-test-${Date.now()}`);
 		mkdirSync(tempDir, { recursive: true });
 		capturedEvents = [];
 	});
@@ -88,7 +88,7 @@ describe.skipIf(!API_KEY)("Compaction extensions", () => {
 	function createSession(extensions: Extension[]) {
 		const model = getModel("anthropic", "claude-sonnet-4-5")!;
 		const agent = new Agent({
-			getApiKey: () => API_KEY,
+			getApiKey: () => AAIRIS_KEY,
 			initialState: {
 				model,
 				systemPrompt: "You are a helpful assistant. Be concise.",

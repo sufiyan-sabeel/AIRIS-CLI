@@ -11,7 +11,7 @@
 # Requirements:
 #   - AIRIS installed (npm link or global install)
 #   - tmux (for terminal recording)
-#   - GEMINI_API_KEY or another provider key set
+#   - GEMINI_AAIRIS_KEY or another provider key set
 #
 # The script runs for approximately 60 seconds and produces:
 #   - A terminal recording for embedding in the README
@@ -47,9 +47,9 @@ if ! command -v airis &>/dev/null; then
 fi
 
 # Verify API key is set
-if [ -z "${GEMINI_API_KEY:-}" ] && [ -z "${OPENAI_API_KEY:-}" ] && [ -z "${ANTHROPIC_API_KEY:-}" ]; then
+if [ -z "${GEMINI_AAIRIS_KEY:-}" ] && [ -z "${OPENAI_AAIRIS_KEY:-}" ] && [ -z "${ANTHROPIC_AAIRIS_KEY:-}" ]; then
   echo "Error: No API key found."
-  echo "Set one of: GEMINI_API_KEY, OPENAI_API_KEY, ANTHROPIC_API_KEY"
+  echo "Set one of: GEMINI_AAIRIS_KEY, OPENAI_AAIRIS_KEY, ANTHROPIC_AAIRIS_KEY"
   exit 1
 fi
 

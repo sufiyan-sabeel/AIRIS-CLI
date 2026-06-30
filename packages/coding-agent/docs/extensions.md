@@ -1,18 +1,18 @@
-> pi can create extensions. Ask it to build one for your use case.
+> airis can create extensions. Ask it to build one for your use case.
 
 # Extensions
 
-Extensions are TypeScript modules that extend pi's behavior. They can subscribe to lifecycle events, register custom tools callable by the LLM, add commands, and more.
+Extensions are TypeScript modules that extend airis's behavior. They can subscribe to lifecycle events, register custom tools callable by the LLM, add commands, and more.
 
-> **Placement for /reload:** Put extensions in `~/.airis/agent/extensions/` (global) or `.airis/extensions/` (project-local) for auto-discovery. Use `pi -e ./path.ts` only for quick tests. Extensions in auto-discovered locations can be hot-reloaded with `/reload`.
+> **Placement for /reload:** Put extensions in `~/.airis/agent/extensions/` (global) or `.airis/extensions/` (project-local) for auto-discovery. Use `airis -e ./path.ts` only for quick tests. Extensions in auto-discovered locations can be hot-reloaded with `/reload`.
 
 **Key capabilities:**
-- **Custom tools** - Register tools the LLM can call via `pi.registerTool()`
+- **Custom tools** - Register tools the LLM can call via `airis.registerTool()`
 - **Event interception** - Block or modify tool calls, inject context, customize compaction
 - **User interaction** - Prompt users via `ctx.ui` (select, confirm, input, notify)
 - **Custom UI components** - Full TUI components with keyboard input via `ctx.ui.custom()` for complex interactions
-- **Custom commands** - Register commands like `/mycommand` via `pi.registerCommand()`
-- **Session persistence** - Store state that survives restarts via `pi.appendEntry()`
+- **Custom commands** - Register commands like `/mycommand` via `airis.registerCommand()`
+- **Session persistence** - Store state that survives restarts via `airis.appendEntry()`
 - **Custom rendering** - Control how tool calls/results and messages appear in TUI
 
 **Example use cases:**
@@ -44,7 +44,7 @@ See [examples/extensions/](../examples/extensions/) for working implementations.
   - [Tool Events](#tool-events)
 - [ExtensionContext](#extensioncontext)
 - [ExtensionCommandContext](#extensioncommandcontext)
-- [ExtensionAPI Methods](#extensionapi-methods)
+- [ExtensionAPI Methods](#extensionaairis-methods)
 - [State Management](#state-management)
 - [Custom Tools](#custom-tools)
 - [Custom UI](#custom-ui)
@@ -60,7 +60,7 @@ Create `~/.airis/agent/extensions/my-extension.ts`:
 import type { ExtensionAPI } from "@sufiyan-sabeel/airis-cli";
 import { Type } from "typebox";
 
-export default function (pi: ExtensionAPI) {
+export default function (airis: ExtensionAPI) {
   // React to events
   airis.on("session_start", async (_event, ctx) => {
     ctx.ui.notify("Extension loaded!", "info");
@@ -74,7 +74,7 @@ export default function (pi: ExtensionAPI) {
   });
 
   // Register a custom tool
-  pi.registerTool({
+  airis.registerTool({
     name: "greet",
     label: "Greet",
     description: "Greet someone by name",
@@ -90,7 +90,7 @@ export default function (pi: ExtensionAPI) {
   });
 
   // Register a command
-  pi.registerCommand("hello", {
+  airis.registerCommand("hello", {
     description: "Say hello",
     handler: async (args, ctx) => {
       ctx.ui.notify(`Hello ${args || "world"}!`, "info");
@@ -102,7 +102,7 @@ export default function (pi: ExtensionAPI) {
 Test with `--extension` (or `-e`) flag:
 
 ```bash
-pi -e ./my-extension.ts
+airis -e ./my-extension.ts
 ```
 
 ## Extension Locations
@@ -133,7 +133,7 @@ Additional paths via `settings.json`:
 }
 ```
 
-To share extensions via npm or git as pi packages, see [packages.md](packages.md).
+To share extensions via npm or git as airis packages, see [packages.md](packages.md).
 
 ## Available Imports
 
@@ -146,7 +146,7 @@ To share extensions via npm or git as pi packages, see [packages.md](packages.md
 
 npm dependencies work too. Add a `package.json` next to your extension (or in a parent directory), run `npm install`, and imports from `node_modules/` are resolved automatically.
 
-For distributed pi packages installed with `pi install` (npm or git), runtime deps must be in `dependencies`. Package installation uses production installs (`npm install --omit=dev`) by default, so `devDependencies` are not available at runtime; when `npmCommand` is configured, git packages use plain `install` for compatibility with wrappers.
+For distributed airis packages installed with `airis install` (npm or git), runtime deps must be in `dependencies`. Package installation uses production installs (`npm install --omit=dev`) by default, so `devDependencies` are not available at runtime; when `npmCommand` is configured, git packages use plain `install` for compatibility with wrappers.
 
 Node.js built-ins (`node:fs`, `node:path`, etc.) are also available.
 
@@ -157,7 +157,7 @@ An extension exports a default factory function that receives `ExtensionAPI`. Th
 ```typescript
 import type { ExtensionAPI } from "@sufiyan-sabeel/airis-cli";
 
-export default function (pi: ExtensionAPI) {
+export default function (airis: ExtensionAPI) {
   // Subscribe to events
   airis.on("event_name", async (event, ctx) => {
     // ctx.ui for user interaction
@@ -168,16 +168,16 @@ export default function (pi: ExtensionAPI) {
   });
 
   // Register tools, commands, shortcuts, flags
-  pi.registerTool({ ... });
-  pi.registerCommand("name", { ... });
-  pi.registerShortcut("ctrl+x", { ... });
-  pi.registerFlag("my-flag", { ... });
+  airis.registerTool({ ... });
+  airis.registerCommand("name", { ... });
+  airis.registerShortcut("ctrl+x", { ... });
+  airis.registerFlag("my-flag", { ... });
 }
 ```
 
 Extensions are loaded via [jiti](https://github.com/unjs/jiti), so TypeScript works without compilation.
 
-If the factory returns a `Promise`, pi awaits it before continuing startup. That means async initialization completes before `session_start`, before `resources_discover`, and before provider registrations queued via `pi.registerProvider()` are flushed.
+If the factory returns a `Promise`, airis awaits it before continuing startup. That means async initialization completes before `session_start`, before `resources_discover`, and before provider registrations queued via `airis.registerProvider()` are flushed.
 
 ### Async factory functions
 
@@ -186,7 +186,7 @@ Use an async factory for one-time startup work such as fetching remote configura
 ```typescript
 import type { ExtensionAPI } from "@sufiyan-sabeel/airis-cli";
 
-export default async function (pi: ExtensionAPI) {
+export default async function (airis: ExtensionAPI) {
   const response = await fetch("http://localhost:1234/v1/models");
   const payload = (await response.json()) as {
     data: Array<{
@@ -197,9 +197,9 @@ export default async function (pi: ExtensionAPI) {
     }>;
   };
 
-  pi.registerProvider("local-openai", {
+  airis.registerProvider("local-openai", {
     baseUrl: "http://localhost:1234/v1",
-    apiKey: "$LOCAL_OPENAI_API_KEY",
+    apiKey: "$LOCAL_OPENAI_AAIRIS_KEY",
     api: "openai-completions",
     models: payload.data.map((model) => ({
       id: model.id,
@@ -214,7 +214,7 @@ export default async function (pi: ExtensionAPI) {
 }
 ```
 
-This pattern makes the fetched models available during normal startup and to `pi --list-models`.
+This pattern makes the fetched models available during normal startup and to `airis --list-models`.
 
 ### Long-lived resources and shutdown
 
@@ -261,7 +261,7 @@ Defer background resource startup until `session_start` or the command/tool/even
     "zod": "^3.0.0",
     "chalk": "^5.0.0"
   },
-  "pi": {
+  "airis": {
     "extensions": ["./src/index.ts"]
   }
 }
@@ -274,7 +274,7 @@ Run `npm install` in the extension directory, then imports from `node_modules/` 
 ### Lifecycle Overview
 
 ```
-pi starts
+airis starts
   │
   ├─► project_trust (user/global and CLI extensions only, before project resources load)
   ├─► session_start { reason: "startup" }
@@ -334,7 +334,7 @@ user sends another prompt ◄─────────────────
   ├─► thinking_level_select (if model change changes/clamps thinking level)
   └─► model_select
 
-thinking level changes (settings, keybinding, pi.setThinkingLevel())
+thinking level changes (settings, keybinding, airis.setThinkingLevel())
   └─► thinking_level_select
 
 exit (Ctrl+C, Ctrl+D, SIGHUP, SIGTERM)
@@ -345,7 +345,7 @@ exit (Ctrl+C, Ctrl+D, SIGHUP, SIGTERM)
 
 #### project_trust
 
-Fired before pi decides whether to trust a project with dynamic configs (`.pi` or `.agents/skills`). It runs during startup and when session replacement (for example `/resume`) enters a cwd whose trust has not been resolved in the current process. Only user/global extensions and CLI `-e` extensions participate; project-local extensions are not loaded until after trust is resolved.
+Fired before airis decides whether to trust a project with dynamic configs (`.airis` or `.agents/skills`). It runs during startup and when session replacement (for example `/resume`) enters a cwd whose trust has not been resolved in the current process. Only user/global extensions and CLI `-e` extensions participate; project-local extensions are not loaded until after trust is resolved.
 
 ```typescript
 airis.on("project_trust", async (event, ctx) => {
@@ -358,7 +358,7 @@ airis.on("project_trust", async (event, ctx) => {
 });
 ```
 
-A `project_trust` handler must return `{ trusted: "yes" | "no" | "undecided" }`. A user/global or CLI extension that returns `"yes"` or `"no"` owns the decision; the first yes/no decision wins and suppresses the built-in trust prompt. Use `remember: true` to persist a yes/no decision; otherwise it applies only to the current process. Return `"undecided"` to let later handlers or the built-in trust flow decide. Check `ctx.hasUI` before prompting. If no handler returns yes/no, normal trust resolution continues: saved `trust.json` decisions apply first, then `defaultProjectTrust` controls whether pi asks, trusts, or declines by default.
+A `project_trust` handler must return `{ trusted: "yes" | "no" | "undecided" }`. A user/global or CLI extension that returns `"yes"` or `"no"` owns the decision; the first yes/no decision wins and suppresses the built-in trust prompt. Use `remember: true` to persist a yes/no decision; otherwise it applies only to the current process. Return `"undecided"` to let later handlers or the built-in trust flow decide. Check `ctx.hasUI` before prompting. If no handler returns yes/no, normal trust resolution continues: saved `trust.json` decisions apply first, then `defaultProjectTrust` controls whether airis asks, trusts, or declines by default.
 
 ### Resource Events
 
@@ -411,7 +411,7 @@ airis.on("session_before_switch", async (event, ctx) => {
 });
 ```
 
-After a successful switch or new-session action, pi emits `session_shutdown` for the old extension instance, reloads and rebinds extensions for the new session, then emits `session_start` with `reason: "new" | "resume"` and `previousSessionFile`.
+After a successful switch or new-session action, airis emits `session_shutdown` for the old extension instance, reloads and rebinds extensions for the new session, then emits `session_start` with `reason: "new" | "resume"` and `previousSessionFile`.
 Do cleanup work in `session_shutdown`, then reestablish any in-memory state in `session_start`.
 
 #### session_before_fork
@@ -428,7 +428,7 @@ airis.on("session_before_fork", async (event, ctx) => {
 });
 ```
 
-After a successful fork or clone, pi emits `session_shutdown` for the old extension instance, reloads and rebinds extensions for the new session, then emits `session_start` with `reason: "fork"` and `previousSessionFile`.
+After a successful fork or clone, airis emits `session_shutdown` for the old extension instance, reloads and rebinds extensions for the new session, then emits `session_start` with `reason: "fork"` and `previousSessionFile`.
 Do cleanup work in `session_shutdown`, then reestablish any in-memory state in `session_start`.
 
 #### session_before_compact / session_compact
@@ -522,7 +522,7 @@ airis.on("before_agent_start", async (event, ctx) => {
 });
 ```
 
-The `systemPromptOptions` field gives extensions access to the same structured data Pi uses to build the system prompt. This lets you inspect what Pi has loaded — custom prompts, guidelines, tool snippets, context files, skills — without re-discovering resources or re-parsing flags. Use it when your extension needs to make deep, informed changes to the system prompt while respecting user-provided configuration.
+The `systemPromptOptions` field gives extensions access to the same structured data AIRIS uses to build the system prompt. This lets you inspect what AIRIS has loaded — custom prompts, guidelines, tool snippets, context files, skills — without re-discovering resources or re-parsing flags. Use it when your extension needs to make deep, informed changes to the system prompt while respecting user-provided configuration.
 
 Inside `before_agent_start`, `event.systemPrompt` and `ctx.getSystemPrompt()` both reflect the chained system prompt as of the current handler. Later `before_agent_start` handlers can still modify it again.
 
@@ -628,7 +628,7 @@ airis.on("context", async (event, ctx) => {
 
 Fired after the provider-specific payload is built, right before the request is sent. Handlers run in extension load order. Returning `undefined` keeps the payload unchanged. Returning any other value replaces the payload for later handlers and for the actual request.
 
-This hook can rewrite provider-level system instructions or remove them entirely. Those payload-level changes are not reflected by `ctx.getSystemPrompt()`, which reports Pi's system prompt string rather than the final serialized provider payload.
+This hook can rewrite provider-level system instructions or remove them entirely. Those payload-level changes are not reflected by `ctx.getSystemPrompt()`, which reports AIRIS's system prompt string rather than the final serialized provider payload.
 
 ```typescript
 airis.on("before_provider_request", (event, ctx) => {
@@ -693,7 +693,7 @@ airis.on("thinking_level_select", async (event, ctx) => {
 });
 ```
 
-Use this to update extension UI when `pi.setThinkingLevel()`, model changes, or built-in thinking-level controls change the active thinking level.
+Use this to update extension UI when `airis.setThinkingLevel()`, model changes, or built-in thinking-level controls change the active thinking level.
 
 ### Tool Events
 
@@ -701,7 +701,7 @@ Use this to update extension UI when `pi.setThinkingLevel()`, model changes, or 
 
 Fired after `tool_execution_start`, before the tool executes. **Can block.** Use `isToolCallEventType` to narrow and get typed inputs.
 
-Before `tool_call` runs, pi waits for previously emitted Agent events to finish draining through `AgentSession`. This means `ctx.sessionManager` is up to date through the current assistant tool-calling message.
+Before `tool_call` runs, airis waits for previously emitted Agent events to finish draining through `AgentSession`. This means `ctx.sessionManager` is up to date through the current assistant tool-calling message.
 
 In the default parallel tool execution mode, sibling tool calls from the same assistant message are preflighted sequentially, then executed concurrently. `tool_call` is not guaranteed to see sibling tool results from that same assistant message in `ctx.sessionManager`.
 
@@ -812,7 +812,7 @@ airis.on("user_bash", (event, ctx) => {
   // Option 1: Provide custom operations (e.g., SSH)
   return { operations: remoteBashOps };
 
-  // Option 2: Wrap pi's built-in local bash backend
+  // Option 2: Wrap airis's built-in local bash backend
   const local = createLocalBashOperations();
   return {
     operations: {
@@ -930,7 +930,7 @@ Use this for abort-aware nested work started by extension handlers, for example:
 - file or process helpers that accept `AbortSignal`
 
 `ctx.signal` is typically defined during active turn events such as `tool_call`, `tool_result`, `message_update`, and `turn_end`.
-It is usually `undefined` in idle or non-turn contexts such as session events, extension commands, and shortcuts fired while pi is idle.
+It is usually `undefined` in idle or non-turn contexts such as session events, extension commands, and shortcuts fired while airis is idle.
 
 ```typescript
 airis.on("tool_result", async (event, ctx) => {
@@ -951,7 +951,7 @@ Control flow helpers.
 
 ### ctx.shutdown()
 
-Request a graceful shutdown of pi.
+Request a graceful shutdown of airis.
 
 - **Interactive mode:** Deferred until the agent becomes idle (after processing all queued steering and follow-up messages).
 - **RPC mode:** Deferred until the next idle state (after completing the current command response, when waiting for the next command).
@@ -996,7 +996,7 @@ ctx.compact({
 
 ### ctx.getSystemPrompt()
 
-Returns Pi's current system prompt string.
+Returns AIRIS's current system prompt string.
 
 - During `before_agent_start`, this reflects chained system-prompt changes made so far for the current turn.
 - It does not include later `context` message mutations.
@@ -1016,7 +1016,7 @@ Command handlers receive `ExtensionCommandContext`, which extends `ExtensionCont
 
 ### ctx.getSystemPromptOptions()
 
-Returns the base inputs Pi currently uses to build the system prompt.
+Returns the base inputs AIRIS currently uses to build the system prompt.
 
 ```typescript
 const options = ctx.getSystemPromptOptions();
@@ -1032,7 +1032,7 @@ This reports the current base prompt inputs. It does not include per-turn `befor
 Wait for the agent to finish streaming:
 
 ```typescript
-pi.registerCommand("my-cmd", {
+airis.registerCommand("my-cmd", {
   handler: async (args, ctx) => {
     await ctx.waitForIdle();
     // Agent is now idle, safe to modify session
@@ -1071,7 +1071,7 @@ if (result.cancelled) {
 Options:
 - `parentSession`: parent session file to record in the new session header
 - `setup`: mutate the new session's `SessionManager` before `withSession` runs
-- `withSession`: run post-switch work against a fresh replacement-session context. Do not use captured old `pi` / command `ctx`; see [Session replacement lifecycle and footguns](#session-replacement-lifecycle-and-footguns).
+- `withSession`: run post-switch work against a fresh replacement-session context. Do not use captured old `airis` / command `ctx`; see [Session replacement lifecycle and footguns](#session-replacement-lifecycle-and-footguns).
 
 ### ctx.fork(entryId, options?)
 
@@ -1097,7 +1097,7 @@ if (cloneResult.cancelled) {
 Options:
 - `position`: `"before"` (default) forks before the selected user message, restoring that prompt into the editor
 - `position`: `"at"` duplicates the active path through the selected entry without restoring editor text
-- `withSession`: run post-switch work against a fresh replacement-session context. Do not use captured old `pi` / command `ctx`; see [Session replacement lifecycle and footguns](#session-replacement-lifecycle-and-footguns).
+- `withSession`: run post-switch work against a fresh replacement-session context. Do not use captured old `airis` / command `ctx`; see [Session replacement lifecycle and footguns](#session-replacement-lifecycle-and-footguns).
 
 ### ctx.navigateTree(targetId, options?)
 
@@ -1134,14 +1134,14 @@ if (result.cancelled) {
 ```
 
 Options:
-- `withSession`: run post-switch work against a fresh replacement-session context. Do not use captured old `pi` / command `ctx`; see [Session replacement lifecycle and footguns](#session-replacement-lifecycle-and-footguns).
+- `withSession`: run post-switch work against a fresh replacement-session context. Do not use captured old `airis` / command `ctx`; see [Session replacement lifecycle and footguns](#session-replacement-lifecycle-and-footguns).
 
 To discover available sessions, use the static `SessionManager.list()` or `SessionManager.listAll()` methods:
 
 ```typescript
 import { SessionManager } from "@sufiyan-sabeel/airis-cli";
 
-pi.registerCommand("switch", {
+airis.registerCommand("switch", {
   description: "Switch to another session",
   handler: async (args, ctx) => {
     const sessions = await SessionManager.list(ctx.cwd);
@@ -1168,14 +1168,14 @@ pi.registerCommand("switch", {
 Lifecycle and footguns:
 - `withSession` runs only after the old session has emitted `session_shutdown`, the old runtime has been torn down, the replacement session has been rebound, and the new extension instance has already received `session_start`.
 - The callback still executes in the original closure, not inside the new extension instance. That means your old extension instance may already have run its shutdown cleanup before `withSession` starts.
-- Captured old `pi` / old command `ctx` session-bound objects are stale after replacement and will throw if used. Use only the `ctx` passed to `withSession` for session-bound work.
+- Captured old `airis` / old command `ctx` session-bound objects are stale after replacement and will throw if used. Use only the `ctx` passed to `withSession` for session-bound work.
 - Previously extracted raw objects are still your responsibility. For example, if you capture `const sm = ctx.sessionManager` before replacement, `sm` is still the old `SessionManager` object. Do not reuse it after replacement.
 - Code in `withSession` should assume any state invalidated by your `session_shutdown` handler is already gone. Only capture plain data that survives shutdown cleanly, such as strings, ids, and serialized config.
 
 Safe pattern:
 
 ```typescript
-pi.registerCommand("handoff", {
+airis.registerCommand("handoff", {
   handler: async (_args, ctx) => {
     const kickoff = "Continue from the replacement session";
     await ctx.newSession({
@@ -1190,14 +1190,14 @@ pi.registerCommand("handoff", {
 Unsafe pattern:
 
 ```typescript
-pi.registerCommand("handoff", {
+airis.registerCommand("handoff", {
   handler: async (_args, ctx) => {
     const oldSessionManager = ctx.sessionManager;
     await ctx.newSession({
       withSession: async (_ctx) => {
         // stale old objects: do not do this
         oldSessionManager.getSessionFile();
-        pi.sendUserMessage("wrong");
+        airis.sendUserMessage("wrong");
       },
     });
   },
@@ -1209,7 +1209,7 @@ pi.registerCommand("handoff", {
 Run the same reload flow as `/reload`.
 
 ```typescript
-pi.registerCommand("reload-runtime", {
+airis.registerCommand("reload-runtime", {
   description: "Reload extensions, skills, prompts, and themes",
   handler: async (_args, ctx) => {
     await ctx.reload();
@@ -1236,8 +1236,8 @@ Example tool the LLM can call to trigger reload:
 import type { ExtensionAPI } from "@sufiyan-sabeel/airis-cli";
 import { Type } from "typebox";
 
-export default function (pi: ExtensionAPI) {
-  pi.registerCommand("reload-runtime", {
+export default function (airis: ExtensionAPI) {
+  airis.registerCommand("reload-runtime", {
     description: "Reload extensions, skills, prompts, and themes",
     handler: async (_args, ctx) => {
       await ctx.reload();
@@ -1245,13 +1245,13 @@ export default function (pi: ExtensionAPI) {
     },
   });
 
-  pi.registerTool({
+  airis.registerTool({
     name: "reload_runtime",
     label: "Reload Runtime",
     description: "Reload extensions, skills, prompts, and themes",
     parameters: Type.Object({}),
     async execute() {
-      pi.sendUserMessage("/reload-runtime", { deliverAs: "followUp" });
+      airis.sendUserMessage("/reload-runtime", { deliverAs: "followUp" });
       return {
         content: [{ type: "text", text: "Queued /reload-runtime as a follow-up command." }],
       };
@@ -1266,13 +1266,13 @@ export default function (pi: ExtensionAPI) {
 
 Subscribe to events. See [Events](#events) for event types and return values.
 
-### pi.registerTool(definition)
+### airis.registerTool(definition)
 
 Register a custom tool callable by the LLM. See [Custom Tools](#custom-tools) for full details.
 
-`pi.registerTool()` works both during extension load and after startup. You can call it inside `session_start`, command handlers, or other event handlers. New tools are refreshed immediately in the same session, so they appear in `pi.getAllTools()` and are callable by the LLM without `/reload`.
+`airis.registerTool()` works both during extension load and after startup. You can call it inside `session_start`, command handlers, or other event handlers. New tools are refreshed immediately in the same session, so they appear in `airis.getAllTools()` and are callable by the LLM without `/reload`.
 
-Use `pi.setActiveTools()` to enable or disable tools (including dynamically added tools) at runtime.
+Use `airis.setActiveTools()` to enable or disable tools (including dynamically added tools) at runtime.
 
 Use `promptSnippet` to opt a custom tool into a one-line entry in `Available tools`, and `promptGuidelines` to append tool-specific bullets to the default `Guidelines` section when the tool is active.
 
@@ -1284,7 +1284,7 @@ See [dynamic-tools.ts](../examples/extensions/dynamic-tools.ts) for a full examp
 import { Type } from "typebox";
 import { StringEnum } from "@earendil-works/airis-ai";
 
-pi.registerTool({
+airis.registerTool({
   name: "my_tool",
   label: "My Tool",
   description: "What this tool does",
@@ -1317,12 +1317,12 @@ pi.registerTool({
 });
 ```
 
-### pi.sendMessage(message, options?)
+### airis.sendMessage(message, options?)
 
 Inject a custom message into the session.
 
 ```typescript
-pi.sendMessage({
+airis.sendMessage({
   customType: "my-extension",
   content: "Message text",
   display: true,
@@ -1340,23 +1340,23 @@ pi.sendMessage({
   - `"nextTurn"` - Queued for next user prompt. Does not interrupt or trigger anything.
 - `triggerTurn: true` - If agent is idle, trigger an LLM response immediately. Only applies to `"steer"` and `"followUp"` modes (ignored for `"nextTurn"`).
 
-### pi.sendUserMessage(content, options?)
+### airis.sendUserMessage(content, options?)
 
 Send a user message to the agent. Unlike `sendMessage()` which sends custom messages, this sends an actual user message that appears as if typed by the user. Always triggers a turn.
 
 ```typescript
 // Simple text message
-pi.sendUserMessage("What is 2+2?");
+airis.sendUserMessage("What is 2+2?");
 
 // With content array (text + images)
-pi.sendUserMessage([
+airis.sendUserMessage([
   { type: "text", text: "Describe this image:" },
   { type: "image", source: { type: "base64", mediaType: "image/png", data: "..." } },
 ]);
 
 // During streaming - must specify delivery mode
-pi.sendUserMessage("Focus on error handling", { deliverAs: "steer" });
-pi.sendUserMessage("And then summarize", { deliverAs: "followUp" });
+airis.sendUserMessage("Focus on error handling", { deliverAs: "steer" });
+airis.sendUserMessage("And then summarize", { deliverAs: "followUp" });
 ```
 
 **Options:**
@@ -1368,12 +1368,12 @@ When not streaming, the message is sent immediately and triggers a new turn. Whe
 
 See [send-user-message.ts](../examples/extensions/send-user-message.ts) for a complete example.
 
-### pi.appendEntry(customType, data?)
+### airis.appendEntry(customType, data?)
 
 Persist extension state (does NOT participate in LLM context).
 
 ```typescript
-pi.appendEntry("my-state", { count: 42 });
+airis.appendEntry("my-state", { count: 42 });
 
 // Restore on reload
 airis.on("session_start", async (_event, ctx) => {
@@ -1385,35 +1385,35 @@ airis.on("session_start", async (_event, ctx) => {
 });
 ```
 
-### pi.setSessionName(name)
+### airis.setSessionName(name)
 
 Set the session display name (shown in session selector instead of first message).
 
 ```typescript
-pi.setSessionName("Refactor auth module");
+airis.setSessionName("Refactor auth module");
 ```
 
-### pi.getSessionName()
+### airis.getSessionName()
 
 Get the current session name, if set.
 
 ```typescript
-const name = pi.getSessionName();
+const name = airis.getSessionName();
 if (name) {
   console.log(`Session: ${name}`);
 }
 ```
 
-### pi.setLabel(entryId, label)
+### airis.setLabel(entryId, label)
 
 Set or clear a label on an entry. Labels are user-defined markers for bookmarking and navigation (shown in `/tree` selector).
 
 ```typescript
 // Set a label
-pi.setLabel(entryId, "checkpoint-before-refactor");
+airis.setLabel(entryId, "checkpoint-before-refactor");
 
 // Clear a label
-pi.setLabel(entryId, undefined);
+airis.setLabel(entryId, undefined);
 
 // Read labels via sessionManager
 const label = ctx.sessionManager.getLabel(entryId);
@@ -1421,14 +1421,14 @@ const label = ctx.sessionManager.getLabel(entryId);
 
 Labels persist in the session and survive restarts. Use them to mark important points (turns, checkpoints) in the conversation tree.
 
-### pi.registerCommand(name, options)
+### airis.registerCommand(name, options)
 
 Register a command.
 
-If multiple extensions register the same command name, pi keeps them all and assigns numeric invocation suffixes in load order, for example `/review:1` and `/review:2`.
+If multiple extensions register the same command name, airis keeps them all and assigns numeric invocation suffixes in load order, for example `/review:1` and `/review:2`.
 
 ```typescript
-pi.registerCommand("stats", {
+airis.registerCommand("stats", {
   description: "Show session statistics",
   handler: async (args, ctx) => {
     const count = ctx.sessionManager.getEntries().length;
@@ -1442,7 +1442,7 @@ Optional: add argument auto-completion for `/command ...`:
 ```typescript
 import type { AutocompleteItem } from "@earendil-works/airis-tui";
 
-pi.registerCommand("deploy", {
+airis.registerCommand("deploy", {
   description: "Deploy to an environment",
   getArgumentCompletions: (prefix: string): AutocompleteItem[] | null => {
     const envs = ["dev", "staging", "prod"];
@@ -1456,13 +1456,13 @@ pi.registerCommand("deploy", {
 });
 ```
 
-### pi.getCommands()
+### airis.getCommands()
 
 Get the slash commands available for invocation via `prompt` in the current session. Includes extension commands, prompt templates, and skill commands.
 The list matches the RPC `get_commands` ordering: extensions first, then templates, then skills.
 
 ```typescript
-const commands = pi.getCommands();
+const commands = airis.getCommands();
 const bySource = commands.filter((command) => command.source === "extension");
 const userScoped = commands.filter((command) => command.sourceInfo.scope === "user");
 ```
@@ -1489,16 +1489,16 @@ Use `sourceInfo` as the canonical provenance field. Do not infer ownership from 
 Built-in interactive commands (like `/model` and `/settings`) are not included here. They are handled only in interactive
 mode and would not execute if sent via `prompt`.
 
-### pi.registerMessageRenderer(customType, renderer)
+### airis.registerMessageRenderer(customType, renderer)
 
 Register a custom TUI renderer for messages with your `customType`. See [Custom UI](#custom-ui).
 
-### pi.registerShortcut(shortcut, options)
+### airis.registerShortcut(shortcut, options)
 
 Register a keyboard shortcut. See [keybindings.md](keybindings.md) for the shortcut format and built-in keybindings.
 
 ```typescript
-pi.registerShortcut("ctrl+shift+p", {
+airis.registerShortcut("ctrl+shift+p", {
   description: "Toggle plan mode",
   handler: async (ctx) => {
     ctx.ui.notify("Toggled!");
@@ -1506,39 +1506,39 @@ pi.registerShortcut("ctrl+shift+p", {
 });
 ```
 
-### pi.registerFlag(name, options)
+### airis.registerFlag(name, options)
 
 Register a CLI flag.
 
 ```typescript
-pi.registerFlag("plan", {
+airis.registerFlag("plan", {
   description: "Start in plan mode",
   type: "boolean",
   default: false,
 });
 
 // Check value
-if (pi.getFlag("plan")) {
+if (airis.getFlag("plan")) {
   // Plan mode enabled
 }
 ```
 
-### pi.exec(command, args, options?)
+### airis.exec(command, args, options?)
 
 Execute a shell command.
 
 ```typescript
-const result = await pi.exec("git", ["status"], { signal, timeout: 5000 });
+const result = await airis.exec("git", ["status"], { signal, timeout: 5000 });
 // result.stdout, result.stderr, result.code, result.killed
 ```
 
-### pi.getActiveTools() / pi.getAllTools() / pi.setActiveTools(names)
+### airis.getActiveTools() / airis.getAllTools() / airis.setActiveTools(names)
 
-Manage active tools. This works for both built-in tools and dynamically registered tools. `pi.getActiveTools()` returns the active tool names as `string[]`; `pi.getAllTools()` returns metadata for all configured tools.
+Manage active tools. This works for both built-in tools and dynamically registered tools. `airis.getActiveTools()` returns the active tool names as `string[]`; `airis.getAllTools()` returns metadata for all configured tools.
 
 ```typescript
-const active = pi.getActiveTools(); // ["read", "bash", ...]
-const all = pi.getAllTools();
+const active = airis.getActiveTools(); // ["read", "bash", ...]
+const all = airis.getAllTools();
 // all = [{
 //   name: "read",
 //   description: "Read file contents...",
@@ -1548,63 +1548,63 @@ const all = pi.getAllTools();
 // }, ...]
 const builtinTools = all.filter((t) => t.sourceInfo.source === "builtin");
 const extensionTools = all.filter((t) => t.sourceInfo.source !== "builtin" && t.sourceInfo.source !== "sdk");
-pi.setActiveTools([...new Set([...active, "my_custom_tool"])]); // Keep current tools and enable my_custom_tool
-pi.setActiveTools(["read", "bash"]); // Switch to read-only
+airis.setActiveTools([...new Set([...active, "my_custom_tool"])]); // Keep current tools and enable my_custom_tool
+airis.setActiveTools(["read", "bash"]); // Switch to read-only
 ```
 
-`pi.getAllTools()` returns `name`, `description`, `parameters`, `promptGuidelines`, and `sourceInfo`.
+`airis.getAllTools()` returns `name`, `description`, `parameters`, `promptGuidelines`, and `sourceInfo`.
 
 Typical `sourceInfo.source` values:
 - `builtin` for built-in tools
 - `sdk` for tools passed via `createAgentSession({ customTools })`
 - extension source metadata for tools registered by extensions
 
-### pi.setModel(model)
+### airis.setModel(model)
 
 Set the current model. Returns `false` if no API key is available for the model. See [models.md](models.md) for configuring custom models.
 
 ```typescript
 const model = ctx.modelRegistry.find("anthropic", "claude-sonnet-4-5");
 if (model) {
-  const success = await pi.setModel(model);
+  const success = await airis.setModel(model);
   if (!success) {
     ctx.ui.notify("No API key for this model", "error");
   }
 }
 ```
 
-### pi.getThinkingLevel() / pi.setThinkingLevel(level)
+### airis.getThinkingLevel() / airis.setThinkingLevel(level)
 
 Get or set the thinking level. Level is clamped to model capabilities (non-reasoning models always use "off"). Changes emit `thinking_level_select`.
 
 ```typescript
-const current = pi.getThinkingLevel();  // "off" | "minimal" | "low" | "medium" | "high" | "xhigh"
-pi.setThinkingLevel("high");
+const current = airis.getThinkingLevel();  // "off" | "minimal" | "low" | "medium" | "high" | "xhigh"
+airis.setThinkingLevel("high");
 ```
 
-### pi.events
+### airis.events
 
 Shared event bus for communication between extensions:
 
 ```typescript
-pi.events.on("my:event", (data) => { ... });
-pi.events.emit("my:event", { ... });
+airis.events.on("my:event", (data) => { ... });
+airis.events.emit("my:event", { ... });
 ```
 
-### pi.registerProvider(name, config)
+### airis.registerProvider(name, config)
 
 Register or override a model provider dynamically. Useful for proxies, custom endpoints, or team-wide model configurations.
 
 Calls made during the extension factory function are queued and applied once the runner initialises. Calls made after that — for example from a command handler following a user setup flow — take effect immediately without requiring a `/reload`.
 
-If you need to discover models from a remote endpoint, prefer an async extension factory over deferring the fetch to `session_start`. pi waits for the factory before startup continues, so the registered models are available immediately, including to `pi --list-models`.
+If you need to discover models from a remote endpoint, prefer an async extension factory over deferring the fetch to `session_start`. airis waits for the factory before startup continues, so the registered models are available immediately, including to `airis --list-models`.
 
 ```typescript
 // Register a new provider with custom models
-pi.registerProvider("my-proxy", {
+airis.registerProvider("my-proxy", {
   name: "My Proxy",
   baseUrl: "https://proxy.example.com",
-  apiKey: "$PROXY_API_KEY",  // env var reference
+  apiKey: "$PROXY_AAIRIS_KEY",  // env var reference
   api: "anthropic-messages",
   models: [
     {
@@ -1620,12 +1620,12 @@ pi.registerProvider("my-proxy", {
 });
 
 // Override baseUrl for an existing provider (keeps all models)
-pi.registerProvider("anthropic", {
+airis.registerProvider("anthropic", {
   baseUrl: "https://proxy.example.com"
 });
 
 // Register provider with OAuth support for /login
-pi.registerProvider("corporate-ai", {
+airis.registerProvider("corporate-ai", {
   baseUrl: "https://ai.corp.com",
   api: "openai-responses",
   models: [...],
@@ -1661,17 +1661,17 @@ pi.registerProvider("corporate-ai", {
 
 See [custom-provider.md](custom-provider.md) for advanced topics: custom streaming APIs, OAuth details, model definition reference.
 
-### pi.unregisterProvider(name)
+### airis.unregisterProvider(name)
 
 Remove a previously registered provider and its models. Built-in models that were overridden by the provider are restored. Has no effect if the provider was not registered.
 
 Like `registerProvider`, this takes effect immediately when called after the initial load phase, so a `/reload` is not required.
 
 ```typescript
-pi.registerCommand("my-setup-teardown", {
+airis.registerCommand("my-setup-teardown", {
   description: "Remove the custom proxy provider",
   handler: async (_args, _ctx) => {
-    pi.unregisterProvider("my-proxy");
+    airis.unregisterProvider("my-proxy");
   },
 });
 ```
@@ -1681,7 +1681,7 @@ pi.registerCommand("my-setup-teardown", {
 Extensions with state should store it in tool result `details` for proper branching support:
 
 ```typescript
-export default function (pi: ExtensionAPI) {
+export default function (airis: ExtensionAPI) {
   let items: string[] = [];
 
   // Reconstruct state from session
@@ -1696,7 +1696,7 @@ export default function (pi: ExtensionAPI) {
     }
   });
 
-  pi.registerTool({
+  airis.registerTool({
     name: "my_tool",
     // ...
     async execute(toolCallId, params, signal, onUpdate, ctx) {
@@ -1712,11 +1712,11 @@ export default function (pi: ExtensionAPI) {
 
 ## Custom Tools
 
-Register tools the LLM can call via `pi.registerTool()`. Tools appear in the system prompt and can have custom rendering.
+Register tools the LLM can call via `airis.registerTool()`. Tools appear in the system prompt and can have custom rendering.
 
 Use `promptSnippet` for a short one-line entry in the `Available tools` section in the default system prompt. If omitted, custom tools are left out of that section.
 
-Use `promptGuidelines` to add tool-specific bullets to the default system prompt `Guidelines` section. These bullets are included only while the tool is active (for example, after `pi.setActiveTools([...])`).
+Use `promptGuidelines` to add tool-specific bullets to the default system prompt `Guidelines` section. These bullets are included only while the tool is active (for example, after `airis.setActiveTools([...])`).
 
 **Important:** `promptGuidelines` bullets are appended flat to the `Guidelines` section with no tool name prefix or grouping. Each guideline must name the tool it refers to — avoid "Use this tool when..." because the LLM cannot tell which tool "this" means. Write "Use my_tool when..." instead.
 
@@ -1759,7 +1759,7 @@ import { Type } from "typebox";
 import { StringEnum } from "@earendil-works/airis-ai";
 import { Text } from "@earendil-works/airis-tui";
 
-pi.registerTool({
+airis.registerTool({
   name: "my_tool",
   label: "My Tool",
   description: "What this tool does (shown to LLM)",
@@ -1792,8 +1792,8 @@ pi.registerTool({
       details: { progress: 50 },
     });
 
-    // Run commands via pi.exec (captured from extension closure)
-    const result = await pi.exec("some-command", [], { signal });
+    // Run commands via airis.exec (captured from extension closure)
+    const result = await airis.exec("some-command", [], { signal });
 
     // Return result
     return {
@@ -1827,12 +1827,12 @@ async execute(toolCallId, params) {
 
 **Important:** Use `StringEnum` from `@earendil-works/airis-ai` for string enums. `Type.Union`/`Type.Literal` doesn't work with Google's API.
 
-**Argument preparation:** `prepareArguments(args)` is optional. If defined, it runs before schema validation and before `execute()`. Use it to mimic an older accepted input shape when pi resumes an older session whose stored tool call arguments no longer match the current schema. Return the object you want validated against `parameters`. Keep the public schema strict. Do not add deprecated compatibility fields to `parameters` just to keep old resumed sessions working.
+**Argument preparation:** `prepareArguments(args)` is optional. If defined, it runs before schema validation and before `execute()`. Use it to mimic an older accepted input shape when airis resumes an older session whose stored tool call arguments no longer match the current schema. Return the object you want validated against `parameters`. Keep the public schema strict. Do not add deprecated compatibility fields to `parameters` just to keep old resumed sessions working.
 
 Example: an older session may contain an `edit` tool call with top-level `oldText` and `newText`, while the current schema only accepts `edits: [{ oldText, newText }]`.
 
 ```typescript
-pi.registerTool({
+airis.registerTool({
   name: "edit",
   label: "Edit",
   description: "Edit a single file using exact text replacement",
@@ -1880,13 +1880,13 @@ Extensions can override built-in tools (`read`, `bash`, `edit`, `write`, `grep`,
 
 ```bash
 # Extension's read tool replaces built-in read
-pi -e ./tool-override.ts
+airis -e ./tool-override.ts
 ```
 
 Alternatively, use `--no-builtin-tools` to start without any built-in tools while keeping extension tools enabled:
 ```bash
 # No built-in tools, only extension tools
-pi --no-builtin-tools -e ./my-extension.ts
+airis --no-builtin-tools -e ./my-extension.ts
 ```
 
 See [examples/extensions/tool-override.ts](../examples/extensions/tool-override.ts) for a complete example that overrides `read` with logging and access control.
@@ -1898,13 +1898,13 @@ See [examples/extensions/tool-override.ts](../examples/extensions/tool-override.
 **Your implementation must match the exact result shape**, including the `details` type. The UI and session logic depend on these shapes for rendering and state tracking.
 
 Built-in tool implementations:
-- [read.ts](https://github.com/earendil-works/pi-mono/blob/main/packages/coding-agent/src/core/tools/read.ts) - `ReadToolDetails`
-- [bash.ts](https://github.com/earendil-works/pi-mono/blob/main/packages/coding-agent/src/core/tools/bash.ts) - `BashToolDetails`
-- [edit.ts](https://github.com/earendil-works/pi-mono/blob/main/packages/coding-agent/src/core/tools/edit.ts)
-- [write.ts](https://github.com/earendil-works/pi-mono/blob/main/packages/coding-agent/src/core/tools/write.ts)
-- [grep.ts](https://github.com/earendil-works/pi-mono/blob/main/packages/coding-agent/src/core/tools/grep.ts) - `GrepToolDetails`
-- [find.ts](https://github.com/earendil-works/pi-mono/blob/main/packages/coding-agent/src/core/tools/find.ts) - `FindToolDetails`
-- [ls.ts](https://github.com/earendil-works/pi-mono/blob/main/packages/coding-agent/src/core/tools/ls.ts) - `LsToolDetails`
+- [read.ts](https://github.com/sufiyan-sabeel/AIRIS-CLI/blob/main/packages/coding-agent/src/core/tools/read.ts) - `ReadToolDetails`
+- [bash.ts](https://github.com/sufiyan-sabeel/AIRIS-CLI/blob/main/packages/coding-agent/src/core/tools/bash.ts) - `BashToolDetails`
+- [edit.ts](https://github.com/sufiyan-sabeel/AIRIS-CLI/blob/main/packages/coding-agent/src/core/tools/edit.ts)
+- [write.ts](https://github.com/sufiyan-sabeel/AIRIS-CLI/blob/main/packages/coding-agent/src/core/tools/write.ts)
+- [grep.ts](https://github.com/sufiyan-sabeel/AIRIS-CLI/blob/main/packages/coding-agent/src/core/tools/grep.ts) - `GrepToolDetails`
+- [find.ts](https://github.com/sufiyan-sabeel/AIRIS-CLI/blob/main/packages/coding-agent/src/core/tools/find.ts) - `FindToolDetails`
+- [ls.ts](https://github.com/sufiyan-sabeel/AIRIS-CLI/blob/main/packages/coding-agent/src/core/tools/ls.ts) - `LsToolDetails`
 
 ### Remote Execution
 
@@ -1922,7 +1922,7 @@ const remoteRead = createReadTool(cwd, {
 });
 
 // Register, checking flag at execution time
-pi.registerTool({
+airis.registerTool({
   ...remoteRead,
   async execute(id, params, signal, onUpdate, _ctx) {
     const ssh = getSshConfig();
@@ -1937,7 +1937,7 @@ pi.registerTool({
 
 **Operations interfaces:** `ReadOperations`, `WriteOperations`, `EditOperations`, `BashOperations`, `LsOperations`, `GrepOperations`, `FindOperations`
 
-For `user_bash`, extensions can reuse pi's local shell backend via `createLocalBashOperations()` instead of reimplementing local process spawning, shell resolution, and process-tree termination.
+For `user_bash`, extensions can reuse airis's local shell backend via `createLocalBashOperations()` instead of reimplementing local process spawning, shell resolution, and process-tree termination.
 
 The bash tool also supports a spawn hook to adjust the command, cwd, or env before execution:
 
@@ -2012,12 +2012,12 @@ See [examples/extensions/truncated-tool.ts](../examples/extensions/truncated-too
 One extension can register multiple tools with shared state:
 
 ```typescript
-export default function (pi: ExtensionAPI) {
+export default function (airis: ExtensionAPI) {
   let connection = null;
 
-  pi.registerTool({ name: "db_connect", ... });
-  pi.registerTool({ name: "db_query", ... });
-  pi.registerTool({ name: "db_close", ... });
+  airis.registerTool({ name: "db_connect", ... });
+  airis.registerTool({ name: "db_query", ... });
+  airis.registerTool({ name: "db_close", ... });
 
   airis.on("session_shutdown", async () => {
     connection?.close();
@@ -2027,14 +2027,14 @@ export default function (pi: ExtensionAPI) {
 
 ### Custom Rendering
 
-Tools can provide `renderCall` and `renderResult` for custom TUI display. See [tui.md](tui.md) for the full component API and [tool-execution.ts](https://github.com/earendil-works/pi-mono/blob/main/packages/coding-agent/src/modes/interactive/components/tool-execution.ts) for how tool rows are composed.
+Tools can provide `renderCall` and `renderResult` for custom TUI display. See [tui.md](tui.md) for the full component API and [tool-execution.ts](https://github.com/sufiyan-sabeel/AIRIS-CLI/blob/main/packages/coding-agent/src/modes/interactive/components/tool-execution.ts) for how tool rows are composed.
 
 By default, tool output is wrapped in a `Box` that handles padding and background. A defined `renderCall` or `renderResult` must return a `Component`. If a slot renderer is not defined, `tool-execution.ts` uses fallback rendering for that slot.
 
 Set `renderShell: "self"` when the tool should render its own shell instead of using the default `Box`. This is useful for tools that need complete control over framing or background behavior, for example large previews that must stay visually stable after the tool settles.
 
 ```typescript
-pi.registerTool({
+airis.registerTool({
   name: "my_tool",
   label: "My Tool",
   description: "Custom shell example",
@@ -2276,7 +2276,7 @@ ctx.ui.setFooter((tui, theme) => ({
 ctx.ui.setFooter(undefined);  // Restore built-in footer
 
 // Terminal title
-ctx.ui.setTitle("pi - my-project");
+ctx.ui.setTitle("airis - my-project");
 
 // Editor text
 ctx.ui.setEditorText("Prefill text");
@@ -2468,7 +2468,7 @@ class VimEditor extends CustomEditor {
   }
 }
 
-export default function (pi: ExtensionAPI) {
+export default function (airis: ExtensionAPI) {
   airis.on("session_start", (_event, ctx) => {
     ctx.ui.setEditorComponent((_tui, theme, keybindings) =>
       new VimEditor(theme, keybindings)
@@ -2502,7 +2502,7 @@ Register a custom renderer for messages with your `customType`:
 ```typescript
 import { Text } from "@earendil-works/airis-tui";
 
-pi.registerMessageRenderer("my-extension", (message, options, theme) => {
+airis.registerMessageRenderer("my-extension", (message, options, theme) => {
   const { expanded } = options;
   let text = theme.fg("accent", `[${message.customType}] `);
   text += message.content;
@@ -2515,10 +2515,10 @@ pi.registerMessageRenderer("my-extension", (message, options, theme) => {
 });
 ```
 
-Messages are sent via `pi.sendMessage()`:
+Messages are sent via `airis.sendMessage()`:
 
 ```typescript
-pi.sendMessage({
+airis.sendMessage({
   customType: "my-extension",  // Matches registerMessageRenderer
   content: "Status update",
   display: true,               // Show in TUI
@@ -2652,7 +2652,7 @@ All examples in [examples/extensions/](../examples/extensions/).
 | `custom-provider-gitlab-duo/` | GitLab Duo integration | `registerProvider` with OAuth |
 | **Messages & Communication** |||
 | `message-renderer.ts` | Custom message rendering | `registerMessageRenderer`, `sendMessage` |
-| `event-bus.ts` | Inter-extension events | `pi.events` |
+| `event-bus.ts` | Inter-extension events | `airis.events` |
 | **Session Metadata** |||
 | `session-name.ts` | Name sessions for selector | `setSessionName`, `getSessionName` |
 | `bookmark.ts` | Bookmark entries for /tree | `setLabel` |

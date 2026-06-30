@@ -19,10 +19,10 @@ class PreferencesManager(private val context: Context) {
         private val WELCOME_SHOWN_KEY = stringPreferencesKey("welcome_shown")
         private val TELEGRAM_TOKEN_KEY = stringPreferencesKey("telegram_token")
         private val TELEGRAM_USER_ID_KEY = stringPreferencesKey("telegram_user_id")
-        private val API_KEY_OPENAI = stringPreferencesKey("api_key_openai")
-        private val API_KEY_GROK = stringPreferencesKey("api_key_grok")
-        private val API_KEY_OPENROUTER = stringPreferencesKey("api_key_openrouter")
-        private val API_KEY_CUSTOM = stringPreferencesKey("api_key_custom")
+        private val AAIRIS_KEY_OPENAI = stringPreferencesKey("aairis_key_openai")
+        private val AAIRIS_KEY_GROK = stringPreferencesKey("aairis_key_grok")
+        private val AAIRIS_KEY_OPENROUTER = stringPreferencesKey("aairis_key_openrouter")
+        private val AAIRIS_KEY_CUSTOM = stringPreferencesKey("aairis_key_custom")
         private val BASE_URL_CUSTOM = stringPreferencesKey("base_url_custom")
         private val VOICE_ENABLED = stringPreferencesKey("voice_enabled")
         private val VOICE_RATE = stringPreferencesKey("voice_rate")
@@ -93,10 +93,10 @@ class PreferencesManager(private val context: Context) {
     suspend fun setApiKey(providerId: String, apiKey: String) {
         context.dataStore.edit { prefs ->
             val key = when (providerId) {
-                "openai" -> API_KEY_OPENAI
-                "grok" -> API_KEY_GROK
-                "openrouter" -> API_KEY_OPENROUTER
-                "custom" -> API_KEY_CUSTOM
+                "openai" -> AAIRIS_KEY_OPENAI
+                "grok" -> AAIRIS_KEY_GROK
+                "openrouter" -> AAIRIS_KEY_OPENROUTER
+                "custom" -> AAIRIS_KEY_CUSTOM
                 else -> return@edit
             }
             prefs[key] = apiKey
@@ -105,10 +105,10 @@ class PreferencesManager(private val context: Context) {
 
     fun getApiKey(providerId: String): Flow<String> = context.dataStore.data.map { prefs ->
         val key = when (providerId) {
-            "openai" -> API_KEY_OPENAI
-            "grok" -> API_KEY_GROK
-            "openrouter" -> API_KEY_OPENROUTER
-            "custom" -> API_KEY_CUSTOM
+            "openai" -> AAIRIS_KEY_OPENAI
+            "grok" -> AAIRIS_KEY_GROK
+            "openrouter" -> AAIRIS_KEY_OPENROUTER
+            "custom" -> AAIRIS_KEY_CUSTOM
             else -> return@map ""
         }
         prefs[key] ?: ""

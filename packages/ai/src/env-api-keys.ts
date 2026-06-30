@@ -93,43 +93,43 @@ function getApiKeyEnvVars(provider: string): readonly string[] | undefined {
 		return ["COPILOT_GITHUB_TOKEN"];
 	}
 
-	// ANTHROPIC_OAUTH_TOKEN takes precedence over ANTHROPIC_API_KEY
+	// ANTHROPIC_OAUTH_TOKEN takes precedence over ANTHROPIC_AAIRIS_KEY
 	if (provider === "anthropic") {
-		return ["ANTHROPIC_OAUTH_TOKEN", "ANTHROPIC_API_KEY"];
+		return ["ANTHROPIC_OAUTH_TOKEN", "ANTHROPIC_AAIRIS_KEY"];
 	}
 
 	const envMap: Record<string, string> = {
-		"ant-ling": "ANT_LING_API_KEY",
-		openai: "OPENAI_API_KEY",
-		"azure-openai-responses": "AZURE_OPENAI_API_KEY",
-		nvidia: "NVIDIA_API_KEY",
-		deepseek: "DEEPSEEK_API_KEY",
-		google: "GEMINI_API_KEY",
-		"google-vertex": "GOOGLE_CLOUD_API_KEY",
-		groq: "GROQ_API_KEY",
-		cerebras: "CEREBRAS_API_KEY",
-		xai: "XAI_API_KEY",
-		openrouter: "OPENROUTER_API_KEY",
-		"vercel-ai-gateway": "AI_GATEWAY_API_KEY",
-		zai: "ZAI_API_KEY",
-		"zai-coding-cn": "ZAI_CODING_CN_API_KEY",
-		mistral: "MISTRAL_API_KEY",
-		minimax: "MINIMAX_API_KEY",
-		"minimax-cn": "MINIMAX_CN_API_KEY",
-		moonshotai: "MOONSHOT_API_KEY",
-		"moonshotai-cn": "MOONSHOT_API_KEY",
+		"ant-ling": "ANT_LING_AAIRIS_KEY",
+		openai: "OPENAI_AAIRIS_KEY",
+		"azure-openai-responses": "AZURE_OPENAI_AAIRIS_KEY",
+		nvidia: "NVIDIA_AAIRIS_KEY",
+		deepseek: "DEEPSEEK_AAIRIS_KEY",
+		google: "GEMINI_AAIRIS_KEY",
+		"google-vertex": "GOOGLE_CLOUD_AAIRIS_KEY",
+		groq: "GROQ_AAIRIS_KEY",
+		cerebras: "CEREBRAS_AAIRIS_KEY",
+		xai: "XAI_AAIRIS_KEY",
+		openrouter: "OPENROUTER_AAIRIS_KEY",
+		"vercel-ai-gateway": "AI_GATEWAY_AAIRIS_KEY",
+		zai: "ZAI_AAIRIS_KEY",
+		"zai-coding-cn": "ZAI_CODING_CN_AAIRIS_KEY",
+		mistral: "MISTRAL_AAIRIS_KEY",
+		minimax: "MINIMAX_AAIRIS_KEY",
+		"minimax-cn": "MINIMAX_CN_AAIRIS_KEY",
+		moonshotai: "MOONSHOT_AAIRIS_KEY",
+		"moonshotai-cn": "MOONSHOT_AAIRIS_KEY",
 		huggingface: "HF_TOKEN",
-		fireworks: "FIREWORKS_API_KEY",
-		together: "TOGETHER_API_KEY",
-		opencode: "OPENCODE_API_KEY",
-		"opencode-go": "OPENCODE_API_KEY",
-		"kimi-coding": "KIMI_API_KEY",
-		"cloudflare-workers-ai": "CLOUDFLARE_API_KEY",
-		"cloudflare-ai-gateway": "CLOUDFLARE_API_KEY",
-		xiaomi: "XIAOMI_API_KEY",
-		"xiaomi-token-plan-cn": "XIAOMI_TOKEN_PLAN_CN_API_KEY",
-		"xiaomi-token-plan-ams": "XIAOMI_TOKEN_PLAN_AMS_API_KEY",
-		"xiaomi-token-plan-sgp": "XIAOMI_TOKEN_PLAN_SGP_API_KEY",
+		fireworks: "FIREWORKS_AAIRIS_KEY",
+		together: "TOGETHER_AAIRIS_KEY",
+		opencode: "OPENCODE_AAIRIS_KEY",
+		"opencode-go": "OPENCODE_AAIRIS_KEY",
+		"kimi-coding": "KIMI_AAIRIS_KEY",
+		"cloudflare-workers-ai": "CLOUDFLARE_AAIRIS_KEY",
+		"cloudflare-ai-gateway": "CLOUDFLARE_AAIRIS_KEY",
+		xiaomi: "XIAOMI_AAIRIS_KEY",
+		"xiaomi-token-plan-cn": "XIAOMI_TOKEN_PLAN_CN_AAIRIS_KEY",
+		"xiaomi-token-plan-ams": "XIAOMI_TOKEN_PLAN_AMS_AAIRIS_KEY",
+		"xiaomi-token-plan-sgp": "XIAOMI_TOKEN_PLAN_SGP_AAIRIS_KEY",
 	};
 
 	const envVar = envMap[provider];
@@ -154,7 +154,7 @@ export function findEnvKeys(provider: string): string[] | undefined {
 }
 
 /**
- * Get API key for provider from known environment variables, e.g. OPENAI_API_KEY.
+ * Get API key for provider from known environment variables, e.g. OPENAI_AAIRIS_KEY.
  *
  * Will not return API keys for providers that require OAuth tokens.
  */

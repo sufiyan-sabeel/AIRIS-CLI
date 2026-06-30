@@ -81,8 +81,8 @@ function errorResult(
 	};
 }
 
-export default function questionnaire(pi: ExtensionAPI) {
-	pi.registerTool({
+export default function questionnaire(airis: ExtensionAPI) {
+	airis.registerTool({
 		name: "questionnaire",
 		label: "Questionnaire",
 		description:

@@ -150,7 +150,7 @@ async function verifyToolResultImagesStayInFunctionCallOutput<TApi extends Api>(
 }
 
 describe("Responses API tool result images", () => {
-	describe.skipIf(!process.env.OPENAI_API_KEY)("OpenAI Responses Provider (gpt-5-mini)", () => {
+	describe.skipIf(!process.env.OPENAI_AAIRIS_KEY)("OpenAI Responses Provider (gpt-5-mini)", () => {
 		const model = getModel("openai", "gpt-5-mini");
 
 		it("should send tool result images in function_call_output", { retry: 3, timeout: 30000 }, async () => {

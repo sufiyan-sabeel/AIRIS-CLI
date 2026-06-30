@@ -95,8 +95,8 @@ describe("parseArgs", () => {
 			expect(result.model).toBe("gpt-4o");
 		});
 
-		test("parses --api-key", () => {
-			const result = parseArgs(["--api-key", "sk-test-key"]);
+		test("parses --aairis-key", () => {
+			const result = parseArgs(["--aairis-key", "sk-test-key"]);
 			expect(result.apiKey).toBe("sk-test-key");
 		});
 

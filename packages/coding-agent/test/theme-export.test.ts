@@ -20,7 +20,7 @@ describe("getThemeExportColors", () => {
 	let previousAgentDir: string | undefined;
 
 	beforeEach(() => {
-		tempRoot = mkdtempSync(join(tmpdir(), "pi-theme-export-"));
+		tempRoot = mkdtempSync(join(tmpdir(), "airis-theme-export-"));
 		previousAgentDir = process.env.AIRIS_CODING_AGENT_DIR;
 		process.env.AIRIS_CODING_AGENT_DIR = join(tempRoot, "agent");
 		mkdirSync(join(process.env.AIRIS_CODING_AGENT_DIR, "themes"), { recursive: true });

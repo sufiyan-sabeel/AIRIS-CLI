@@ -4,17 +4,17 @@ This page gets you from install to a useful first AIRIS session.
 
 ## Install
 
-Pi is distributed as an npm package:
+AIRIS is distributed as an npm package:
 
 ```bash
 npm install -g --ignore-scripts @sufiyan-sabeel/airis-cli
 ```
 
-`--ignore-scripts` disables dependency lifecycle scripts during install. Pi does not require install scripts for normal npm installs.
+`--ignore-scripts` disables dependency lifecycle scripts during install. AIRIS does not require install scripts for normal npm installs.
 
 ### Uninstall
 
-Use the package manager that installed pi. The curl installer uses npm globally, so curl and npm installs are removed with npm:
+Use the package manager that installed airis. The curl installer uses npm globally, so curl and npm installs are removed with npm:
 
 ```bash
 # curl installer or npm install -g
@@ -30,13 +30,13 @@ yarn global remove @sufiyan-sabeel/airis-cli
 bun uninstall -g @sufiyan-sabeel/airis-cli
 ```
 
-Uninstalling pi leaves settings, credentials, sessions, and installed pi packages in `~/.airis/agent/`.
+Uninstalling airis leaves settings, credentials, sessions, and installed airis packages in `~/.airis/agent/`.
 
-Then start pi in the project directory you want it to work on:
+Then start airis in the project directory you want it to work on:
 
 ```bash
 cd /path/to/project
-pi
+airis
 ```
 
 ## Authenticate
@@ -45,7 +45,7 @@ AIRIS can use subscription providers through `/login`, or API-key providers thro
 
 ### Option 1: subscription login
 
-Start pi and run:
+Start airis and run:
 
 ```text
 /login
@@ -55,11 +55,11 @@ Then select a provider. Built-in subscription logins include Claude Pro/Max, Cha
 
 ### Option 2: API key
 
-Set an API key before launching pi:
+Set an API key before launching airis:
 
 ```bash
-export ANTHROPIC_API_KEY=sk-ant-...
-pi
+export ANTHROPIC_AAIRIS_KEY=sk-ant-...
+airis
 ```
 
 You can also run `/login` and select an API-key provider to store the key in `~/.airis/agent/auth.json`.
@@ -68,7 +68,7 @@ See [Providers](providers.md) for all supported providers, environment variables
 
 ## First session
 
-Once pi starts, type a request and press Enter:
+Once airis starts, type a request and press Enter:
 
 ```text
 Summarize this repository and tell me how to run its checks.
@@ -83,9 +83,9 @@ By default, AIRIS gives the model four tools:
 
 Additional built-in read-only tools (`grep`, `find`, `ls`) are available through tool options. AIRIS runs in your current working directory and can modify files there. Use git or another checkpointing workflow if you want easy rollback.
 
-## Give pi project instructions
+## Give airis project instructions
 
-Pi loads context files at startup. Add an `AGENTS.md` file to tell it how to work in a project:
+AIRIS loads context files at startup. Add an `AGENTS.md` file to tell it how to work in a project:
 
 ```markdown
 # Project Instructions
@@ -95,12 +95,12 @@ Pi loads context files at startup. Add an `AGENTS.md` file to tell it how to wor
 - Keep responses concise.
 ```
 
-Pi loads:
+AIRIS loads:
 
 - `~/.airis/agent/AGENTS.md` for global instructions
 - `AGENTS.md` or `CLAUDE.md` from parent directories and the current directory
 
-Restart pi, or run `/reload`, after changing context files.
+Restart airis, or run `/reload`, after changing context files.
 
 ## Common things to try
 
@@ -109,8 +109,8 @@ Restart pi, or run `/reload`, after changing context files.
 Type `@` in the editor to fuzzy-search files, or pass files on the command line:
 
 ```bash
-pi @README.md "Summarize this"
-pi @src/app.ts @src/app.test.ts "Review these together"
+airis @README.md "Summarize this"
+airis @src/app.ts @src/app.test.ts "Review these together"
 ```
 
 Images can be pasted with Ctrl+V (Alt+V on Windows) or dragged into supported terminals.
@@ -134,22 +134,22 @@ Use `/model` or Ctrl+L to choose a model. Use Shift+Tab to cycle thinking level.
 Sessions are saved automatically:
 
 ```bash
-pi -c                  # Continue most recent session
-pi -r                  # Browse previous sessions
-pi --name "my task"    # Set session display name at startup
-pi --session <path|id> # Open a specific session
+airis -c                  # Continue most recent session
+airis -r                  # Browse previous sessions
+airis --name "my task"    # Set session display name at startup
+airis --session <path|id> # Open a specific session
 ```
 
-Inside pi, use `/resume`, `/new`, `/tree`, `/fork`, and `/clone` to manage sessions.
+Inside airis, use `/resume`, `/new`, `/tree`, `/fork`, and `/clone` to manage sessions.
 
 ### Non-interactive mode
 
 For one-shot prompts:
 
 ```bash
-pi -p "Summarize this codebase"
-cat README.md | pi -p "Summarize this text"
-pi -p @screenshot.png "What's in this image?"
+airis -p "Summarize this codebase"
+cat README.md | airis -p "Summarize this text"
+airis -p @screenshot.png "What's in this image?"
 ```
 
 Use `--mode json` for JSON event output or `--mode rpc` for process integration.

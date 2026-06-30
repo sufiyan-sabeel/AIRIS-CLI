@@ -350,7 +350,7 @@ export function resolveCliModel(options: {
 	}
 
 	// Important: use *all* models here, not just models with pre-configured auth.
-	// This allows "--api-key" to be used for first-time setup.
+	// This allows "--aairis-key" to be used for first-time setup.
 	const availableModels = modelRegistry.getAll();
 	if (availableModels.length === 0) {
 		return {

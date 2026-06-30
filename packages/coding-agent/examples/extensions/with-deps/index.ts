@@ -9,9 +9,9 @@ import type { ExtensionAPI } from "@sufiyan-sabeel/airis-cli";
 import ms from "ms";
 import { Type } from "typebox";
 
-export default function (pi: ExtensionAPI) {
+export default function (airis: ExtensionAPI) {
 	// Register a tool that uses ms
-	pi.registerTool({
+	airis.registerTool({
 		name: "parse_duration",
 		label: "Parse Duration",
 		description: "Parse a human-readable duration string (e.g., '2 days', '1h', '5m') to milliseconds",

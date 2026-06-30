@@ -95,13 +95,13 @@ const PROVIDER_MODEL_PAIRS: ProviderModelPair[] = [
 		provider: "cloudflare-ai-gateway",
 		model: "claude-sonnet-4-5",
 		label: "cloudflare-gateway-claude-sonnet-4-5",
-		upstreamApiKeyEnv: "ANTHROPIC_API_KEY",
+		upstreamApiKeyEnv: "ANTHROPIC_AAIRIS_KEY",
 	},
 	{
 		provider: "cloudflare-ai-gateway",
 		model: "gpt-5.1",
 		label: "cloudflare-gateway-gpt-5.1",
-		upstreamApiKeyEnv: "OPENAI_API_KEY",
+		upstreamApiKeyEnv: "OPENAI_AAIRIS_KEY",
 	},
 	// Groq
 	{ provider: "groq", model: "openai/gpt-oss-120b", label: "groq-gpt-oss-120b" },
@@ -183,7 +183,7 @@ function hasAnyApiKey(): boolean {
 }
 
 function dumpFailurePayload(params: { label: string; error: string; payload?: unknown; messages: Message[] }): void {
-	const filename = `/tmp/pi-handoff-${params.label}-${Date.now()}.json`;
+	const filename = `/tmp/airis-handoff-${params.label}-${Date.now()}.json`;
 	const body = {
 		label: params.label,
 		error: params.error,

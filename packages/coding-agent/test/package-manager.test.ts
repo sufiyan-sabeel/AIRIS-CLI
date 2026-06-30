@@ -74,8 +74,8 @@ describe("DefaultPackageManager", () => {
 	let previousOfflineEnv: string | undefined;
 
 	beforeEach(() => {
-		previousOfflineEnv = process.env.PI_OFFLINE;
-		delete process.env.PI_OFFLINE;
+		previousOfflineEnv = process.env.AIRIS_OFFLINE;
+		delete process.env.AIRIS_OFFLINE;
 		tempDir = join(tmpdir(), `pm-test-${Date.now()}-${Math.random().toString(36).slice(2)}`);
 		mkdirSync(tempDir, { recursive: true });
 		agentDir = join(tempDir, "agent");
@@ -91,9 +91,9 @@ describe("DefaultPackageManager", () => {
 
 	afterEach(() => {
 		if (previousOfflineEnv === undefined) {
-			delete process.env.PI_OFFLINE;
+			delete process.env.AIRIS_OFFLINE;
 		} else {
-			process.env.PI_OFFLINE = previousOfflineEnv;
+			process.env.AIRIS_OFFLINE = previousOfflineEnv;
 		}
 		vi.restoreAllMocks();
 		vi.unstubAllGlobals();
@@ -142,7 +142,7 @@ Content`,
 			expect(result.skills.some((r) => r.path === skillFile && r.enabled)).toBe(true);
 		});
 
-		it("should auto-discover root markdown skills from .pi skill dirs", async () => {
+		it("should auto-discover root markdown skills from .airis skill dirs", async () => {
 			const skillFile = join(agentDir, "skills", "single-file.md");
 			mkdirSync(join(agentDir, "skills"), { recursive: true });
 			writeFileSync(
@@ -158,7 +158,7 @@ Content`,
 			expect(result.skills.some((r) => r.path === skillFile && r.enabled)).toBe(true);
 		});
 
-		it("should resolve project paths relative to .pi", async () => {
+		it("should resolve project paths relative to .airis", async () => {
 			const extDir = join(tempDir, ".airis", "extensions");
 			mkdirSync(extDir, { recursive: true });
 			const extPath = join(extDir, "project-ext.ts");
@@ -262,15 +262,15 @@ Content`,
 			expect(result.prompts.some((r) => r.path === promptPath && !r.enabled)).toBe(true);
 		});
 
-		it("should resolve directory with package.json pi.extensions in extensions setting", async () => {
-			// Create a package with pi.extensions in package.json
+		it("should resolve directory with package.json airis.extensions in extensions setting", async () => {
+			// Create a package with airis.extensions in package.json
 			const pkgDir = join(tempDir, "my-extensions-pkg");
 			mkdirSync(join(pkgDir, "extensions"), { recursive: true });
 			writeFileSync(
 				join(pkgDir, "package.json"),
 				JSON.stringify({
 					name: "my-extensions-pkg",
-					pi: {
+					airis: {
 						extensions: ["./extensions/clip.ts", "./extensions/cost.ts"],
 					},
 				}),
@@ -284,7 +284,7 @@ Content`,
 
 			const result = await packageManager.resolve();
 
-			// Should find the extensions declared in package.json pi.extensions
+			// Should find the extensions declared in package.json airis.extensions
 			expect(result.extensions.some((r) => r.path === join(pkgDir, "extensions", "clip.ts") && r.enabled)).toBe(
 				true,
 			);
@@ -298,10 +298,10 @@ Content`,
 	});
 
 	describe("auto-discovered skill metadata", () => {
-		it("should use the agent dir as baseDir for user .pi/agent skills", async () => {
-			const skillPath = join(agentDir, "skills", "user-pi", "SKILL.md");
-			mkdirSync(join(agentDir, "skills", "user-pi"), { recursive: true });
-			writeFileSync(skillPath, "---\nname: user-pi\ndescription: user pi\n---\n");
+		it("should use the agent dir as baseDir for user .airis/agent skills", async () => {
+			const skillPath = join(agentDir, "skills", "user-airis", "SKILL.md");
+			mkdirSync(join(agentDir, "skills", "user-airis"), { recursive: true });
+			writeFileSync(skillPath, "---\nname: user-airis\ndescription: user airis\n---\n");
 
 			const result = await packageManager.resolve();
 			const skill = result.skills.find((r) => r.path === skillPath);
@@ -311,11 +311,11 @@ Content`,
 			expect(skill?.metadata.baseDir).toBe(agentDir);
 		});
 
-		it("should use the project .pi dir as baseDir for project .pi skills", async () => {
+		it("should use the project .airis dir as baseDir for project .airis skills", async () => {
 			const projectBaseDir = join(tempDir, ".airis");
-			const skillPath = join(projectBaseDir, "skills", "project-pi", "SKILL.md");
-			mkdirSync(join(projectBaseDir, "skills", "project-pi"), { recursive: true });
-			writeFileSync(skillPath, "---\nname: project-pi\ndescription: project pi\n---\n");
+			const skillPath = join(projectBaseDir, "skills", "project-airis", "SKILL.md");
+			mkdirSync(join(projectBaseDir, "skills", "project-airis"), { recursive: true });
+			writeFileSync(skillPath, "---\nname: project-airis\ndescription: project airis\n---\n");
 
 			const result = await packageManager.resolve();
 			const skill = result.skills.find((r) => r.path === skillPath);
@@ -496,7 +496,7 @@ Content`,
 			}
 		});
 
-		it("should dedupe user skill entries when ~/.pi/agent/skills is a symlink to ~/.agents/skills", async () => {
+		it("should dedupe user skill entries when ~/.airis/agent/skills is a symlink to ~/.agents/skills", async () => {
 			const previousHome = process.env.HOME;
 			process.env.HOME = tempDir;
 
@@ -547,8 +547,8 @@ Content`,
 			expect(result.skills.some((r) => r.path.includes("venv") && r.enabled)).toBe(false);
 		});
 
-		it("should not apply parent .gitignore to .pi auto-discovery", async () => {
-			writeFileSync(join(tempDir, ".gitignore"), ".pi\n");
+		it("should not apply parent .gitignore to .airis auto-discovery", async () => {
+			writeFileSync(join(tempDir, ".gitignore"), ".airis\n");
 
 			const skillDir = join(tempDir, ".airis", "skills", "auto-skill");
 			mkdirSync(skillDir, { recursive: true });
@@ -569,14 +569,14 @@ Content`,
 			expect(result.extensions.some((r) => r.path === extPath && r.enabled)).toBe(true);
 		});
 
-		it("should handle directories with pi manifest", async () => {
+		it("should handle directories with airis manifest", async () => {
 			const pkgDir = join(tempDir, "my-package");
 			mkdirSync(pkgDir, { recursive: true });
 			writeFileSync(
 				join(pkgDir, "package.json"),
 				JSON.stringify({
 					name: "my-package",
-					pi: {
+					airis: {
 						extensions: ["./src/index.ts"],
 						skills: ["./skills"],
 					},
@@ -598,7 +598,7 @@ Content`,
 			);
 		});
 
-		it("should keep pi manifest entries with leading tilde package-relative", async () => {
+		it("should keep airis manifest entries with leading tilde package-relative", async () => {
 			const pkgDir = join(tempDir, "tilde-manifest-package");
 			const directExtensionPath = join(pkgDir, "~extensions", "main.ts");
 			const slashExtensionPath = join(pkgDir, "~", "extensions", "alt.ts");
@@ -617,7 +617,7 @@ Content`,
 				join(pkgDir, "package.json"),
 				JSON.stringify({
 					name: "tilde-manifest-package",
-					pi: {
+					airis: {
 						extensions: ["~extensions/main.ts", "~/extensions/alt.ts"],
 						skills: ["~skills", "~/skills"],
 					},
@@ -679,7 +679,7 @@ Content`,
 			const managerWithInternals = packageManager as unknown as {
 				runCommandSync(command: string, args: string[]): string;
 			};
-			const valueWithSpace = "C:\\Users\\A B\\.pi\\npm";
+			const valueWithSpace = "C:\\Users\\A B\\.airis\\npm";
 			const output = managerWithInternals.runCommandSync(process.execPath, [
 				"-e",
 				"console.log(process.argv[1])",
@@ -952,7 +952,7 @@ Content`,
 			expect(runCommandSyncSpy).toHaveBeenNthCalledWith(2, "mise", ["exec", "node@22", "--", "npm", "root", "-g"]);
 		});
 
-		it("should install user npm packages into the pi-managed npm root", async () => {
+		it("should install user npm packages into the airis-managed npm root", async () => {
 			settingsManager = SettingsManager.inMemory({
 				npmCommand: ["pnpm"],
 				packages: ["npm:pnpm-pkg"],
@@ -1193,7 +1193,7 @@ Content`,
 
 			expect(pathEndsWith(installPath, "node_modules/left-pad")).toBe(true);
 			expect(relative(tempRoot, installPath).startsWith("..")).toBe(false);
-			expect(installPath.startsWith(join(tmpdir(), "pi-extensions"))).toBe(false);
+			expect(installPath.startsWith(join(tmpdir(), "airis-extensions"))).toBe(false);
 			if (process.platform !== "win32") {
 				expect(statSync(tempRoot).mode & 0o777).toBe(0o700);
 			}
@@ -1215,7 +1215,7 @@ Content`,
 			expect(settings.packages?.[0]).toBe(expected);
 		});
 
-		it("should store project local packages relative to .pi settings base", () => {
+		it("should store project local packages relative to .airis settings base", () => {
 			const projectPkgDir = join(tempDir, "project-local-pkg");
 			mkdirSync(join(projectPkgDir, "extensions"), { recursive: true });
 			writeFileSync(join(projectPkgDir, "extensions", "index.ts"), "export default function() {}");
@@ -1469,7 +1469,7 @@ Content`,
 		});
 	});
 
-	describe("pattern filtering in pi manifest", () => {
+	describe("pattern filtering in airis manifest", () => {
 		it("should support glob patterns in manifest extensions", async () => {
 			const pkgDir = join(tempDir, "manifest-pkg");
 			mkdirSync(join(pkgDir, "extensions"), { recursive: true });
@@ -1481,7 +1481,7 @@ Content`,
 				join(pkgDir, "package.json"),
 				JSON.stringify({
 					name: "manifest-pkg",
-					pi: {
+					airis: {
 						extensions: ["extensions", "node_modules/dep/extensions", "!**/skip.ts"],
 					},
 				}),
@@ -1509,7 +1509,7 @@ Content`,
 				join(pkgDir, "package.json"),
 				JSON.stringify({
 					name: "skill-manifest-pkg",
-					pi: {
+					airis: {
 						skills: ["skills", "!**/bad-skill"],
 					},
 				}),
@@ -1536,7 +1536,7 @@ Content`,
 				join(pkgDir, "package.json"),
 				JSON.stringify({
 					name: "skill-manifest-glob-pkg",
-					pi: {
+					airis: {
 						skills: ["./plugins/*/skills"],
 					},
 				}),
@@ -1561,7 +1561,7 @@ Content`,
 				join(pkgDir, "package.json"),
 				JSON.stringify({
 					name: "layered-pkg",
-					pi: {
+					airis: {
 						extensions: ["extensions", "!**/baz.ts"],
 					},
 				}),
@@ -1765,7 +1765,7 @@ Content`,
 				join(pkgDir, "package.json"),
 				JSON.stringify({
 					name: "manifest-force-pkg",
-					pi: {
+					airis: {
 						extensions: ["extensions", "!**/two.ts", "+extensions/two.ts"],
 					},
 				}),
@@ -1987,7 +1987,7 @@ export default function(api) { api.registerTool({ name: "test", description: "te
 			expect(result.extensions.some((r) => pathEndsWith(r.path, "agents.ts"))).toBe(false);
 		});
 
-		it("should respect package.json pi.extensions manifest in subdirectories", async () => {
+		it("should respect package.json airis.extensions manifest in subdirectories", async () => {
 			const pkgDir = join(tempDir, "manifest-subdir-pkg");
 			mkdirSync(join(pkgDir, "extensions", "custom"), { recursive: true });
 
@@ -1995,7 +1995,7 @@ export default function(api) { api.registerTool({ name: "test", description: "te
 			writeFileSync(
 				join(pkgDir, "extensions", "custom", "package.json"),
 				JSON.stringify({
-					pi: {
+					airis: {
 						extensions: ["./main.ts"],
 					},
 				}),
@@ -2283,7 +2283,7 @@ export default function(api) { api.registerTool({ name: "test", description: "te
 		});
 
 		it("should skip installing missing package sources when offline", async () => {
-			process.env.PI_OFFLINE = "1";
+			process.env.AIRIS_OFFLINE = "1";
 			settingsManager.setProjectPackages(["npm:missing-package", "git:github.com/example/missing-repo"]);
 
 			const installParsedSourceSpy = vi.spyOn(packageManager as any, "installParsedSource");
@@ -2295,7 +2295,7 @@ export default function(api) { api.registerTool({ name: "test", description: "te
 		});
 
 		it("should skip refreshing temporary git sources when offline", async () => {
-			process.env.PI_OFFLINE = "1";
+			process.env.AIRIS_OFFLINE = "1";
 			const gitSource = "git:github.com/example/repo";
 			const parsedGitSource = (packageManager as any).parseSource(gitSource);
 			const installedPath = (packageManager as any).getGitInstallPath(parsedGitSource, "temporary") as string;
@@ -2311,7 +2311,7 @@ export default function(api) { api.registerTool({ name: "test", description: "te
 		});
 
 		it("should not run npm view during resolve for installed unpinned packages", async () => {
-			process.env.PI_OFFLINE = "1";
+			process.env.AIRIS_OFFLINE = "1";
 			const installedPath = join(tempDir, ".airis", "npm", "node_modules", "example");
 			mkdirSync(join(installedPath, "extensions"), { recursive: true });
 			writeFileSync(join(installedPath, "package.json"), JSON.stringify({ name: "example", version: "1.0.0" }));
@@ -2340,7 +2340,7 @@ export default function(api) { api.registerTool({ name: "test", description: "te
 		});
 
 		it("should not check package updates when offline", async () => {
-			process.env.PI_OFFLINE = "1";
+			process.env.AIRIS_OFFLINE = "1";
 			const runCommandCaptureSpy = vi.spyOn(packageManager as any, "runCommandCapture");
 
 			const updates = await packageManager.checkForAvailableUpdates();

@@ -7,13 +7,13 @@ import { getModel, getModels } from "../src/models.ts";
 import { streamAnthropic } from "../src/providers/anthropic.ts";
 import type { Context, Model, Tool } from "../src/types.ts";
 
-const originalFireworksApiKey = process.env.FIREWORKS_API_KEY;
+const originalFireworksApiKey = process.env.FIREWORKS_AAIRIS_KEY;
 
 afterEach(() => {
 	if (originalFireworksApiKey === undefined) {
-		delete process.env.FIREWORKS_API_KEY;
+		delete process.env.FIREWORKS_AAIRIS_KEY;
 	} else {
-		process.env.FIREWORKS_API_KEY = originalFireworksApiKey;
+		process.env.FIREWORKS_AAIRIS_KEY = originalFireworksApiKey;
 	}
 });
 
@@ -48,10 +48,10 @@ describe("Fireworks models", () => {
 		expect(model?.input).toEqual(["text", "image"]);
 	});
 
-	it("resolves FIREWORKS_API_KEY from the environment", () => {
-		process.env.FIREWORKS_API_KEY = "test-fireworks-key";
+	it("resolves FIREWORKS_AAIRIS_KEY from the environment", () => {
+		process.env.FIREWORKS_AAIRIS_KEY = "test-fireworks-key";
 
-		expect(findEnvKeys("fireworks")).toEqual(["FIREWORKS_API_KEY"]);
+		expect(findEnvKeys("fireworks")).toEqual(["FIREWORKS_AAIRIS_KEY"]);
 		expect(getEnvApiKey("fireworks")).toBe("test-fireworks-key");
 	});
 

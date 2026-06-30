@@ -11,7 +11,7 @@ function createLongSystemPrompt(): string {
 		.join("\n\n")}`;
 }
 
-describe.skipIf(!process.env.OPENROUTER_API_KEY)("OpenRouter cache_write repro E2E", () => {
+describe.skipIf(!process.env.OPENROUTER_AAIRIS_KEY)("OpenRouter cache_write repro E2E", () => {
 	it(
 		"regression: preserves cache_write_tokens on openai-completions stream path",
 		{ retry: 2, timeout: 90000 },
@@ -29,7 +29,7 @@ describe.skipIf(!process.env.OPENROUTER_API_KEY)("OpenRouter cache_write repro E
 			};
 
 			const options = {
-				apiKey: process.env.OPENROUTER_API_KEY!,
+				apiKey: process.env.OPENROUTER_AAIRIS_KEY!,
 				maxTokens: 32,
 				temperature: 0,
 				onPayload: (payload: unknown) => {
