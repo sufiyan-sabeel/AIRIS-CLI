@@ -450,13 +450,13 @@ export function getBundledInteractiveAssetPath(name: string): string {
 }
 
 // =============================================================================
-// App Config (from package.json piConfig)
+// App Config (from package.json airisConfig)
 // =============================================================================
 
 interface PackageJson {
 	name?: string;
 	version?: string;
-	piConfig?: {
+	airisConfig?: {
 		name?: string;
 		configDir?: string;
 	};
@@ -470,11 +470,11 @@ try {
 	if (err.code !== "ENOENT") throw e;
 }
 
-const piConfigName: string | undefined = pkg.piConfig?.name;
+const airisConfigName: string | undefined = pkg.airisConfig?.name;
 export const PACKAGE_NAME: string = pkg.name || "@sufiyan-sabeel/airis-cli";
-export const APP_NAME: string = piConfigName || "airis";
-export const APP_TITLE: string = piConfigName ? APP_NAME : "AIRIS";
-export const CONFIG_DIR_NAME: string = pkg.piConfig?.configDir || ".airis";
+export const APP_NAME: string = airisConfigName || "airis";
+export const APP_TITLE: string = airisConfigName ? APP_NAME : "AIRIS";
+export const CONFIG_DIR_NAME: string = pkg.airisConfig?.configDir || ".airis";
 export const VERSION: string = pkg.version || "0.0.0";
 
 // e.g., AIRIS_CODING_AGENT_DIR or TAU_CODING_AGENT_DIR
