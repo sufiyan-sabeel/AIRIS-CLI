@@ -6,7 +6,7 @@
 	"main": "dist/index.js",
 	"scripts": {
 		"clean": "shx rm -rf dist",
-		"build": "tsgo -config tsconfig.build.json",
+		"build": "tsgo -p tsconfig.build.json",
 		"test": "node --test test/*.test.ts",
 		"prepublishOnly": "npm run clean && npm run build"
 	},
