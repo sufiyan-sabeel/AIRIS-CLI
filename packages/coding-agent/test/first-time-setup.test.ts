@@ -7,7 +7,6 @@ import { ENV_AGENT_DIR } from "../src/config.ts";
 import { SettingsManager } from "../src/core/settings-manager.ts";
 
 describe("shouldRunFirstTimeSetup", () => {
-	const originalPiExperimental = process.env.AIRIS_EXPERIMENTAL;
 	const originalAgentDir = process.env[ENV_AGENT_DIR];
 	let tempDir: string;
 	let settingsPath: string;
@@ -15,17 +14,11 @@ describe("shouldRunFirstTimeSetup", () => {
 	beforeEach(() => {
 		tempDir = mkdtempSync(join(tmpdir(), "airis-first-time-setup-"));
 		settingsPath = join(tempDir, "settings.json");
-		process.env.AIRIS_EXPERIMENTAL = "1";
 		delete process.env[ENV_AGENT_DIR];
 	});
 
 	afterEach(() => {
 		rmSync(tempDir, { recursive: true, force: true });
-		if (originalPiExperimental === undefined) {
-			delete process.env.AIRIS_EXPERIMENTAL;
-		} else {
-			process.env.AIRIS_EXPERIMENTAL = originalPiExperimental;
-		}
 		if (originalAgentDir === undefined) {
 			delete process.env[ENV_AGENT_DIR];
 		} else {
@@ -33,14 +26,8 @@ describe("shouldRunFirstTimeSetup", () => {
 		}
 	});
 
-	it("returns true when experimental, default agent dir, and no settings.json", () => {
+	it("returns true when default agent dir and no settings.json", () => {
 		expect(shouldRunFirstTimeSetup(settingsPath)).toBe(true);
-	});
-
-	it("returns false when experimental features are disabled", () => {
-		delete process.env.AIRIS_EXPERIMENTAL;
-
-		expect(shouldRunFirstTimeSetup(settingsPath)).toBe(false);
 	});
 
 	it("returns false when a custom agent dir is set", () => {

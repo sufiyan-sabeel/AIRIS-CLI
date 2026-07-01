@@ -99,11 +99,11 @@ describe("WelcomeHeader", () => {
 			expect(hasSubtitle).toBe(true);
 		});
 
-		it("shows subtitle in compact layout", () => {
+		it("does not show subtitle in compact layout", () => {
 			const header = new WelcomeHeader(baseInfo);
 			const lines = header.render(60);
 			const hasSubtitle = lines.some((l) => l.includes("Artificial Intelligence Responsive"));
-			expect(hasSubtitle).toBe(true);
+			expect(hasSubtitle).toBe(false);
 		});
 	});
 

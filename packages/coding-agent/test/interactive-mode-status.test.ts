@@ -629,7 +629,7 @@ describe("InteractiveMode.showLoadedResources", () => {
 
 		expect(normalizeRenderedOutput(fakeThis.chatContainer)).toMatchInlineSnapshot(`
 "[Extensions]
-  @scope/airis-scoped, answer.ts, cli-extension.ts, HazAT/airis-interactive-subagents, HazAT/airis-interactive-subagents:subagents, local-index, airis-markdown-preview, user-index"`);
+  @scope/airis-scoped, airis-markdown-preview, answer.ts, cli-extension.ts, HazAT/airis-interactive-subagents, HazAT/airis-interactive-subagents:subagents, local-index, user-index"`);
 	});
 
 	test("adds more parent folders until local extension labels are unique", () => {
