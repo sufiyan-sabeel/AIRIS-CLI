@@ -172,7 +172,7 @@ export const installSections = [
   {
     platform: "Linux",
     commands: [
-      "curl -fsSL https://airis-dev.netlify.app/install.sh | sh",
+      "curl -fsSL https://sufiyan-sabeel.github.io/AIRIS-CLI/install.sh | sh",
       "git clone https://github.com/sufiyan-sabeel/AIRIS-CLI.git\ncd AIRIS-CLI\nnpm install --ignore-scripts --no-audit --no-fund\nnpm run build\nnpm link",
     ],
   },
