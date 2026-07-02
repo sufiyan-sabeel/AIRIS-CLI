@@ -473,7 +473,12 @@ install_airis() {
     
     local version="${AIRIS_VERSION:-latest}"
     local repo="sufiyan-sabeel/AIRIS-CLI"
-    local download_url="https://github.com/$repo/releases/download/$version/airis-$platform.tar.gz"
+    local download_url
+    if [[ "$version" == "latest" ]]; then
+        download_url="https://github.com/$repo/releases/latest/download/airis-$platform.tar.gz"
+    else
+        download_url="https://github.com/$repo/releases/download/$version/airis-$platform.tar.gz"
+    fi
     local tmp_dir="/tmp/airis-install-$$"
     mkdir -p "$tmp_dir"
     
