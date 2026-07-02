@@ -54,6 +54,7 @@ jobs:
           node scripts/release-notes.mjs extract --version "${VERSION}" --tag "${RELEASE_TAG}" --out /tmp/release-notes.md
 
       - name: Create GitHub Release and upload binaries
+        continue-on-error: true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
