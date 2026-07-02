@@ -44,7 +44,7 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
 
       - name: Build binaries
-        run: ./scripts/build-binaries.sh
+        run: bash ./scripts/build-binaries.sh
 
       - name: Extract changelog for this version
         id: changelog
