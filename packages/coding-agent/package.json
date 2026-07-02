@@ -1,6 +1,6 @@
 {
 	"name": "@sufiyan-sabeel/airis-cli",
-	"version": "0.79.3",
+	"version": "0.79.4",
 	"description": "Coding agent CLI with read, bash, edit, write tools and session management",
 	"type": "module",
 	"airisConfig": {
@@ -37,9 +37,9 @@
 		"prepublishOnly": "npm run clean && npm run build && npm run shrinkwrap"
 	},
 	"dependencies": {
-		"@earendil-works/airis-agent-core": "^0.79.3",
-		"@earendil-works/airis-ai": "^0.79.3",
-		"@earendil-works/airis-tui": "^0.79.3",
+		"@earendil-works/airis-agent-core": "^0.79.4",
+		"@earendil-works/airis-ai": "^0.79.4",
+		"@earendil-works/airis-tui": "^0.79.4",
 		"@silvia-odwyer/photon-node": "0.3.4",
 		"chalk": "5.6.2",
 		"cross-spawn": "7.0.6",
