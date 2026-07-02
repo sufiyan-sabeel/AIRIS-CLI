@@ -239,7 +239,7 @@ Both `steer()` and `followUp()` expand file-based prompt templates but error on 
 
 ### Agent and AgentState
 
-The `Agent` class (from `@earendil-works/airis-agent-core`) handles the core LLM interaction. Access it via `session.agent`.
+The `Agent` class (from `@sufiyan-sabeel/airis-agent-core`) handles the core LLM interaction. Access it via `session.agent`.
 
 ```typescript
 // Access current state
@@ -368,7 +368,7 @@ When you pass a custom `ResourceLoader`, `cwd` and `agentDir` no longer control 
 ### Model
 
 ```typescript
-import { getModel } from "@earendil-works/airis-ai";
+import { getModel } from "@sufiyan-sabeel/airis-ai";
 import { AuthStorage, ModelRegistry } from "@sufiyan-sabeel/airis-cli";
 
 const authStorage = AuthStorage.create();
@@ -877,7 +877,7 @@ interface LoadExtensionsResult {
 ## Complete Example
 
 ```typescript
-import { getModel } from "@earendil-works/airis-ai";
+import { getModel } from "@sufiyan-sabeel/airis-ai";
 import { Type } from "typebox";
 import {
   AuthStorage,

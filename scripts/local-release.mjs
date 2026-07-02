@@ -6,9 +6,9 @@ import { isAbsolute, join, relative, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 
 const packages = [
-	{ directory: "packages/ai", name: "@earendil-works/airis-ai" },
-	{ directory: "packages/tui", name: "@earendil-works/airis-tui" },
-	{ directory: "packages/agent", name: "@earendil-works/airis-agent-core" },
+	{ directory: "packages/ai", name: "@sufiyan-sabeel/airis-ai" },
+	{ directory: "packages/tui", name: "@sufiyan-sabeel/airis-tui" },
+	{ directory: "packages/agent", name: "@sufiyan-sabeel/airis-agent-core" },
 	{ directory: "packages/coding-agent", name: "@sufiyan-sabeel/airis-cli" },
 ];
 

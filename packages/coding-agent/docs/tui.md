@@ -4,7 +4,7 @@
 
 Extensions and custom tools can render custom TUI components for interactive user interfaces. This page covers the component system and available building blocks.
 
-**Source:** [`@earendil-works/airis-tui`](https://github.com/sufiyan-sabeel/AIRIS-CLI/tree/main/packages/tui)
+**Source:** [`@sufiyan-sabeel/airis-tui`](https://github.com/sufiyan-sabeel/AIRIS-CLI/tree/main/packages/tui)
 
 ## Component Interface
 
@@ -33,7 +33,7 @@ The TUI appends a full SGR reset and OSC 8 reset at the end of each rendered lin
 Components that display a text cursor and need IME (Input Method Editor) support should implement the `Focusable` interface:
 
 ```typescript
-import { CURSOR_MARKER, type Component, type Focusable } from "@earendil-works/airis-tui";
+import { CURSOR_MARKER, type Component, type Focusable } from "@sufiyan-sabeel/airis-tui";
 
 class MyInput implements Component, Focusable {
   focused: boolean = false;  // Set by TUI when focus changes
@@ -59,7 +59,7 @@ The cursor remains hidden by default. This keeps the fake cursor rendering, whil
 When a container component (dialog, selector, etc.) contains an `Input` or `Editor` child, the container must implement `Focusable` and propagate the focus state to the child. Otherwise, the hardware cursor won't be positioned correctly for IME input.
 
 ```typescript
-import { Container, type Focusable, Input } from "@earendil-works/airis-tui";
+import { Container, type Focusable, Input } from "@sufiyan-sabeel/airis-tui";
 
 class SearchDialog extends Container implements Focusable {
   private searchInput: Input;
@@ -188,10 +188,10 @@ See [overlay-qa-tests.ts](../examples/extensions/overlay-qa-tests.ts) for compre
 
 ## Built-in Components
 
-Import from `@earendil-works/airis-tui`:
+Import from `@sufiyan-sabeel/airis-tui`:
 
 ```typescript
-import { Text, Box, Container, Spacer, Markdown } from "@earendil-works/airis-tui";
+import { Text, Box, Container, Spacer, Markdown } from "@sufiyan-sabeel/airis-tui";
 ```
 
 ### Text
@@ -273,7 +273,7 @@ const image = new Image(
 Use `matchesKey()` for key detection:
 
 ```typescript
-import { matchesKey, Key } from "@earendil-works/airis-tui";
+import { matchesKey, Key } from "@sufiyan-sabeel/airis-tui";
 
 handleInput(data: string) {
   if (matchesKey(data, Key.up)) {
@@ -299,7 +299,7 @@ handleInput(data: string) {
 **Critical:** Each line from `render()` must not exceed the `width` parameter.
 
 ```typescript
-import { visibleWidth, truncateToWidth } from "@earendil-works/airis-tui";
+import { visibleWidth, truncateToWidth } from "@sufiyan-sabeel/airis-tui";
 
 render(width: number): string[] {
   // Truncate long lines
@@ -320,7 +320,7 @@ Example: Interactive selector
 import {
   matchesKey, Key,
   truncateToWidth, visibleWidth
-} from "@earendil-works/airis-tui";
+} from "@sufiyan-sabeel/airis-tui";
 
 class MySelector {
   private items: string[];
@@ -435,7 +435,7 @@ renderResult(result, options, theme, context) {
 
 ```typescript
 import { getMarkdownTheme } from "@sufiyan-sabeel/airis-cli";
-import { Markdown } from "@earendil-works/airis-tui";
+import { Markdown } from "@sufiyan-sabeel/airis-tui";
 
 renderResult(result, options, theme, context) {
   const mdTheme = getMarkdownTheme();
@@ -596,12 +596,12 @@ These patterns cover the most common UI needs in extensions. **Copy these patter
 
 ### Pattern 1: Selection Dialog (SelectList)
 
-For letting users pick from a list of options. Use `SelectList` from `@earendil-works/airis-tui` with `DynamicBorder` for framing.
+For letting users pick from a list of options. Use `SelectList` from `@sufiyan-sabeel/airis-tui` with `DynamicBorder` for framing.
 
 ```typescript
 import type { ExtensionAPI } from "@sufiyan-sabeel/airis-cli";
 import { DynamicBorder } from "@sufiyan-sabeel/airis-cli";
-import { Container, type SelectItem, SelectList, Text } from "@earendil-works/airis-tui";
+import { Container, type SelectItem, SelectList, Text } from "@sufiyan-sabeel/airis-tui";
 
 airis.registerCommand("pick", {
   handler: async (_args, ctx) => {
@@ -688,11 +688,11 @@ airis.registerCommand("fetch", {
 
 ### Pattern 3: Settings/Toggles (SettingsList)
 
-For toggling multiple settings. Use `SettingsList` from `@earendil-works/airis-tui` with `getSettingsListTheme()`.
+For toggling multiple settings. Use `SettingsList` from `@sufiyan-sabeel/airis-tui` with `getSettingsListTheme()`.
 
 ```typescript
 import { getSettingsListTheme } from "@sufiyan-sabeel/airis-cli";
-import { Container, type SettingItem, SettingsList, Text } from "@earendil-works/airis-tui";
+import { Container, type SettingItem, SettingsList, Text } from "@sufiyan-sabeel/airis-tui";
 
 airis.registerCommand("settings", {
   handler: async (_args, ctx) => {
@@ -832,7 +832,7 @@ Replace the main input editor with a custom implementation. Useful for modal edi
 
 ```typescript
 import { CustomEditor, type ExtensionAPI } from "@sufiyan-sabeel/airis-cli";
-import { matchesKey, truncateToWidth } from "@earendil-works/airis-tui";
+import { matchesKey, truncateToWidth } from "@sufiyan-sabeel/airis-tui";
 
 type Mode = "normal" | "insert";
 

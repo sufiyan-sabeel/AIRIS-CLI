@@ -7,7 +7,7 @@ import * as crypto from "node:crypto";
 import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
-import type { AgentMessage } from "@earendil-works/airis-agent-core";
+import type { AgentMessage } from "@sufiyan-sabeel/airis-agent-core";
 import {
 	type AssistantMessage,
 	getProviders,
@@ -16,7 +16,7 @@ import {
 	type Model,
 	type OAuthProviderId,
 	type OAuthSelectPrompt,
-} from "@earendil-works/airis-ai";
+} from "@sufiyan-sabeel/airis-ai";
 import type {
 	AutocompleteItem,
 	AutocompleteProvider,
@@ -27,7 +27,7 @@ import type {
 	OverlayHandle,
 	OverlayOptions,
 	SlashCommand,
-} from "@earendil-works/airis-tui";
+} from "@sufiyan-sabeel/airis-tui";
 import {
 	CombinedAutocompleteProvider,
 	type Component,
@@ -46,7 +46,7 @@ import {
 	TruncatedText,
 	TUI,
 	visibleWidth,
-} from "@earendil-works/airis-tui";
+} from "@sufiyan-sabeel/airis-tui";
 import chalk from "chalk";
 import { spawn, spawnSync } from "child_process";
 // Android automation is routed via @automation/@multiauto prefixes in _handleRoute()

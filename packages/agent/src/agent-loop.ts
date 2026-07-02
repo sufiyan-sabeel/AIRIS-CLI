@@ -10,7 +10,7 @@ import {
 	streamSimple,
 	type ToolResultMessage,
 	validateToolArguments,
-} from "@earendil-works/airis-ai";
+} from "@sufiyan-sabeel/airis-ai";
 import type {
 	AgentContext,
 	AgentEvent,

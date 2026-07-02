@@ -80,7 +80,7 @@
 - Added `ctx.isProjectTrusted()` for extensions to observe the effective project trust decision, including temporary trust decisions ([#5523](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/5523)).
 - Added a global `defaultProjectTrust` setting to choose whether unresolved project trust asks, always trusts, or never trusts by default.
 - Added extension autocomplete trigger character support for `ctx.ui.addAutocompleteProvider()` wrappers ([#4703](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/4703)).
-- Added Claude Fable 5 model support inherited from `@earendil-works/airis-ai` for the Anthropic and Amazon Bedrock providers, with adaptive thinking and `xhigh` effort support.
+- Added Claude Fable 5 model support inherited from `@sufiyan-sabeel/airis-ai` for the Anthropic and Amazon Bedrock providers, with adaptive thinking and `xhigh` effort support.
 
 ### Fixed
 
@@ -146,7 +146,7 @@
 
 - Added containerization documentation and a Gondolin extension example for routing built-in tools into a local micro-VM.
 - Added Ant Ling provider selection and setup documentation.
-- Added MiniMax-M3 model support inherited from `@earendil-works/airis-ai` for the `minimax` and `minimax-cn` direct providers ([#5313](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/5313)).
+- Added MiniMax-M3 model support inherited from `@sufiyan-sabeel/airis-ai` for the `minimax` and `minimax-cn` direct providers ([#5313](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/5313)).
 - Added NVIDIA NIM provider selection, setup documentation, and direct NIM request attribution headers.
 - Added `ctx.mode` to extension contexts so extensions can distinguish TUI, RPC, JSON, and print mode.
 - Added `ctx.getSystemPromptOptions()` for extension commands to inspect the current base system prompt inputs ([#5306](https://github.com/sufiyan-sabeel/AIRIS-CLI/pull/5306) by [@xl0](https://github.com/xl0)).
@@ -184,7 +184,7 @@
 - Added `--name` / `-n` to set the session display name at startup ([#5153](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/5153)).
 - Added a resume command hint when exiting interactive sessions ([#5176](https://github.com/sufiyan-sabeel/AIRIS-CLI/pull/5176) by [@yzhg1983](https://github.com/yzhg1983)).
 - Added OSC 8 `file://` hyperlinks to file paths shown in built-in file tool titles ([#5189](https://github.com/sufiyan-sabeel/AIRIS-CLI/pull/5189) by [@mpazik](https://github.com/mpazik)).
-- Added custom Amazon Bedrock request header support inherited from `@earendil-works/airis-ai` ([#5178](https://github.com/sufiyan-sabeel/AIRIS-CLI/pull/5178) by [@stephanmck](https://github.com/stephanmck)).
+- Added custom Amazon Bedrock request header support inherited from `@sufiyan-sabeel/airis-ai` ([#5178](https://github.com/sufiyan-sabeel/AIRIS-CLI/pull/5178) by [@stephanmck](https://github.com/stephanmck)).
 
 ### Fixed
 
@@ -297,7 +297,7 @@
 - Fixed config pattern matching to resolve patterns from the correct base directory ([#4898](https://github.com/sufiyan-sabeel/AIRIS-CLI/pull/4898) by [@haoqixu](https://github.com/haoqixu)).
 - Fixed theme pickers to list themes by their content name instead of file stem ([#4830](https://github.com/sufiyan-sabeel/AIRIS-CLI/pull/4830) by [@Perlence](https://github.com/Perlence)).
 - Fixed OpenCode Zen/Go requests to send per-session OpenCode routing headers ([#4847](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/4847)).
-- Fixed Amazon Bedrock provider loading under strict package managers by inheriting the declared `@smithy/node-http-handler` dependency from `@earendil-works/airis-ai` ([#4842](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/4842)).
+- Fixed Amazon Bedrock provider loading under strict package managers by inheriting the declared `@smithy/node-http-handler` dependency from `@sufiyan-sabeel/airis-ai` ([#4842](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/4842)).
 - Fixed inherited Amazon Bedrock Claude requests to send the model output token cap by default, avoiding Bedrock's 4096-token default truncation ([#4848](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/4848)).
 - Fixed exported session HTML to escape quote characters in attribute values ([#4832](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/4832)).
 - Fixed GitHub Copilot device-code login to keep opening the verification URL in browser-capable environments while ignoring browser launch failures for headless use ([#4788](https://github.com/sufiyan-sabeel/AIRIS-CLI/pull/4788) by [@vegarsti](https://github.com/vegarsti)).
@@ -342,9 +342,9 @@
 - Fixed HTML share/export sidebar clicks for shared tool entries to scroll to the rendered tool call ([#4664](https://github.com/sufiyan-sabeel/AIRIS-CLI/pull/4664) by [@yzhg1983](https://github.com/yzhg1983)).
 - Fixed theme palettes to set explicit text colors and avoid terminal-default color drift.
 - Fixed truecolor detection to align terminal image rendering and interactive theme decisions.
-- Fixed loader indicator startup inherited from `@earendil-works/airis-tui` so initialization cannot run before frames are available.
-- Fixed OpenAI-compatible default output token requests inherited from `@earendil-works/airis-ai` to avoid reserving impossible context windows on servers such as vLLM ([#4675](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/4675)).
-- Fixed OpenAI prompt cache keys inherited from `@earendil-works/airis-ai` to stay within the 64-character provider limit ([#4720](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/4720)).
+- Fixed loader indicator startup inherited from `@sufiyan-sabeel/airis-tui` so initialization cannot run before frames are available.
+- Fixed OpenAI-compatible default output token requests inherited from `@sufiyan-sabeel/airis-ai` to avoid reserving impossible context windows on servers such as vLLM ([#4675](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/4675)).
+- Fixed OpenAI prompt cache keys inherited from `@sufiyan-sabeel/airis-ai` to stay within the 64-character provider limit ([#4720](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/4720)).
 - Fixed Windows npm-family package commands for fnm-managed Node.js installs that expose both extensionless Unix scripts and `.cmd` shims ([#4793](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/4793)).
 
 ## [0.75.3] - 2026-05-18
@@ -358,7 +358,7 @@
 ### Fixed
 
 - Fixed Bun-compiled release binaries failing to start when Bun's built-in undici shim lacks npm undici's `install` export ([#4661](https://github.com/sufiyan-sabeel/AIRIS-CLI/pull/4661) by [@dmasiero](https://github.com/dmasiero)).
-- Fixed Xiaomi MiMo generated model metadata to replay assistant tool-call messages with `reasoning_content` for thinking-mode multi-turn requests, inherited from `@earendil-works/airis-ai` ([#4678](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/4678)).
+- Fixed Xiaomi MiMo generated model metadata to replay assistant tool-call messages with `reasoning_content` for thinking-mode multi-turn requests, inherited from `@sufiyan-sabeel/airis-ai` ([#4678](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/4678)).
 - Fixed Windows external editor handoff so vim/nvim can receive input after opening from the TUI ([#4612](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/4612)).
 - Fixed Windows npm self-updates to move loaded native dependency packages out of the active install before reinstalling airis ([#4157](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/4157)).
 - Fixed `airis update --self` detection for pnpm v11 global installs whose package path resolves through the pnpm store ([#4647](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/4647)).
@@ -370,17 +370,17 @@
 ### Fixed
 
 - Fixed config selectors to scale their visible row count to terminal height ([#4243](https://github.com/sufiyan-sabeel/AIRIS-CLI/pull/4243) by [@samjonester](https://github.com/samjonester)).
-- Fixed Anthropic-compatible API-key requests to ignore unrelated `ANTHROPIC_AUTH_TOKEN` environment values, avoiding invalid bearer credentials for providers such as Xiaomi MiMo inherited from `@earendil-works/airis-ai` ([#4342](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/4342)).
-- Fixed Amazon Bedrock message conversion to skip unknown content blocks instead of failing the stream, inherited from `@earendil-works/airis-ai` ([#4223](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/4223)).
-- Fixed Azure OpenAI Responses and OpenAI Responses error formatting to prefix HTTP status codes onto `errorMessage`, so transient 5xx and 429 errors are correctly matched by the agent-level auto-retry classifier inherited from `@earendil-works/airis-ai` ([#4232](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/4232)).
-- Fixed OpenCode Go Kimi reasoning replay by normalizing streamed `reasoning` fields back to `reasoning_content` for OpenCode Go only, inherited from `@earendil-works/airis-ai` ([#4251](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/4251)).
-- Fixed Xiaomi MiMo model metadata to use the OpenAI-compatible endpoints and `openai-completions` API, restoring multi-turn thinking/tool-call sessions inherited from `@earendil-works/airis-ai` ([#4505](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/4505)).
+- Fixed Anthropic-compatible API-key requests to ignore unrelated `ANTHROPIC_AUTH_TOKEN` environment values, avoiding invalid bearer credentials for providers such as Xiaomi MiMo inherited from `@sufiyan-sabeel/airis-ai` ([#4342](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/4342)).
+- Fixed Amazon Bedrock message conversion to skip unknown content blocks instead of failing the stream, inherited from `@sufiyan-sabeel/airis-ai` ([#4223](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/4223)).
+- Fixed Azure OpenAI Responses and OpenAI Responses error formatting to prefix HTTP status codes onto `errorMessage`, so transient 5xx and 429 errors are correctly matched by the agent-level auto-retry classifier inherited from `@sufiyan-sabeel/airis-ai` ([#4232](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/4232)).
+- Fixed OpenCode Go Kimi reasoning replay by normalizing streamed `reasoning` fields back to `reasoning_content` for OpenCode Go only, inherited from `@sufiyan-sabeel/airis-ai` ([#4251](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/4251)).
+- Fixed Xiaomi MiMo model metadata to use the OpenAI-compatible endpoints and `openai-completions` API, restoring multi-turn thinking/tool-call sessions inherited from `@sufiyan-sabeel/airis-ai` ([#4505](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/4505)).
 - Fixed JSON parse failures for compressed fetch responses under Node 26.0 by installing undici fetch globals alongside airis's global dispatcher ([#4650](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/4650), [#4652](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/4652), [#4653](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/4653)).
 - Fixed npm-family package commands on Windows to avoid shell argument splitting when install prefixes contain spaces ([#4623](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/4623)).
 
 ### Removed
 
-- Removed non-working OpenAI Codex fast model variants inherited from `@earendil-works/airis-ai`.
+- Removed non-working OpenAI Codex fast model variants inherited from `@sufiyan-sabeel/airis-ai`.
 
 ## [0.75.0] - 2026-05-17
 
@@ -392,24 +392,24 @@
 
 - Fixed compaction summary calls to use custom agent stream functions, preserving proxy-backed LLM routing ([#4484](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/4484)).
 - Fixed system prompt and context file boundaries to use explicit XML tags instead of Markdown headings, reducing inconsistent boundary ingestion by models ([#4541](https://github.com/sufiyan-sabeel/AIRIS-CLI/pull/4541) by [@herrnel](https://github.com/herrnel)).
-- Fixed OpenAI Codex generated model metadata to use the current upstream model list inherited from `@earendil-works/airis-ai` ([#4603](https://github.com/sufiyan-sabeel/AIRIS-CLI/pull/4603) by [@mattiacerutti](https://github.com/mattiacerutti)).
-- Fixed GitHub Copilot GPT model thinking metadata inherited from `@earendil-works/airis-ai` to map unsupported minimal thinking to low ([#4622](https://github.com/sufiyan-sabeel/AIRIS-CLI/pull/4622) by [@mattiacerutti](https://github.com/mattiacerutti)).
+- Fixed OpenAI Codex generated model metadata to use the current upstream model list inherited from `@sufiyan-sabeel/airis-ai` ([#4603](https://github.com/sufiyan-sabeel/AIRIS-CLI/pull/4603) by [@mattiacerutti](https://github.com/mattiacerutti)).
+- Fixed GitHub Copilot GPT model thinking metadata inherited from `@sufiyan-sabeel/airis-ai` to map unsupported minimal thinking to low ([#4622](https://github.com/sufiyan-sabeel/AIRIS-CLI/pull/4622) by [@mattiacerutti](https://github.com/mattiacerutti)).
 - Fixed user-scoped npm airis packages to install under `~/.airis/agent/npm/` instead of npm's global package root, avoiding permission errors with system-managed Node installs ([#4587](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/4587)).
 - Fixed Mistral requests failing after the global fetch proxy/timeout workaround by removing the custom fetch override and using undici 8 dispatcher support instead ([#4619](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/4619)).
-- Fixed default output token requests for models whose advertised output limit is effectively their full context window, avoiding impossible provider requests inherited from `@earendil-works/airis-ai` ([#4614](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/4614)).
+- Fixed default output token requests for models whose advertised output limit is effectively their full context window, avoiding impossible provider requests inherited from `@sufiyan-sabeel/airis-ai` ([#4614](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/4614)).
 
 ## [0.74.1] - 2026-05-16
 
 ### New Features
 
-- **Image generation support** - Added image generation APIs, generated image model metadata, and built-in OpenRouter image generation support inherited from `@earendil-works/airis-ai`.
+- **Image generation support** - Added image generation APIs, generated image model metadata, and built-in OpenRouter image generation support inherited from `@sufiyan-sabeel/airis-ai`.
 - **Together AI provider** - Added Together AI as a built-in provider with `/login` API-key auth, default model resolution, and setup docs. See [README.md#providers--models](README.md#providers--models) and [docs/providers.md](docs/providers.md).
 - **Windows ARM64 standalone binaries** - Added standalone release artifacts for Windows ARM64.
-- **Improved terminal and markdown rendering** - Added markdown list indentation, task-list checkbox rendering, large markdown robustness, and inline image placement fixes inherited from `@earendil-works/airis-tui`.
+- **Improved terminal and markdown rendering** - Added markdown list indentation, task-list checkbox rendering, large markdown robustness, and inline image placement fixes inherited from `@sufiyan-sabeel/airis-tui`.
 
 ### Added
 
-- Added image generation support from `@earendil-works/airis-ai`, including image generation APIs, image model metadata, and built-in OpenRouter image generation support ([#3887](https://github.com/sufiyan-sabeel/AIRIS-CLI/pull/3887) by [@cristinaponcela](https://github.com/cristinaponcela)).
+- Added image generation support from `@sufiyan-sabeel/airis-ai`, including image generation APIs, image model metadata, and built-in OpenRouter image generation support ([#3887](https://github.com/sufiyan-sabeel/AIRIS-CLI/pull/3887) by [@cristinaponcela](https://github.com/cristinaponcela)).
 - Added Together AI to built-in provider setup, `/login` API-key auth, and default model resolution ([#3624](https://github.com/sufiyan-sabeel/AIRIS-CLI/pull/3624) by [@Nutlope](https://github.com/Nutlope)).
 - Added Windows ARM64 standalone binary release artifacts ([#4458](https://github.com/sufiyan-sabeel/AIRIS-CLI/pull/4458) by [@brianmichel](https://github.com/brianmichel)).
 
@@ -433,8 +433,8 @@
 - Fixed uncaught interactive-mode exceptions to restore the terminal before exiting ([#4426](https://github.com/sufiyan-sabeel/AIRIS-CLI/pull/4426) by [@ofa1](https://github.com/ofa1)).
 - Fixed ANSI stripping to match `strip-ansi` behavior after dependency removal.
 - Fixed UUIDv7 sequence generation shared by session IDs after dependency removal.
-- Fixed OpenRouter cached-token usage accounting, Fireworks caching compatibility, and OpenAI Codex WebSocket proxy handling inherited from `@earendil-works/airis-ai`.
-- Fixed markdown list wrapping, task-list checkboxes, large markdown rendering, WezTerm Kitty keyboard escape handling, and short-viewport inline image placement inherited from `@earendil-works/airis-tui`.
+- Fixed OpenRouter cached-token usage accounting, Fireworks caching compatibility, and OpenAI Codex WebSocket proxy handling inherited from `@sufiyan-sabeel/airis-ai`.
+- Fixed markdown list wrapping, task-list checkboxes, large markdown rendering, WezTerm Kitty keyboard escape handling, and short-viewport inline image placement inherited from `@sufiyan-sabeel/airis-tui`.
 - Fixed theme sharing across package scopes so extensions do not crash with `Theme not initialized` ([#4333](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/4333)).
 - Fixed keybinding hints to show Option instead of Alt on macOS ([#4289](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/4289)).
 - Fixed the interactive update notification to render the changelog as an OSC 8 hyperlink when the terminal supports hyperlinks ([#4280](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/4280)).
@@ -528,7 +528,7 @@
 
 - Added Xiaomi MiMo Token Plan provider support with `XIAOMI_AAIRIS_KEY`, default model resolution, `/login` display support, and provider documentation ([#4005](https://github.com/sufiyan-sabeel/AIRIS-CLI/pull/4005) by [@Phoen1xCode](https://github.com/Phoen1xCode)).
 - Added model-level `thinkingLevelMap` support in `models.json` and `airis.registerProvider()`, allowing models to expose only the thinking levels they actually support ([#3208](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/3208)).
-- Added `shouldStopAfterTurn` agent loop callback for post-turn stop control, inherited from `@earendil-works/airis-agent-core`. See [`packages/agent/README.md`](https://github.com/sufiyan-sabeel/AIRIS-CLI/blob/main/packages/agent/README.md).
+- Added `shouldStopAfterTurn` agent loop callback for post-turn stop control, inherited from `@sufiyan-sabeel/airis-agent-core`. See [`packages/agent/README.md`](https://github.com/sufiyan-sabeel/AIRIS-CLI/blob/main/packages/agent/README.md).
 
 ### Fixed
 
@@ -560,7 +560,7 @@
 
 - Added Cloudflare AI Gateway as a built-in provider with `CLOUDFLARE_AAIRIS_KEY`/`CLOUDFLARE_ACCOUNT_ID`/`CLOUDFLARE_GATEWAY_ID` setup, default model resolution, `/login` display support, and provider documentation ([#3856](https://github.com/sufiyan-sabeel/AIRIS-CLI/pull/3856) by [@mchenco](https://github.com/mchenco)).
 - Added Moonshot AI as a built-in provider with `MOONSHOT_AAIRIS_KEY` setup, default model resolution, and `/login` display support.
-- Added Mistral Medium 3.5 built-in model support via `@earendil-works/airis-ai` ([#4009](https://github.com/sufiyan-sabeel/AIRIS-CLI/pull/4009) by [@technocidal](https://github.com/technocidal)).
+- Added Mistral Medium 3.5 built-in model support via `@sufiyan-sabeel/airis-ai` ([#4009](https://github.com/sufiyan-sabeel/AIRIS-CLI/pull/4009) by [@technocidal](https://github.com/technocidal)).
 - Added routed OpenAI-compatible response model metadata in assistant messages, so providers such as OpenRouter can expose the concrete model used ([#3968](https://github.com/sufiyan-sabeel/AIRIS-CLI/pull/3968) by [@purrgrammer](https://github.com/purrgrammer)).
 - Added `AIRIS_CODING_AGENT_SESSION_DIR` as an environment equivalent to `--session-dir` ([#4027](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/4027)).
 - Added `message_end` extension result support for replacing finalized messages, enabling extensions to override assistant usage cost ([#3982](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/3982)).
@@ -574,7 +574,7 @@
 - Fixed Google Vertex Gemini 3 tool call replay for unsigned tool calls ([#4032](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/4032)).
 - Fixed blocked `edit` tool results rendering the rejection reason twice after interactive extension confirmation ([#3830](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/3830)).
 - Fixed extension-triggered thinking level changes refreshing the interactive editor border immediately ([#3888](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/3888)).
-- Fixed the coding-agent README See Also link to point at `@earendil-works/airis-agent-core` ([#4023](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/4023)).
+- Fixed the coding-agent README See Also link to point at `@sufiyan-sabeel/airis-agent-core` ([#4023](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/4023)).
 - Fixed `grep` and `find` tool argument injection for flag-like search patterns ([#4018](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/4018)).
 - Fixed PowerShell shell command output on Windows by only spawning detached processes on Unix ([#4013](https://github.com/sufiyan-sabeel/AIRIS-CLI/pull/4013) by [@picasso250](https://github.com/picasso250)).
 - Fixed Bun package manager `node_modules` discovery when `npmCommand` is configured to use Bun ([#3998](https://github.com/sufiyan-sabeel/AIRIS-CLI/pull/3998) by [@thirtythreeforty](https://github.com/thirtythreeforty)).
@@ -765,7 +765,7 @@
 
 ### Breaking Changes
 
-- Migrated first-party coding-agent code, SDK/examples/docs, and package metadata from `@sinclair/typebox` 0.34.x to `typebox` 1.x. New extensions, SDK integrations, and airis packages should depend on and import from `typebox`. Legacy extension loading still aliases the root `@sinclair/typebox` package, but `@sinclair/typebox/compiler` is no longer shimmed. This migration also picks up the new `@earendil-works/airis-ai` TypeBox-native validator path, so tool argument validation now works in eval-restricted runtimes such as Cloudflare Workers instead of being skipped ([#3112](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/3112))
+- Migrated first-party coding-agent code, SDK/examples/docs, and package metadata from `@sinclair/typebox` 0.34.x to `typebox` 1.x. New extensions, SDK integrations, and airis packages should depend on and import from `typebox`. Legacy extension loading still aliases the root `@sinclair/typebox` package, but `@sinclair/typebox/compiler` is no longer shimmed. This migration also picks up the new `@sufiyan-sabeel/airis-ai` TypeBox-native validator path, so tool argument validation now works in eval-restricted runtimes such as Cloudflare Workers instead of being skipped ([#3112](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/3112))
 - Session-replacement commands now invalidate captured pre-replacement session-bound extension objects after `ctx.newSession()`, `ctx.fork()`, and `ctx.switchSession()`. Old `airis` and command `ctx` references now throw instead of silently targeting the replaced session. Migration: if code needs to keep working in the replacement session after one of those calls, pass `withSession` to that same method and do the post-switch work there. In practice, move post-switch `airis.sendUserMessage()`, `airis.sendMessage()`, and command-ctx/session-manager access into `withSession`, and use only the `ReplacedSessionContext` passed to that callback for session-bound operations. Footguns: `withSession` runs after the old extension instance has already received `session_shutdown`, old cleanup may already have invalidated captured state, captured old `airis` / old command `ctx` are stale, and previously extracted raw objects such as `const sm = ctx.sessionManager` remain the caller's responsibility and must not be reused after the switch.
 
 ### Added
@@ -1213,7 +1213,7 @@ await runtime.fork("entry-id");
 ### Fixed
 
 - Fixed extension-queued user messages to refresh the interactive pending-message list so messages submitted while a turn is active are no longer silently dropped ([#2674](https://github.com/sufiyan-sabeel/AIRIS-CLI/pull/2674) by [@mrexodia](https://github.com/mrexodia))
-- Fixed monorepo `tsconfig.json` path mappings to resolve `@earendil-works/airis-ai` subpath exports to source files in development checkouts ([#2625](https://github.com/sufiyan-sabeel/AIRIS-CLI/pull/2625) by [@ferologics](https://github.com/ferologics))
+- Fixed monorepo `tsconfig.json` path mappings to resolve `@sufiyan-sabeel/airis-ai` subpath exports to source files in development checkouts ([#2625](https://github.com/sufiyan-sabeel/AIRIS-CLI/pull/2625) by [@ferologics](https://github.com/ferologics))
 - Fixed TUI cell size response handling to consume only exact `CSI 6 ; height ; width t` replies, so bare `Escape` is no longer swallowed while waiting for terminal image metadata ([#2661](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/2661))
 - Fixed Kitty keyboard protocol keypad functional keys to normalize to logical digits, symbols, and navigation keys, so numpad input in terminals such as iTerm2 no longer inserts Private Use Area gibberish or gets ignored ([#2650](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/2650))
 
@@ -1293,7 +1293,7 @@ return streamSimple(model, messages, {
 - Fixed file mutation queue ordering so concurrent `edit` and `write` operations targeting the same file stay serialized in request order instead of being reordered during queue-key resolution
 - Fixed `models.json` shell-command auth and headers to resolve at request time instead of being cached into long-lived model state. airis now leaves TTL, caching, and recovery policy to user-provided wrapper commands because arbitrary shell commands need provider-specific strategies ([#1835](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/1835))
 - Fixed Google and Vertex cost calculation to subtract cached prompt tokens from billable input tokens instead of double-counting them when providers report `cachedContentTokenCount` ([#2588](https://github.com/sufiyan-sabeel/AIRIS-CLI/pull/2588) by [@sparkleMing](https://github.com/sparkleMing))
-- Added missing `ajv` direct dependency; previously relied on transitive install via `@earendil-works/airis-ai` which broke standalone installs ([#2252](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/2252))
+- Added missing `ajv` direct dependency; previously relied on transitive install via `@sufiyan-sabeel/airis-ai` which broke standalone installs ([#2252](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/2252))
 - Fixed `/export` HTML backgrounds to honor `theme.export.pageBg`, `cardBg`, and `infoBg` instead of always deriving them from `userMessageBg` ([#2565](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/2565))
 - Fixed interactive bash execution collapsed previews to recompute visual line wrapping at render time, so previews respect the current terminal width after resizes and split-pane width changes ([#2569](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/2569))
 - Fixed RPC `get_session_stats` to expose `contextUsage`, so headless clients can read actual current context-window usage instead of deriving it from token totals ([#2550](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/2550))
@@ -1457,7 +1457,7 @@ Examples:
 
 ### New Features
 
-- Faster startup by lazy-loading `@earendil-works/airis-ai` provider SDKs on first use instead of import time ([#2297](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/2297))
+- Faster startup by lazy-loading `@sufiyan-sabeel/airis-ai` provider SDKs on first use instead of import time ([#2297](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/2297))
 - Better provider retry behavior when providers return error messages as responses ([#2264](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/2264))
 - Better terminal integration via OSC 133 command-executed markers ([#2242](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/2242))
 - Better Git footer branch detection for repositories using reftable storage ([#2300](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/2300))
@@ -1468,7 +1468,7 @@ Examples:
 
 ### Changed
 
-- Lazy-load built-in `@earendil-works/airis-ai` provider modules and root provider wrappers so coding-agent startup no longer eagerly loads provider SDKs before first use ([#2297](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/2297))
+- Lazy-load built-in `@sufiyan-sabeel/airis-ai` provider modules and root provider wrappers so coding-agent startup no longer eagerly loads provider SDKs before first use ([#2297](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/2297))
 
 ### Fixed
 
@@ -1662,7 +1662,7 @@ Examples:
 - Fixed OpenAI Responses replay to omit empty thinking blocks, avoiding invalid no-op reasoning items in follow-up turns.
 - Updated Mistral integration to use the native SDK-backed provider and conversations API, including coding-agent model/provider wiring and Mistral setup documentation ([#1716](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/1716)).
 - Fixed Antigravity reliability: endpoint cascade on 403/404, added autopush sandbox fallback, removed extra fingerprint headers ([#1830](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/1830)).
-- Fixed `@earendil-works/airis-ai/oauth` extension imports in published installs by resolving the subpath directly from built `dist` files instead of package-root wrapper shims ([#1856](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/1856)).
+- Fixed `@sufiyan-sabeel/airis-ai/oauth` extension imports in published installs by resolving the subpath directly from built `dist` files instead of package-root wrapper shims ([#1856](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/1856)).
 - Fixed Gemini 3 multi-turn tool use losing structured context by using `skip_thought_signature_validator` sentinel for unsigned function calls instead of text fallback ([#1829](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/1829)).
 - Fixed model selector filter not accepting typed characters in VS Code 1.110+ due to missing Kitty CSI-u printable decoding in the `Input` component ([#1857](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/1857))
 - Fixed editor/footer visibility drift during terminal resize by forcing full redraws when terminal width or height changes ([#1844](https://github.com/sufiyan-sabeel/AIRIS-CLI/pull/1844) by [@ghoulr](https://github.com/ghoulr)).
@@ -1687,7 +1687,7 @@ Examples:
 ### Breaking Changes
 
 - Changed scoped model thinking semantics. Scoped entries without an explicit `:<thinking>` suffix now inherit the current session thinking level when selected, instead of applying a startup-captured default.
-- Moved Node OAuth runtime exports off the top-level `@earendil-works/airis-ai` entry. OAuth login and refresh must be imported from `@earendil-works/airis-ai/oauth` ([#1814](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/1814)).
+- Moved Node OAuth runtime exports off the top-level `@sufiyan-sabeel/airis-ai` entry. OAuth login and refresh must be imported from `@sufiyan-sabeel/airis-ai/oauth` ([#1814](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/1814)).
 
 ### Added
 
@@ -1707,7 +1707,7 @@ Examples:
 - Fixed TUI width handling for regional indicator symbols to prevent wrap drift and stale characters during streaming ([#1783](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/1783)).
 - Fixed Kitty CSI-u handling to ignore unsupported modifiers so modifier-only events do not insert printable characters ([#1807](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/1807)).
 - Fixed single-line paste handling to insert text atomically and avoid repeated `@` autocomplete scans on large pastes ([#1812](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/1812)).
-- Fixed extension loading with the new `@earendil-works/airis-ai/oauth` export path by aliasing the oauth subpath in the extension loader and development path mapping ([#1814](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/1814)).
+- Fixed extension loading with the new `@sufiyan-sabeel/airis-ai/oauth` export path by aliasing the oauth subpath in the extension loader and development path mapping ([#1814](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/1814)).
 - Fixed browser-safe provider loading regressions by preloading the Bedrock provider module in compiled Bun binaries and rebuilding binaries against fresh workspace dependencies ([#1814](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/1814)).
 - Fixed GNU screen terminal detection by downgrading theme output to 256-color mode for `screen*` TERM values ([#1809](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/1809)).
 - Fixed branch summarization queue handling so messages typed while summaries are generated are processed correctly ([#1803](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/1803)).
@@ -1718,7 +1718,7 @@ Examples:
 - Fixed Groq Qwen3 reasoning effort mapping for OpenAI-compatible models ([#1745](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/1745)).
 - Fixed Bedrock `AWS_PROFILE` region resolution by honoring profile `region` values ([#1800](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/1800)).
 - Fixed Gemini 3.1 thinking-level detection for `google` and `google-vertex` providers ([#1785](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/1785)).
-- Fixed browser bundling compatibility for `@earendil-works/airis-ai` by removing Node-only side effects from default browser import paths ([#1814](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/1814)).
+- Fixed browser bundling compatibility for `@sufiyan-sabeel/airis-ai` by removing Node-only side effects from default browser import paths ([#1814](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/1814)).
 ## [0.55.4] - 2026-03-02
 
 ### New Features
@@ -2691,7 +2691,7 @@ There are multiple SDK breaking changes since v0.49.3. For the quickest migratio
 
 ### Fixed
 
-- Extensions now load correctly in compiled Bun binary using `@mariozechner/jiti` fork with `virtualModules` support. Bundled packages (`@sinclair/typebox`, `@earendil-works/airis-tui`, `@earendil-works/airis-ai`, `@sufiyan-sabeel/airis-cli`) are accessible to extensions without filesystem node_modules.
+- Extensions now load correctly in compiled Bun binary using `@mariozechner/jiti` fork with `virtualModules` support. Bundled packages (`@sinclair/typebox`, `@sufiyan-sabeel/airis-tui`, `@sufiyan-sabeel/airis-ai`, `@sufiyan-sabeel/airis-cli`) are accessible to extensions without filesystem node_modules.
 
 ## [0.45.1] - 2026-01-13
 
@@ -3279,7 +3279,7 @@ airis --extension ./safety.ts -e ./todo.ts
 
 ### Breaking Changes
 
-- **Key detection functions removed from `@earendil-works/airis-tui`**: All `isXxx()` key detection functions (`isEnter()`, `isEscape()`, `isCtrlC()`, etc.) have been removed. Use `matchesKey(data, keyId)` instead (e.g., `matchesKey(data, "enter")`, `matchesKey(data, "ctrl+c")`). This affects hooks and custom tools that use `ctx.ui.custom()` with keyboard input handling. ([#405](https://github.com/sufiyan-sabeel/AIRIS-CLI/pull/405))
+- **Key detection functions removed from `@sufiyan-sabeel/airis-tui`**: All `isXxx()` key detection functions (`isEnter()`, `isEscape()`, `isCtrlC()`, etc.) have been removed. Use `matchesKey(data, keyId)` instead (e.g., `matchesKey(data, "enter")`, `matchesKey(data, "ctrl+c")`). This affects hooks and custom tools that use `ctx.ui.custom()` with keyboard input handling. ([#405](https://github.com/sufiyan-sabeel/AIRIS-CLI/pull/405))
 
 ### Added
 
@@ -3488,7 +3488,7 @@ See [docs/custom-tools.md](docs/custom-tools.md) and [examples/custom-tools/](ex
 - `AppMessage` → `AgentMessage`
 - `sessionFile` returns `string | undefined` (was `string | null`)
 - `model` returns `Model | undefined` (was `Model | null`)
-- `Attachment` type removed. Use `ImageContent` from `@earendil-works/airis-ai` instead. Add images directly to message content arrays.
+- `Attachment` type removed. Use `ImageContent` from `@sufiyan-sabeel/airis-ai` instead. Add images directly to message content arrays.
 
 **AgentSession API:**
 
@@ -3717,7 +3717,7 @@ Total color count increased from 46 to 50. See [docs/themes.md](docs/themes.md) 
   - `createAgentSession()` now accepts `authStorage` and `modelRegistry` options
   - Removed `configureOAuthStorage()`, `defaultGetApiKey()`, `findModel()`, `discoverAvailableModels()`
   - Removed `getApiKey` callback option (use `AuthStorage.setRuntimeApiKey()` for runtime overrides)
-  - Use `getModel()` from `@earendil-works/airis-ai` for built-in models, `modelRegistry.find()` for custom models + built-in models
+  - Use `getModel()` from `@sufiyan-sabeel/airis-ai` for built-in models, `modelRegistry.find()` for custom models + built-in models
   - See updated [SDK documentation](docs/sdk.md) and [README](README.md)
 
 - **Settings changes**: Removed `apiKeys` from `settings.json`. Use `auth.json` instead. ([#296](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/296))
@@ -4020,7 +4020,7 @@ Total color count increased from 46 to 50. See [docs/themes.md](docs/themes.md) 
   - `rpc.md`: Added missing `hook_error` event documentation
   - `README.md`: Complete settings table, condensed philosophy section, standardized OAuth docs
 
-- Hooks loader now supports same import aliases as custom tools (`@sinclair/typebox`, `@earendil-works/airis-ai`, `@earendil-works/airis-tui`, `@sufiyan-sabeel/airis-cli`).
+- Hooks loader now supports same import aliases as custom tools (`@sinclair/typebox`, `@sufiyan-sabeel/airis-ai`, `@sufiyan-sabeel/airis-tui`, `@sufiyan-sabeel/airis-cli`).
 
 ### Breaking Changes
 
@@ -4042,7 +4042,7 @@ Total color count increased from 46 to 50. See [docs/themes.md](docs/themes.md) 
 
 - Fixed TUI performance regression caused by Box component lacking render caching. Built-in tools now use Text directly (like v0.22.5), and Box has proper caching for custom tool rendering.
 
-- Fixed custom tools failing to load from `~/.airis/agent/tools/` when airis is installed globally. Module imports (`@sinclair/typebox`, `@earendil-works/airis-tui`, `@earendil-works/airis-ai`) are now resolved via aliases.
+- Fixed custom tools failing to load from `~/.airis/agent/tools/` when airis is installed globally. Module imports (`@sinclair/typebox`, `@sufiyan-sabeel/airis-tui`, `@sufiyan-sabeel/airis-ai`) are now resolved via aliases.
 
 ## [0.23.0] - 2025-12-17
 
@@ -4082,7 +4082,7 @@ Total color count increased from 46 to 50. See [docs/themes.md](docs/themes.md) 
 
 - **Tool output display**: When collapsed, tool output now shows the last N lines instead of the first N lines, making streaming output more useful.
 
-- Updated `@earendil-works/airis-ai` with X-Initiator header support for GitHub Copilot, ensuring agent calls are not deducted from quota. ([#200](https://github.com/sufiyan-sabeel/AIRIS-CLI/pull/200) by [@kim0](https://github.com/kim0))
+- Updated `@sufiyan-sabeel/airis-ai` with X-Initiator header support for GitHub Copilot, ensuring agent calls are not deducted from quota. ([#200](https://github.com/sufiyan-sabeel/AIRIS-CLI/pull/200) by [@kim0](https://github.com/kim0))
 
 ### Fixed
 
@@ -4094,7 +4094,7 @@ Total color count increased from 46 to 50. See [docs/themes.md](docs/themes.md) 
 
 ### Changed
 
-- Updated `@earendil-works/airis-ai` with interleaved thinking enabled by default for Anthropic Claude 4 models.
+- Updated `@sufiyan-sabeel/airis-ai` with interleaved thinking enabled by default for Anthropic Claude 4 models.
 
 ## [0.22.1] - 2025-12-15
 
@@ -4102,7 +4102,7 @@ _Dedicated to Peter's shoulder ([@steipete](https://twitter.com/steipete))_
 
 ### Changed
 
-- Updated `@earendil-works/airis-ai` with interleaved thinking support for Anthropic models.
+- Updated `@sufiyan-sabeel/airis-ai` with interleaved thinking support for Anthropic models.
 
 ## [0.22.0] - 2025-12-15
 

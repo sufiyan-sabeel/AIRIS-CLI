@@ -21,7 +21,7 @@ import {
 	streamSimpleAnthropic,
 	streamSimpleOpenAIResponses,
 	type ThinkingLevelMap,
-} from "@earendil-works/airis-ai";
+} from "@sufiyan-sabeel/airis-ai";
 import type { ExtensionAPI } from "@sufiyan-sabeel/airis-cli";
 
 // =============================================================================

@@ -1,4 +1,4 @@
-import { fauxAssistantMessage, fauxToolCall, registerFauxProvider, type StreamOptions } from "@earendil-works/airis-ai";
+import { fauxAssistantMessage, fauxToolCall, registerFauxProvider, type StreamOptions } from "@sufiyan-sabeel/airis-ai";
 import { afterEach, describe, expect, it } from "vitest";
 import { AgentHarness } from "../../src/harness/agent-harness.ts";
 import { NodeExecutionEnv } from "../../src/harness/env/nodejs.ts";

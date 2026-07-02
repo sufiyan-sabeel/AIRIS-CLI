@@ -16,7 +16,6 @@
  * Then use ctrl+o to toggle between minimal (collapsed) and full (expanded) views.
  */
 
-import { Text } from "@earendil-works/airis-tui";
 import type { ExtensionAPI } from "@sufiyan-sabeel/airis-cli";
 import {
 	createBashTool,
@@ -27,6 +26,7 @@ import {
 	createReadTool,
 	createWriteTool,
 } from "@sufiyan-sabeel/airis-cli";
+import { Text } from "@sufiyan-sabeel/airis-tui";
 import { homedir } from "os";
 
 /**

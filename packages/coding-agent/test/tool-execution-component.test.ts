@@ -1,5 +1,5 @@
 import { join, resolve } from "node:path";
-import { Text, type TUI } from "@earendil-works/airis-tui";
+import { Text, type TUI } from "@sufiyan-sabeel/airis-tui";
 import { Type } from "typebox";
 import { beforeAll, describe, expect, test } from "vitest";
 import { getReadmePath } from "../src/config.ts";

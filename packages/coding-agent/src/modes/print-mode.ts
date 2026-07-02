@@ -6,7 +6,7 @@
  * - `airis --mode json "prompt"` - JSON event stream
  */
 
-import type { AssistantMessage, ImageContent } from "@earendil-works/airis-ai";
+import type { AssistantMessage, ImageContent } from "@sufiyan-sabeel/airis-ai";
 import type { AgentSessionRuntime } from "../core/agent-session-runtime.ts";
 import { flushRawStdout, writeRawStdout } from "../core/output-guard.ts";
 import { killTrackedDetachedChildren } from "../utils/shell.ts";

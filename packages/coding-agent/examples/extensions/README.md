@@ -182,7 +182,7 @@ export default function (airis: ExtensionAPI) {
 
 **Use StringEnum for string parameters** (required for Google API compatibility):
 ```typescript
-import { StringEnum } from "@earendil-works/airis-ai";
+import { StringEnum } from "@sufiyan-sabeel/airis-ai";
 
 // Good
 action: StringEnum(["list", "add"] as const)

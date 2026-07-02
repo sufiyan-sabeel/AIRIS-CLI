@@ -7,7 +7,7 @@
  * 3. Loads the result into the editor for user to fill in answers
  */
 
-import { complete, type UserMessage } from "@earendil-works/airis-ai";
+import { complete, type UserMessage } from "@sufiyan-sabeel/airis-ai";
 import type { ExtensionAPI } from "@sufiyan-sabeel/airis-cli";
 import { BorderedLoader } from "@sufiyan-sabeel/airis-cli";
 

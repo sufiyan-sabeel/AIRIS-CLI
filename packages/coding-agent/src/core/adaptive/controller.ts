@@ -1,6 +1,6 @@
-import type { AgentMessage } from "@earendil-works/airis-agent-core";
-import type { Model } from "@earendil-works/airis-ai";
-import { Text } from "@earendil-works/airis-tui";
+import type { AgentMessage } from "@sufiyan-sabeel/airis-agent-core";
+import type { Model } from "@sufiyan-sabeel/airis-ai";
+import { Text } from "@sufiyan-sabeel/airis-tui";
 import { type Static, Type } from "typebox";
 import { estimateContextTokens, shouldCompact } from "../compaction/index.ts";
 import type { ToolDefinition } from "../extensions/types.ts";

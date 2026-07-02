@@ -1,7 +1,7 @@
 import { basename, dirname, isAbsolute, relative, resolve as resolvePath, sep } from "node:path";
-import type { AgentTool } from "@earendil-works/airis-agent-core";
-import type { Api, ImageContent, Model, TextContent } from "@earendil-works/airis-ai";
-import { Text } from "@earendil-works/airis-tui";
+import type { AgentTool } from "@sufiyan-sabeel/airis-agent-core";
+import type { Api, ImageContent, Model, TextContent } from "@sufiyan-sabeel/airis-ai";
+import { Text } from "@sufiyan-sabeel/airis-tui";
 import { constants } from "fs";
 import { access as fsAccess, readFile as fsReadFile } from "fs/promises";
 import { type Static, Type } from "typebox";

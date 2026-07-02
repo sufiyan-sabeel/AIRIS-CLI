@@ -12,8 +12,8 @@
  * The generated prompt appears as a draft in the editor for review/editing.
  */
 
-import type { AgentMessage } from "@earendil-works/airis-agent-core";
-import { complete, type Message } from "@earendil-works/airis-ai";
+import type { AgentMessage } from "@sufiyan-sabeel/airis-agent-core";
+import { complete, type Message } from "@sufiyan-sabeel/airis-ai";
 import type { ExtensionAPI, SessionEntry } from "@sufiyan-sabeel/airis-cli";
 import { BorderedLoader, convertToLlm, serializeConversation } from "@sufiyan-sabeel/airis-cli";
 

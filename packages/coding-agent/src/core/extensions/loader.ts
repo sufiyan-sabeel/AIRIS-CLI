@@ -7,11 +7,11 @@ import * as fs from "node:fs";
 import { createRequire } from "node:module";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
-import * as _bundledAirisAgentCore from "@earendil-works/airis-agent-core";
-import * as _bundledAirisAi from "@earendil-works/airis-ai";
-import * as _bundledAirisAiOauth from "@earendil-works/airis-ai/oauth";
-import type { KeyId } from "@earendil-works/airis-tui";
-import * as _bundledAirisTui from "@earendil-works/airis-tui";
+import * as _bundledAirisAgentCore from "@sufiyan-sabeel/airis-agent-core";
+import * as _bundledAirisAi from "@sufiyan-sabeel/airis-ai";
+import * as _bundledAirisAiOauth from "@sufiyan-sabeel/airis-ai/oauth";
+import type { KeyId } from "@sufiyan-sabeel/airis-tui";
+import * as _bundledAirisTui from "@sufiyan-sabeel/airis-tui";
 import { createJiti } from "jiti/static";
 // Static imports of packages that extensions may use.
 // These MUST be static so Bun bundles them into the compiled binary.
@@ -48,10 +48,10 @@ const VIRTUAL_MODULES: Record<string, unknown> = {
 	"@sinclair/typebox": _bundledTypebox,
 	"@sinclair/typebox/compile": _bundledTypeboxCompile,
 	"@sinclair/typebox/value": _bundledTypeboxValue,
-	"@earendil-works/airis-agent-core": _bundledAirisAgentCore,
-	"@earendil-works/airis-tui": _bundledAirisTui,
-	"@earendil-works/airis-ai": _bundledAirisAi,
-	"@earendil-works/airis-ai/oauth": _bundledAirisAiOauth,
+	"@sufiyan-sabeel/airis-agent-core": _bundledAirisAgentCore,
+	"@sufiyan-sabeel/airis-tui": _bundledAirisTui,
+	"@sufiyan-sabeel/airis-ai": _bundledAirisAi,
+	"@sufiyan-sabeel/airis-ai/oauth": _bundledAirisAiOauth,
 	"@sufiyan-sabeel/airis-cli": _bundledAirisCodingAgent,
 };
 
@@ -83,17 +83,17 @@ function getAliases(): Record<string, string> {
 	};
 
 	const piCodingAgentEntry = packageIndex;
-	const piAgentCoreEntry = resolveWorkspaceOrImport("agent/dist/index.js", "@earendil-works/airis-agent-core");
-	const piTuiEntry = resolveWorkspaceOrImport("tui/dist/index.js", "@earendil-works/airis-tui");
-	const piAiEntry = resolveWorkspaceOrImport("ai/dist/index.js", "@earendil-works/airis-ai");
-	const piAiOauthEntry = resolveWorkspaceOrImport("ai/dist/oauth.js", "@earendil-works/airis-ai/oauth");
+	const piAgentCoreEntry = resolveWorkspaceOrImport("agent/dist/index.js", "@sufiyan-sabeel/airis-agent-core");
+	const piTuiEntry = resolveWorkspaceOrImport("tui/dist/index.js", "@sufiyan-sabeel/airis-tui");
+	const piAiEntry = resolveWorkspaceOrImport("ai/dist/index.js", "@sufiyan-sabeel/airis-ai");
+	const piAiOauthEntry = resolveWorkspaceOrImport("ai/dist/oauth.js", "@sufiyan-sabeel/airis-ai/oauth");
 
 	_aliases = {
 		"@sufiyan-sabeel/airis-cli": piCodingAgentEntry,
-		"@earendil-works/airis-agent-core": piAgentCoreEntry,
-		"@earendil-works/airis-tui": piTuiEntry,
-		"@earendil-works/airis-ai": piAiEntry,
-		"@earendil-works/airis-ai/oauth": piAiOauthEntry,
+		"@sufiyan-sabeel/airis-agent-core": piAgentCoreEntry,
+		"@sufiyan-sabeel/airis-tui": piTuiEntry,
+		"@sufiyan-sabeel/airis-ai": piAiEntry,
+		"@sufiyan-sabeel/airis-ai/oauth": piAiOauthEntry,
 		typebox: typeboxEntry,
 		"typebox/compile": typeboxCompileEntry,
 		"typebox/value": typeboxValueEntry,

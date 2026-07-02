@@ -8,7 +8,7 @@
  *   npx tsx test.ts claude-sonnet-4-5-20250929 --thinking
  */
 
-import { type Api, type Context, type Model, registerApiProvider, streamSimple } from "@earendil-works/airis-ai";
+import { type Api, type Context, type Model, registerApiProvider, streamSimple } from "@sufiyan-sabeel/airis-ai";
 import { readFileSync } from "fs";
 import { getAgentDir } from "packages/coding-agent/src/config.js";
 import { join } from "path";

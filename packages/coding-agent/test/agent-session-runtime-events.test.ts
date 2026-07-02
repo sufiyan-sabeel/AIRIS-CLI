@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { fauxAssistantMessage, registerFauxProvider } from "@earendil-works/airis-ai";
+import { fauxAssistantMessage, registerFauxProvider } from "@sufiyan-sabeel/airis-ai";
 import { afterEach, describe, expect, it } from "vitest";
 import {
 	type CreateAgentSessionRuntimeFactory,

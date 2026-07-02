@@ -17,9 +17,9 @@
  * separate variables. Only the agent cursor is ever exposed to the agent.
  */
 
-import { StringEnum } from "@earendil-works/airis-ai";
-import { type Component, matchesKey, Text, truncateToWidth, visibleWidth } from "@earendil-works/airis-tui";
+import { StringEnum } from "@sufiyan-sabeel/airis-ai";
 import type { ExtensionAPI, ExtensionContext, Theme, ToolExecutionMode } from "@sufiyan-sabeel/airis-cli";
+import { type Component, matchesKey, Text, truncateToWidth, visibleWidth } from "@sufiyan-sabeel/airis-tui";
 import { Type } from "typebox";
 
 // Thrown from the tool on illegal actions. The agent runtime surfaces thrown

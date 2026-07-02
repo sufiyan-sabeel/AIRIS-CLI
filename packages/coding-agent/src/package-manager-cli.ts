@@ -1,5 +1,5 @@
 import { createInterface } from "node:readline";
-import { Markdown, type MarkdownTheme } from "@earendil-works/airis-tui";
+import { Markdown, type MarkdownTheme } from "@sufiyan-sabeel/airis-tui";
 import chalk from "chalk";
 import { selectConfig } from "./cli/config-selector.ts";
 import { createProjectTrustContext } from "./cli/project-trust.ts";

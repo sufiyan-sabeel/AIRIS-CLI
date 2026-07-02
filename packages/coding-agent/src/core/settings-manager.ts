@@ -1,4 +1,4 @@
-import type { Transport } from "@earendil-works/airis-ai";
+import type { Transport } from "@sufiyan-sabeel/airis-ai";
 import { randomUUID } from "crypto";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import { dirname, join } from "path";

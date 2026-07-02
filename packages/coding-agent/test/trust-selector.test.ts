@@ -1,4 +1,4 @@
-import { setKeybindings } from "@earendil-works/airis-tui";
+import { setKeybindings } from "@sufiyan-sabeel/airis-tui";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { KeybindingsManager } from "../src/core/keybindings.ts";
 import { TrustSelectorComponent } from "../src/modes/interactive/components/trust-selector.ts";

@@ -2,7 +2,7 @@
  * Hello Tool - Minimal custom tool example
  */
 
-import { Type } from "@earendil-works/airis-ai";
+import { Type } from "@sufiyan-sabeel/airis-ai";
 import { defineTool, type ExtensionAPI } from "@sufiyan-sabeel/airis-cli";
 
 const helloTool = defineTool({

@@ -1,4 +1,4 @@
-import { setBedrockProviderModule } from "@earendil-works/airis-ai";
-import { bedrockProviderModule } from "@earendil-works/airis-ai/bedrock-provider";
+import { setBedrockProviderModule } from "@sufiyan-sabeel/airis-ai";
+import { bedrockProviderModule } from "@sufiyan-sabeel/airis-ai/bedrock-provider";
 
 setBedrockProviderModule(bedrockProviderModule);

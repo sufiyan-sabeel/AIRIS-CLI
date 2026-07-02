@@ -6,7 +6,7 @@
  */
 
 import { createInterface } from "node:readline";
-import { type ImageContent, modelsAreEqual } from "@earendil-works/airis-ai";
+import { type ImageContent, modelsAreEqual } from "@sufiyan-sabeel/airis-ai";
 import chalk from "chalk";
 import {
 	commandNeedsProjectTrustForMutation,

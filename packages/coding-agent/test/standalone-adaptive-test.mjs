@@ -19,10 +19,10 @@ const PACKAGES = join(ROOT, "packages");
 const j = createJiti(import.meta.url, {
 	interopDefault: true,
 	aliases: {
-		"@earendil-works/airis-ai": join(PACKAGES, "ai/src/index.ts"),
-		"@earendil-works/airis-ai/oauth": join(PACKAGES, "ai/src/oauth.ts"),
-		"@earendil-works/airis-agent-core": join(PACKAGES, "agent/src/index.ts"),
-		"@earendil-works/airis-tui": join(PACKAGES, "tui/src/index.ts"),
+		"@sufiyan-sabeel/airis-ai": join(PACKAGES, "ai/src/index.ts"),
+		"@sufiyan-sabeel/airis-ai/oauth": join(PACKAGES, "ai/src/oauth.ts"),
+		"@sufiyan-sabeel/airis-agent-core": join(PACKAGES, "agent/src/index.ts"),
+		"@sufiyan-sabeel/airis-tui": join(PACKAGES, "tui/src/index.ts"),
 	},
 });
 

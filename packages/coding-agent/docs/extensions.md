@@ -141,8 +141,8 @@ To share extensions via npm or git as airis packages, see [packages.md](packages
 |---------|---------|
 | `@sufiyan-sabeel/airis-cli` | Extension types (`ExtensionAPI`, `ExtensionContext`, events) |
 | `typebox` | Schema definitions for tool parameters |
-| `@earendil-works/airis-ai` | AI utilities (`StringEnum` for Google-compatible enums) |
-| `@earendil-works/airis-tui` | TUI components for custom rendering |
+| `@sufiyan-sabeel/airis-ai` | AI utilities (`StringEnum` for Google-compatible enums) |
+| `@sufiyan-sabeel/airis-tui` | TUI components for custom rendering |
 
 npm dependencies work too. Add a `package.json` next to your extension (or in a parent directory), run `npm install`, and imports from `node_modules/` are resolved automatically.
 
@@ -1282,7 +1282,7 @@ See [dynamic-tools.ts](../examples/extensions/dynamic-tools.ts) for a full examp
 
 ```typescript
 import { Type } from "typebox";
-import { StringEnum } from "@earendil-works/airis-ai";
+import { StringEnum } from "@sufiyan-sabeel/airis-ai";
 
 airis.registerTool({
   name: "my_tool",
@@ -1440,7 +1440,7 @@ airis.registerCommand("stats", {
 Optional: add argument auto-completion for `/command ...`:
 
 ```typescript
-import type { AutocompleteItem } from "@earendil-works/airis-tui";
+import type { AutocompleteItem } from "@sufiyan-sabeel/airis-tui";
 
 airis.registerCommand("deploy", {
   description: "Deploy to an environment",
@@ -1756,8 +1756,8 @@ async execute(_toolCallId, params, _signal, _onUpdate, ctx) {
 
 ```typescript
 import { Type } from "typebox";
-import { StringEnum } from "@earendil-works/airis-ai";
-import { Text } from "@earendil-works/airis-tui";
+import { StringEnum } from "@sufiyan-sabeel/airis-ai";
+import { Text } from "@sufiyan-sabeel/airis-tui";
 
 airis.registerTool({
   name: "my_tool",
@@ -1825,7 +1825,7 @@ async execute(toolCallId, params) {
 }
 ```
 
-**Important:** Use `StringEnum` from `@earendil-works/airis-ai` for string enums. `Type.Union`/`Type.Literal` doesn't work with Google's API.
+**Important:** Use `StringEnum` from `@sufiyan-sabeel/airis-ai` for string enums. `Type.Union`/`Type.Literal` doesn't work with Google's API.
 
 **Argument preparation:** `prepareArguments(args)` is optional. If defined, it runs before schema validation and before `execute()`. Use it to mimic an older accepted input shape when airis resumes an older session whose stored tool call arguments no longer match the current schema. Return the object you want validated against `parameters`. Keep the public schema strict. Do not add deprecated compatibility fields to `parameters` just to keep old resumed sessions working.
 
@@ -2063,7 +2063,7 @@ Use `context.state` for cross-slot shared state. Keep slot-local caches on the r
 Renders the tool call or header:
 
 ```typescript
-import { Text } from "@earendil-works/airis-tui";
+import { Text } from "@sufiyan-sabeel/airis-tui";
 
 renderCall(args, theme, context) {
   const text = (context.lastComponent as Text | undefined) ?? new Text("", 0, 0);
@@ -2384,7 +2384,7 @@ See [github-issue-autocomplete.ts](../examples/extensions/github-issue-autocompl
 For complex UI, use `ctx.ui.custom()`. This temporarily replaces the editor with your component until `done()` is called:
 
 ```typescript
-import { Text, Component } from "@earendil-works/airis-tui";
+import { Text, Component } from "@sufiyan-sabeel/airis-tui";
 
 const result = await ctx.ui.custom<boolean>((tui, theme, keybindings, done) => {
   const text = new Text("Press Enter to confirm, Escape to cancel", 1, 1);
@@ -2450,7 +2450,7 @@ Replace the main input editor with a custom implementation (vim mode, emacs mode
 
 ```typescript
 import { CustomEditor, type ExtensionAPI } from "@sufiyan-sabeel/airis-cli";
-import { matchesKey } from "@earendil-works/airis-tui";
+import { matchesKey } from "@sufiyan-sabeel/airis-tui";
 
 class VimEditor extends CustomEditor {
   private mode: "normal" | "insert" = "insert";
@@ -2500,7 +2500,7 @@ See [tui.md](tui.md) Pattern 7 for a complete example with mode indicator.
 Register a custom renderer for messages with your `customType`:
 
 ```typescript
-import { Text } from "@earendil-works/airis-tui";
+import { Text } from "@sufiyan-sabeel/airis-tui";
 
 airis.registerMessageRenderer("my-extension", (message, options, theme) => {
   const { expanded } = options;

@@ -4,7 +4,7 @@
  * Replace everything - no discovery, explicit configuration.
  */
 
-import { getModel } from "@earendil-works/airis-ai";
+import { getModel } from "@sufiyan-sabeel/airis-ai";
 import {
 	AuthStorage,
 	createAgentSession,

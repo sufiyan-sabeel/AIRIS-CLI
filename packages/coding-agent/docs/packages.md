@@ -166,7 +166,7 @@ If no `airis` manifest is present, airis auto-discovers resources from these dir
 
 Third party runtime dependencies belong in `dependencies` in `package.json`. Dependencies that do not register extensions, skills, prompt templates, or themes also belong in `dependencies`. When airis installs a package from npm or git, it runs `npm install`, so those dependencies are installed automatically.
 
-AIRIS bundles core packages for extensions and skills. If you import any of these, list them in `peerDependencies` with a `"*"` range and do not bundle them: `@earendil-works/airis-ai`, `@earendil-works/airis-agent-core`, `@sufiyan-sabeel/airis-cli`, `@earendil-works/airis-tui`, `typebox`.
+AIRIS bundles core packages for extensions and skills. If you import any of these, list them in `peerDependencies` with a `"*"` range and do not bundle them: `@sufiyan-sabeel/airis-ai`, `@sufiyan-sabeel/airis-agent-core`, `@sufiyan-sabeel/airis-cli`, `@sufiyan-sabeel/airis-tui`, `typebox`.
 
 Other AIRIS packages must be bundled in your tarball. Add them to `dependencies` and `bundledDependencies`, then reference their resources through `node_modules/` paths. AIRIS loads packages with separate module roots, so separate installs do not collide or share modules.
 

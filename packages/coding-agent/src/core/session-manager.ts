@@ -1,5 +1,5 @@
-import { type AgentMessage, uuidv7 } from "@earendil-works/airis-agent-core";
-import type { ImageContent, Message, TextContent } from "@earendil-works/airis-ai";
+import { type AgentMessage, uuidv7 } from "@sufiyan-sabeel/airis-agent-core";
+import type { ImageContent, Message, TextContent } from "@sufiyan-sabeel/airis-ai";
 import { randomUUID } from "crypto";
 import {
 	appendFileSync,

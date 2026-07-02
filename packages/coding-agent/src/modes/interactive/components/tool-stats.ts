@@ -4,7 +4,7 @@
  * Shows real-time statistics about tool executions during a session.
  * Tracks file reads, writes, edits, bash commands, and more.
  */
-import { truncateToWidth } from "@earendil-works/airis-tui";
+import { truncateToWidth } from "@sufiyan-sabeel/airis-tui";
 import { theme } from "../theme/theme.ts";
 
 export interface ToolStats {

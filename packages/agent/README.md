@@ -1,18 +1,18 @@
-# @earendil-works/airis-agent-core
+# @sufiyan-sabeel/airis-agent-core
 
-Stateful agent with tool execution and event streaming. Built on `@earendil-works/airis-ai`.
+Stateful agent with tool execution and event streaming. Built on `@sufiyan-sabeel/airis-ai`.
 
 ## Installation
 
 ```bash
-npm install @earendil-works/airis-agent-core
+npm install @sufiyan-sabeel/airis-agent-core
 ```
 
 ## Quick Start
 
 ```typescript
-import { Agent } from "@earendil-works/airis-agent-core";
-import { getModel } from "@earendil-works/airis-ai";
+import { Agent } from "@sufiyan-sabeel/airis-agent-core";
+import { getModel } from "@sufiyan-sabeel/airis-ai";
 
 const agent = new Agent({
   initialState: {
@@ -355,7 +355,7 @@ Follow-up messages are checked only when there are no more tool calls and no ste
 Extend `AgentMessage` via declaration merging:
 
 ```typescript
-declare module "@earendil-works/airis-agent-core" {
+declare module "@sufiyan-sabeel/airis-agent-core" {
   interface CustomAgentMessages {
     notification: { role: "notification"; text: string; timestamp: number };
   }
@@ -436,7 +436,7 @@ Return `terminate: true` from `execute()` or `afterToolCall` to hint that the ag
 For browser apps that proxy through a backend:
 
 ```typescript
-import { Agent, streamProxy } from "@earendil-works/airis-agent-core";
+import { Agent, streamProxy } from "@sufiyan-sabeel/airis-agent-core";
 
 const agent = new Agent({
   streamFn: (model, context, options) =>
@@ -453,7 +453,7 @@ const agent = new Agent({
 For direct control without the Agent class:
 
 ```typescript
-import { agentLoop, agentLoopContinue } from "@earendil-works/airis-agent-core";
+import { agentLoop, agentLoopContinue } from "@sufiyan-sabeel/airis-agent-core";
 
 const context: AgentContext = {
   systemPrompt: "You are helpful.",

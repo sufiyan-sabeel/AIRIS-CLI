@@ -26,7 +26,7 @@ import {
 	ProcessTerminal,
 	SelectList,
 	TUI,
-} from "@earendil-works/airis-tui";
+} from "@sufiyan-sabeel/airis-tui";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 

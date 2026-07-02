@@ -1,5 +1,5 @@
-import { Agent } from "@earendil-works/airis-agent-core";
-import { type AssistantMessage, getModel, type Usage } from "@earendil-works/airis-ai";
+import { Agent } from "@sufiyan-sabeel/airis-agent-core";
+import { type AssistantMessage, getModel, type Usage } from "@sufiyan-sabeel/airis-ai";
 import { describe, expect, it } from "vitest";
 import { AgentSession } from "../src/core/agent-session.ts";
 import { AuthStorage } from "../src/core/auth-storage.ts";

@@ -1,4 +1,4 @@
-import type { Api, Model } from "@earendil-works/airis-ai";
+import type { Api, Model } from "@sufiyan-sabeel/airis-ai";
 import type { SettingsManager } from "./settings-manager.ts";
 import { isInstallTelemetryEnabled } from "./telemetry.ts";
 

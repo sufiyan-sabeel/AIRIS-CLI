@@ -1,4 +1,4 @@
-import type { ImageContent } from "@earendil-works/airis-ai";
+import type { ImageContent } from "@sufiyan-sabeel/airis-ai";
 import type { Args } from "./args.ts";
 
 export interface InitialMessageInput {

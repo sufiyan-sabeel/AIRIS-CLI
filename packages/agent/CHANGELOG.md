@@ -487,7 +487,7 @@
 
 - **`UserMessageWithAttachments` and `Attachment` types removed**: Attachment handling is now the responsibility of the `convertToLlm` function.
 
-- **Agent loop moved from `@earendil-works/airis-ai`**: The `agentLoop`, `agentLoopContinue`, and related types have moved to this package. Import from `@earendil-works/airis-agent-core` instead.
+- **Agent loop moved from `@sufiyan-sabeel/airis-ai`**: The `agentLoop`, `agentLoopContinue`, and related types have moved to this package. Import from `@sufiyan-sabeel/airis-agent-core` instead.
 
 ### Added
 

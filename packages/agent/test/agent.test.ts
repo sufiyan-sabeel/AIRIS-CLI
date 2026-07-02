@@ -1,4 +1,4 @@
-import { type AssistantMessage, type AssistantMessageEvent, EventStream, getModel } from "@earendil-works/airis-ai";
+import { type AssistantMessage, type AssistantMessageEvent, EventStream, getModel } from "@sufiyan-sabeel/airis-ai";
 import { Type } from "typebox";
 import { describe, expect, it } from "vitest";
 import { Agent, type AgentEvent, type AgentTool, type AgentToolUpdateCallback } from "../src/index.ts";

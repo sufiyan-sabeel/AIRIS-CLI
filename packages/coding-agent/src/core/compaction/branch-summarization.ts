@@ -5,9 +5,9 @@
  * a summary of the branch being left so context isn't lost.
  */
 
-import type { AgentMessage, StreamFn } from "@earendil-works/airis-agent-core";
-import type { Model, SimpleStreamOptions } from "@earendil-works/airis-ai";
-import { completeSimple } from "@earendil-works/airis-ai";
+import type { AgentMessage, StreamFn } from "@sufiyan-sabeel/airis-agent-core";
+import type { Model, SimpleStreamOptions } from "@sufiyan-sabeel/airis-ai";
+import { completeSimple } from "@sufiyan-sabeel/airis-ai";
 import {
 	convertToLlm,
 	createBranchSummaryMessage,

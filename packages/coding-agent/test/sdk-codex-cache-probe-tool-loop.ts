@@ -20,7 +20,7 @@ import {
 	type Model,
 	type SimpleStreamOptions,
 	Type,
-} from "@earendil-works/airis-ai";
+} from "@sufiyan-sabeel/airis-ai";
 import {
 	getOpenAICodexWebSocketDebugStats,
 	streamSimpleOpenAICodexResponses,

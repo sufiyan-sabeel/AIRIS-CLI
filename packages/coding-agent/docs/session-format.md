@@ -34,7 +34,7 @@ Source on GitHub ([airis-mono](https://github.com/earendil-works/airis-mono)):
 - [`packages/ai/src/types.ts`](https://github.com/earendil-works/airis-mono/blob/main/packages/ai/src/types.ts) - Base message types (UserMessage, AssistantMessage, ToolResultMessage)
 - [`packages/agent/src/types.ts`](https://github.com/earendil-works/airis-mono/blob/main/packages/agent/src/types.ts) - AgentMessage union type
 
-For TypeScript definitions in your project, inspect `node_modules/@sufiyan-sabeel/airis-cli/dist/` and `node_modules/@earendil-works/airis-ai/dist/`.
+For TypeScript definitions in your project, inspect `node_modules/@sufiyan-sabeel/airis-cli/dist/` and `node_modules/@sufiyan-sabeel/airis-ai/dist/`.
 
 ## Message Types
 

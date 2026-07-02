@@ -1,4 +1,4 @@
-import { truncateToWidth, visibleWidth } from "@earendil-works/airis-tui";
+import { truncateToWidth, visibleWidth } from "@sufiyan-sabeel/airis-tui";
 import { describe, expect, it } from "vitest";
 
 /**

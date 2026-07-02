@@ -4,7 +4,7 @@ import {
 	type Model,
 	streamSimple,
 	type UserMessage,
-} from "@earendil-works/airis-ai";
+} from "@sufiyan-sabeel/airis-ai";
 import { runAgentLoop } from "../agent-loop.ts";
 import type {
 	AgentContext,

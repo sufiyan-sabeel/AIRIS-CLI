@@ -1,6 +1,6 @@
 import { join } from "node:path";
-import { Agent, type AgentMessage, type ThinkingLevel } from "@earendil-works/airis-agent-core";
-import { clampThinkingLevel, type Message, type Model, streamSimple } from "@earendil-works/airis-ai";
+import { Agent, type AgentMessage, type ThinkingLevel } from "@sufiyan-sabeel/airis-agent-core";
+import { clampThinkingLevel, type Message, type Model, streamSimple } from "@sufiyan-sabeel/airis-ai";
 import { getAgentDir } from "../config.ts";
 import { resolvePath } from "../utils/paths.ts";
 import { AgentSession } from "./agent-session.ts";
@@ -137,7 +137,7 @@ function getDefaultAgentDir(): string {
  * const { session } = await createAgentSession();
  *
  * // With explicit model
- * import { getModel } from '@earendil-works/airis-ai';
+ * import { getModel } from '@sufiyan-sabeel/airis-ai';
  * const { session } = await createAgentSession({
  *   model: getModel('anthropic', 'claude-opus-4-5'),
  *   thinkingLevel: 'high',

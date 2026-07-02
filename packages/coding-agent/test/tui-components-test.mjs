@@ -13,9 +13,9 @@ const __dirname = dirname(__filename);
 const j = createJiti(import.meta.url, {
 	interopDefault: true,
 	aliases: {
-		"@earendil-works/airis-ai": join(__dirname, "../../packages/ai/src/index.ts"),
-		"@earendil-works/airis-agent-core": join(__dirname, "../../packages/agent/src/index.ts"),
-		"@earendil-works/airis-tui": join(__dirname, "../../packages/tui/src/index.ts"),
+		"@sufiyan-sabeel/airis-ai": join(__dirname, "../../packages/ai/src/index.ts"),
+		"@sufiyan-sabeel/airis-agent-core": join(__dirname, "../../packages/agent/src/index.ts"),
+		"@sufiyan-sabeel/airis-tui": join(__dirname, "../../packages/tui/src/index.ts"),
 	},
 });
 

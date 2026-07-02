@@ -2,7 +2,7 @@
  * CLI argument parsing and help display
  */
 
-import type { ThinkingLevel } from "@earendil-works/airis-agent-core";
+import type { ThinkingLevel } from "@sufiyan-sabeel/airis-agent-core";
 import chalk from "chalk";
 import { APP_NAME, CONFIG_DIR_NAME, ENV_AGENT_DIR, ENV_SESSION_DIR, VERSION } from "../config.ts";
 import type { ExtensionFlag } from "../core/extensions/types.ts";

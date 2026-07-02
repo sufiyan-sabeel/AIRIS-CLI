@@ -1,5 +1,5 @@
-import type { Component } from "@earendil-works/airis-tui";
-import { visibleWidth } from "@earendil-works/airis-tui";
+import type { Component } from "@sufiyan-sabeel/airis-tui";
+import { visibleWidth } from "@sufiyan-sabeel/airis-tui";
 import type { Theme } from "../theme/theme.ts";
 import { theme as _theme } from "../theme/theme.ts";
 

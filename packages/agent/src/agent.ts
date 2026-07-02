@@ -7,7 +7,7 @@ import {
 	type TextContent,
 	type ThinkingBudgets,
 	type Transport,
-} from "@earendil-works/airis-ai";
+} from "@sufiyan-sabeel/airis-ai";
 import { runAgentLoop, runAgentLoopContinue } from "./agent-loop.ts";
 import type {
 	AfterToolCallContext,

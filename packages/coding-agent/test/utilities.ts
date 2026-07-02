@@ -5,9 +5,9 @@
 import { chmodSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { homedir, tmpdir } from "node:os";
 import { dirname, join } from "node:path";
-import { Agent } from "@earendil-works/airis-agent-core";
-import { getModel, type OAuthCredentials, type OAuthProvider } from "@earendil-works/airis-ai";
-import { getOAuthApiKey } from "@earendil-works/airis-ai/oauth";
+import { Agent } from "@sufiyan-sabeel/airis-agent-core";
+import { getModel, type OAuthCredentials, type OAuthProvider } from "@sufiyan-sabeel/airis-ai";
+import { getOAuthApiKey } from "@sufiyan-sabeel/airis-ai/oauth";
 import { AgentSession } from "../src/core/agent-session.ts";
 import { AuthStorage } from "../src/core/auth-storage.ts";
 import { createEventBus } from "../src/core/event-bus.ts";

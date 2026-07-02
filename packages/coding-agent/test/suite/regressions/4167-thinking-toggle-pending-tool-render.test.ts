@@ -1,6 +1,6 @@
-import type { AgentMessage } from "@earendil-works/airis-agent-core";
-import type { AssistantMessage, ToolResultMessage, Usage } from "@earendil-works/airis-ai";
-import { Container, Text, type TUI } from "@earendil-works/airis-tui";
+import type { AgentMessage } from "@sufiyan-sabeel/airis-agent-core";
+import type { AssistantMessage, ToolResultMessage, Usage } from "@sufiyan-sabeel/airis-ai";
+import { Container, Text, type TUI } from "@sufiyan-sabeel/airis-tui";
 import { beforeAll, describe, expect, test, vi } from "vitest";
 import type { AgentSessionEvent } from "../../../src/core/agent-session.ts";
 import type { SessionContext } from "../../../src/core/session-manager.ts";

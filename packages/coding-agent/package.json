@@ -37,9 +37,9 @@
 		"prepublishOnly": "npm run clean && npm run build && npm run shrinkwrap"
 	},
 	"dependencies": {
-		"@earendil-works/airis-agent-core": "^0.79.5",
-		"@earendil-works/airis-ai": "^0.79.5",
-		"@earendil-works/airis-tui": "^0.79.5",
+		"@sufiyan-sabeel/airis-agent-core": "0.79.5",
+		"@sufiyan-sabeel/airis-ai": "0.79.5",
+		"@sufiyan-sabeel/airis-tui": "0.79.5",
 		"@silvia-odwyer/photon-node": "0.3.4",
 		"chalk": "5.6.2",
 		"cross-spawn": "7.0.6",

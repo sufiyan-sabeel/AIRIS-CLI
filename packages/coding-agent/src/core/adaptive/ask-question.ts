@@ -6,7 +6,7 @@ import {
 	Text,
 	visibleWidth,
 	wrapTextWithAnsi,
-} from "@earendil-works/airis-tui";
+} from "@sufiyan-sabeel/airis-tui";
 import { type Static, Type } from "typebox";
 import type { ToolDefinition } from "../extensions/types.ts";
 import type { SessionManager } from "../session-manager.ts";

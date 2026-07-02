@@ -1,6 +1,6 @@
 import { join } from "node:path";
-import type { ThinkingLevel } from "@earendil-works/airis-agent-core";
-import type { Model } from "@earendil-works/airis-ai";
+import type { ThinkingLevel } from "@sufiyan-sabeel/airis-agent-core";
+import type { Model } from "@sufiyan-sabeel/airis-ai";
 import { getAgentDir } from "../config.ts";
 import { resolvePath } from "../utils/paths.ts";
 import { AuthStorage } from "./auth-storage.ts";

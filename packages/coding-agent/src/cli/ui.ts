@@ -1,4 +1,4 @@
-import { visibleWidth } from "@earendil-works/airis-tui";
+import { visibleWidth } from "@sufiyan-sabeel/airis-tui";
 import chalk from "chalk";
 
 const DEFAULT_WIDTH = 80;

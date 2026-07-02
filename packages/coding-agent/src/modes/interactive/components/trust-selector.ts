@@ -1,4 +1,4 @@
-import { Container, getKeybindings, Spacer, Text } from "@earendil-works/airis-tui";
+import { Container, getKeybindings, Spacer, Text } from "@sufiyan-sabeel/airis-tui";
 import {
 	getProjectTrustOptions,
 	type ProjectTrustOption,

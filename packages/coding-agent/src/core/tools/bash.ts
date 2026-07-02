@@ -1,7 +1,7 @@
 import { constants } from "node:fs";
 import { access as fsAccess } from "node:fs/promises";
-import type { AgentTool } from "@earendil-works/airis-agent-core";
-import { Container, Text, truncateToWidth } from "@earendil-works/airis-tui";
+import type { AgentTool } from "@sufiyan-sabeel/airis-agent-core";
+import { Container, Text, truncateToWidth } from "@sufiyan-sabeel/airis-tui";
 import { spawn } from "child_process";
 import { type Static, Type } from "typebox";
 import { keyHint } from "../../modes/interactive/components/keybinding-hints.ts";

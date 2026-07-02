@@ -1,4 +1,4 @@
-import { Box, Markdown, type MarkdownTheme, Text } from "@earendil-works/airis-tui";
+import { Box, Markdown, type MarkdownTheme, Text } from "@sufiyan-sabeel/airis-tui";
 import type { ParsedSkillBlock } from "../../../core/agent-session.ts";
 import { getMarkdownTheme, theme } from "../theme/theme.ts";
 import { keyText } from "./keybinding-hints.ts";

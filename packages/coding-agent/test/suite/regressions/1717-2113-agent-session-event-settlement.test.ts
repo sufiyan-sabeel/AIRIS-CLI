@@ -1,5 +1,5 @@
-import type { AgentTool } from "@earendil-works/airis-agent-core";
-import { fauxAssistantMessage, fauxToolCall } from "@earendil-works/airis-ai";
+import type { AgentTool } from "@sufiyan-sabeel/airis-agent-core";
+import { fauxAssistantMessage, fauxToolCall } from "@sufiyan-sabeel/airis-ai";
 import { Type } from "typebox";
 import { afterEach, describe, expect, it } from "vitest";
 import { createHarness, type Harness } from "../harness.ts";

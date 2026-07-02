@@ -5,9 +5,9 @@
  * and after compaction the session is reloaded.
  */
 
-import type { AgentMessage, StreamFn, ThinkingLevel } from "@earendil-works/airis-agent-core";
-import type { AssistantMessage, Context, Model, SimpleStreamOptions, Usage } from "@earendil-works/airis-ai";
-import { completeSimple } from "@earendil-works/airis-ai";
+import type { AgentMessage, StreamFn, ThinkingLevel } from "@sufiyan-sabeel/airis-agent-core";
+import type { AssistantMessage, Context, Model, SimpleStreamOptions, Usage } from "@sufiyan-sabeel/airis-ai";
+import { completeSimple } from "@sufiyan-sabeel/airis-ai";
 import {
 	convertToLlm,
 	createBranchSummaryMessage,

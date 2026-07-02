@@ -5,7 +5,7 @@
  * Displays in the footer/status area without user interaction.
  */
 
-import { truncateToWidth } from "@earendil-works/airis-tui";
+import { truncateToWidth } from "@sufiyan-sabeel/airis-tui";
 import type { AdaptiveTodoItem, AdaptiveTodoStats } from "../../../core/adaptive/types.ts";
 import { type ThemeColor, theme } from "../theme/theme.ts";
 

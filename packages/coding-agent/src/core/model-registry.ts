@@ -17,8 +17,8 @@ import {
 	registerApiProvider,
 	resetApiProviders,
 	type SimpleStreamOptions,
-} from "@earendil-works/airis-ai";
-import { registerOAuthProvider, resetOAuthProviders } from "@earendil-works/airis-ai/oauth";
+} from "@sufiyan-sabeel/airis-ai";
+import { registerOAuthProvider, resetOAuthProviders } from "@sufiyan-sabeel/airis-ai/oauth";
 import { existsSync, readFileSync } from "fs";
 import { join } from "path";
 import { type Static, Type } from "typebox";

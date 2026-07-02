@@ -12,10 +12,10 @@
  * - Progress tracking widget during execution
  */
 
-import type { AgentMessage } from "@earendil-works/airis-agent-core";
-import type { AssistantMessage, TextContent } from "@earendil-works/airis-ai";
-import { Key } from "@earendil-works/airis-tui";
+import type { AgentMessage } from "@sufiyan-sabeel/airis-agent-core";
+import type { AssistantMessage, TextContent } from "@sufiyan-sabeel/airis-ai";
 import type { ExtensionAPI, ExtensionContext } from "@sufiyan-sabeel/airis-cli";
+import { Key } from "@sufiyan-sabeel/airis-tui";
 import { extractTodoItems, isSafeCommand, markCompletedSteps, type TodoItem } from "./utils.ts";
 
 // Tools

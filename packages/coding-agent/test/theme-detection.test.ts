@@ -1,4 +1,4 @@
-import { type RgbColor, resetCapabilitiesCache, setCapabilities } from "@earendil-works/airis-tui";
+import { type RgbColor, resetCapabilitiesCache, setCapabilities } from "@sufiyan-sabeel/airis-tui";
 import { afterEach, describe, expect, it } from "vitest";
 import {
 	detectTerminalBackgroundFromEnv,

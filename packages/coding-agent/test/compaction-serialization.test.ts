@@ -1,4 +1,4 @@
-import type { Message } from "@earendil-works/airis-ai";
+import type { Message } from "@sufiyan-sabeel/airis-ai";
 import { describe, expect, it } from "vitest";
 import { serializeConversation } from "../src/core/compaction/utils.ts";
 

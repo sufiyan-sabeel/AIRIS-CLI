@@ -1,5 +1,5 @@
-import { getOAuthProviders, type OAuthDeviceCodeInfo } from "@earendil-works/airis-ai/oauth";
-import { Container, type Focusable, getKeybindings, Input, Spacer, Text, type TUI } from "@earendil-works/airis-tui";
+import { getOAuthProviders, type OAuthDeviceCodeInfo } from "@sufiyan-sabeel/airis-ai/oauth";
+import { Container, type Focusable, getKeybindings, Input, Spacer, Text, type TUI } from "@sufiyan-sabeel/airis-tui";
 import { openBrowser } from "../../../utils/open-browser.ts";
 import { theme } from "../theme/theme.ts";
 import { DynamicBorder } from "./dynamic-border.ts";

@@ -1,8 +1,8 @@
 import { existsSync, mkdirSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { Agent } from "@earendil-works/airis-agent-core";
-import { type AssistantMessage, getModel } from "@earendil-works/airis-ai";
+import { Agent } from "@sufiyan-sabeel/airis-agent-core";
+import { type AssistantMessage, getModel } from "@sufiyan-sabeel/airis-ai";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AgentSession } from "../src/core/agent-session.ts";
 import { AuthStorage } from "../src/core/auth-storage.ts";

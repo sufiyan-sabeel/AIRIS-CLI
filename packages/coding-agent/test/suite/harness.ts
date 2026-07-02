@@ -5,10 +5,10 @@
 import { existsSync, mkdirSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import type { AgentMessage, AgentTool } from "@earendil-works/airis-agent-core";
-import { Agent } from "@earendil-works/airis-agent-core";
-import type { FauxModelDefinition, FauxProviderRegistration, FauxResponseStep, Model } from "@earendil-works/airis-ai";
-import { registerFauxProvider } from "@earendil-works/airis-ai";
+import type { AgentMessage, AgentTool } from "@sufiyan-sabeel/airis-agent-core";
+import { Agent } from "@sufiyan-sabeel/airis-agent-core";
+import type { FauxModelDefinition, FauxProviderRegistration, FauxResponseStep, Model } from "@sufiyan-sabeel/airis-ai";
+import { registerFauxProvider } from "@sufiyan-sabeel/airis-ai";
 import { AgentSession, type AgentSessionEvent } from "../../src/core/agent-session.ts";
 import { AuthStorage } from "../../src/core/auth-storage.ts";
 import type { ExtensionRunner } from "../../src/core/extensions/index.ts";

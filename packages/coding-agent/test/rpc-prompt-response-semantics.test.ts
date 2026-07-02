@@ -1,14 +1,14 @@
 import { existsSync, mkdirSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { Agent } from "@earendil-works/airis-agent-core";
+import { Agent } from "@sufiyan-sabeel/airis-agent-core";
 import {
 	type AssistantMessage,
 	type AssistantMessageEvent,
 	EventStream,
 	getModel,
 	type Model,
-} from "@earendil-works/airis-ai";
+} from "@sufiyan-sabeel/airis-ai";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { AgentSession } from "../src/core/agent-session.ts";
 import type { AgentSessionRuntime } from "../src/core/agent-session-runtime.ts";

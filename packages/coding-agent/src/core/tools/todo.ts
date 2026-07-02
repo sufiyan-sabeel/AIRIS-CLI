@@ -1,4 +1,4 @@
-import { Text } from "@earendil-works/airis-tui";
+import { Text } from "@sufiyan-sabeel/airis-tui";
 import { type Static, Type } from "typebox";
 import type { Theme } from "../../modes/interactive/theme/theme.ts";
 import type { ToolDefinition } from "../extensions/types.ts";

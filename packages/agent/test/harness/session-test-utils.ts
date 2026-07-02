@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import type { AgentMessage } from "@earendil-works/airis-agent-core";
+import type { AgentMessage } from "@sufiyan-sabeel/airis-agent-core";
 import { afterEach } from "vitest";
 
 export function createUserMessage(text: string): AgentMessage {

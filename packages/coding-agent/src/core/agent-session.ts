@@ -22,8 +22,8 @@ import type {
 	AgentState,
 	AgentTool,
 	ThinkingLevel,
-} from "@earendil-works/airis-agent-core";
-import type { AssistantMessage, ImageContent, Message, Model, TextContent } from "@earendil-works/airis-ai";
+} from "@sufiyan-sabeel/airis-agent-core";
+import type { AssistantMessage, ImageContent, Message, Model, TextContent } from "@sufiyan-sabeel/airis-ai";
 import {
 	clampThinkingLevel,
 	cleanupSessionResources,
@@ -32,7 +32,7 @@ import {
 	modelsAreEqual,
 	resetApiProviders,
 	streamSimple,
-} from "@earendil-works/airis-ai";
+} from "@sufiyan-sabeel/airis-ai";
 import { executeAndroidAction, formatResponse } from "../automation/androidBridge.ts";
 import { isAndroidAutomationRequest } from "../automation/androidIntentRouter.ts";
 import { getThemeByName, theme } from "../modes/interactive/theme/theme.ts";

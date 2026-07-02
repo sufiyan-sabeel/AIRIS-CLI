@@ -4,7 +4,7 @@
  * Shows how to select a specific model and thinking level.
  */
 
-import { getModel } from "@earendil-works/airis-ai";
+import { getModel } from "@sufiyan-sabeel/airis-ai";
 import { AuthStorage, createAgentSession, ModelRegistry } from "@sufiyan-sabeel/airis-cli";
 
 // Set up auth storage and model registry

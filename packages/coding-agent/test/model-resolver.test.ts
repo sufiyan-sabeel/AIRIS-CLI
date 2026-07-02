@@ -1,4 +1,4 @@
-import type { Model } from "@earendil-works/airis-ai";
+import type { Model } from "@sufiyan-sabeel/airis-ai";
 import { describe, expect, test } from "vitest";
 import {
 	defaultModelPerProvider,

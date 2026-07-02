@@ -8,9 +8,9 @@
  * Token stats come from ctx.sessionManager/ctx.model (already accessible).
  */
 
-import type { AssistantMessage } from "@earendil-works/airis-ai";
-import { truncateToWidth, visibleWidth } from "@earendil-works/airis-tui";
+import type { AssistantMessage } from "@sufiyan-sabeel/airis-ai";
 import type { ExtensionAPI } from "@sufiyan-sabeel/airis-cli";
+import { truncateToWidth, visibleWidth } from "@sufiyan-sabeel/airis-tui";
 
 export default function (airis: ExtensionAPI) {
 	let enabled = false;

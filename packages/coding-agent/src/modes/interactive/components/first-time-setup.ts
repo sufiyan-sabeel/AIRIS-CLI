@@ -1,4 +1,4 @@
-import { Container, getKeybindings, Spacer, Text } from "@earendil-works/airis-tui";
+import { Container, getKeybindings, Spacer, Text } from "@sufiyan-sabeel/airis-tui";
 import { APP_NAME } from "../../../config.ts";
 import { type TerminalTheme, theme } from "../theme/theme.ts";
 import { getCreatorAttribution, getFullLogo, getTagline } from "./airis-logo.ts";

@@ -681,6 +681,6 @@ MIT
 
 ## See Also
 
-- [@earendil-works/airis-ai](https://www.npmjs.com/package/@earendil-works/airis-ai): Core LLM toolkit
-- [@earendil-works/airis-agent-core](https://www.npmjs.com/package/@earendil-works/airis-agent-core): Agent framework
-- [@earendil-works/airis-tui](https://www.npmjs.com/package/@earendil-works/airis-tui): Terminal UI components
+- [@sufiyan-sabeel/airis-ai](https://www.npmjs.com/package/@sufiyan-sabeel/airis-ai): Core LLM toolkit
+- [@sufiyan-sabeel/airis-agent-core](https://www.npmjs.com/package/@sufiyan-sabeel/airis-agent-core): Agent framework
+- [@sufiyan-sabeel/airis-tui](https://www.npmjs.com/package/@sufiyan-sabeel/airis-tui): Terminal UI components

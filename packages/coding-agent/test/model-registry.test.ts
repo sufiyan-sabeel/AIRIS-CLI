@@ -1,9 +1,9 @@
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import type { AnthropicMessagesCompat, Api, Context, Model, OpenAICompletionsCompat } from "@earendil-works/airis-ai";
-import { getApiProvider } from "@earendil-works/airis-ai";
-import { getOAuthProvider } from "@earendil-works/airis-ai/oauth";
+import type { AnthropicMessagesCompat, Api, Context, Model, OpenAICompletionsCompat } from "@sufiyan-sabeel/airis-ai";
+import { getApiProvider } from "@sufiyan-sabeel/airis-ai";
+import { getOAuthProvider } from "@sufiyan-sabeel/airis-ai/oauth";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { AuthStorage } from "../src/core/auth-storage.ts";
 import { clearApiKeyCache, ModelRegistry, type ProviderConfigInput } from "../src/core/model-registry.ts";

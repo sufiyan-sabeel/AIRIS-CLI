@@ -1,5 +1,5 @@
-import type { AgentTool, ThinkingLevel } from "@earendil-works/airis-agent-core";
-import { fauxAssistantMessage, fauxToolCall, type Model } from "@earendil-works/airis-ai";
+import type { AgentTool, ThinkingLevel } from "@sufiyan-sabeel/airis-agent-core";
+import { fauxAssistantMessage, fauxToolCall, type Model } from "@sufiyan-sabeel/airis-ai";
 import { Type } from "typebox";
 import { afterEach, describe, expect, it } from "vitest";
 import type { BuildSystemPromptOptions, ExtensionAPI } from "../../src/index.ts";

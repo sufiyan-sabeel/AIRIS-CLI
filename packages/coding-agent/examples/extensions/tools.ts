@@ -9,9 +9,9 @@
  * 2. Use /tools to open the tool selector
  */
 
-import { Container, type SettingItem, SettingsList } from "@earendil-works/airis-tui";
 import type { ExtensionAPI, ExtensionContext, ToolInfo } from "@sufiyan-sabeel/airis-cli";
 import { getSettingsListTheme } from "@sufiyan-sabeel/airis-cli";
+import { Container, type SettingItem, SettingsList } from "@sufiyan-sabeel/airis-tui";
 
 // State persisted to session
 interface ToolsState {

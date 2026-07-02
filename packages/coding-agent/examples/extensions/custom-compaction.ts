@@ -13,7 +13,7 @@
  *   airis --extension examples/extensions/custom-compaction.ts
  */
 
-import { complete } from "@earendil-works/airis-ai";
+import { complete } from "@sufiyan-sabeel/airis-ai";
 import type { ExtensionAPI } from "@sufiyan-sabeel/airis-cli";
 import { convertToLlm, serializeConversation } from "@sufiyan-sabeel/airis-cli";
 

@@ -7,7 +7,7 @@ import {
 	type RgbColor,
 	type SelectListTheme,
 	type SettingsListTheme,
-} from "@earendil-works/airis-tui";
+} from "@sufiyan-sabeel/airis-tui";
 import chalk from "chalk";
 import { type Static, Type } from "typebox";
 import { Compile } from "typebox/compile";

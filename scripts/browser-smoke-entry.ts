@@ -1,4 +1,4 @@
-import { complete, createAssistantMessageEventStream, getModel, getProviders, Type } from "@earendil-works/airis-ai";
+import { complete, createAssistantMessageEventStream, getModel, getProviders, Type } from "@sufiyan-sabeel/airis-ai";
 import {
 	Agent,
 	bashExecutionToText,
@@ -15,7 +15,7 @@ import {
 	streamProxy,
 	toError,
 	truncateHead,
-} from "@earendil-works/airis-agent-core";
+} from "@sufiyan-sabeel/airis-agent-core";
 
 // Keep this entry browser-safe. It is bundled by scripts/check-browser-smoke.mjs
 // to catch accidental Node-only runtime imports in browser-facing package exports.

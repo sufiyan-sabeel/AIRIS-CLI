@@ -1,6 +1,6 @@
-import type { TextContent } from "@earendil-works/airis-ai";
-import type { Component } from "@earendil-works/airis-tui";
-import { Box, Container, Markdown, type MarkdownTheme, Spacer, Text } from "@earendil-works/airis-tui";
+import type { TextContent } from "@sufiyan-sabeel/airis-ai";
+import type { Component } from "@sufiyan-sabeel/airis-tui";
+import { Box, Container, Markdown, type MarkdownTheme, Spacer, Text } from "@sufiyan-sabeel/airis-tui";
 import type { MessageRenderer } from "../../../core/extensions/types.ts";
 import type { CustomMessage } from "../../../core/messages.ts";
 import { getMarkdownTheme, theme } from "../theme/theme.ts";

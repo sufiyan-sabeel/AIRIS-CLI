@@ -14,7 +14,7 @@ import type {
 	AgentToolUpdateCallback,
 	ThinkingLevel,
 	ToolExecutionMode,
-} from "@earendil-works/airis-agent-core";
+} from "@sufiyan-sabeel/airis-agent-core";
 import type {
 	Api,
 	AssistantMessageEvent,
@@ -27,7 +27,7 @@ import type {
 	SimpleStreamOptions,
 	TextContent,
 	ToolResultMessage,
-} from "@earendil-works/airis-ai";
+} from "@sufiyan-sabeel/airis-ai";
 import type {
 	AutocompleteItem,
 	AutocompleteProvider,
@@ -38,7 +38,7 @@ import type {
 	OverlayHandle,
 	OverlayOptions,
 	TUI,
-} from "@earendil-works/airis-tui";
+} from "@sufiyan-sabeel/airis-tui";
 import type { Static, TSchema } from "typebox";
 import type { Theme } from "../../modes/interactive/theme/theme.ts";
 import type { BashResult } from "../bash-executor.ts";

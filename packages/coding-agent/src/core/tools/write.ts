@@ -1,5 +1,5 @@
-import type { AgentTool } from "@earendil-works/airis-agent-core";
-import { Container, Text } from "@earendil-works/airis-tui";
+import type { AgentTool } from "@sufiyan-sabeel/airis-agent-core";
+import { Container, Text } from "@sufiyan-sabeel/airis-tui";
 import { mkdir as fsMkdir, writeFile as fsWriteFile } from "fs/promises";
 import { dirname } from "path";
 import { type Static, Type } from "typebox";

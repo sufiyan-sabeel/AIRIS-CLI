@@ -1,13 +1,13 @@
 // Requires GitHub CLI (`gh`) and a GitHub repository checkout.
 // Preloads the latest open issues once per session, then filters them locally for fast `#...` completion.
 
+import type { ExtensionAPI } from "@sufiyan-sabeel/airis-cli";
 import {
 	type AutocompleteItem,
 	type AutocompleteProvider,
 	type AutocompleteSuggestions,
 	fuzzyFilter,
-} from "@earendil-works/airis-tui";
-import type { ExtensionAPI } from "@sufiyan-sabeel/airis-cli";
+} from "@sufiyan-sabeel/airis-tui";
 
 type GitHubIssue = {
 	number: number;

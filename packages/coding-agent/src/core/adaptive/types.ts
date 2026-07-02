@@ -1,4 +1,4 @@
-import type { AgentToolResult } from "@earendil-works/airis-agent-core";
+import type { AgentToolResult } from "@sufiyan-sabeel/airis-agent-core";
 
 export type AdaptiveTodoStatus = "pending" | "in_progress" | "completed" | "blocked" | "cancelled";
 export type AdaptiveTodoPriority = "low" | "medium" | "high" | "critical";

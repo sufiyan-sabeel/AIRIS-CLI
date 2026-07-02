@@ -588,7 +588,7 @@
 
 ### Changed
 
-- Lazy-load built-in provider modules and root provider wrappers so importing `@earendil-works/airis-ai` no longer eagerly loads provider SDKs, significantly reducing base startup cost without changing dependency installation footprint ([#2297](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/2297))
+- Lazy-load built-in provider modules and root provider wrappers so importing `@sufiyan-sabeel/airis-ai` no longer eagerly loads provider SDKs, significantly reducing base startup cost without changing dependency installation footprint ([#2297](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/2297))
 
 ### Fixed
 
@@ -671,7 +671,7 @@
 - Fixed OpenAI Responses replay to omit empty thinking blocks, avoiding invalid no-op reasoning items in follow-up turns.
 - Switched the Mistral provider from the OpenAI-compatible completions path to Mistral's native SDK and conversations API, preserving native thinking blocks and Mistral-specific message semantics across turns ([#1716](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/1716)).
 - Fixed Antigravity endpoint fallback: 403/404 responses now cascade to the next endpoint instead of throwing immediately, added `autopush-cloudcode-pa.sandbox` endpoint to the fallback list, and removed extra fingerprint headers (`X-Goog-Aairis-Client`, `Client-Metadata`) from Antigravity requests ([#1830](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/1830)).
-- Fixed `@earendil-works/airis-ai/oauth` package exports to point directly at built `dist` files, avoiding broken TypeScript resolution through unpublished wrapper targets ([#1856](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/1856)).
+- Fixed `@sufiyan-sabeel/airis-ai/oauth` package exports to point directly at built `dist` files, avoiding broken TypeScript resolution through unpublished wrapper targets ([#1856](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/1856)).
 - Fixed Gemini 3 unsigned tool call replay: use `skip_thought_signature_validator` sentinel instead of converting function calls to text, preserving structured tool call context across multi-turn conversations ([#1829](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/1829)).
 
 ## [0.56.1] - 2026-03-05
@@ -680,7 +680,7 @@
 
 ### Breaking Changes
 
-- Moved Node OAuth runtime exports off the top-level package entry. Import OAuth login/refresh functions from `@earendil-works/airis-ai/oauth` instead of `@earendil-works/airis-ai` ([#1814](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/1814))
+- Moved Node OAuth runtime exports off the top-level package entry. Import OAuth login/refresh functions from `@sufiyan-sabeel/airis-ai/oauth` instead of `@sufiyan-sabeel/airis-ai` ([#1814](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/1814))
 
 ### Added
 
@@ -806,7 +806,7 @@
 ### Fixed
 
 - Set OpenAI Responses API requests to `store: false` by default to avoid server-side history logging ([#1308](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/1308))
-- Re-exported TypeBox `Type`, `Static`, and `TSchema` from `@earendil-works/airis-ai` to match documentation and avoid duplicate TypeBox type identity issues in pnpm setups ([#1338](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/1338))
+- Re-exported TypeBox `Type`, `Static`, and `TSchema` from `@sufiyan-sabeel/airis-ai` to match documentation and avoid duplicate TypeBox type identity issues in pnpm setups ([#1338](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/1338))
 - Fixed Bedrock adaptive thinking handling for Claude Opus 4.6 with interleaved thinking beta responses ([#1323](https://github.com/sufiyan-sabeel/AIRIS-CLI/pull/1323) by [@markusylisiurunen](https://github.com/markusylisiurunen))
 - Fixed `AWS_BEDROCK_SKIP_AUTH` environment detection to avoid `process` access in non-Node.js environments
 
@@ -1257,7 +1257,7 @@
 
 ### Breaking Changes
 
-- **Agent API moved**: All agent functionality (`agentLoop`, `agentLoopContinue`, `AgentContext`, `AgentEvent`, `AgentTool`, `AgentToolResult`, etc.) has moved to `@earendil-works/airis-agent-core`. Import from that package instead of `@earendil-works/airis-ai`.
+- **Agent API moved**: All agent functionality (`agentLoop`, `agentLoopContinue`, `AgentContext`, `AgentEvent`, `AgentTool`, `AgentToolResult`, etc.) has moved to `@sufiyan-sabeel/airis-agent-core`. Import from that package instead of `@sufiyan-sabeel/airis-ai`.
 
 ### Added
 

@@ -10,8 +10,8 @@
 import { existsSync, mkdirSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import type { AgentTool } from "@earendil-works/airis-agent-core";
-import { Agent } from "@earendil-works/airis-agent-core";
+import type { AgentTool } from "@sufiyan-sabeel/airis-agent-core";
+import { Agent } from "@sufiyan-sabeel/airis-agent-core";
 import type {
 	AssistantMessage,
 	AssistantMessageEvent,
@@ -24,8 +24,8 @@ import type {
 	ThinkingContent,
 	ToolCall,
 	Usage,
-} from "@earendil-works/airis-ai";
-import { createAssistantMessageEventStream } from "@earendil-works/airis-ai";
+} from "@sufiyan-sabeel/airis-ai";
+import { createAssistantMessageEventStream } from "@sufiyan-sabeel/airis-ai";
 import { AgentSession, type AgentSessionEvent } from "../src/core/agent-session.ts";
 import { AuthStorage } from "../src/core/auth-storage.ts";
 import { ModelRegistry } from "../src/core/model-registry.ts";

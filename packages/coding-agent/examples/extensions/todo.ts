@@ -10,9 +10,9 @@
  * correct for that point in history.
  */
 
-import { StringEnum } from "@earendil-works/airis-ai";
-import { matchesKey, Text, truncateToWidth } from "@earendil-works/airis-tui";
+import { StringEnum } from "@sufiyan-sabeel/airis-ai";
 import type { ExtensionAPI, ExtensionContext, Theme } from "@sufiyan-sabeel/airis-cli";
+import { matchesKey, Text, truncateToWidth } from "@sufiyan-sabeel/airis-tui";
 import { Type } from "typebox";
 
 interface Todo {

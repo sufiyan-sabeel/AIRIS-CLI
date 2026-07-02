@@ -20,7 +20,7 @@
  *   airis -e ./tool-override.ts
  */
 
-import type { TextContent } from "@earendil-works/airis-ai";
+import type { TextContent } from "@sufiyan-sabeel/airis-ai";
 import { type ExtensionAPI, getAgentDir, withFileMutationQueue } from "@sufiyan-sabeel/airis-cli";
 import { constants, readFileSync } from "fs";
 import { access, appendFile, readFile } from "fs/promises";

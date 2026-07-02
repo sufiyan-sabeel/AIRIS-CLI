@@ -1,4 +1,4 @@
-import type { Component } from "@earendil-works/airis-tui";
+import type { Component } from "@sufiyan-sabeel/airis-tui";
 import { theme } from "../theme/theme.ts";
 
 /**

@@ -1,11 +1,11 @@
-import type { Component, EditorTheme, TUI } from "@earendil-works/airis-tui";
-import { truncateToWidth, visibleWidth } from "@earendil-works/airis-tui";
 import {
 	CustomEditor,
 	type ExtensionAPI,
 	type ExtensionContext,
 	type KeybindingsManager,
 } from "@sufiyan-sabeel/airis-cli";
+import type { Component, EditorTheme, TUI } from "@sufiyan-sabeel/airis-tui";
+import { truncateToWidth, visibleWidth } from "@sufiyan-sabeel/airis-tui";
 
 function fitBorder(
 	left: string,

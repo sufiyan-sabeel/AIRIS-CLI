@@ -2,9 +2,9 @@
  * Extension runner - executes extensions and manages their lifecycle.
  */
 
-import type { AgentMessage } from "@earendil-works/airis-agent-core";
-import type { ImageContent, Model } from "@earendil-works/airis-ai";
-import type { KeyId } from "@earendil-works/airis-tui";
+import type { AgentMessage } from "@sufiyan-sabeel/airis-agent-core";
+import type { ImageContent, Model } from "@sufiyan-sabeel/airis-ai";
+import type { KeyId } from "@sufiyan-sabeel/airis-tui";
 import { type Theme, theme } from "../../modes/interactive/theme/theme.ts";
 import type { ResourceDiagnostic } from "../diagnostics.ts";
 import type { KeybindingsConfig } from "../keybindings.ts";

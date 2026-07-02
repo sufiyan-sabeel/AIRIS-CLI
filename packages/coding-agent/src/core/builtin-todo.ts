@@ -6,8 +6,8 @@
  * and a `/todos` command for users to view the list.
  */
 
-import { StringEnum } from "@earendil-works/airis-ai";
-import { matchesKey, Text, truncateToWidth } from "@earendil-works/airis-tui";
+import { StringEnum } from "@sufiyan-sabeel/airis-ai";
+import { matchesKey, Text, truncateToWidth } from "@sufiyan-sabeel/airis-tui";
 import { Type } from "typebox";
 import type { Theme } from "../modes/interactive/theme/theme.ts";
 import type {

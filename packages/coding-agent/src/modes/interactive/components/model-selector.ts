@@ -1,4 +1,4 @@
-import { type Model, modelsAreEqual } from "@earendil-works/airis-ai";
+import { type Model, modelsAreEqual } from "@sufiyan-sabeel/airis-ai";
 import {
 	Container,
 	type Focusable,
@@ -8,7 +8,7 @@ import {
 	Spacer,
 	Text,
 	type TUI,
-} from "@earendil-works/airis-tui";
+} from "@sufiyan-sabeel/airis-tui";
 import type { ModelRegistry } from "../../../core/model-registry.ts";
 import type { SettingsManager } from "../../../core/settings-manager.ts";
 import { theme } from "../theme/theme.ts";
