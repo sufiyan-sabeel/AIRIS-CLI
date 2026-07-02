@@ -10251,13 +10251,13 @@ export const MODELS = {
 			thinkingLevelMap: {"minimal":null,"low":null,"medium":null,"high":"high","xhigh":"xhigh"},
 			input: ["text"],
 			cost: {
-				input: 0.09,
+				input: 0.089,
 				output: 0.18,
 				cacheRead: 0.018,
 				cacheWrite: 0,
 			},
 			contextWindow: 1048576,
-			maxTokens: 16384,
+			maxTokens: 4096,
 		} satisfies Model<"openai-completions">,
 		"deepseek/deepseek-v4-pro": {
 			id: "deepseek/deepseek-v4-pro",
@@ -13038,8 +13038,8 @@ export const MODELS = {
 			reasoning: false,
 			input: ["text", "image"],
 			cost: {
-				input: 0.08,
-				output: 0.5,
+				input: 0.117,
+				output: 0.455,
 				cacheRead: 0,
 				cacheWrite: 0,
 			},
