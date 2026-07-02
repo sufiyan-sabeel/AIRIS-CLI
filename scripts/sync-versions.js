@@ -55,11 +55,11 @@ for (const [dir, pkg] of Object.entries(packages)) {
 	if (pkg.data.dependencies) {
 		for (const [depName, currentVersion] of Object.entries(pkg.data.dependencies)) {
 			if (versionMap[depName]) {
-				const newVersion = `^${versionMap[depName]}`;
-				if (currentVersion !== newVersion) {
-					console.log(`\n${pkg.data.name}:`);
-					console.log(`  ${depName}: ${currentVersion} → ${newVersion}`);
-					pkg.data.dependencies[depName] = newVersion;
+			const newVersion = `${versionMap[depName]}`;
+			if (currentVersion !== newVersion) {
+				console.log(`\n${pkg.data.name}:`);
+				console.log(`  ${depName}: ${currentVersion} → ${newVersion}`);
+				pkg.data.dependencies[depName] = newVersion;
 					updated = true;
 					totalUpdates++;
 				}
@@ -71,11 +71,11 @@ for (const [dir, pkg] of Object.entries(packages)) {
 	if (pkg.data.devDependencies) {
 		for (const [depName, currentVersion] of Object.entries(pkg.data.devDependencies)) {
 			if (versionMap[depName]) {
-				const newVersion = `^${versionMap[depName]}`;
-				if (currentVersion !== newVersion) {
-					console.log(`\n${pkg.data.name}:`);
-					console.log(`  ${depName}: ${currentVersion} → ${newVersion} (devDependencies)`);
-					pkg.data.devDependencies[depName] = newVersion;
+			const newVersion = `${versionMap[depName]}`;
+			if (currentVersion !== newVersion) {
+				console.log(`\n${pkg.data.name}:`);
+				console.log(`  ${depName}: ${currentVersion} → ${newVersion} (devDependencies)`);
+				pkg.data.devDependencies[depName] = newVersion;
 					updated = true;
 					totalUpdates++;
 				}

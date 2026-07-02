@@ -1,22 +1,22 @@
 {
-  "name": "airis-extension-with-deps",
-  "private": true,
-  "version": "0.79.5",
-  "type": "module",
-  "scripts": {
-    "clean": "echo 'nothing to clean'",
-    "build": "echo 'nothing to build'",
-    "check": "echo 'nothing to check'"
-  },
-  "airis": {
-    "extensions": [
-      "./index.ts"
-    ]
-  },
-  "dependencies": {
-    "ms": "2.1.3"
-  },
-  "devDependencies": {
-    "@types/ms": "2.1.0"
-  }
+	"name": "airis-extension-with-deps",
+	"private": true,
+	"version": "0.79.6",
+	"type": "module",
+	"scripts": {
+		"clean": "echo 'nothing to clean'",
+		"build": "echo 'nothing to build'",
+		"check": "echo 'nothing to check'"
+	},
+	"airis": {
+		"extensions": [
+			"./index.ts"
+		]
+	},
+	"dependencies": {
+		"ms": "2.1.3"
+	},
+	"devDependencies": {
+		"@types/ms": "2.1.0"
+	}
 }
