@@ -1,0 +1,21 @@
+# CODEOWNERS - These users/teams must approve changes to matching paths
+# @sufiyan-sabeel is the repository owner/admin
+
+# Global - all changes require admin approval
+* @sufiyan-sabeel
+
+# Security-sensitive paths - require explicit admin review
+.github/workflows/ @sufiyan-sabeel
+scripts/publish.mjs @sufiyan-sabeel
+scripts/generate-coding-agent-shrinkwrap.mjs @sufiyan-sabeel
+package.json @sufiyan-sabeel
+packages/*/package.json @sufiyan-sabeel
+
+# Configuration files
+tsconfig.json @sufiyan-sabeel
+biome.json @sufiyan-sabeel
+*.config.* @sufiyan-sabeel
+
+# Documentation
+SECURITY.md @sufiyan-sabeel
+README.md @sufiyan-sabeel

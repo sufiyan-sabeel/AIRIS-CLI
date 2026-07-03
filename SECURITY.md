@@ -21,6 +21,73 @@ skills and only to use AIRIS within trusted repositories.  This is because files
 like `AGENTS.md` or instructions in comments can be used to prompt inject the
 coding agent trivially and this cannot be protected against.
 
+## Repository Security Configuration
+
+The following security controls are enforced for this repository to prevent unauthorized changes:
+
+### Branch Protection (`main`)
+
+The `main` branch has the following protection rules that must be configured in GitHub Settings > Branches:
+
+- **Require pull request reviews before merging** — at least 1 approving review from a code owner
+- **Dismiss stale pull request approvals when new commits are pushed**
+- **Require review from CODEOWNERS** — the CODEOWNERS file in this repository lists `@sufiyan-sabeel` as owner for all paths
+- **Require status checks to pass before merging** — CI, lint, type-check must pass
+- **Require branches to be up to date before merging**
+- **Do not allow bypassing the above protections** (enforce for administrators as well)
+- **Restrict push access** — only admins can push directly to `main`
+- **Lock branch** — prevent accidental deletion
+
+### CODEOWNERS
+
+The `.github/CODEOWNERS` file requires admin approval for all changes:
+
+| Pattern | Owner |
+|---------|-------|
+| `*` (all files) | `@sufiyan-sabeel` |
+| `.github/workflows/` | `@sufiyan-sabeel` |
+| `scripts/publish.mjs` | `@sufiyan-sabeel` |
+| `package.json` | `@sufiyan-sabeel` |
+| `packages/*/package.json` | `@sufiyan-sabeel` |
+| `SECURITY.md`, `README.md` | `@sufiyan-sabeel` |
+
+### Required Configuration Steps (via GitHub UI)
+
+1. Go to repository **Settings > Branches > Add branch protection rule**
+2. Branch pattern: `main`
+3. Enable: "Require a pull request before merging" → "Require approvals" → `1`
+4. Enable: "Dismiss stale pull request approvals when new commits are pushed"
+5. Enable: "Require review from Code Owners"
+6. Enable: "Require status checks to pass before merging" → select CI workflows
+7. Enable: "Require branches to be up to date before merging"
+8. Enable: "Do not allow bypassing the above protections"
+9. Enable: "Restrict who can push to matching branches" → add only admins
+10. **Save** the rule
+
+### Dependabot Secrets Scanning
+
+Dependabot is configured (`.github/dependabot.yml`) for weekly security updates.
+Enable secret scanning and push protection in GitHub Settings > Code security & analysis:
+- **Dependency graph** — ON
+- **Dependabot alerts** — ON
+- **Dependabot security updates** — ON
+- **Secret scanning** — ON (with push protection)
+- **Code scanning** — ON (CodeQL)
+
+### Access Permissions
+
+Configure repository access in GitHub Settings > Collaborators:
+- **Admin** — only trusted owners (`@sufiyan-sabeel`)
+- **Write** — contributors who need to create branches (not push to main)
+- **Read** — everyone else
+- Do not give anyone outside the owner team "Admin" or "Maintain" permission
+
+### Vulnerability Reporting
+
+Report security issues privately via the GitHub Security Advisories tab
+or email `riyazo65ckm@gmail.com`. Do not open public issues for security
+vulnerabilities.
+
 ## Public GitHub Safety
 
 Do not copy or paste sensitive files into public GitHub issues, pull requests,
@@ -38,7 +105,7 @@ credential that was accidentally shared publicly.
 If you believe you found a security vulnerability in AIRIS or another package in
 this repository, please report it privately by either:
 
-- Emailing `security@earendil.com`, or
+- Emailing `riyazo65ckm@gmail.com`, or
 - Opening a private report through GitHub Security Advisories for this repository
 
 Please include:
