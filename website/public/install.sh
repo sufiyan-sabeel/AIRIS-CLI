@@ -6,8 +6,40 @@ set -eu
 
 REPO="sufiyan-sabeel/AIRIS-CLI"
 VERSION="${VERSION:-latest}"
-BINDIR="${BINDIR:-/usr/local/bin}"
-INSTALL_DIR="${AIRIS_INSTALL_DIR:-${HOME}/.airis/bin/airis}"
+USER_HOME="${HOME:-.}"
+BINDIR="${BINDIR:-}"
+INSTALL_DIR="${AIRIS_INSTALL_DIR:-${USER_HOME}/.airis/bin/airis}"
+
+is_termux() {
+    [ -n "${ANDROID_ROOT:-}" ] || [ -d "/data/data/com.termux/files/usr" ] || printf '%s' "${PREFIX:-}" | grep -q 'com.termux'
+}
+
+choose_bindir() {
+    if [ -n "$BINDIR" ]; then
+        printf '%s\n' "$BINDIR"
+        return 0
+    fi
+
+    OS="$(uname -s | tr '[:upper:]' '[:lower:]')"
+    case "$OS" in
+        mingw*|msys*|cygwin*)
+            printf '%s\n' "${USER_HOME}/.local/bin"
+            return 0
+            ;;
+    esac
+
+    if is_termux; then
+        printf '%s\n' "${PREFIX:-${USER_HOME}/.local}/bin"
+        return 0
+    fi
+
+    if [ -d "/usr/local/bin" ] && [ -w "/usr/local/bin" ]; then
+        printf '%s\n' "/usr/local/bin"
+        return 0
+    fi
+
+    printf '%s\n' "${USER_HOME}/.local/bin"
+}
 
 detect_platform() {
     OS="$(uname -s | tr '[:upper:]' '[:lower:]')"
@@ -26,6 +58,13 @@ detect_platform() {
     esac
 
     echo "${OS}-${ARCH}"
+}
+
+require_command() {
+    if ! command -v "$1" >/dev/null 2>&1; then
+        echo "Missing required command: $1"
+        exit 1
+    fi
 }
 
 download_url() {
@@ -48,9 +87,22 @@ link_binary() {
     cp "$SOURCE" "$TARGET"
 }
 
+warn_path() {
+    case ":$PATH:" in
+        *":$BINDIR:"*) return 0 ;;
+    esac
+
+    echo "Warning: $BINDIR is not in PATH. Add it before running airis globally:"
+    echo "  export PATH=\"$BINDIR:\$PATH\""
+}
+
 download_and_install() {
+    require_command curl
     PLATFORM="$(detect_platform)"
+    BINDIR="$(choose_bindir)"
     echo "Downloading AIRIS CLI ${VERSION} for ${PLATFORM}..."
+    echo "Installing command to ${BINDIR}"
+    echo "Installing package files to ${INSTALL_DIR}"
 
     TMPDIR="$(mktemp -d)"
     trap 'rm -rf "$TMPDIR"' EXIT
@@ -58,6 +110,7 @@ download_and_install() {
     mkdir -p "$INSTALL_DIR" "$BINDIR"
 
     if [ "$(echo "$PLATFORM" | cut -d- -f1)" = "windows" ]; then
+        require_command unzip
         URL="$(download_url "airis-${PLATFORM}.zip")"
         curl -fsSL "$URL" -o "$TMPDIR/airis.zip"
         unzip -q "$TMPDIR/airis.zip" -d "$TMPDIR"
@@ -67,6 +120,7 @@ download_and_install() {
         link_binary "$INSTALL_DIR/airis.exe" "$BINDIR/airis.exe"
         INSTALLED="$BINDIR/airis.exe"
     else
+        require_command tar
         URL="$(download_url "airis-${PLATFORM}.tar.gz")"
         curl -fsSL "$URL" | tar -xz -C "$TMPDIR"
         rm -rf "${INSTALL_DIR:?}"/*
@@ -89,7 +143,7 @@ download_and_install() {
     fi
 
     if ! command -v airis >/dev/null 2>&1; then
-        echo "Warning: airis not found in PATH. Ensure ${BINDIR} is in your PATH."
+        warn_path
     fi
 }
 
