@@ -51,6 +51,7 @@ export default function Home() {
       <main id="top">
         <section className="hero-gradient relative isolate overflow-hidden border-b border-border/70 px-4 py-16 sm:px-6 sm:py-28 lg:px-8">
           <div className="bg-grid absolute inset-0 -z-10 opacity-60" aria-hidden />
+          <div className="particle-field absolute inset-0 -z-10 opacity-70" aria-hidden />
           <div className="scanline absolute inset-x-0 top-0 -z-10 h-1/2 opacity-50" aria-hidden />
           <div className="float-slow absolute left-[8%] top-20 -z-10 h-40 w-40 rounded-full bg-blue-500/15 blur-3xl" aria-hidden />
           <div className="float-medium float-delay absolute right-[10%] top-10 -z-10 h-56 w-56 rounded-full bg-violet-500/15 blur-3xl" aria-hidden />
@@ -65,7 +66,7 @@ export default function Home() {
                 AIRIS CLI is a local-first AI coding agent that runs in your terminal. It works with local files, shell commands, sessions, verified autonomy, and the `airis ship` workflow.
               </p>
               <div className="fade-up fade-up-delay-1 mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-                <Button asChild size="lg"><a href="#installation">Install AIRIS <ArrowRight className="h-4 w-4" /></a></Button>
+                <Button asChild size="lg" className="pulse-cta"><a href="#installation">Install AIRIS <ArrowRight className="h-4 w-4" /></a></Button>
                 <Button asChild size="lg" variant="outline"><a href="#commands"><Search className="h-4 w-4" /> Explore commands</a></Button>
                 <Button asChild size="lg" variant="ghost"><a href={repo.url} target="_blank" rel="noreferrer"><Github className="h-4 w-4" /> Repository</a></Button>
                 <Button asChild size="lg" variant="ghost"><a href={repo.forksUrl} target="_blank" rel="noreferrer"><GitFork className="h-4 w-4" /> Fork project</a></Button>
@@ -79,7 +80,7 @@ export default function Home() {
                 <a className="glass-card hover-lift rounded-2xl border border-border p-3 sm:p-4" href={repo.forksUrl} target="_blank" rel="noreferrer"><dt className="text-muted-foreground">GitHub</dt><dd className="mt-1 flex items-center gap-1 font-medium"><GitFork className="h-3.5 w-3.5" /> Forks</dd></a>
               </dl>
             </div>
-            <div className="fade-up fade-up-delay-3 relative">
+            <div className="terminal-orbit fade-up fade-up-delay-3 relative">
               <div className="float-medium absolute -left-3 top-8 z-10 rounded-full border border-blue-400/30 bg-background/80 px-3 py-1 text-xs font-medium shadow-xl backdrop-blur-md">adaptive installer</div>
               <div className="float-slow float-delay absolute -right-2 bottom-12 z-10 rounded-full border border-violet-400/30 bg-background/80 px-3 py-1 text-xs font-medium shadow-xl backdrop-blur-md">verified autonomy</div>
               <TerminalDemo />

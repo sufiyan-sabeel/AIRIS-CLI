@@ -80,6 +80,17 @@ img, video, pre, code {
     radial-gradient(circle at 50% 78%, hsl(185 95% 55% / 0.12), transparent 28rem);
 }
 
+.particle-field {
+  background-image:
+    radial-gradient(circle, hsl(213 93% 70% / 0.42) 0 1px, transparent 1.8px),
+    radial-gradient(circle, hsl(265 90% 78% / 0.34) 0 1px, transparent 1.8px),
+    radial-gradient(circle, hsl(185 95% 62% / 0.28) 0 1px, transparent 1.8px);
+  background-position: 0 0, 34px 46px, 82px 18px;
+  background-size: 120px 120px, 170px 170px, 220px 220px;
+  animation: particle-drift 28s linear infinite;
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 35%, black 28%, transparent 82%);
+}
+
 .gradient-text {
   background: linear-gradient(120deg, hsl(var(--foreground)) 0%, hsl(213 93% 58%) 48%, hsl(265 90% 68%) 100%);
   background-size: 180% 180%;
@@ -125,6 +136,48 @@ img, video, pre, code {
   animation: shine 1.2s ease;
 }
 
+.pulse-cta {
+  position: relative;
+  isolation: isolate;
+  box-shadow: 0 16px 45px hsl(213 93% 58% / 0.28);
+}
+
+.pulse-cta::before {
+  position: absolute;
+  inset: -5px;
+  z-index: -1;
+  content: "";
+  border-radius: inherit;
+  background: linear-gradient(120deg, hsl(213 93% 58% / 0.48), hsl(265 90% 68% / 0.38), hsl(185 95% 55% / 0.36));
+  opacity: 0.72;
+  filter: blur(12px);
+  animation: cta-pulse 2.8s ease-in-out infinite;
+}
+
+.terminal-orbit {
+  position: relative;
+}
+
+.terminal-orbit::before,
+.terminal-orbit::after {
+  position: absolute;
+  inset: -18px;
+  z-index: -1;
+  content: "";
+  border-radius: 2rem;
+  background: conic-gradient(from 0deg, transparent 0 22%, hsl(213 93% 58% / 0.45), transparent 42% 66%, hsl(265 90% 68% / 0.36), transparent 86% 100%);
+  filter: blur(18px);
+  opacity: 0.55;
+  animation: orbit-spin 14s linear infinite;
+}
+
+.terminal-orbit::after {
+  inset: -10px;
+  opacity: 0.32;
+  animation-direction: reverse;
+  animation-duration: 20s;
+}
+
 .float-slow { animation: float 7s ease-in-out infinite; }
 .float-medium { animation: float 5.5s ease-in-out infinite; }
 .float-delay { animation-delay: -2.2s; }
@@ -150,6 +203,9 @@ img, video, pre, code {
 
 @keyframes caret { 0%, 45% { opacity: 1; } 46%, 100% { opacity: 0; } }
 @keyframes gradient-shift { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+@keyframes particle-drift { from { background-position: 0 0, 34px 46px, 82px 18px; } to { background-position: 120px 120px, 204px 216px, 302px 238px; } }
+@keyframes cta-pulse { 0%, 100% { opacity: 0.42; transform: scale(0.98); } 50% { opacity: 0.9; transform: scale(1.04); } }
+@keyframes orbit-spin { to { transform: rotate(1turn); } }
 @keyframes float { 0%, 100% { transform: translate3d(0, 0, 0); } 50% { transform: translate3d(0, -14px, 0); } }
 @keyframes fade-up { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes scanline { from { transform: translateY(-100%); } to { transform: translateY(100%); } }
