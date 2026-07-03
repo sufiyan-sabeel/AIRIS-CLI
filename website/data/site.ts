@@ -24,7 +24,7 @@ export const repo = {
   url: "https://github.com/sufiyan-sabeel/AIRIS-CLI",
   forksUrl: "https://github.com/sufiyan-sabeel/AIRIS-CLI/fork",
   packageName: "@sufiyan-sabeel/airis-cli",
-  version: "0.79.3",
+  version: "0.79.6",
   license: "MIT",
   node: ">=22.19.0",
   configDir: "~/.airis/agent",
@@ -185,13 +185,20 @@ export const installSections = [
   {
     platform: "Windows",
     commands: [
+      "# Git Bash, MSYS, Cygwin, or WSL\ncurl -fsSL https://sufiyan-sabeel.github.io/AIRIS-CLI/install.sh | sh",
       "git clone https://github.com/sufiyan-sabeel/AIRIS-CLI.git\ncd AIRIS-CLI\nnpm install --ignore-scripts --no-audit --no-fund\nnpm run build\nnpm link",
     ],
   },
   {
     platform: "Termux",
     commands: [
-      "pkg update && pkg upgrade\npkg install nodejs git\nnpm install -g @sufiyan-sabeel/airis-cli\nairis --version",
+      "pkg update && pkg upgrade\npkg install curl tar\ncurl -fsSL https://sufiyan-sabeel.github.io/AIRIS-CLI/install.sh | sh\nairis --version",
+    ],
+  },
+  {
+    platform: "proot-distro",
+    commands: [
+      "apt update && apt install -y curl tar\ncurl -fsSL https://sufiyan-sabeel.github.io/AIRIS-CLI/install.sh | sh\nairis --version",
     ],
   },
 ];

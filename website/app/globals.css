@@ -73,11 +73,87 @@ img, video, pre, code {
   mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, black 35%, transparent 78%);
 }
 
+.hero-gradient {
+  background:
+    radial-gradient(circle at 18% 18%, hsl(213 93% 58% / 0.22), transparent 26rem),
+    radial-gradient(circle at 78% 8%, hsl(265 90% 65% / 0.18), transparent 24rem),
+    radial-gradient(circle at 50% 78%, hsl(185 95% 55% / 0.12), transparent 28rem);
+}
+
+.gradient-text {
+  background: linear-gradient(120deg, hsl(var(--foreground)) 0%, hsl(213 93% 58%) 48%, hsl(265 90% 68%) 100%);
+  background-size: 180% 180%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: gradient-shift 9s ease infinite;
+}
+
+.glass-card {
+  background:
+    linear-gradient(135deg, hsl(var(--card) / 0.9), hsl(var(--card) / 0.58)),
+    radial-gradient(circle at top left, hsl(213 93% 58% / 0.13), transparent 18rem);
+  box-shadow: 0 20px 70px hsl(222 25% 8% / 0.08);
+  backdrop-filter: blur(18px);
+}
+
+.hover-lift {
+  transition: transform 220ms ease, border-color 220ms ease, box-shadow 220ms ease, background 220ms ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  border-color: hsl(var(--ring) / 0.42);
+  box-shadow: 0 24px 80px hsl(213 93% 58% / 0.14);
+}
+
+.shine-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.shine-card::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  pointer-events: none;
+  background: linear-gradient(110deg, transparent 20%, hsl(var(--foreground) / 0.08) 42%, transparent 64%);
+  transform: translateX(-120%);
+}
+
+.shine-card:hover::after {
+  animation: shine 1.2s ease;
+}
+
+.float-slow { animation: float 7s ease-in-out infinite; }
+.float-medium { animation: float 5.5s ease-in-out infinite; }
+.float-delay { animation-delay: -2.2s; }
+.fade-up { animation: fade-up 760ms ease both; }
+.fade-up-delay-1 { animation-delay: 120ms; }
+.fade-up-delay-2 { animation-delay: 240ms; }
+.fade-up-delay-3 { animation-delay: 360ms; }
+
+.scanline {
+  background: linear-gradient(to bottom, transparent, hsl(213 93% 58% / 0.10), transparent);
+  animation: scanline 5.5s linear infinite;
+}
+
+.terminal-glow {
+  box-shadow:
+    0 24px 90px hsl(213 93% 58% / 0.18),
+    inset 0 1px 0 hsl(0 0% 100% / 0.08);
+}
+
 .prose-airis h3 { margin-top: 1.5rem; font-size: 1rem; font-weight: 650; letter-spacing: -0.02em; }
 .prose-airis p, .prose-airis li { color: hsl(var(--muted-foreground)); line-height: 1.8; }
 .prose-airis code { border-radius: 0.4rem; background: hsl(var(--secondary)); padding: 0.15rem 0.35rem; font-family: var(--font-mono); font-size: 0.9em; color: hsl(var(--foreground)); }
 
 @keyframes caret { 0%, 45% { opacity: 1; } 46%, 100% { opacity: 0; } }
+@keyframes gradient-shift { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+@keyframes float { 0%, 100% { transform: translate3d(0, 0, 0); } 50% { transform: translate3d(0, -14px, 0); } }
+@keyframes fade-up { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes scanline { from { transform: translateY(-100%); } to { transform: translateY(100%); } }
+@keyframes shine { from { transform: translateX(-120%); } to { transform: translateX(120%); } }
 .animate-caret { animation: caret 1s steps(1) infinite; }
 
 @media (prefers-reduced-motion: reduce) {

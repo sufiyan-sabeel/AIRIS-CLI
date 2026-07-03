@@ -48,40 +48,46 @@ export default function Home() {
       </header>
 
       <main id="top">
-        <section className="relative overflow-hidden border-b border-border/70 px-4 py-16 sm:px-6 sm:py-28 lg:px-8">
+        <section className="hero-gradient relative isolate overflow-hidden border-b border-border/70 px-4 py-16 sm:px-6 sm:py-28 lg:px-8">
           <div className="bg-grid absolute inset-0 -z-10 opacity-60" aria-hidden />
-          <div className="absolute left-1/2 top-0 -z-10 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-blue-500/10 blur-3xl" aria-hidden />
+          <div className="scanline absolute inset-x-0 top-0 -z-10 h-1/2 opacity-50" aria-hidden />
+          <div className="float-slow absolute left-[8%] top-20 -z-10 h-40 w-40 rounded-full bg-blue-500/15 blur-3xl" aria-hidden />
+          <div className="float-medium float-delay absolute right-[10%] top-10 -z-10 h-56 w-56 rounded-full bg-violet-500/15 blur-3xl" aria-hidden />
           <div className="mx-auto grid max-w-7xl items-center gap-10 lg:gap-14 lg:grid-cols-[1.02fr_0.98fr]">
-            <div>
+            <div className="fade-up">
               <AirisLogo large className="mb-8 max-w-full" />
               <Badge className="mb-5">{repo.fullName}</Badge>
-              <h1 className="max-w-4xl text-balance text-4xl font-semibold tracking-[-0.07em] sm:text-5xl md:text-6xl lg:text-7xl">
+              <h1 className="gradient-text max-w-4xl text-balance text-4xl font-semibold tracking-[-0.07em] sm:text-5xl md:text-6xl lg:text-7xl">
                 A modern AI-powered command-line development assistant.
               </h1>
               <p className="mt-6 max-w-2xl text-balance text-base leading-7 text-muted-foreground sm:text-lg sm:leading-8">
                 AIRIS CLI is a local-first AI coding agent that runs in your terminal. It works with local files, shell commands, sessions, verified autonomy, and the `airis ship` workflow.
               </p>
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+              <div className="fade-up fade-up-delay-1 mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                 <Button asChild size="lg"><a href="#installation">Install AIRIS <ArrowRight className="h-4 w-4" /></a></Button>
                 <Button asChild size="lg" variant="outline"><a href="#commands"><Search className="h-4 w-4" /> Explore commands</a></Button>
                 <Button asChild size="lg" variant="ghost"><a href={repo.url} target="_blank" rel="noreferrer"><Github className="h-4 w-4" /> Repository</a></Button>
                 <Button asChild size="lg" variant="ghost"><a href={repo.forksUrl} target="_blank" rel="noreferrer"><GitFork className="h-4 w-4" /> Fork project</a></Button>
               </div>
-              <dl className="mt-10 grid max-w-2xl grid-cols-2 gap-2 text-xs sm:gap-3 sm:text-sm md:grid-cols-3 lg:grid-cols-5">
-                <div className="rounded-2xl border border-border bg-card p-3 sm:p-4"><dt className="text-muted-foreground">Creator</dt><dd className="mt-1 font-medium">{repo.creator}</dd></div>
-                <div className="rounded-2xl border border-border bg-card p-3 sm:p-4"><dt className="text-muted-foreground">Brand</dt><dd className="mt-1 font-medium">{repo.organization}</dd></div>
-                <div className="rounded-2xl border border-border bg-card p-3 sm:p-4"><dt className="text-muted-foreground">Version</dt><dd className="mt-1 font-medium">{repo.version}</dd></div>
-                <div className="rounded-2xl border border-border bg-card p-3 sm:p-4"><dt className="text-muted-foreground">License</dt><dd className="mt-1 font-medium">{repo.license}</dd></div>
-                <a className="rounded-2xl border border-border bg-card p-3 transition-colors hover:bg-secondary sm:p-4" href={repo.forksUrl} target="_blank" rel="noreferrer"><dt className="text-muted-foreground">GitHub</dt><dd className="mt-1 flex items-center gap-1 font-medium"><GitFork className="h-3.5 w-3.5" /> Forks</dd></a>
+              <dl className="fade-up fade-up-delay-2 mt-10 grid max-w-2xl grid-cols-2 gap-2 text-xs sm:gap-3 sm:text-sm md:grid-cols-3 lg:grid-cols-5">
+                <div className="glass-card hover-lift rounded-2xl border border-border p-3 sm:p-4"><dt className="text-muted-foreground">Creator</dt><dd className="mt-1 font-medium">{repo.creator}</dd></div>
+                <div className="glass-card hover-lift rounded-2xl border border-border p-3 sm:p-4"><dt className="text-muted-foreground">Brand</dt><dd className="mt-1 font-medium">{repo.organization}</dd></div>
+                <div className="glass-card hover-lift rounded-2xl border border-border p-3 sm:p-4"><dt className="text-muted-foreground">Version</dt><dd className="mt-1 font-medium">{repo.version}</dd></div>
+                <div className="glass-card hover-lift rounded-2xl border border-border p-3 sm:p-4"><dt className="text-muted-foreground">License</dt><dd className="mt-1 font-medium">{repo.license}</dd></div>
+                <a className="glass-card hover-lift rounded-2xl border border-border p-3 sm:p-4" href={repo.forksUrl} target="_blank" rel="noreferrer"><dt className="text-muted-foreground">GitHub</dt><dd className="mt-1 flex items-center gap-1 font-medium"><GitFork className="h-3.5 w-3.5" /> Forks</dd></a>
               </dl>
             </div>
-            <TerminalDemo />
+            <div className="fade-up fade-up-delay-3 relative">
+              <div className="float-medium absolute -left-3 top-8 z-10 rounded-full border border-blue-400/30 bg-background/80 px-3 py-1 text-xs font-medium shadow-xl backdrop-blur-md">adaptive installer</div>
+              <div className="float-slow float-delay absolute -right-2 bottom-12 z-10 rounded-full border border-violet-400/30 bg-background/80 px-3 py-1 text-xs font-medium shadow-xl backdrop-blur-md">verified autonomy</div>
+              <TerminalDemo />
+            </div>
           </div>
         </section>
 
         <section id="creator" className="px-4 py-16 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-4xl">
-            <Card className="bg-card/70">
+            <Card className="glass-card hover-lift bg-card/70">
               <CardHeader>
                 <Badge className="mb-3 w-fit">Creator</Badge>
                 <CardTitle>About the creator</CardTitle>
@@ -98,7 +104,7 @@ export default function Home() {
               {features.map((feature) => {
                 const Icon = feature.icon;
                 return (
-                  <Card key={feature.title} className="bg-card/70">
+                  <Card key={feature.title} className="glass-card hover-lift shine-card bg-card/70">
                     <CardHeader>
                       <div className="mb-4 grid h-10 w-10 place-items-center rounded-xl border border-border bg-secondary"><Icon className="h-5 w-5 text-blue-500" /></div>
                       <CardTitle>{feature.title}</CardTitle>
@@ -119,8 +125,8 @@ export default function Home() {
               <h2 className="text-3xl font-semibold tracking-[-0.05em] sm:text-5xl">Start from the terminal you already use.</h2>
               <p className="mt-4 text-lg leading-8 text-muted-foreground">The README verifies interactive mode, one-shot prompt mode, and continuing the last session after setting a provider API key.</p>
               <div className="mt-8 grid gap-3 sm:grid-cols-2">
-                <Card><CardHeader><KeyRound className="mb-2 h-5 w-5 text-blue-500" /><CardTitle>Provider key</CardTitle><CardDescription>Use a supported environment variable such as `GEMINI_AAIRIS_KEY`, `OPENAI_AAIRIS_KEY`, or `ANTHROPIC_AAIRIS_KEY`.</CardDescription></CardHeader></Card>
-                <Card><CardHeader><Terminal className="mb-2 h-5 w-5 text-blue-500" /><CardTitle>CLI modes</CardTitle><CardDescription>Use interactive mode with `airis`, or one-shot prompt mode with `airis -p`.</CardDescription></CardHeader></Card>
+                <Card className="glass-card hover-lift shine-card"><CardHeader><KeyRound className="mb-2 h-5 w-5 text-blue-500" /><CardTitle>Provider key</CardTitle><CardDescription>Use a supported environment variable such as `GEMINI_AAIRIS_KEY`, `OPENAI_AAIRIS_KEY`, or `ANTHROPIC_AAIRIS_KEY`.</CardDescription></CardHeader></Card>
+                <Card className="glass-card hover-lift shine-card"><CardHeader><Terminal className="mb-2 h-5 w-5 text-blue-500" /><CardTitle>CLI modes</CardTitle><CardDescription>Use interactive mode with `airis`, or one-shot prompt mode with `airis -p`.</CardDescription></CardHeader></Card>
               </div>
             </div>
             <CodeBlock code={'export GEMINI_AAIRIS_KEY="your-key"\n# or: export OPENAI_AAIRIS_KEY="your-key"\n# or: export ANTHROPIC_AAIRIS_KEY="your-key"\n\nairis\nairis -p "List all TypeScript files in src/"\nairis --continue'} />
@@ -139,8 +145,8 @@ export default function Home() {
             <SectionHeader eyebrow="Installation" title="Install commands from the repository" description={`Runtime requirement verified from package metadata: Node.js ${repo.node}. These commands are copied from README, docs/installation.md, and install scripts.`} />
             <div className="grid gap-5 lg:grid-cols-2">
               {installSections.map((section) => (
-                <Card key={section.platform}>
-                  <CardHeader><CardTitle>{section.platform}</CardTitle><CardDescription>{section.platform === "Termux" ? "Supported by repository Termux instructions." : "Verified repository installation path."}</CardDescription></CardHeader>
+                <Card key={section.platform} className="glass-card hover-lift">
+                  <CardHeader><CardTitle>{section.platform}</CardTitle><CardDescription>{section.platform === "Termux" || section.platform === "proot-distro" ? "Supported by the adaptive curl installer path." : "Verified repository installation path."}</CardDescription></CardHeader>
                   <CardContent className="space-y-4">{section.commands.map((command) => <CodeBlock key={command} code={command} />)}</CardContent>
                 </Card>
               ))}
@@ -153,7 +159,7 @@ export default function Home() {
             <SectionHeader eyebrow="airis ship" title="Full-lifecycle workflow" description="The README describes `airis ship` as a workflow that moves from request and contract through testing, verification, proof, and optional commit." />
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
               {workflowPhases.map((phase, index) => (
-                <Card key={phase} className="relative overflow-hidden">
+                <Card key={phase} className="glass-card hover-lift shine-card relative overflow-hidden">
                   <CardHeader>
                     <Badge className="w-fit">{String(index + 1).padStart(2, "0")}</Badge>
                     <CardTitle>{phase}</CardTitle>
@@ -161,7 +167,7 @@ export default function Home() {
                 </Card>
               ))}
             </div>
-            <Card className="mt-8 overflow-hidden">
+            <Card className="glass-card mt-8 overflow-hidden">
               <CardHeader><CardTitle className="flex items-center gap-2"><Workflow className="h-5 w-5 text-blue-500" /> Architecture overview</CardTitle><CardDescription>Verified package structure: CLI entry point, coding agent, agent core, AI provider layer, TUI package, and local project/user state.</CardDescription></CardHeader>
               <CardContent>
                 <div className="grid gap-3 text-sm md:grid-cols-5">
@@ -182,13 +188,13 @@ export default function Home() {
               </nav>
             </aside>
             <div className="space-y-6">
-              <Card><CardHeader><CardTitle>Docs search</CardTitle><CardDescription>Use the command explorer search for CLI reference. Browser search also works across this static documentation page.</CardDescription></CardHeader></Card>
-              <Card><CardHeader><CardTitle>Provider environment variables</CardTitle><CardDescription>Variables below are present in `airis --help` output.</CardDescription></CardHeader><CardContent><div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">{providers.map(([name, env]) => <div key={name} className="rounded-xl border border-border p-3 text-sm"><div className="font-medium">{name}</div><code className="break-all text-xs text-muted-foreground">{env}</code></div>)}</div></CardContent></Card>
-              <Card><CardHeader><CardTitle>Safety notes</CardTitle></CardHeader><CardContent className="prose-airis"><ul className="list-disc pl-5"><li>README states AIRIS runs locally with your user permissions and does not sandbox itself.</li><li>Project trust controls whether AIRIS can use project-local resources and mutation tools.</li><li>AI-generated code requires human review according to the repository README.</li></ul></CardContent></Card>
+              <Card className="glass-card hover-lift"><CardHeader><CardTitle>Docs search</CardTitle><CardDescription>Use the command explorer search for CLI reference. Browser search also works across this static documentation page.</CardDescription></CardHeader></Card>
+              <Card className="glass-card"><CardHeader><CardTitle>Provider environment variables</CardTitle><CardDescription>Variables below are present in `airis --help` output.</CardDescription></CardHeader><CardContent><div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">{providers.map(([name, env]) => <div key={name} className="hover-lift rounded-xl border border-border p-3 text-sm"><div className="font-medium">{name}</div><code className="break-all text-xs text-muted-foreground">{env}</code></div>)}</div></CardContent></Card>
+              <Card className="glass-card hover-lift"><CardHeader><CardTitle>Safety notes</CardTitle></CardHeader><CardContent className="prose-airis"><ul className="list-disc pl-5"><li>README states AIRIS runs locally with your user permissions and does not sandbox itself.</li><li>Project trust controls whether AIRIS can use project-local resources and mutation tools.</li><li>AI-generated code requires human review according to the repository README.</li></ul></CardContent></Card>
             </div>
           </div>
         </section>
-        <section id="creator" className="px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
+        <section id="creator-story" className="px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
           <div className="mx-auto max-w-3xl text-center">
             <Badge className="mb-4">About the Creator</Badge>
             <h2 className="text-3xl font-semibold tracking-[-0.05em] sm:text-5xl">Umaiz Sufiyan</h2>

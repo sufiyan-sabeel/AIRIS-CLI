@@ -5,14 +5,14 @@ import { repo, terminalLines } from "@/data/site";
 
 export function TerminalDemo() {
   return (
-    <div className="w-full max-w-full overflow-hidden rounded-3xl border border-border bg-zinc-950 shadow-2xl shadow-blue-950/10 dark:bg-black">
+    <div className="terminal-glow shine-card w-full max-w-full overflow-hidden rounded-3xl border border-white/10 bg-zinc-950 shadow-2xl shadow-blue-950/10 dark:bg-black">
       <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
         <div className="flex items-center gap-2" aria-hidden>
           <span className="h-3 w-3 rounded-full bg-red-400" />
           <span className="h-3 w-3 rounded-full bg-amber-400" />
           <span className="h-3 w-3 rounded-full bg-emerald-400" />
         </div>
-        <span className="font-mono text-xs text-zinc-500">airis</span>
+        <span className="rounded-full border border-blue-400/20 bg-blue-400/10 px-2 py-1 font-mono text-xs text-blue-200">airis</span>
       </div>
       <div className="space-y-4 p-5 font-mono text-sm leading-7 text-zinc-200 sm:p-6">
         {terminalLines.map((line, index) => (
@@ -27,7 +27,7 @@ export function TerminalDemo() {
             {index === terminalLines.length - 1 ? <span className="ml-1 inline-block h-4 w-2 translate-y-0.5 animate-caret bg-blue-300" aria-hidden /> : null}
           </motion.div>
         ))}
-        <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 2.6, duration: 0.35 }} className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-zinc-400">
+        <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 2.6, duration: 0.35 }} className="rounded-2xl border border-blue-300/20 bg-blue-300/[0.06] p-4 text-zinc-300">
           AIRIS v{repo.version} · 30+ Providers · 18 Themes · 7 Tools · Brand: {repo.organization}
         </motion.div>
       </div>
