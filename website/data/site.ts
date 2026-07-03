@@ -23,6 +23,7 @@ export const repo = {
   organization: "KageOS",
   url: "https://github.com/sufiyan-sabeel/AIRIS-CLI",
   forksUrl: "https://github.com/sufiyan-sabeel/AIRIS-CLI/fork",
+  contributionUrl: "https://github.com/sufiyan-sabeel/AIRIS-CLI/issues",
   packageName: "@sufiyan-sabeel/airis-cli",
   version: "0.79.6",
   license: "MIT",

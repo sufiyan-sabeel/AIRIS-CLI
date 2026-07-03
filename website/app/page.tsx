@@ -43,6 +43,7 @@ export default function Home() {
             <ThemeToggle />
             <Button asChild size="sm" variant="outline" className="max-sm:px-3"><a href={repo.url} target="_blank" rel="noreferrer"><Github className="h-4 w-4" /><span className="hidden sm:inline">GitHub</span></a></Button>
             <Button asChild size="sm" variant="outline" className="max-sm:px-3"><a href={repo.forksUrl} target="_blank" rel="noreferrer"><GitFork className="h-4 w-4" /><span className="hidden sm:inline">Forks</span></a></Button>
+            <Button asChild size="sm" className="hidden bg-blue-600 text-white hover:bg-blue-700 lg:inline-flex"><a href={repo.contributionUrl} target="_blank" rel="noreferrer"><Github className="h-4 w-4" /> Contribute</a></Button>
           </div>
         </div>
       </header>
@@ -68,6 +69,7 @@ export default function Home() {
                 <Button asChild size="lg" variant="outline"><a href="#commands"><Search className="h-4 w-4" /> Explore commands</a></Button>
                 <Button asChild size="lg" variant="ghost"><a href={repo.url} target="_blank" rel="noreferrer"><Github className="h-4 w-4" /> Repository</a></Button>
                 <Button asChild size="lg" variant="ghost"><a href={repo.forksUrl} target="_blank" rel="noreferrer"><GitFork className="h-4 w-4" /> Fork project</a></Button>
+                <Button asChild size="lg" className="bg-blue-600 text-white hover:bg-blue-700"><a href={repo.contributionUrl} target="_blank" rel="noreferrer"><Github className="h-4 w-4" /> Contribute on GitHub</a></Button>
               </div>
               <dl className="fade-up fade-up-delay-2 mt-10 grid max-w-2xl grid-cols-2 gap-2 text-xs sm:gap-3 sm:text-sm md:grid-cols-3 lg:grid-cols-5">
                 <div className="glass-card hover-lift rounded-2xl border border-border p-3 sm:p-4"><dt className="text-muted-foreground">Creator</dt><dd className="mt-1 font-medium">{repo.creator}</dd></div>
@@ -208,7 +210,7 @@ export default function Home() {
       <footer className="px-4 py-12 sm:px-6 lg:px-8">
         <div className="mx-auto flex max-w-7xl flex-col gap-6 border-t border-border pt-8 md:flex-row md:items-center md:justify-between">
           <div><AirisLogo /><p className="mt-3 max-w-xl text-sm text-muted-foreground">AIRIS CLI is created by {repo.creator} for {repo.organization}. Repository license: {repo.license}. Package: {repo.packageName}.</p></div>
-          <div className="flex flex-wrap gap-3 text-sm"><a className="text-muted-foreground hover:text-foreground" href={repo.url} target="_blank" rel="noreferrer">Repository <ExternalLink className="inline h-3 w-3" /></a><a className="text-muted-foreground hover:text-foreground" href={repo.forksUrl} target="_blank" rel="noreferrer">Forks</a><a className="text-muted-foreground hover:text-foreground" href={`${repo.url}/blob/main/LICENSE`} target="_blank" rel="noreferrer">License</a><a className="text-muted-foreground hover:text-foreground" href={`${repo.url}/tree/main/docs`} target="_blank" rel="noreferrer">Documentation</a></div>
+          <div className="flex flex-wrap gap-3 text-sm"><a className="text-muted-foreground hover:text-foreground" href={repo.url} target="_blank" rel="noreferrer">Repository <ExternalLink className="inline h-3 w-3" /></a><a className="text-muted-foreground hover:text-foreground" href={repo.contributionUrl} target="_blank" rel="noreferrer">Contribute</a><a className="text-muted-foreground hover:text-foreground" href={repo.forksUrl} target="_blank" rel="noreferrer">Forks</a><a className="text-muted-foreground hover:text-foreground" href={`${repo.url}/blob/main/LICENSE`} target="_blank" rel="noreferrer">License</a><a className="text-muted-foreground hover:text-foreground" href={`${repo.url}/tree/main/docs`} target="_blank" rel="noreferrer">Documentation</a></div>
         </div>
       </footer>
     </div>
