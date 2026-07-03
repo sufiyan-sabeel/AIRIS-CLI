@@ -114,10 +114,14 @@ const ERROR_PATTERNS: ErrorPattern[] = [
 	// Syntax errors
 	{
 		id: "syntax-error-ts",
-		regex: /SyntaxError.*Unexpected token|error TS\d{4}:|Cannot find module/i,
+		regex: /SyntaxError.*Unexpected token|error TS\d{4}:/i,
 		category: "syntax",
 		severity: "medium",
-		commonCauses: ["Missing semicolon or bracket", "Invalid TypeScript syntax", "Import path incorrect"],
+		commonCauses: [
+			"Missing semicolon or bracket",
+			"Invalid TypeScript syntax",
+			"Malformed code near the reported line",
+		],
 		suggestedFixes: [
 			{
 				type: "guided",
@@ -145,6 +149,25 @@ const ERROR_PATTERNS: ErrorPattern[] = [
 			},
 		],
 	},
+	// Edit replacement errors
+	{
+		id: "edit-match-error",
+		regex: /oldText.*(?:match|unique)|No exact match|replacement.*failed|Failed to edit|edit.*not found/i,
+		category: "logic",
+		severity: "medium",
+		commonCauses: [
+			"Edit replacement text no longer matches the current file content",
+			"The selected replacement region is not unique",
+			"The file changed after the edit was planned",
+		],
+		suggestedFixes: [
+			{
+				type: "guided",
+				description: "Read the current file and retry with a smaller exact replacement",
+				actions: [],
+			},
+		],
+	},
 	// Import errors
 	{
 		id: "import-error",
@@ -157,6 +180,25 @@ const ERROR_PATTERNS: ErrorPattern[] = [
 				type: "auto",
 				description: "Install missing dependency",
 				actions: [{ type: "bash", command: "npm install {module}" }],
+			},
+		],
+	},
+	// Command timeouts and hangs
+	{
+		id: "process-timeout",
+		regex: /Command timed out after|timed out after \d+(?:ms| seconds?)|Test timed out|Timeout \d+ms/i,
+		category: "runtime",
+		severity: "high",
+		commonCauses: [
+			"The command exceeded its allowed runtime or spawned a hanging process",
+			"A verification command is waiting on external resources or interactive input",
+			"The timeout is too short for the requested operation",
+		],
+		suggestedFixes: [
+			{
+				type: "guided",
+				description: "Isolate the hanging step or rerun the narrowest verification with an appropriate timeout",
+				actions: [],
 			},
 		],
 	},
@@ -236,10 +278,7 @@ export class SelfDebugBrain {
 	 * Analyze an error and generate debugging recommendations.
 	 */
 	analyzeError(context: ErrorContext): ErrorAnalysis {
-		// Record in history
-		this.recordError(context);
-
-		// Check for recurring error
+		// Check history before recording the current error so first occurrences are not marked recurring.
 		const isRecurring = this.isRecurringError(context);
 
 		// Match against known patterns
@@ -252,12 +291,12 @@ export class SelfDebugBrain {
 		const rootCause = this.hypothesizeRootCause(context, matchedPattern);
 
 		// Generate suggested fixes
-		const suggestedFixes = this.generateFixes(context, matchedPattern);
+		const suggestedFixes = this.generateFixes(context, matchedPattern, affectedFiles);
 
 		// Calculate confidence based on pattern match and history
 		const confidence = this.calculateConfidence(matchedPattern, isRecurring);
 
-		return {
+		const analysis = {
 			category: matchedPattern?.category ?? "unknown",
 			severity: matchedPattern?.severity ?? this.estimateSeverity(context),
 			rootCause,
@@ -267,6 +306,8 @@ export class SelfDebugBrain {
 			patternId: matchedPattern?.id,
 			isRecurring,
 		};
+		this.recordError(context);
+		return analysis;
 	}
 
 	/**
@@ -316,8 +357,8 @@ export class SelfDebugBrain {
 			session.resolvedAt = Date.now();
 			// Learn from successful fix
 			this.learnFromResolution(session);
-		} else if (session.attempts.length >= 3) {
-			// Max attempts reached
+		} else if (session.attempts.filter((attempt) => attempt.result === "failure").length >= 3) {
+			// Max failed attempts reached. Skipped attempts are informational and should not abandon a session.
 			session.status = "abandoned";
 		}
 
@@ -330,6 +371,7 @@ export class SelfDebugBrain {
 	formatDebugContext(analysis: ErrorAnalysis, session?: DebugSession): string {
 		const lines = [
 			"## Self-Debug Analysis",
+			...(session ? [`**Session:** ${session.id}`] : []),
 			`**Category:** ${analysis.category}`,
 			`**Severity:** ${analysis.severity}`,
 			`**Confidence:** ${Math.round(analysis.confidence * 100)}%`,
@@ -405,7 +447,8 @@ export class SelfDebugBrain {
 		instructions.push(
 			"",
 			"5. **Verify:** After applying a fix, run verification (tests, build, typecheck).",
-			"6. **Learn:** If the fix works, note what resolved the issue.",
+			"6. **Resolve:** Only mark the debug session resolved after verification passes.",
+			"7. **Learn:** If the fix works, note what resolved the issue.",
 			"",
 			"Use `self_debug` tool to report progress or request additional analysis.",
 		);
@@ -455,7 +498,7 @@ export class SelfDebugBrain {
 	 * Extract file paths mentioned in the error context.
 	 */
 	private extractAffectedFiles(context: ErrorContext): string[] {
-		const files: string[] = [];
+		const files: string[] = [...(context.relatedFiles ?? [])];
 		const errorText = `${context.errorMessage} ${JSON.stringify(context.args)}`;
 
 		// Match common file patterns
@@ -479,8 +522,11 @@ export class SelfDebugBrain {
 	 */
 	private hypothesizeRootCause(context: ErrorContext, pattern?: ErrorPattern): string {
 		if (pattern) {
+			if (pattern.id === "process-timeout") {
+				return "Command timed out or hung while running";
+			}
 			const causes = pattern.commonCauses;
-			return causes[Math.floor(Math.random() * causes.length)];
+			return causes[0] ?? "Unknown error - requires manual investigation";
 		}
 
 		// Generic analysis based on error message
@@ -501,7 +547,7 @@ export class SelfDebugBrain {
 	/**
 	 * Generate suggested fixes based on error analysis.
 	 */
-	private generateFixes(context: ErrorContext, pattern?: ErrorPattern): SuggestedFix[] {
+	private generateFixes(context: ErrorContext, pattern?: ErrorPattern, affectedFiles: string[] = []): SuggestedFix[] {
 		const fixes: SuggestedFix[] = [];
 
 		// Add pattern-based fixes
@@ -519,7 +565,7 @@ export class SelfDebugBrain {
 		fixes.push({
 			type: "guided",
 			description: "Investigate error by reading relevant files and logs",
-			actions: [{ type: "read", path: context.relatedFiles?.[0] ?? "." }],
+			actions: [{ type: "read", path: context.relatedFiles?.[0] ?? affectedFiles[0] ?? "." }],
 			risk: "safe",
 			requiresConfirmation: false,
 		});

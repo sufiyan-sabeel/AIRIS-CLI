@@ -439,7 +439,7 @@ export class AdaptiveBrainController {
 			promptGuidelines: [
 				"Use self_debug when you encounter errors to get analysis and suggested fixes.",
 				"For action=analyze, provide the error message and tool name to get root cause analysis.",
-				"For action=fix, provide the session ID and fix action to apply a suggested fix.",
+				"For action=fix, provide the session ID and fix action to record the intended fix; apply and verify it with the appropriate tools.",
 				"For action=status, check the status of an ongoing debug session.",
 				"For action=stats, get statistics about errors in this session.",
 			],
@@ -472,13 +472,18 @@ export class AdaptiveBrainController {
 						if (!session) {
 							throw new Error(`Debug session ${params.sessionId} not found`);
 						}
-						// Record the attempt (actual execution happens outside this tool)
-						selfDebugBrain.recordAttempt(params.sessionId, params.fixAction, "success", "Fix applied");
+						// Record the planned fix without marking the session resolved.
+						selfDebugBrain.recordAttempt(
+							params.sessionId,
+							params.fixAction,
+							"skipped",
+							"Fix recorded; apply the fix using appropriate tools and verify the result.",
+						);
 						return {
 							content: [
 								{
 									type: "text",
-									text: `Fix recorded for session ${params.sessionId}. Apply the fix using appropriate tools.`,
+									text: `Fix recorded for session ${params.sessionId}. Apply and verify it with the appropriate tools.`,
 								},
 							],
 							details: { sessionId: params.sessionId, status: "recorded" },
