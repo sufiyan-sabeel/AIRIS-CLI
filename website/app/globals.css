@@ -178,6 +178,51 @@ img, video, pre, code {
   animation-duration: 20s;
 }
 
+.feature-grid > * {
+  animation: fade-up 700ms ease both;
+}
+
+.feature-grid > *:nth-child(2) { animation-delay: 70ms; }
+.feature-grid > *:nth-child(3) { animation-delay: 140ms; }
+.feature-grid > *:nth-child(4) { animation-delay: 210ms; }
+.feature-grid > *:nth-child(5) { animation-delay: 280ms; }
+.feature-grid > *:nth-child(6) { animation-delay: 350ms; }
+.feature-grid > *:nth-child(n + 7) { animation-delay: 420ms; }
+
+.feature-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.feature-card::before {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  content: "";
+  background: linear-gradient(90deg, hsl(213 93% 58% / 0), hsl(213 93% 58% / 0.85), hsl(265 90% 68% / 0.75), hsl(185 95% 55% / 0));
+  opacity: 0.55;
+  transform: translateX(-35%);
+  transition: opacity 220ms ease, transform 420ms ease;
+}
+
+.feature-card:hover::before {
+  opacity: 1;
+  transform: translateX(35%);
+}
+
+.feature-card:hover .feature-icon {
+  transform: translateY(-2px) rotate(-4deg) scale(1.08);
+  box-shadow: 0 18px 45px hsl(213 93% 58% / 0.28);
+}
+
+.feature-icon {
+  background:
+    radial-gradient(circle at 30% 20%, hsl(0 0% 100% / 0.34), transparent 36%),
+    linear-gradient(135deg, hsl(213 93% 58% / 0.22), hsl(265 90% 68% / 0.16));
+  box-shadow: 0 12px 35px hsl(213 93% 58% / 0.15);
+  transition: transform 260ms ease, box-shadow 260ms ease;
+}
+
 .float-slow { animation: float 7s ease-in-out infinite; }
 .float-medium { animation: float 5.5s ease-in-out infinite; }
 .float-delay { animation-delay: -2.2s; }

@@ -100,20 +100,23 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="features" className="px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
+        <section id="features" className="relative isolate overflow-hidden px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
+          <div className="bg-grid absolute inset-0 -z-10 opacity-35" aria-hidden />
+          <div className="particle-field absolute inset-0 -z-10 opacity-25" aria-hidden />
+          <div className="absolute left-1/2 top-24 -z-10 h-72 w-72 -translate-x-1/2 rounded-full bg-blue-500/10 blur-3xl" aria-hidden />
           <div className="mx-auto max-w-7xl">
             <SectionHeader eyebrow="Repository-verified" title="Capabilities exposed by the CLI" description="The feature list is limited to information verified from README, package metadata, source files, installation scripts, documentation, and `airis --help` output." />
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="feature-grid grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {features.map((feature) => {
                 const Icon = feature.icon;
                 return (
-                  <Card key={feature.title} className="glass-card hover-lift shine-card bg-card/70">
+                  <Card key={feature.title} className="feature-card glass-card hover-lift shine-card bg-card/70">
                     <CardHeader>
-                      <div className="mb-4 grid h-10 w-10 place-items-center rounded-xl border border-border bg-secondary"><Icon className="h-5 w-5 text-blue-500" /></div>
+                      <div className="feature-icon mb-4 grid h-12 w-12 place-items-center rounded-2xl border border-blue-400/25"><Icon className="h-5 w-5 text-blue-500" /></div>
                       <CardTitle>{feature.title}</CardTitle>
                       <CardDescription>{feature.description}</CardDescription>
                     </CardHeader>
-                    <CardContent><p className="text-xs text-muted-foreground"><span className="font-medium text-foreground">Evidence:</span> {feature.evidence}</p></CardContent>
+                    <CardContent><p className="border-t border-border/70 pt-4 text-xs text-muted-foreground"><span className="font-medium text-foreground">Evidence:</span> {feature.evidence}</p></CardContent>
                   </Card>
                 );
               })}
@@ -193,7 +196,7 @@ export default function Home() {
             <div className="space-y-6">
               <Card className="glass-card hover-lift"><CardHeader><CardTitle>Docs search</CardTitle><CardDescription>Use the command explorer search for CLI reference. Browser search also works across this static documentation page.</CardDescription></CardHeader></Card>
               <Card className="glass-card"><CardHeader><CardTitle>Provider environment variables</CardTitle><CardDescription>Variables below are present in `airis --help` output.</CardDescription></CardHeader><CardContent><div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">{providers.map(([name, env]) => <div key={name} className="hover-lift rounded-xl border border-border p-3 text-sm"><div className="font-medium">{name}</div><code className="break-all text-xs text-muted-foreground">{env}</code></div>)}</div></CardContent></Card>
-              <Card className="glass-card hover-lift"><CardHeader><CardTitle>Safety notes</CardTitle></CardHeader><CardContent className="prose-airis"><ul className="list-disc pl-5"><li>README states AIRIS runs locally with your user permissions and does not sandbox itself.</li><li>Project trust controls whether AIRIS can use project-local resources and mutation tools.</li><li>AI-generated code requires human review according to the repository README.</li></ul></CardContent></Card>
+              <Card className="glass-card hover-lift"><CardHeader><CardTitle>Safety notes</CardTitle></CardHeader><CardContent className="prose-airis"><ul className="list-disc pl-5"><li>README states AIRIS runs locally with your user permissions and does not sandbox itself.</li><li>Project trust controls whether AIRIS can use project-local resources and mutation tools.</li><li>Do not paste `.env` files, private keys, API tokens, passwords, recovery codes, personal data, proprietary files, or unredacted logs into public GitHub issues, screenshots, or AI prompts.</li><li>AI-generated code requires human review according to the repository README.</li></ul></CardContent></Card>
             </div>
           </div>
         </section>

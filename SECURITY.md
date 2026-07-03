@@ -21,6 +21,18 @@ skills and only to use AIRIS within trusted repositories.  This is because files
 like `AGENTS.md` or instructions in comments can be used to prompt inject the
 coding agent trivially and this cannot be protected against.
 
+## Public GitHub Safety
+
+Do not copy or paste sensitive files into public GitHub issues, pull requests,
+discussions, screenshots, logs, or AI prompts. This includes `.env` files,
+private keys, API tokens, npm tokens, passwords, recovery codes, SSH keys,
+cloud credentials, database dumps, personal data, proprietary source files, and
+unredacted configuration.
+
+Share the smallest reproducible example instead. Redact secrets before posting,
+replace private values with placeholders such as `<redacted>`, and rotate any
+credential that was accidentally shared publicly.
+
 ## Reporting a Vulnerability
 
 If you believe you found a security vulnerability in AIRIS or another package in
