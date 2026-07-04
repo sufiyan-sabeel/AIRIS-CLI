@@ -429,8 +429,6 @@ The repository includes GitHub Actions workflows for:
 | `.github/workflows/go-r-ci.yml` | Go/R tool checks |
 | `.github/workflows/daily-facts.yml` | scheduled repository automation |
 
-Dependabot configuration is present in `.github/dependabot.yml`.
-
 ## Roadmap
 
 The public roadmap is maintained in [`ROADMAP.md`](ROADMAP.md).

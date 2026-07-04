@@ -66,8 +66,7 @@ The `.github/CODEOWNERS` file requires admin approval for all changes:
 
 ### Dependabot Secrets Scanning
 
-Dependabot is configured (`.github/dependabot.yml`) for weekly security updates.
-Enable secret scanning and push protection in GitHub Settings > Code security & analysis:
+Dependabot configuration has been removed from this repository. If re-enabled, configure weekly security updates in `.github/dependabot.yml` and enable secret scanning and push protection in GitHub Settings > Code security & analysis:
 - **Dependency graph** — ON
 - **Dependabot alerts** — ON
 - **Dependabot security updates** — ON
