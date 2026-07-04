@@ -349,8 +349,9 @@ export class Markdown implements Component {
 
 			case "code": {
 				const indent = this.theme.codeBlockIndent ?? "  ";
-				const lang = token.lang || "";
-				lines.push(this.theme.codeBlockBorder(`\`\`\`${lang ? ` ${lang}` : ""}`));
+				const openingFence = this.theme.codeBlockBorder(`\`\`\`${token.lang || ""}`);
+				const closingFence = this.theme.codeBlockBorder("```");
+				lines.push(openingFence);
 				if (this.theme.highlightCode) {
 					const highlightedLines = this.theme.highlightCode(token.text, token.lang);
 					for (const hlLine of highlightedLines) {
@@ -362,7 +363,7 @@ export class Markdown implements Component {
 						lines.push(`${indent}${this.theme.codeBlock(codeLine)}`);
 					}
 				}
-				lines.push(this.theme.codeBlockBorder(`\`\`\`${lang ? ` ${lang}` : ""}`));
+				lines.push(closingFence);
 				if (nextTokenType && nextTokenType !== "space") {
 					lines.push("");
 				}

@@ -54,7 +54,7 @@ jobs:
           r-version: "4.4"
       - name: Install dependencies
         run: |
-          Rscript -e 'install.packages(c("jsonlite", "testthat"), repos="https://cloud.r-project.org")'
+          Rscript -e 'install.packages("jsonlite", repos="https://cloud.r-project.org")'
       - name: R CMD check
         run: R CMD check . --no-manual --no-vignettes
 
