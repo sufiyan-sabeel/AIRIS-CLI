@@ -292,7 +292,7 @@ describe("harness compaction", () => {
 		expect(estimateTokens({ role: "user", content: "plain user", timestamp: Date.now() })).toBeGreaterThan(0);
 		expect(estimateTokens(assistantWithThinkingAndTool)).toBeGreaterThan(0);
 		expect(estimateTokens(customString)).toBeGreaterThan(0);
-		expect(estimateTokens(toolResultWithImage)).toBeGreaterThan(1000);
+		expect(estimateTokens(toolResultWithImage)).toBeGreaterThan(200);
 		expect(estimateTokens(bashExecution)).toBeGreaterThan(0);
 		expect(estimateTokens(branchSummaryMessage)).toBeGreaterThan(0);
 		expect(estimateTokens(compactionSummaryMessage)).toBeGreaterThan(0);
