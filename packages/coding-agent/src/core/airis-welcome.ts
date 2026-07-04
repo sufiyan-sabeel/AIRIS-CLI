@@ -17,14 +17,15 @@ const AIRIS_LOGO_LINES = [
 	"║ Artificial Intelligence Responsive    ║",
 	"║        Integrated System              ║",
 	"║                                        ║",
-	"║ Mobile-first AI CLI                   ║",
-	"║ Coding + Android Automation           ║",
+	"║ Multi-platform AI CLI                 ║",
+	"║ Coding + Automation                   ║",
+	"║ Mobile · Windows · Linux              ║",
 	"╚════════════════════════════════════════╝",
 ] as const;
 
 const AIRIS_COMPACT_LOGO_LINES = ["╔══════════════════╗", "║  A I R I S CLI  ║", "╚══════════════════╝"] as const;
 
-export const AIRIS_TAGLINE = "Mobile-first AI CLI for coding and Android automation";
+export const AIRIS_TAGLINE = "Multi-platform AI CLI for coding and automation";
 export const AIRIS_ATTRIBUTION = "Built by Umaiz Sufiyan";
 
 const AIRIS_MODES: AirisWelcomeMode[] = [

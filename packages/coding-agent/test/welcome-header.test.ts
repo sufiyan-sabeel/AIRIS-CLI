@@ -77,17 +77,17 @@ describe("WelcomeHeader", () => {
 			expect(hasTextLogo).toBe(true);
 		});
 
-		it("shows the full subtitle in the logo banner", () => {
+		it("shows the updated subtitle in the logo banner", () => {
 			const header = new WelcomeHeader(baseInfo);
 			const lines = header.render(80);
-			const hasSubtitle = lines.some((line) => line.includes("Adaptive terminal coding agent"));
+			const hasSubtitle = lines.some((line) => line.includes("Multi-platform AI CLI"));
 			expect(hasSubtitle).toBe(true);
 		});
 
-		it("does not show the full subtitle in the minimal layout", () => {
+		it("does not show the updated subtitle in the minimal layout", () => {
 			const header = new WelcomeHeader(baseInfo);
 			const lines = header.render(36);
-			const hasSubtitle = lines.some((line) => line.includes("Adaptive terminal coding agent"));
+			const hasSubtitle = lines.some((line) => line.includes("Multi-platform AI CLI"));
 			expect(hasSubtitle).toBe(false);
 		});
 
@@ -96,6 +96,13 @@ describe("WelcomeHeader", () => {
 			const lines = header.render(36);
 			const hasMinimalName = lines.some((line) => line.includes("AIRIS"));
 			expect(hasMinimalName).toBe(true);
+		});
+
+		it("shows the updated tagline in the compact layout at 40 columns", () => {
+			const header = new WelcomeHeader(baseInfo);
+			const lines = header.render(40);
+			const hasUpdatedTagline = lines.some((line) => line.includes("Multi-platform AI CLI"));
+			expect(hasUpdatedTagline).toBe(true);
 		});
 	});
 

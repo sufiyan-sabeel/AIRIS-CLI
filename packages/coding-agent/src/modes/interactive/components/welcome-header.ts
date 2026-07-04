@@ -24,8 +24,9 @@ const LOGO_LINES: readonly string[] = [
 	"╚═╝  ╚═╝╚═╝╚═╝  ╚═╝╚═╝╚══════╝",
 	"",
 	"AIRIS CLI",
-	"Adaptive terminal coding agent",
-	"",
+	"Multi-platform AI CLI",
+	"Coding + Automation",
+	"Mobile · Windows · Linux",
 	"Code · Search · Automate",
 	"Keyboard-first · Model-aware",
 ];
@@ -61,11 +62,10 @@ const EMBLEM_ASCII: readonly string[] = ["         \\   |   /", "       ===\\  <
 
 const NAME_MINIMAL = "AIRIS CLI";
 const NAME_ASCII = "AIRIS CLI";
-const TAGLINE_MINIMAL = "Adaptive terminal coding agent";
-
+const TAGLINE_MINIMAL = "Multi-platform AI CLI";
 const WIDTH_LOGO = Math.max(LOGO_BLOCK_WIDTH + 4, 45);
 const WIDTH_MINIMAL = 36;
-const WIDTH_MINIMAL_TAGLINE = 48;
+const WIDTH_MINIMAL_TAGLINE = 40;
 
 function selectVariant(width: number): { kind: "logo" | "minimal" | "ascii" } {
 	if (width >= WIDTH_LOGO) {

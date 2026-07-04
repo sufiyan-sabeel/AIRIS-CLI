@@ -754,7 +754,7 @@ export class InteractiveMode {
 			);
 			const onboarding = theme.fg(
 				"dim",
-				`${welcome.tagline}. Try ${APP_NAME} @coding "review this project" or ask how to use AIRIS.`,
+				`${welcome.tagline}. Try @coding "review this project" or @automation "open settings".`,
 			);
 			this.builtInHeader = new ExpandableText(
 				() => `${creatorLine}\n${safetyLine}\n${compactInstructions}\n${compactOnboarding}\n\n${onboarding}`,
