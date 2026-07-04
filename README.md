@@ -52,10 +52,15 @@ AIRIS stands out in four main ways:
 - One-shot prompt mode for fast CLI usage
 - Session save, resume, fork, tree navigation, export, and compaction
 
-### Workflow and autonomy features
+### Workflow, autonomy, and automation
 
 - Project trust decisions for local project resources
 - Routing modes such as `@coding`, `@automation`, and `@multiauto`
+- Natural-language automation detection in chat mode
+- Local ADB bridge execution for Android tasks
+- `airis droid ...` and `airis automation ...` commands for direct device control
+- Android toast notifications via `toast` when Termux:API is available
+- Safety checks that block sensitive or destructive actions
 - Verified autonomy and evidence-oriented workflow components
 - `airis ship` for structured task execution and proof-oriented progress tracking
 - Self-debugging and adaptive planning support inside the coding-agent runtime
@@ -145,11 +150,16 @@ airis
 airis -p "Review this project structure and identify improvement areas"
 ```
 
-### Android automation routing
+### Android automation
 
 ```bash
 airis @automation "open settings"
+airis @multiauto "open settings, scroll down, tap Display"
+airis droid open settings
+airis automation tap 360 800
 ```
+
+AIRIS can route Android requests from chat or explicit prefixes, execute them through the local ADB bridge, and provide Android toast feedback when Termux:API is installed.
 
 ### Structured ship workflow
 

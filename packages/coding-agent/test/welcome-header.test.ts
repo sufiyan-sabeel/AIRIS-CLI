@@ -50,7 +50,7 @@ describe("WelcomeHeader", () => {
 		it("uses the minimal fallback at 36 columns", () => {
 			const header = new WelcomeHeader(baseInfo);
 			const lines = header.render(36);
-			const hasMinimalEmblem = lines.some((line) => line.includes("━━━━"));
+			const hasMinimalEmblem = lines.some((line) => line.includes("◆"));
 			expect(hasMinimalEmblem).toBe(true);
 		});
 
@@ -80,14 +80,14 @@ describe("WelcomeHeader", () => {
 		it("shows the full subtitle in the logo banner", () => {
 			const header = new WelcomeHeader(baseInfo);
 			const lines = header.render(80);
-			const hasSubtitle = lines.some((line) => line.includes("Artificial Intelligence Responsive"));
+			const hasSubtitle = lines.some((line) => line.includes("Adaptive terminal coding agent"));
 			expect(hasSubtitle).toBe(true);
 		});
 
 		it("does not show the full subtitle in the minimal layout", () => {
 			const header = new WelcomeHeader(baseInfo);
 			const lines = header.render(36);
-			const hasSubtitle = lines.some((line) => line.includes("Artificial Intelligence Responsive"));
+			const hasSubtitle = lines.some((line) => line.includes("Adaptive terminal coding agent"));
 			expect(hasSubtitle).toBe(false);
 		});
 

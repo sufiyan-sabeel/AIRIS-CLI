@@ -23,11 +23,11 @@ const LOGO_LINES: readonly string[] = [
 	"██║  ██║██║██║  ██║██║███████║",
 	"╚═╝  ╚═╝╚═╝╚═╝  ╚═╝╚═╝╚══════╝",
 	"",
-	"Artificial Intelligence Responsive",
-	"Integrated System",
+	"AIRIS CLI",
+	"Adaptive terminal coding agent",
 	"",
-	"AI Coding · Automation · CLI",
-	"KageOS · Umaiz Sufiyan",
+	"Code · Search · Automate",
+	"Keyboard-first · Model-aware",
 ];
 
 const LOGO_BLOCK_WIDTH = Math.max(...LOGO_LINES.map((line) => visibleWidth(line)));
@@ -59,11 +59,13 @@ const EMBLEM_MINIMAL: readonly string[] = ["       ╲   ╿   ╱", "    ━━
 
 const EMBLEM_ASCII: readonly string[] = ["         \\   |   /", "       ===\\  <>  /===", "         /   |   \\"];
 
-const NAME_MINIMAL = "AIRIS";
-const NAME_ASCII = "AIRIS";
+const NAME_MINIMAL = "AIRIS CLI";
+const NAME_ASCII = "AIRIS CLI";
+const TAGLINE_MINIMAL = "Adaptive terminal coding agent";
 
-const WIDTH_LOGO = LOGO_BLOCK_WIDTH + 4;
+const WIDTH_LOGO = Math.max(LOGO_BLOCK_WIDTH + 4, 45);
 const WIDTH_MINIMAL = 36;
+const WIDTH_MINIMAL_TAGLINE = 48;
 
 function selectVariant(width: number): { kind: "logo" | "minimal" | "ascii" } {
 	if (width >= WIDTH_LOGO) {
@@ -119,6 +121,16 @@ function renderBoxBlockLine(content: string, width: number, blockWidth: number):
 	);
 }
 
+function renderBoxInsetLine(content: string, width: number, inset: number = 2): string {
+	const inner = width - 4;
+	const contentWidth = Math.max(1, inner - inset * 2);
+	const safeContent = padToWidth(fitContent(content, contentWidth), contentWidth);
+	return padToWidth(
+		fg("border", "│") + " ".repeat(inset) + safeContent + " ".repeat(inset) + fg("border", "│"),
+		width,
+	);
+}
+
 function renderBoxEmpty(width: number): string {
 	return renderBoxLine("", width);
 }
@@ -139,7 +151,8 @@ function renderLogoLine(index: number, line: string): string {
 	const paddedLine = padToWidth(line, LOGO_BLOCK_WIDTH);
 	if (!line.trim()) return paddedLine;
 	if (index < 6) return fg("airisOrangeHighlight", bold(paddedLine));
-	if (index < 9) return fg("airisOrangeMuted", paddedLine);
+	if (index === 7) return fg("accent", bold(paddedLine));
+	if (index === 8) return fg("airisOrangeMuted", paddedLine);
 	if (index === 10) return fg("accent", paddedLine);
 	return fg("dim", paddedLine);
 }
@@ -154,9 +167,28 @@ function renderSeparator(width: number): string {
 	return padToWidth(fg("borderAccent", "├") + fg("borderMuted", "─".repeat(inner)) + fg("borderAccent", "┤"), width);
 }
 
+function renderSectionDivider(title: string, width: number): string {
+	const inner = width - 4;
+	if (inner < 14) {
+		return renderSeparator(width);
+	}
+	const label = ` ${title.toUpperCase()} `;
+	const labelWidth = visibleWidth(label);
+	const left = Math.max(1, Math.floor((inner - labelWidth) / 2));
+	const right = Math.max(1, inner - labelWidth - left);
+	return padToWidth(
+		fg("borderAccent", "├") +
+			fg("borderMuted", "─".repeat(left)) +
+			fg("accent", label) +
+			fg("borderMuted", "─".repeat(right)) +
+			fg("borderAccent", "┤"),
+		width,
+	);
+}
+
 function renderMetaLine(label: string, value: string, width: number): string {
-	const text = `${fg("accent", label.toUpperCase().padEnd(9))}${fg("dim", "• ")}${fg("text", value)}`;
-	return renderBoxLine(text, width);
+	const text = `${fg("accent", label.toUpperCase().padEnd(8))} ${fg("airisOrangeMuted", "◆")} ${fg("text", value)}`;
+	return renderBoxInsetLine(text, width);
 }
 
 function renderTitle(name: string): string {
@@ -202,9 +234,12 @@ export class WelcomeHeader implements Component {
 				lines.push(...renderEmblem(EMBLEM_MINIMAL, width));
 				lines.push(renderBoxEmpty(width));
 				lines.push(renderBoxLine(renderTitle(NAME_MINIMAL), width));
+				if (width >= WIDTH_MINIMAL_TAGLINE) {
+					lines.push(renderBoxLine(fg("airisOrangeMuted", TAGLINE_MINIMAL), width));
+				}
 			}
 
-			lines.push(renderSeparator(width));
+			lines.push(renderSectionDivider("Session", width));
 
 			if (this.info.model) {
 				lines.push(renderMetaLine("Model", this.info.model, width));
@@ -219,7 +254,7 @@ export class WelcomeHeader implements Component {
 				lines.push(renderMetaLine("Version", `v${this.info.version}`, width));
 			}
 			if (this.info.cwd) {
-				const maxPathLen = Math.max(10, width - 24);
+				const maxPathLen = Math.max(10, width - 20);
 				const shortCwd = truncateMiddle(this.info.cwd, maxPathLen);
 				lines.push(renderMetaLine("Project", shortCwd, width));
 			}
