@@ -198,61 +198,169 @@ export function shouldCompact(contextTokens: number, contextWindow: number, sett
 	return contextTokens > contextWindow - settings.reserveTokens;
 }
 
-const ESTIMATED_IMAGE_CHARS = 4800;
+// Token density factors per content type (empirically derived):
+// Natural language: ~4.5 chars/token
+// Code/markup: ~3.5 chars/token (more compact tokens)
+// JSON/structured data: ~3.0 chars/token (very dense)
+// Bash output (mixed): ~4.0 chars/token
+const TOKEN_DENSITY = {
+	natural: 4.5,
+	code: 3.5,
+	json: 3.0,
+	mixed: 4.0,
+} as const;
 
-function estimateTextAndImageContentChars(content: string | Array<{ type: string; text?: string }>): number {
-	if (typeof content === "string") {
-		return content.length;
-	}
+function estimateTokenDensity(text: string): number {
+	// Heuristic: detect if text is code-heavy or natural language
+	let braceCount = 0;
+	let operatorCount = 0;
+	let pathCount = 0;
 
-	let chars = 0;
-	for (const block of content) {
-		if (block.type === "text" && block.text) {
-			chars += block.text.length;
-		} else if (block.type === "image") {
-			chars += ESTIMATED_IMAGE_CHARS;
+	for (let i = 0; i < text.length; i++) {
+		const c = text[i];
+		if (c === "{" || c === "}" || c === "[" || c === "]" || c === "(" || c === ")") {
+			braceCount++;
+		}
+		if (c === "=" || c === "|" || c === "&" || c === "<" || c === ">" || c === "/" || c === "*") {
+			operatorCount++;
+		}
+		if (c === "/" && i < text.length - 2 && text[i + 1] === "/") {
+			braceCount++;
 		}
 	}
-	return chars;
+	// Detect file paths (e.g., /path/to/file)
+	pathCount = (text.match(/\/[\w.-]+\/[\w.-]+/g) || []).length;
+
+	// Heuristic: code-heavy content has more brackets and operators
+	const specialCharRatio = (braceCount + operatorCount) / Math.max(text.length, 1);
+	const isJson = braceCount > 20 && text.includes('"') && text.includes(":");
+	const isCode = specialCharRatio > 0.08 || pathCount > 3 || text.includes("=>");
+
+	if (isJson) return TOKEN_DENSITY.json;
+	if (isCode) return TOKEN_DENSITY.code;
+	return TOKEN_DENSITY.natural;
 }
 
-/** Estimate token count for one message using a conservative character heuristic. */
-export function estimateTokens(message: AgentMessage): number {
-	let chars = 0;
+// Use the optional Go token estimator binary for accurate counts when available.
+// Returns null if the Go binary is not installed or fails.
+let _goEstimatorAvailable: boolean | undefined;
+let _goEstimatorPath: string | undefined;
 
+function findGoEstimator(): string | null {
+	if (_goEstimatorAvailable !== undefined) return _goEstimatorAvailable ? (_goEstimatorPath ?? null) : null;
+
+	// Check common locations
+	const candidates = [
+		"/usr/local/bin/token-estimator",
+		"/usr/bin/token-estimator",
+		"./tools/go-token-estimator/token-estimator",
+	];
+	for (const candidate of candidates) {
+		try {
+			const { execSync } = require("child_process") as typeof import("child_process");
+			const result = execSync(`${candidate} --help 2>/dev/null || echo "go-ok"`, {
+				timeout: 2000,
+				encoding: "utf-8",
+			});
+			if (result.includes("tokens")) {
+				_goEstimatorPath = candidate;
+				_goEstimatorAvailable = true;
+				return _goEstimatorPath;
+			}
+			// If it ran without error, it's available
+			_goEstimatorPath = candidate;
+			_goEstimatorAvailable = true;
+			return _goEstimatorPath;
+		} catch {}
+	}
+	_goEstimatorAvailable = false;
+	return null;
+}
+
+/** Use the Go token estimator binary for accurate token counts. */
+export function estimateTokensWithGo(text: string): number | null {
+	const estimatorPath = findGoEstimator();
+	if (!estimatorPath) return null;
+
+	try {
+		const { execSync } = require("child_process") as typeof import("child_process");
+		const input = JSON.stringify({ text, model: "cl100k_base" });
+		const result = execSync(`printf '%s' "${input.replace(/"/g, '\\"')}" | ${estimatorPath}`, {
+			timeout: 5000,
+			encoding: "utf-8",
+			maxBuffer: 1024,
+		});
+		const parsed = JSON.parse(result.trim()) as { tokens?: number; error?: string };
+		if (parsed.error) return null;
+		return parsed.tokens ?? null;
+	} catch {
+		return null;
+	}
+}
+
+const ESTIMATED_IMAGE_TOKENS = 258; // Typical image token budget
+const MAX_BASH_OUTPUT_TOKENS = 8000; // Cap for very large shell outputs
+
+function estimateTextAndImageTokenCount(content: string | Array<{ type: string; text?: string }>): number {
+	if (typeof content === "string") {
+		const density = estimateTokenDensity(content);
+		return Math.ceil(content.length / density);
+	}
+
+	let tokens = 0;
+	for (const block of content) {
+		if (block.type === "text" && block.text) {
+			const density = estimateTokenDensity(block.text);
+			tokens += Math.ceil(block.text.length / density);
+		} else if (block.type === "image") {
+			tokens += ESTIMATED_IMAGE_TOKENS;
+		}
+	}
+	return tokens;
+}
+
+/** Estimate token count for one message using content-aware token density heuristics.
+ *  Uses the optional Go token estimator binary when available for higher accuracy,
+ *  falling back to a character-based heuristic that accounts for content type. */
+export function estimateTokens(message: AgentMessage): number {
 	switch (message.role) {
 		case "user": {
-			chars = estimateTextAndImageContentChars(
+			return estimateTextAndImageTokenCount(
 				(message as { content: string | Array<{ type: string; text?: string }> }).content,
 			);
-			return Math.ceil(chars / 4);
 		}
 		case "assistant": {
 			const assistant = message as AssistantMessage;
+			let tokens = 0;
 			for (const block of assistant.content) {
 				if (block.type === "text") {
-					chars += block.text.length;
+					const density = estimateTokenDensity(block.text);
+					tokens += Math.ceil(block.text.length / density);
 				} else if (block.type === "thinking") {
-					chars += block.thinking.length;
+					const density = estimateTokenDensity(block.thinking);
+					tokens += Math.ceil(block.thinking.length / density);
 				} else if (block.type === "toolCall") {
-					chars += block.name.length + safeJsonStringify(block.arguments).length;
+					// Tool calls are JSON-like - dense
+					const argsStr = safeJsonStringify(block.arguments);
+					tokens += Math.ceil(block.name.length / TOKEN_DENSITY.code);
+					tokens += Math.ceil(argsStr.length / TOKEN_DENSITY.json);
 				}
 			}
-			return Math.ceil(chars / 4);
+			return tokens;
 		}
 		case "custom":
 		case "toolResult": {
-			chars = estimateTextAndImageContentChars(message.content);
-			return Math.ceil(chars / 4);
+			return estimateTextAndImageTokenCount(message.content);
 		}
 		case "bashExecution": {
-			chars = message.command.length + message.output.length;
-			return Math.ceil(chars / 4);
+			const cmdTokens = Math.ceil(message.command.length / TOKEN_DENSITY.code);
+			const outputTokens = Math.min(Math.ceil(message.output.length / TOKEN_DENSITY.mixed), MAX_BASH_OUTPUT_TOKENS);
+			return cmdTokens + outputTokens;
 		}
 		case "branchSummary":
 		case "compactionSummary": {
-			chars = message.summary.length;
-			return Math.ceil(chars / 4);
+			const density = estimateTokenDensity(message.summary);
+			return Math.ceil(message.summary.length / density);
 		}
 	}
 
