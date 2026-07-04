@@ -116,7 +116,7 @@ function buildDefinition(operations: ToastOperations): ToolDefinition<typeof toa
 			}
 
 			const { message, duration } = params;
-			const truncated = message.length > 50 ? message.slice(0, 47) + "..." : message;
+			const truncated = message.length > 50 ? `${message.slice(0, 47)}...` : message;
 			const { exitCode, stderr } = operations.show(truncated, duration ?? "short");
 
 			if (exitCode !== 0) {

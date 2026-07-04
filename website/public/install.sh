@@ -181,6 +181,37 @@ link_binary() {
     cp "$SOURCE" "$TARGET"
 }
 
+resolve_latest_tag() {
+    EFFECTIVE_URL="$(curl -fsSIL -o /dev/null -w '%{url_effective}' "https://github.com/${REPO}/releases/latest")"
+    TAG="${EFFECTIVE_URL##*/}"
+    if [ -z "$TAG" ] || [ "$TAG" = "latest" ]; then
+        fail "Unable to resolve latest AIRIS release tag"
+    fi
+    printf '%s\n' "$TAG"
+}
+
+source_archive_url() {
+    if [ "$VERSION" = "latest" ]; then
+        TAG="$(resolve_latest_tag)"
+    else
+        TAG="$VERSION"
+    fi
+    echo "https://github.com/${REPO}/archive/refs/tags/${TAG}.tar.gz"
+}
+
+install_source_payload() {
+    mkdir -p "$BINDIR"
+    rm -rf "${INSTALL_DIR:?}"
+    mkdir -p "$INSTALL_DIR"
+    cp -R "$SOURCE_DIR/." "$INSTALL_DIR/"
+
+    cat > "$BINDIR/airis" <<EOF
+#!/bin/sh
+exec node "$INSTALL_DIR/packages/coding-agent/dist/cli.js" "\$@"
+EOF
+    chmod +x "$BINDIR/airis"
+}
+
 warn_path() {
     case ":$PATH:" in
         *":$BINDIR:"*) return 0 ;;
@@ -198,10 +229,66 @@ print_header() {
 install_payload() {
     mkdir -p "$INSTALL_DIR" "$BINDIR"
     rm -rf "${INSTALL_DIR:?}"/*
-    cp -R "$TMPDIR/airis/." "$INSTALL_DIR/"
+    if [ -d "$TMPDIR/airis" ]; then
+        cp -R "$TMPDIR/airis/." "$INSTALL_DIR/"
+    else
+        cp -R "$TMPDIR/." "$INSTALL_DIR/"
+    fi
+}
+
+install_from_source() {
+    require_command curl
+    require_command tar
+    require_command cp
+    require_command chmod
+    require_command mkdir
+    require_command rm
+    require_command node
+    require_command npm
+
+    BINDIR="$(choose_bindir)"
+    INSTALL_DIR="$(choose_install_dir)"
+
+    print_header
+    info "Environment: $(uname -s) $(uname -m)"
+    info "Mode: Android Termux source build"
+    info "Version: ${VERSION}"
+    info "Command path: ${BINDIR}"
+    info "Package path: ${INSTALL_DIR}"
+    warn "GitHub release binaries target desktop/server Linux and do not run on Android/Termux. Building AIRIS from source instead."
+
+    TMPDIR="$(make_tmpdir)"
+    trap 'rm -rf "$TMPDIR"' EXIT INT TERM
+
+    URL="$(source_archive_url)"
+    run_step "Download AIRIS source" curl -fsSL --retry 2 --retry-delay 1 "$URL" -o "$TMPDIR/source.tar.gz"
+    mkdir -p "$TMPDIR/source-extract"
+    run_step "Extract AIRIS source" tar -xzf "$TMPDIR/source.tar.gz" -C "$TMPDIR/source-extract"
+    set -- "$TMPDIR/source-extract"/*
+    SOURCE_DIR="$1"
+    if [ ! -d "$SOURCE_DIR" ]; then
+        fail "Downloaded AIRIS source archive did not contain a source directory"
+    fi
+
+    run_step "Install AIRIS dependencies" npm --prefix "$SOURCE_DIR" install --ignore-scripts --no-audit --no-fund
+    run_step "Build AIRIS" npm --prefix "$SOURCE_DIR" run build
+    run_step "Install AIRIS command" install_source_payload
+
+    INSTALLED="$BINDIR/airis"
+    run_step "Verify AIRIS" "$INSTALLED" --version
+
+    success "AIRIS CLI installed successfully"
+    echo "Installed command: $INSTALLED"
+    echo "Installed package: $INSTALL_DIR"
+    warn_path
 }
 
 download_and_install() {
+    if is_termux; then
+        install_from_source
+        return 0
+    fi
+
     require_command curl
     require_command cp
     require_command chmod
