@@ -1,28 +1,29 @@
-# AIRIS CLI
+# AIRIS
 
-**Artificial Intelligence Responsive Integrated System** — A modern AI-powered command-line development assistant.
+**Artificial Intelligence Responsive Integrated System**
 
-A local-first AI coding agent that runs in your terminal. Work with local files, shell commands, sessions, verified autonomy, and the `airis ship` workflow — all without sending your code to remote servers unless you choose a cloud provider.
+A local-first AI coding agent that runs in your terminal. Chat with AI models, edit files, run commands, and automate workflows -- all without sending your code to remote servers unless you choose a cloud provider.
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Node.js >=22.19.0](https://img.shields.io/badge/node-%3E%3D22.19.0-green.svg)](https://nodejs.org)
 [![Runs on Android](https://img.shields.io/badge/android-termux-orange.svg)](#android--termux)
 [![CI](https://github.com/sufiyan-sabeel/AIRIS-CLI/actions/workflows/ci.yml/badge.svg)](https://github.com/sufiyan-sabeel/AIRIS-CLI/actions/workflows/ci.yml)
+[![npm audit](https://github.com/sufiyan-sabeel/AIRIS-CLI/actions/workflows/npm-audit.yml/badge.svg)](https://github.com/sufiyan-sabeel/AIRIS-CLI/actions/workflows/npm-audit.yml)
 [![Deploy to GitHub Pages](https://github.com/sufiyan-sabeel/AIRIS-CLI/actions/workflows/deploy-pages.yml/badge.svg)](https://sufiyan-sabeel.github.io/AIRIS-CLI/)
 
 ## Website
 
-Visit the [AIRIS website](https://sufiyan-sabeel.github.io/AIRIS-CLI/) for documentation, guides, interactive demos, and the animated terminal preview.
+Visit the [AIRIS website](https://sufiyan-sabeel.github.io/AIRIS-CLI/) for documentation, guides, and interactive demos.
 
 ## About the Creator
 
-Created by **Umaiz Sufiyan**, a student developer and independent builder behind **KageOS**. He began building AIRIS at 15 and continues developing it at 16 with a focus on AI-powered command-line tools, automation, developer productivity, and mobile-first development.
+AIRIS-CLI is created by Umaiz Sufiyan, a student developer and independent builder behind KageOS. He began building AIRIS at 15 and continues developing it at 16 with a focus on AI-powered command-line tools, automation, developer productivity, and mobile-first development.
 
 ## What AIRIS Does
 
-AIRIS is a command-line AI assistant that operates directly on your local files and terminal. It reads code, executes shell commands, edits files, manages sessions, and provides verified autonomy capabilities — giving you an AI pair programmer that works where you work.
+AIRIS is a command-line AI assistant that operates directly on your local files and terminal. It reads code, executes shell commands, edits files, and manages sessions -- giving you an AI pair programmer that works where you work.
 
-**The problem it solves:** Most AI coding tools require a specific IDE, a subscription, or send your code to third-party servers. AIRIS runs entirely in your terminal, works with any text editor, supports 30+ AI providers (including local models), and runs on Android phones via Termux.
+**The problem it solves:** Most AI coding tools require a specific IDE, a subscription, or send your code to third-party servers. AIRIS runs entirely in your terminal, works with any text editor, supports 25+ AI providers (including local models), and runs on Android phones via Termux.
 
 ## Why Android and Termux Support Matter
 
@@ -35,20 +36,123 @@ AIRIS is one of the few full-featured AI coding agents that runs natively on And
 
 ## Verified Features
 
-All features are verified from README, package metadata, source files, installation scripts, documentation, and `airis --help` output.
+- **Interactive TUI** -- Rich terminal interface with 14 built-in themes, split panels, and keyboard navigation
+- **File Operations** -- Read, edit, and write files with AI guidance and diff review
+- **Shell Execution** -- Run bash commands with approval-based safety controls
+- **Session Management** -- Save, resume, fork, and export conversations to HTML
+- **25+ Providers** -- OpenAI, Anthropic, Google Gemini, Groq, Mistral, DeepSeek, Ollama, and more
+- **Project Trust** -- Granular trust model: AIRIS asks before accessing project-local resources
+- **Verified Autonomy** -- Mission contracts with evidence-backed completion proofs
+- **`airis ship`** -- Full-lifecycle development workflow with TODO tracking and proof reports
+- **Routing Modes** -- `@coding`, `@automation`, `@multiauto` prefixes for task-specific behavior
+- **Extension System** -- Custom extensions, skills, and prompt templates
+- **Smart Routing** -- Automatic tool selection based on task type
 
-- **Interactive terminal UI** — Rich terminal interface with built-in themes, keyboard navigation, and animated command letter-by-letter typing
-- **File operations** — Built-in tools: read, write, edit, grep, find, ls for project-aware file workflows
-- **Shell execution** — Built-in bash tool with trust and approval controls around mutation-capable tools
-- **Session management** — List, resume, continue, fork, name, store, clear, and export sessions from the CLI
-- **30+ Provider selection** — Choose providers and models with `--provider`, `--model`, and `--list-models`
-- **Verified Autonomy** — Mission contracts, capability leases, evidence reports, and failure search commands
-- **`airis ship` workflow** — Start, resume, cancel, list, and report status for a full development lifecycle
-- **Project trust** — Trust commands and per-run approval flags control project-local resources
-- **Extensions and skills** — Load extension files, skills, prompt templates, themes, and package sources
-- **Theme support** — Theme listing, setting, preview, custom theme file loading
-- **Termux support** — Android Termux installation supported by the adaptive curl installer
-- **Machine-readable modes** — `--mode json` or `--mode rpc` for machine-readable output and process integration
+## Project Dashboard & Daily Facts
+
+Visit the [AIRIS Dashboard](https://sufiyan-sabeel.github.io/AIRIS-CLI/dashboard) for live repository analysis, daily facts about the project, and code statistics.
+
+### Daily Facts
+
+A daily fact about AIRIS is generated automatically every 24 hours via GitHub Actions. Facts cover project history, features, architecture, and development insights. Each fact is also displayed on the website dashboard.
+
+### Repository Analysis
+
+The dashboard includes auto-generated statistics:
+- Package count and names
+- Source file breakdown (TypeScript, Go, Markdown)
+- Total lines of code
+- GitHub workflow count
+- Code composition chart
+
+Analysis data is regenerated daily via [`.github/workflows/daily-facts.yml`](.github/workflows/daily-facts.yml).
+
+## Go Security Tools (`tools/go/airis-security`)
+
+Optional Go-based security utilities for file integrity, auditing, and encryption.
+
+### Requirements
+
+- Go >= 1.22
+
+### Commands
+
+```bash
+# Hash a file (SHA-256)
+scripts/airis-go-security.sh hash <file>
+
+# Create an integrity manifest for a directory
+scripts/airis-go-security.sh manifest create <dir> --out manifest.json
+
+# Verify integrity against a manifest
+scripts/airis-go-security.sh manifest verify --manifest manifest.json
+
+# Append an audit log entry (JSONL)
+scripts/airis-go-security.sh audit append --event "deploy v1.2.3" --level info
+
+# Encrypt/decrypt a file (AES-GCM, key from $AIRIS_ENCRYPTION_KEY)
+scripts/airis-go-security.sh encrypt <file> --out <file.enc>
+scripts/airis-go-security.sh decrypt <file.enc> --out <file>
+```
+
+### Safety notes
+
+- Encryption key must be at least 32 bytes. Set `AIRIS_ENCRYPTION_KEY`.
+- Never commit secrets, keys, or `.enc` files to version control.
+- Audit logs are JSONL — safe to pipe into other tools.
+
+### Make targets
+
+```bash
+make go-vet             # go vet ./...
+make go-test            # go test ./...
+make security-build     # build airis-security binary
+```
+
+## R Analytics Tools (`tools/r/airis.analytics`)
+
+Optional R package for log analysis, anomaly detection, and CI failure reporting.
+
+### Requirements
+
+- R >= 4.0
+- R packages: `jsonlite`, `stats`
+
+### Usage
+
+```bash
+# Analyze AIRIS logs
+scripts/airis-r-analyze.sh --input logs/airis.log --json report.json --csv report.csv
+
+# Or directly with Rscript
+Rscript tools/r/airis.analytics/scripts/analyze_logs.R \
+  --input logs/airis.log --json report.json --csv report.csv
+```
+
+### Report output
+
+| Metric | Description |
+|--------|-------------|
+| total_lines | Total log lines parsed |
+| error_count | Number of ERROR-level entries |
+| warning_count | Number of WARNING-level entries |
+| top_errors | Most frequent error messages |
+| spike_windows | Minute windows with unusually high error counts |
+| anomaly_score | 0-100 score based on error/warning rate deviation |
+
+### Make targets
+
+```bash
+make r-check             # R CMD check
+make logs-analyze FILE=logs/airis.log JSON=report.json CSV=report.csv
+make doctor-all          # Run all Go and R checks
+```
+
+### CI integration
+
+A dedicated Go & R workflow (`.github/workflows/go-r-ci.yml`) runs on pushes
+and PRs that touch `tools/go/**` or `tools/r/**`. It does **not** block the
+main npm release pipeline.
 
 ## Known Limitations
 
@@ -60,13 +164,15 @@ All features are verified from README, package metadata, source files, installat
 
 ## Installation
 
-### One-liner (Linux, macOS, Termux, proot-distro)
+### One-liner (Linux, macOS, Termux)
 
 ```bash
+# Primary (GitHub Pages - after first deploy)
 curl -fsSL https://sufiyan-sabeel.github.io/AIRIS-CLI/install.sh | sh
-```
 
-The adaptive installer automatically detects your platform and installs AIRIS with the correct binary path (`$PREFIX/bin` on Termux, `/usr/local/bin` on Linux, `~/.local/bin` on macOS/non-root).
+# Fallback (raw GitHub - always works immediately)
+curl -fsSL https://raw.githubusercontent.com/sufiyan-sabeel/AIRIS-CLI/main/install.sh | sh
+```
 
 ### From source
 
@@ -81,18 +187,8 @@ npm link
 ### Android (Termux)
 
 ```bash
-pkg update && pkg upgrade
-pkg install curl tar
-curl -fsSL https://sufiyan-sabeel.github.io/AIRIS-CLI/install.sh | sh
-airis --version
-```
-
-### proot-distro (Linux on Android)
-
-```bash
-apt update && apt install -y curl tar
-curl -fsSL https://sufiyan-sabeel.github.io/AIRIS-CLI/install.sh | sh
-airis --version
+pkg update && pkg install nodejs git
+npm install -g @sufiyan-sabeel/airis-cli
 ```
 
 ### Requirements
@@ -162,28 +258,19 @@ Interrupted workflows persist in `.airis/ship/` and can be resumed at any time. 
 
 ## Providers and Local Models
 
-AIRIS supports 30+ AI providers. Set the appropriate environment variable for your chosen provider:
+AIRIS supports 25+ AI providers. Set the appropriate environment variable for your chosen provider:
 
 | Provider | Environment Variable |
 |----------|---------------------|
-| Anthropic | `ANTHROPIC_AAIRIS_KEY` or `ANTHROPIC_OAUTH_TOKEN` |
-| OpenAI | `OPENAI_AAIRIS_KEY` |
 | Google Gemini | `GEMINI_AAIRIS_KEY` |
+| Anthropic Claude | `ANTHROPIC_AAIRIS_KEY` |
+| OpenAI GPT | `OPENAI_AAIRIS_KEY` |
 | Groq | `GROQ_AAIRIS_KEY` |
 | Mistral | `MISTRAL_AAIRIS_KEY` |
 | DeepSeek | `DEEPSEEK_AAIRIS_KEY` |
 | OpenRouter | `OPENROUTER_AAIRIS_KEY` |
-| Amazon Bedrock | `AWS_PROFILE` / `AWS_BEARER_TOKEN_BEDROCK` |
-| Azure OpenAI | `AZURE_OPENAI_AAIRIS_KEY` |
-| Cloudflare | `CLOUDFLARE_AAIRIS_KEY` + `CLOUDFLARE_ACCOUNT_ID` |
-| Cerebras | `CEREBRAS_AAIRIS_KEY` |
-| xAI | `XAI_AAIRIS_KEY` |
-| Fireworks | `FIREWORKS_AAIRIS_KEY` |
-| Together AI | `TOGETHER_AAIRIS_KEY` |
-| Kimi For Coding | `KIMI_AAIRIS_KEY` |
-| MiniMax | `MINIMAX_AAIRIS_KEY` |
-| NVIDIA NIM | `NVIDIA_AAIRIS_KEY` |
-| Ollama (local) | No key needed — start Ollama first |
+| Amazon Bedrock | `AWS_BEARER_TOKEN_BEDROCK` |
+| Ollama (local) | No key needed -- start Ollama first |
 
 ```bash
 # Use a specific provider and model
@@ -234,7 +321,7 @@ AIRIS stores configuration in `~/.airis/agent/`:
 ~/.airis/agent/
   auth.json        # Provider API keys
   settings.json    # User preferences
-  models.json      # Custom model definitions (including generated model registry)
+  models.json      # Custom model definitions
   sessions/        # Saved conversations
   extensions/      # Custom extensions
   skills/          # Custom skills
@@ -266,22 +353,9 @@ npm run check    # Lint, format, and type check
 
 ## Security
 
-AIRIS runs locally with your user permissions. It does not sandbox itself.
+AIRIS runs locally with your user permissions. It does not sandbox itself. See [SECURITY.md](SECURITY.md) for the security model, scope, and vulnerability reporting process.
 
-### Repository Security Controls
-
-This repository enforces:
-- **CODEOWNERS review** — all changes require admin (`@sufiyan-sabeel`) approval
-- **Dependabot** — weekly automated security dependency scanning
-- **Branch protection** — required reviews, status checks, and admin enforcement on `main`
-- **Secret scanning** — push protection enabled for credentials and tokens
-
-See [SECURITY.md](SECURITY.md) for the full security model, scope, and vulnerability reporting process.
-
-### Safety for Contributors
-
-**Never** include API keys, tokens, `.env` files, passwords, recovery codes, private keys, personal data, or unredacted configuration in public GitHub issues, pull requests, discussions, screenshots, logs, or AI prompts. Share the smallest reproducible example and redact all secrets.
-
+Never include API keys, tokens, or private session data in issues, PRs, or logs.
 
 ## License
 

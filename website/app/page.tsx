@@ -17,6 +17,7 @@ const nav = [
   ["Commands", "#commands"],
   ["Install", "#installation"],
   ["Docs", "#docs"],
+  ["Dashboard", "/dashboard"],
 ];
 
 function SectionHeader({ eyebrow, title, description }: { eyebrow: string; title: string; description: string }) {
@@ -214,7 +215,7 @@ export default function Home() {
       <footer className="px-4 py-12 sm:px-6 lg:px-8">
         <div className="mx-auto flex max-w-7xl flex-col gap-6 border-t border-border pt-8 md:flex-row md:items-center md:justify-between">
           <div><AirisLogo /><p className="mt-3 max-w-xl text-sm text-muted-foreground">AIRIS CLI is created by {repo.creator} for {repo.organization}. Repository license: {repo.license}. Package: {repo.packageName}.</p></div>
-          <div className="flex flex-wrap gap-3 text-sm"><a className="text-muted-foreground hover:text-foreground" href={repo.url} target="_blank" rel="noreferrer">Repository <ExternalLink className="inline h-3 w-3" /></a><a className="text-muted-foreground hover:text-foreground" href={repo.contributionUrl} target="_blank" rel="noreferrer">Contribute</a><a className="text-muted-foreground hover:text-foreground" href={repo.forksUrl} target="_blank" rel="noreferrer">Forks</a><a className="text-muted-foreground hover:text-foreground" href={`${repo.url}/blob/main/LICENSE`} target="_blank" rel="noreferrer">License</a><a className="text-muted-foreground hover:text-foreground" href={`${repo.url}/tree/main/docs`} target="_blank" rel="noreferrer">Documentation</a></div>
+          <div className="flex flex-wrap gap-3 text-sm"><a className="text-muted-foreground hover:text-foreground" href={repo.url} target="_blank" rel="noreferrer">Repository <ExternalLink className="inline h-3 w-3" /></a><a className="text-muted-foreground hover:text-foreground" href={repo.contributionUrl} target="_blank" rel="noreferrer">Contribute</a><a className="text-muted-foreground hover:text-foreground" href={repo.forksUrl} target="_blank" rel="noreferrer">Forks</a><a className="text-muted-foreground hover:text-foreground" href={`${repo.url}/blob/main/LICENSE`} target="_blank" rel="noreferrer">License</a><a className="text-muted-foreground hover:text-foreground" href={`${repo.url}/tree/main/docs`} target="_blank" rel="noreferrer">Documentation</a><Link className="text-muted-foreground hover:text-foreground" href="/dashboard">Dashboard</Link>
         </div>
       </footer>
     </div>
