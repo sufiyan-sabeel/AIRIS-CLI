@@ -6,6 +6,7 @@
 
 - Added `aisearch` — a bundled Go binary that replaces the external `fd` dependency for file search operations.
 - Added `aifetch` — a bundled Go binary for HTTP web requests (GET, POST, HEAD, PUT, DELETE) with timeout, redirect following, JSON output, TLS skip, custom headers, and size limits. The binary outputs status info to stderr and body to stdout, matching the Unix tool convention. The `aisearch` binary supports glob/full-path matching, `.gitignore` respect, hidden file control, and result limits. TypeScript code in `find.ts` prefers `aisearch` first, falling back to downloading `fd`. The binary is built via `npm run build:aisearch` (requires Go 1.22+).
+- Added `toast` tool — allows the AI to display Android toast notifications via Termux:API. The tool accepts a `message` and optional `duration` (short/long). It gracefully reports unavailability on non-Android platforms. Registered in the default active tools for trusted projects.
 
 ### Changed
 
