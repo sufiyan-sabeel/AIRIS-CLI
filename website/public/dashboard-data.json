@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-04T01:50:21.737Z",
+  "generatedAt": "2026-07-04T02:05:11.719Z",
   "date": "2026-07-04",
   "dailyFact": {
     "fact": "The project includes native Go binaries for file search (aisearch) and web fetching (aifetch).",
@@ -16,18 +16,18 @@
       "coding-agent",
       "tui"
     ],
-    "tsSourceFiles": 1026,
+    "tsSourceFiles": 717,
     "tsxComponents": 16,
     "goModules": 5,
     "scriptFiles": 16,
-    "totalSourceLines": 253717,
-    "githubWorkflows": 11,
+    "totalSourceLines": 217151,
+    "githubWorkflows": 10,
     "markdownDocs": 93
   },
   "codeBreakdown": [
     {
       "label": "TypeScript (.ts)",
-      "count": 1026,
+      "count": 717,
       "color": "#3178c6"
     },
     {
