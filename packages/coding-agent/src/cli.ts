@@ -15,6 +15,18 @@ process.emitWarning = (() => {}) as typeof process.emitWarning;
 const args = process.argv.slice(2);
 logCliEvent("command.start", { command: args[0] ?? "chat", args: maskCliArgs(args) });
 
+function validateSessionIdBeforeMainImport(): void {
+	const sessionIdIndex = args.indexOf("--session-id");
+	const sessionId = sessionIdIndex >= 0 ? args[sessionIdIndex + 1] : undefined;
+	if (sessionId === undefined) return;
+	if (!/^[A-Za-z0-9](?:[A-Za-z0-9._-]*[A-Za-z0-9])?$/.test(sessionId)) {
+		console.error(
+			"Error: Session id must be non-empty, contain only alphanumeric characters, '-', '_', and '.', and start and end with an alphanumeric character",
+		);
+		process.exit(1);
+	}
+}
+
 async function run(): Promise<void> {
 	if (args.length === 1 && (args[0] === "--version" || args[0] === "-v")) {
 		console.log(VERSION);
@@ -38,6 +50,8 @@ async function run(): Promise<void> {
 		printHelp();
 		process.exit(0);
 	}
+
+	validateSessionIdBeforeMainImport();
 
 	// Configure undici's global dispatcher before provider SDKs issue requests.
 	// Runtime settings are applied once SettingsManager has loaded global/project settings.

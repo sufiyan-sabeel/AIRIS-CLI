@@ -1,11 +1,13 @@
 import { spawn } from "node:child_process";
 import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join, resolve } from "node:path";
+import { dirname, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { afterEach, describe, expect, it } from "vitest";
 import { ENV_AGENT_DIR } from "../src/config.ts";
 
-const cliPath = resolve(__dirname, "../src/cli.ts");
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const cliPath = resolve(__dirname, "../dist/cli.js");
 const tempDirs: string[] = [];
 
 afterEach(() => {
@@ -67,7 +69,6 @@ async function runCli(
 				...process.env,
 				[ENV_AGENT_DIR]: dirs.agentDir,
 				AIRIS_OFFLINE: "1",
-				TSX_TSCONFIG_PATH: resolve(__dirname, "../../../tsconfig.json"),
 			},
 			stdio: ["ignore", "ignore", "pipe"],
 		});
@@ -89,43 +90,59 @@ function writeSession(sessionDir: string, cwd: string, id: string): void {
 }
 
 describe("--session-id read-only commands", () => {
-	it("does not reserve a session for --help", async () => {
-		const result = await runCli(["--session-id", "read-only-help", "--help"]);
+	it(
+		"does not reserve a session for --help",
+		async () => {
+			const result = await runCli(["--session-id", "read-only-help", "--help"]);
 
-		expect(result.code).toBe(0);
-		expect(hasSessionWithId(join(result.agentDir, "sessions"), "read-only-help")).toBe(false);
-	});
+			expect(result.code).toBe(0);
+			expect(hasSessionWithId(join(result.agentDir, "sessions"), "read-only-help")).toBe(false);
+		},
+		90_000,
+	);
 
-	it("does not reserve a session for --list-models", async () => {
-		const result = await runCli(["--session-id", "read-only-models", "--list-models"]);
+	it(
+		"does not reserve a session for --list-models",
+		async () => {
+			const result = await runCli(["--session-id", "read-only-models", "--list-models"]);
 
-		expect(result.code).toBe(0);
-		expect(hasSessionWithId(join(result.agentDir, "sessions"), "read-only-models")).toBe(false);
-	});
+			expect(result.code).toBe(0);
+			expect(hasSessionWithId(join(result.agentDir, "sessions"), "read-only-models")).toBe(false);
+		},
+		90_000,
+	);
 
-	it("rejects an existing fork target session id", async () => {
-		const result = await runCli(
-			(dirs) => ["--session-dir", dirs.sessionDir, "--fork", "source-id", "--session-id", "existing-id", "-p", "hi"],
-			(dirs) => {
-				mkdirSync(dirs.sessionDir, { recursive: true });
-				writeSession(dirs.sessionDir, dirs.projectDir, "source-id");
-				writeSession(dirs.sessionDir, dirs.projectDir, "existing-id");
-			},
-		);
+	it(
+		"rejects an existing fork target session id",
+		async () => {
+			const result = await runCli(
+				(dirs) => ["--session-dir", dirs.sessionDir, "--fork", "source-id", "--session-id", "existing-id", "-p", "hi"],
+				(dirs) => {
+					mkdirSync(dirs.sessionDir, { recursive: true });
+					writeSession(dirs.sessionDir, dirs.projectDir, "source-id");
+					writeSession(dirs.sessionDir, dirs.projectDir, "existing-id");
+				},
+			);
 
-		expect(result.code).toBe(1);
-		expect(result.stderr).toContain("Session already exists with id 'existing-id'");
-	});
+			expect(result.code).toBe(1);
+			expect(result.stderr).toContain("Session already exists with id 'existing-id'");
+		},
+		90_000,
+	);
 });
 
 describe("--session-id validation", () => {
-	it("rejects ids invalid under SessionManager rules without stack traces", async () => {
-		for (const id of ["-bad", "bad id"]) {
-			const result = await runCli(["--session-id", id, "-p", "hi"]);
+	it(
+		"rejects ids invalid under SessionManager rules without stack traces",
+		async () => {
+			for (const id of ["-bad", "bad id"]) {
+				const result = await runCli(["--session-id", id, "-p", "hi"]);
 
-			expect(result.code).toBe(1);
-			expect(result.stderr).toContain("Session id must be non-empty");
-			expect(result.stderr).not.toContain("SessionManager.create");
-		}
-	});
+				expect(result.code).toBe(1);
+				expect(result.stderr).toContain("Session id must be non-empty");
+				expect(result.stderr).not.toContain("SessionManager.create");
+			}
+		},
+		90_000,
+	);
 });

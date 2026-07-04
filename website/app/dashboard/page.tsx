@@ -136,7 +136,7 @@ function DailyFactCard({ fact }: { fact: DashboardData["dailyFact"] }) {
 			<CardHeader>
 				<div className="flex items-center gap-2">
 					<Lightbulb className="h-5 w-5 text-amber-400" />
-					<Badge variant="outline" className="border-amber-400/30 text-amber-500">
+					<Badge className="border-amber-400/30 text-amber-500">
 						Daily Fact #{fact.index + 1} of {fact.total}
 					</Badge>
 				</div>

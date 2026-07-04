@@ -89,6 +89,7 @@ describe("regression #3592: no-builtin-tools keeps extension tools enabled", () 
 			"ls",
 			"read",
 			"self_debug",
+			"toast",
 			"write",
 		]);
 		expect(session.getActiveToolNames().sort()).toEqual([

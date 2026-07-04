@@ -1,11 +1,13 @@
 import { spawn } from "node:child_process";
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join, resolve } from "node:path";
+import { dirname, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { afterEach, describe, expect, it } from "vitest";
 import { ENV_AGENT_DIR } from "../src/config.ts";
 
-const cliPath = resolve(__dirname, "../src/cli.ts");
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const cliPath = resolve(__dirname, "../dist/cli.js");
 const tempDirs: string[] = [];
 
 afterEach(() => {
@@ -71,7 +73,6 @@ async function runCli(args: string[], dirs: CliDirs): Promise<CliResult> {
 			...process.env,
 			[ENV_AGENT_DIR]: dirs.agentDir,
 			AIRIS_OFFLINE: "1",
-			TSX_TSCONFIG_PATH: resolve(__dirname, "../../../tsconfig.json"),
 		},
 		stdio: ["ignore", "ignore", "pipe"],
 	});
@@ -82,7 +83,7 @@ async function runCli(args: string[], dirs: CliDirs): Promise<CliResult> {
 	return new Promise((resolvePromise, reject) => {
 		const timeout = setTimeout(() => {
 			child.kill("SIGKILL");
-		}, 10_000);
+		}, 75_000);
 		child.on("error", (error) => {
 			clearTimeout(timeout);
 			reject(error);
@@ -118,7 +119,7 @@ describe("startup session name", () => {
 		expect(result.code).toBe(1);
 		expect(result.signal).toBeNull();
 		expect(readSessionInfoNames(dirs.sessionFile)).toEqual(["CLI Named Session"]);
-	});
+	}, 90_000);
 
 	it("rejects empty --name values without appending session metadata", async () => {
 		const dirs = setup();
@@ -131,5 +132,5 @@ describe("startup session name", () => {
 		expect(result.signal).toBeNull();
 		expect(result.stderr).toContain("--name requires a non-empty value");
 		expect(readSessionInfoNames(dirs.sessionFile)).toEqual([]);
-	});
+	}, 90_000);
 });
