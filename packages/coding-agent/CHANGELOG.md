@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+### Added
+
+- Added `aisearch` — a bundled Go binary that replaces the external `fd` dependency for file search operations.
+- Added `aifetch` — a bundled Go binary for HTTP web requests (GET, POST, HEAD, PUT, DELETE) with timeout, redirect following, JSON output, TLS skip, custom headers, and size limits. The binary outputs status info to stderr and body to stdout, matching the Unix tool convention. The `aisearch` binary supports glob/full-path matching, `.gitignore` respect, hidden file control, and result limits. TypeScript code in `find.ts` prefers `aisearch` first, falling back to downloading `fd`. The binary is built via `npm run build:aisearch` (requires Go 1.22+).
+
+### Changed
+
+- Polished the interactive startup header with a sharper AIRIS emblem, coding-agent readiness copy, version context, and safer width-aware truncation.
+
 ## [0.79.6] - 2026-07-02
 
 ## [0.79.5] - 2026-07-02

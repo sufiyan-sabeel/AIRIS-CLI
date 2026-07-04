@@ -10,6 +10,9 @@ packages/*/dist-chrome/
 packages/*/dist-firefox/
 *.cpuprofile
 
+# aisearch Go binary (built via npm run build:aisearch)
+packages/coding-agent/bin/
+
 # Environment
 .env
 .env.local

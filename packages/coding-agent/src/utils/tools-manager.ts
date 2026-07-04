@@ -6,6 +6,7 @@ import { join } from "path";
 import { Readable } from "stream";
 import { pipeline } from "stream/promises";
 import { APP_NAME, getBinDir } from "../config.ts";
+import { getAifetchConfig, getAisearchConfig } from "../core/aisearch-config.ts";
 
 const TOOLS_DIR = getBinDir();
 const NETWORK_TIMEOUT_MS = 10_000;
@@ -320,6 +321,62 @@ const TERMUX_PACKAGES: Record<string, string> = {
 	fd: "fd",
 	rg: "ripgrep",
 };
+
+/** Get the path to the bundled aisearch binary, if available. */
+export function getAisearchPath(): string | undefined {
+	const config = getAisearchConfig();
+	if (existsSync(config.fullPath)) {
+		return config.fullPath;
+	}
+	// Also check PATH
+	try {
+		const result = spawnSync(config.binaryName, ["--version"], { stdio: "pipe" });
+		if (!result.error && result.status === 0) {
+			return config.binaryName;
+		}
+	} catch {
+		// not in PATH
+	}
+	return undefined;
+}
+
+/** Get the path to the bundled aifetch binary, if available. */
+export function getAifetchPath(): string | undefined {
+	const config = getAifetchConfig();
+	if (existsSync(config.fullPath)) {
+		return config.fullPath;
+	}
+	// Also check PATH
+	try {
+		const result = spawnSync(config.binaryName, ["--help"], { stdio: "pipe" });
+		if (!result.error && result.status === 0) {
+			return config.binaryName;
+		}
+	} catch {
+		// not in PATH
+	}
+	return undefined;
+}
+
+/**
+ * Get the best available search tool for file find operations.
+ * Returns aisearch path first (bundled Go binary), falling back to fd.
+ */
+export async function ensureSearchTool(): Promise<string | undefined> {
+	const aisearch = getAisearchPath();
+	if (aisearch) return aisearch;
+	return ensureTool("fd", true);
+}
+
+/**
+ * Get the best available search tool for grep operations.
+ * Returns aisearch path first (bundled Go binary), falling back to rg.
+ */
+export async function ensureGrepTool(): Promise<string | undefined> {
+	const aisearch = getAisearchPath();
+	if (aisearch) return aisearch;
+	return ensureTool("rg", true);
+}
 
 // Ensure a tool is available, downloading if necessary
 // Returns the path to the tool, or null if unavailable

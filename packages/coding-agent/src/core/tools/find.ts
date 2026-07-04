@@ -6,7 +6,7 @@ import path from "path";
 import { type Static, Type } from "typebox";
 import { keyHint } from "../../modes/interactive/components/keybinding-hints.ts";
 import type { Theme } from "../../modes/interactive/theme/theme.ts";
-import { ensureTool } from "../../utils/tools-manager.ts";
+import { ensureSearchTool, getAisearchPath } from "../../utils/tools-manager.ts";
 import type { ToolDefinition, ToolRenderResultOptions } from "../extensions/types.ts";
 import { pathExists, resolveToCwd } from "./path-utils.ts";
 import { getTextOutput, invalidArgText, shortenPath, str } from "./render-utils.ts";
@@ -210,42 +210,53 @@ export function createFindToolDefinition(
 							return;
 						}
 
-						// Default implementation uses fd.
-						const fdPath = await ensureTool("fd", true);
+						// Default implementation uses aisearch (bundled Go binary) or fd as fallback.
+						const searchTool = getAisearchPath() || (await ensureSearchTool());
 						if (signal?.aborted) {
 							settle(() => reject(new Error("Operation aborted")));
 							return;
 						}
-						if (!fdPath) {
-							settle(() => reject(new Error("fd is not available and could not be downloaded")));
+						if (!searchTool) {
+							settle(() => reject(new Error("No search tool available (aisearch or fd)")));
 							return;
 						}
 
-						// Build fd arguments. --no-require-git makes fd apply hierarchical .gitignore
-						// semantics whether or not the search path is inside a git repository, without
-						// leaking sibling-directory rules the way --ignore-file (a global source) would.
-						const args: string[] = [
-							"--glob",
-							"--color=never",
-							"--hidden",
-							"--no-require-git",
-							"--max-results",
-							String(effectiveLimit),
-						];
-
-						// fd --glob matches against the basename unless --full-path is set; in --full-path
-						// mode it matches against the absolute candidate path, so a path-containing
-						// pattern like 'src/**/*.spec.ts' needs a leading '**/' to match anything.
+						const isAisearch = getAisearchPath() === searchTool || searchTool.includes("aisearch");
+						let args: string[];
 						let effectivePattern = pattern;
-						if (pattern.includes("/")) {
-							args.push("--full-path");
-							if (!pattern.startsWith("/") && !pattern.startsWith("**/") && pattern !== "**") {
-								effectivePattern = `**/${pattern}`;
-							}
-						}
-						args.push("--", effectivePattern, searchPath);
 
-						const child = spawn(fdPath, args, { stdio: ["ignore", "pipe", "pipe"] });
+						if (isAisearch) {
+							// aisearch find [flags] <pattern> <path>
+							args = ["find", "--glob", "--hidden"];
+							args.push("--max-results", String(effectiveLimit));
+							if (pattern.includes("/")) {
+								args.push("--full-path");
+								if (!pattern.startsWith("/") && !pattern.startsWith("**/") && pattern !== "**") {
+									effectivePattern = `**/${pattern}`;
+								}
+							}
+							args.push(effectivePattern, searchPath);
+						} else {
+							// Build fd arguments. --no-require-git makes fd apply hierarchical .gitignore
+							// semantics whether or not the search path is inside a git repository.
+							args = [
+								"--glob",
+								"--color=never",
+								"--hidden",
+								"--no-require-git",
+								"--max-results",
+								String(effectiveLimit),
+							];
+							if (pattern.includes("/")) {
+								args.push("--full-path");
+								if (!pattern.startsWith("/") && !pattern.startsWith("**/") && pattern !== "**") {
+									effectivePattern = `**/${pattern}`;
+								}
+							}
+							args.push("--", effectivePattern, searchPath);
+						}
+
+						const child = spawn(searchTool, args, { stdio: ["ignore", "pipe", "pipe"] });
 						const rl = createInterface({ input: child.stdout });
 						let stderr = "";
 						const lines: string[] = [];
