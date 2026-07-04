@@ -5,7 +5,7 @@
  */
 
 import type { ExtensionAPI } from "@sufiyan-sabeel/airis-cli";
-import { Text } from "@earendil-works/airis-tui";
+import { Text } from "@sufiyan-sabeel/airis-tui";
 
 export default function (airis: ExtensionAPI) {
 	airis.registerCommand("tui", {

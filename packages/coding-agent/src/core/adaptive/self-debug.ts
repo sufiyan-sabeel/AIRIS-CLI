@@ -9,6 +9,7 @@
  * 5. Learns from past errors to improve future debugging
  */
 
+import { spawnSync } from "child_process";
 import { type Static, Type } from "typebox";
 
 // ============================================================================
@@ -25,6 +26,9 @@ export type ErrorCategory =
 	| "permission"
 	| "resource"
 	| "logic"
+	| "build"
+	| "compile"
+	| "test"
 	| "unknown";
 
 export interface ErrorContext {
@@ -251,7 +255,7 @@ const ERROR_PATTERNS: ErrorPattern[] = [
 	{
 		id: "test-failure",
 		regex: /FAIL|failing|test.*failed|assertion.*error|expect.*received/i,
-		category: "logic",
+		category: "test",
 		severity: "medium",
 		commonCauses: ["Test expectation mismatch", "Logic error in implementation", "Test environment issue"],
 		suggestedFixes: [
@@ -259,6 +263,60 @@ const ERROR_PATTERNS: ErrorPattern[] = [
 				type: "guided",
 				description: "Analyze test failure and fix implementation",
 				actions: [],
+			},
+		],
+	},
+	// Go build/vet errors
+	{
+		id: "go-build-error",
+		regex: /go\s*(build|vet|test|mod)\s.*(error|FAIL)|cannot find package|undefined:\s*[\w.]+|_.go:\d+:\s/i,
+		category: "build",
+		severity: "high",
+		commonCauses: [
+			"Go compilation error or vet violation",
+			"Missing Go module dependency",
+			"Type mismatch in Go code",
+		],
+		suggestedFixes: [
+			{
+				type: "guided",
+				description: "Run go vet and go build to see full diagnostics",
+				actions: [{ type: "bash", command: "go vet ./..." }],
+			},
+			{
+				type: "guided",
+				description: "Read Go source files near the error line",
+				actions: [],
+			},
+		],
+	},
+	// R CMD check / Rscript errors
+	{
+		id: "r-check-error",
+		regex: /R\sCMD\scheck|Rscript.*error|Error in [\w(]|ERROR:\s|could not find function|unexpected symbol in/i,
+		category: "build",
+		severity: "high",
+		commonCauses: ["R package check failure", "Missing R dependency", "Syntax error in R code"],
+		suggestedFixes: [
+			{
+				type: "guided",
+				description: "Run R CMD check on the package for full diagnostics",
+				actions: [{ type: "bash", command: "R CMD check tools/r/airis.analytics --no-manual --no-vignettes" }],
+			},
+		],
+	},
+	// C/C++ compilation errors
+	{
+		id: "c-compile-error",
+		regex: /cc?\s+|gcc|clang|error:\s|warning:\s|undefined reference|implicit declaration/i,
+		category: "compile",
+		severity: "high",
+		commonCauses: ["C compilation error", "Missing header or library", "Memory or type error in C code"],
+		suggestedFixes: [
+			{
+				type: "guided",
+				description: "Check compiler flags and include paths",
+				actions: [{ type: "bash", command: "make -C tools/c/airis-procmon" }],
 			},
 		],
 	},
@@ -275,31 +333,70 @@ export class SelfDebugBrain {
 	private readonly maxHistorySize = 50;
 
 	/**
+	 * Run external Go/R/C diagnostics when relevant error types occur.
+	 * Non-blocking: silently returns null if tools are unavailable.
+	 */
+	private runExternalDiagnostics(context: ErrorContext): string | null {
+		const msg = context.errorMessage.toLowerCase();
+		const stack = context.errorStack ?? "";
+
+		const runTool = (cmd: string, args: string[], timeoutMs = 10000): string | null => {
+			try {
+				const result = spawnSync(cmd, args, {
+					encoding: "utf8",
+					timeout: timeoutMs,
+					cwd: context.cwd,
+				});
+				if (result.status === 0 && result.stdout) {
+					return result.stdout.trim();
+				}
+			} catch {
+				// tool not available, skip silently
+			}
+			return null;
+		};
+
+		if (/go\s+(build|vet|test|mod)/.test(msg) || stack.includes(".go:")) {
+			const out = runTool("scripts/airis-go-security.sh", ["selfdebug", "--govet", "--dir", context.cwd]);
+			if (out) return `[Go diagnostics] ${out}`;
+		}
+
+		if (msg.includes("memory") || msg.includes("heap") || msg.includes("fd ") || msg.includes("leak")) {
+			const out = runTool("tools/c/airis-procmon/airis-procmon", [String(process.pid)], 5000);
+			if (out) return `[Process resources] ${out}`;
+		}
+
+		if (/r\s+(cmd|script)/.test(msg) || msg.includes("error in") || stack.includes(".r:")) {
+			const out = runTool("Rscript", [
+				"-e",
+				`airis.analytics::analyze_self_debug_history("${context.cwd}/.airis/self-debug-history.jsonl")`,
+			]);
+			if (out) return `[R analytics] ${out}`;
+		}
+
+		return null;
+	}
+
+	/**
 	 * Analyze an error and generate debugging recommendations.
 	 */
 	analyzeError(context: ErrorContext): ErrorAnalysis {
-		// Check history before recording the current error so first occurrences are not marked recurring.
 		const isRecurring = this.isRecurringError(context);
-
-		// Match against known patterns
 		const matchedPattern = this.matchErrorPattern(context);
-
-		// Extract affected files from context
 		const affectedFiles = this.extractAffectedFiles(context);
-
-		// Generate root cause hypothesis
 		const rootCause = this.hypothesizeRootCause(context, matchedPattern);
 
-		// Generate suggested fixes
-		const suggestedFixes = this.generateFixes(context, matchedPattern, affectedFiles);
+		// Run external Go/R/C diagnostics when appropriate
+		const externalDiag = this.runExternalDiagnostics(context);
 
-		// Calculate confidence based on pattern match and history
+		const suggestedFixes = this.generateFixes(context, matchedPattern, affectedFiles, externalDiag);
+
 		const confidence = this.calculateConfidence(matchedPattern, isRecurring);
 
-		const analysis = {
+		const analysis: ErrorAnalysis = {
 			category: matchedPattern?.category ?? "unknown",
 			severity: matchedPattern?.severity ?? this.estimateSeverity(context),
-			rootCause,
+			rootCause: externalDiag ? `${rootCause}\n${externalDiag}` : rootCause,
 			affectedFiles,
 			suggestedFixes,
 			confidence,
@@ -501,9 +598,9 @@ export class SelfDebugBrain {
 		const files: string[] = [...(context.relatedFiles ?? [])];
 		const errorText = `${context.errorMessage} ${JSON.stringify(context.args)}`;
 
-		// Match common file patterns
+		// Match common file patterns including Go, R, C
 		const filePatterns = [
-			/[\w./-]+\.(?:ts|tsx|js|jsx|json|md|py|rs|go|java|kt)/g,
+			/[\w./-]+\.(?:ts|tsx|js|jsx|json|md|py|rs|go|java|kt|c|cpp|h|r|rproj)/g,
 			/(?:at|in|file|path)[\s:]+([^\s,]+)/gi,
 		];
 
@@ -547,7 +644,12 @@ export class SelfDebugBrain {
 	/**
 	 * Generate suggested fixes based on error analysis.
 	 */
-	private generateFixes(context: ErrorContext, pattern?: ErrorPattern, affectedFiles: string[] = []): SuggestedFix[] {
+	private generateFixes(
+		context: ErrorContext,
+		pattern?: ErrorPattern,
+		affectedFiles: string[] = [],
+		externalDiag?: string | null,
+	): SuggestedFix[] {
 		const fixes: SuggestedFix[] = [];
 
 		// Add pattern-based fixes
@@ -559,6 +661,17 @@ export class SelfDebugBrain {
 					requiresConfirmation: patternFix.type !== "auto",
 				});
 			}
+		}
+
+		// Add external diagnostics result as a fix suggestion
+		if (externalDiag) {
+			fixes.push({
+				type: "guided",
+				description: `External diagnostics available: ${externalDiag.slice(0, 200)}`,
+				actions: [],
+				risk: "safe" as const,
+				requiresConfirmation: false,
+			});
 		}
 
 		// Add generic investigation fix

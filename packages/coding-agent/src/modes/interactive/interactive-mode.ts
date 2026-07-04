@@ -190,6 +190,11 @@ type CompactionQueuedMessage = {
 	mode: "steer" | "followUp";
 };
 
+const AIRIS_WORKING_INDICATOR: LoaderIndicatorOptions = {
+	frames: ["AIRIS .", "AIRIS ..", "AIRIS ...", "AIRIS .."],
+	intervalMs: 180,
+};
+
 const DEAD_TERMINAL_ERROR_CODES = new Set(["EIO", "EPIPE", "ENOTCONN"]);
 
 function isDeadTerminalError(error: unknown): boolean {
@@ -441,7 +446,6 @@ export class InteractiveMode {
 
 		// Load hide thinking block setting
 		this.hideThinkingBlock = this.settingsManager.getHideThinkingBlock();
-
 		// Register themes from resource loader and initialize
 		setRegisteredThemes(this.session.resourceLoader.getThemes().themes);
 		initTheme(this.settingsManager.getTheme(), true);
@@ -722,7 +726,7 @@ export class InteractiveMode {
 				rawKeyHint(`${keyText("app.model.cycleForward")}/${keyText("app.model.cycleBackward")}`, "to cycle models"),
 				hint("app.model.select", "to select model"),
 				hint("app.tools.expand", "to expand tools"),
-				hint("app.thinking.toggle", "to expand thinking"),
+				hint("app.thinking.toggle", "to toggle thinking visibility"),
 				hint("app.editor.external", "for external editor"),
 				rawKeyHint("/", "for commands"),
 				rawKeyHint("!", "to run bash"),
@@ -1794,7 +1798,7 @@ export class InteractiveMode {
 			(spinner) => theme.fg("accent", spinner),
 			(text) => theme.fg("muted", text),
 			this.getWorkingLoaderMessage(),
-			this.workingIndicatorOptions,
+			this.workingIndicatorOptions ?? AIRIS_WORKING_INDICATOR,
 		);
 	}
 
@@ -1823,7 +1827,7 @@ export class InteractiveMode {
 
 	private setWorkingIndicator(options?: LoaderIndicatorOptions): void {
 		this.workingIndicatorOptions = options;
-		this.loadingAnimation?.setIndicator(options);
+		this.loadingAnimation?.setIndicator(options ?? AIRIS_WORKING_INDICATOR);
 		this.ui.requestRender();
 	}
 
@@ -2629,6 +2633,12 @@ export class InteractiveMode {
 				this.editor.setText("");
 				return;
 			}
+			if (text === "/search" || text.startsWith("/search ")) {
+				const query = text.startsWith("/search ") ? text.slice(8).trim() : "";
+				this.editor.setText("");
+				await this.handleSearchCommand(query);
+				return;
+			}
 			if (text === "/changelog") {
 				this.handleChangelogCommand();
 				this.editor.setText("");
@@ -2636,6 +2646,11 @@ export class InteractiveMode {
 			}
 			if (text === "/hotkeys") {
 				this.handleHotkeysCommand();
+				this.editor.setText("");
+				return;
+			}
+			if (text === "/doctor") {
+				this.handleDoctorCommand();
 				this.editor.setText("");
 				return;
 			}
@@ -3794,11 +3809,9 @@ export class InteractiveMode {
 		this.hideThinkingBlock = !this.hideThinkingBlock;
 		this.settingsManager.setHideThinkingBlock(this.hideThinkingBlock);
 
-		// Rebuild chat from session messages
 		this.chatContainer.clear();
 		this.rebuildChatFromMessages();
 
-		// If streaming, re-add the streaming component with updated visibility and re-render
 		if (this.streamingComponent && this.streamingMessage) {
 			this.streamingComponent.setHideThinkingBlock(this.hideThinkingBlock);
 			this.streamingComponent.updateContent(this.streamingMessage);
@@ -5544,6 +5557,64 @@ export class InteractiveMode {
 		this.ui.requestRender();
 	}
 
+	private async handleSearchCommand(query: string): Promise<void> {
+		if (!query) {
+			this.showError("Usage: /search <query>");
+			return;
+		}
+		try {
+			const { SessionManager } = await import("../../core/session-manager.ts");
+			const sessionDir = this.sessionManager.getSessionDir();
+			const sessions = await SessionManager.listAll(sessionDir);
+			const results: { session: string; matches: { line: number; text: string }[] }[] = [];
+
+			for (const session of sessions) {
+				try {
+					const content = await import("node:fs/promises").then((fs) => fs.readFile(session.path, "utf8"));
+					const lines = content.split("\n");
+					const matches: { line: number; text: string }[] = [];
+					for (let i = 0; i < lines.length; i++) {
+						const line = lines[i].toLowerCase();
+						if (line.includes(query.toLowerCase())) {
+							const text = lines[i].length > 120 ? `${lines[i].slice(0, 120)}...` : lines[i];
+							matches.push({ line: i + 1, text });
+						}
+					}
+					if (matches.length > 0) {
+						results.push({
+							session: session.name || session.path.split("/").pop() || session.path,
+							matches,
+						});
+					}
+				} catch {
+					// Skip unreadable files
+				}
+			}
+
+			if (results.length === 0) {
+				this.showStatus(`No matches found for "${query}"`);
+				return;
+			}
+
+			let output = `${theme.bold(`Search results for "${query}"`)}\n\n`;
+			for (const result of results) {
+				output += `${theme.fg("accent", result.session)}\n`;
+				for (const match of result.matches.slice(0, 5)) {
+					output += `  ${theme.fg("dim", `L${match.line}:`)} ${match.text}\n`;
+				}
+				if (result.matches.length > 5) {
+					output += `  ${theme.fg("dim", `... ${result.matches.length - 5} more matches`)}\n`;
+				}
+				output += "\n";
+			}
+
+			this.showInfo(output);
+		} catch (err) {
+			const msg = err instanceof Error ? err.message : String(err);
+			this.showError(`Search failed: ${msg}`);
+		}
+	}
+
 	private handleSessionCommand(): void {
 		const stats = this.session.getSessionStats();
 		const sessionName = this.sessionManager.getSessionName();
@@ -6592,6 +6663,149 @@ Type any command or just describe what you want to do.
 		this.chatContainer.addChild(new Text(theme.bold(theme.fg("accent", "Skills")), 1, 0));
 		this.chatContainer.addChild(new Spacer(1));
 		this.chatContainer.addChild(new Markdown(skillsText.trim(), 1, 1, this.getMarkdownThemeWithSettings()));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.ui.requestRender();
+	}
+
+	private commandFirstLine(command: string, args: string[]): string | undefined {
+		const result = spawnSync(command, args, { encoding: "utf8", timeout: 2000 });
+		if (result.status !== 0) return undefined;
+		const output = `${result.stdout ?? ""}${result.stderr ?? ""}`.trim();
+		return output.split(/\r?\n/, 1)[0]?.trim() || undefined;
+	}
+
+	private detectProjectFiles(cwd: string): {
+		go: string[];
+		r: string[];
+	} {
+		let entries: fs.Dirent[] = [];
+		try {
+			entries = fs.readdirSync(cwd, { withFileTypes: true });
+		} catch {
+			return { go: [], r: [] };
+		}
+
+		const names = new Set(entries.map((entry) => entry.name));
+		const go = ["go.mod", "go.work"].filter((name) => names.has(name));
+		const r = ["DESCRIPTION", "renv.lock", ".Rprofile"].filter((name) => names.has(name));
+
+		if (entries.some((entry) => entry.isFile() && entry.name.endsWith(".go"))) {
+			go.push("*.go");
+		}
+		if (entries.some((entry) => entry.isFile() && (entry.name.endsWith(".R") || entry.name.endsWith(".Rproj")))) {
+			r.push("*.R / *.Rproj");
+		}
+
+		// Check if AIRIS's own Go tools exist
+		const toolsGoMod = path.join(cwd, "tools", "go", "airis-security", "go.mod");
+		if (fs.existsSync(toolsGoMod)) {
+			go.push("tools/go/airis-security");
+		}
+		const toolsRDesc = path.join(cwd, "tools", "r", "airis.analytics", "DESCRIPTION");
+		if (fs.existsSync(toolsRDesc)) {
+			r.push("tools/r/airis.analytics");
+		}
+
+		return { go, r };
+	}
+
+	private escapeTableCell(text: string): string {
+		return text.replace(/\|/g, "\\|").replace(/\r?\n/g, " ");
+	}
+
+	private commandFullOutput(command: string, args: string[], timeoutMs = 5000): string | undefined {
+		const result = spawnSync(command, args, { encoding: "utf8", timeout: timeoutMs });
+		if (result.status !== 0) return undefined;
+		return `${result.stdout ?? ""}${result.stderr ?? ""}`.trim();
+	}
+
+	private handleDoctorCommand(): void {
+		const cwd = this.sessionManager.getCwd();
+		const projectFiles = this.detectProjectFiles(cwd);
+		const goVersion = this.commandFirstLine("go", ["version"]);
+		const rVersion = this.commandFirstLine("R", ["--version"]);
+		const rscriptVersion = this.commandFirstLine("Rscript", ["--version"]);
+
+		const goVetResult = goVersion ? this.commandFullOutput("go", ["vet", "./..."], 10000) : undefined;
+		const securityBinary = "tools/go/airis-security/airis-security";
+		const securityBuilt =
+			fs.existsSync(securityBinary) || fs.existsSync(`${securityBinary}.exe`) ? "✓ Built" : "○ Not built";
+		const analyticsScript = "tools/r/airis.analytics/scripts/analyze_logs.R";
+		const analyticsExists = fs.existsSync(analyticsScript) ? "✓ Found" : "○ Missing";
+
+		const rows: Array<[string, string, string]> = [
+			["Workspace", "✓ Active", `\`${cwd}\``],
+			[
+				"Go project",
+				projectFiles.go.length > 0 ? "✓ Detected" : "○ Not detected",
+				projectFiles.go.join(", ") || "No go.mod/go.work/*.go in root",
+			],
+			[
+				"Go toolchain",
+				goVersion ? "✓ Available" : "○ Missing",
+				goVersion ?? "Install Go >= 1.22 for security/vet/test tools",
+			],
+			[
+				"Go vet",
+				goVetResult !== undefined ? "✓ Passed" : "○ Not run",
+				goVetResult !== undefined
+					? "go vet ./... passed"
+					: goVersion
+						? "go vet failed or timed out"
+						: "Go not available",
+			],
+			[
+				"Security binary",
+				securityBuilt,
+				securityBuilt === "✓ Built" ? `\`${securityBinary}\` ready` : "Run: make security-build",
+			],
+			[
+				"R project",
+				projectFiles.r.length > 0 ? "✓ Detected" : "○ Not detected",
+				projectFiles.r.join(", ") || "No DESCRIPTION/renv.lock/*.R in root",
+			],
+			[
+				"R toolchain",
+				rVersion || rscriptVersion ? "✓ Available" : "○ Missing",
+				rVersion ?? rscriptVersion ?? "Install R >= 4.0 for analytics tools",
+			],
+			[
+				"R analytics script",
+				analyticsExists,
+				analyticsExists === "✓ Found" ? `\`${analyticsScript}\`` : "Run: git restore tools/r/",
+			],
+		];
+
+		let doctorText = "**AIRIS Project Doctor**\n\n";
+		doctorText += "| Area | Status | Details |\n";
+		doctorText += "|------|--------|---------|\n";
+		for (const [area, status, details] of rows) {
+			doctorText += `| ${area} | ${status} | ${this.escapeTableCell(details)} |\n`;
+		}
+
+		doctorText += "\n**Commands**\n\n";
+		doctorText += "- `make go-vet` -- Run go vet\n";
+		doctorText += "- `make go-test` -- Run go test\n";
+		doctorText += "- `make security-build` -- Build airis-security binary\n";
+		doctorText += "- `make r-check` -- Run R CMD check\n";
+		doctorText += "- `make logs-analyze FILE=logs/airis.log` -- Analyze logs with R\n";
+		doctorText += "- `make doctor-all` -- Run all Go/R checks\n";
+		doctorText += "- `scripts/airis-go-security.sh hash <file>` -- Hash a file\n";
+		doctorText += "- `scripts/airis-r-analyze.sh --input <logfile>` -- Analyze logs\n";
+
+		if (goVersion && projectFiles.go.length > 0) {
+			const goVetOk = goVetResult !== undefined ? "pass" : "FAIL";
+			doctorText += `\n**Go Results:** go vet ${goVetOk}\n`;
+		}
+		if ((rVersion || rscriptVersion) && projectFiles.r.length > 0) {
+			doctorText += "\n**R Results:** R available for analytics on this project\n";
+		}
+
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.chatContainer.addChild(new Text(theme.bold(theme.fg("accent", "Project Doctor")), 1, 0));
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new Markdown(doctorText.trim(), 1, 1, this.getMarkdownThemeWithSettings()));
 		this.chatContainer.addChild(new DynamicBorder());
 		this.ui.requestRender();
 	}

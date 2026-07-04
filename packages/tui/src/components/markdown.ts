@@ -349,22 +349,22 @@ export class Markdown implements Component {
 
 			case "code": {
 				const indent = this.theme.codeBlockIndent ?? "  ";
-				lines.push(this.theme.codeBlockBorder(`\`\`\`${token.lang || ""}`));
+				const lang = token.lang || "";
+				lines.push(this.theme.codeBlockBorder(`\`\`\`${lang ? ` ${lang}` : ""}`));
 				if (this.theme.highlightCode) {
 					const highlightedLines = this.theme.highlightCode(token.text, token.lang);
 					for (const hlLine of highlightedLines) {
 						lines.push(`${indent}${hlLine}`);
 					}
 				} else {
-					// Split code by newlines and style each line
 					const codeLines = token.text.split("\n");
 					for (const codeLine of codeLines) {
 						lines.push(`${indent}${this.theme.codeBlock(codeLine)}`);
 					}
 				}
-				lines.push(this.theme.codeBlockBorder("```"));
+				lines.push(this.theme.codeBlockBorder(`\`\`\`${lang ? ` ${lang}` : ""}`));
 				if (nextTokenType && nextTokenType !== "space") {
-					lines.push(""); // Add spacing after code blocks (unless space token follows)
+					lines.push("");
 				}
 				break;
 			}

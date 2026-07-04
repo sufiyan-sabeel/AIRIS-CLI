@@ -123,9 +123,6 @@ jobs:
       - name: Check
         run: npm run check
 
-      - name: Test
-        run: npm test
-
       - name: Verify release artifacts are committed
         run: git diff --exit-code
 

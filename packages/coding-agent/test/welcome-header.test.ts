@@ -1,3 +1,4 @@
+import { visibleWidth } from "@sufiyan-sabeel/airis-tui";
 import { describe, expect, it, vi } from "vitest";
 import { WelcomeHeader, type WelcomeHeaderInfo } from "../src/modes/interactive/components/welcome-header.ts";
 
@@ -5,6 +6,7 @@ import { WelcomeHeader, type WelcomeHeaderInfo } from "../src/modes/interactive/
 vi.mock("../src/modes/interactive/theme/theme.ts", () => ({
 	theme: {
 		fg: (_color: string, text: string) => text, // Return text as-is for testing
+		bold: (text: string) => text,
 	},
 }));
 
@@ -153,6 +155,9 @@ describe("WelcomeHeader", () => {
 				const lines = header.render(width);
 				expect(Array.isArray(lines)).toBe(true);
 				expect(lines.length).toBeGreaterThan(0);
+				for (const line of lines) {
+					expect(visibleWidth(line)).toBeLessThanOrEqual(width);
+				}
 			}
 		});
 

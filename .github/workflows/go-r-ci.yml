@@ -1,0 +1,75 @@
+name: Go & R Tools
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "tools/go/**"
+      - "tools/r/**"
+      - "scripts/airis-go-security.sh"
+      - "scripts/airis-r-analyze.sh"
+      - "Makefile"
+  pull_request:
+    branches: [main]
+    paths:
+      - "tools/go/**"
+      - "tools/r/**"
+      - "scripts/airis-go-security.sh"
+      - "scripts/airis-r-analyze.sh"
+      - "Makefile"
+
+  workflow_dispatch:
+
+jobs:
+  go:
+    name: Go Security Tools
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: tools/go/airis-security
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+      - name: Tidy dependencies
+        run: go mod tidy
+      - name: Go vet
+        run: go vet ./...
+      - name: Go test
+        run: go test ./...
+      - name: Go build
+        run: go build ./cmd/airis-security
+
+  r:
+    name: R Analytics Tools
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: tools/r/airis.analytics
+    steps:
+      - uses: actions/checkout@v4
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: "4.4"
+      - name: Install dependencies
+        run: |
+          Rscript -e 'install.packages(c("jsonlite", "testthat"), repos="https://cloud.r-project.org")'
+      - name: R CMD check
+        run: R CMD check . --no-manual --no-vignettes
+
+  npm:
+    name: NPM Build (isolated)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+      - name: Install dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Build
+        run: npm run build
+      - name: Check
+        run: npm run check

@@ -1,0 +1,16 @@
+Package: airis.analytics
+Title: AIRIS Log Analysis and Anomaly Detection
+Version: 0.1.0
+Author: AIRIS Team
+Maintainer: AIRIS Team <airis@kageos.dev>
+Description: Parses AIRIS CLI logs, summarizes errors and warnings,
+  detects anomalous log patterns, generates CI failure reports,
+  and exports JSON/CSV summaries for the AIRIS CLI dashboard.
+License: MIT
+Encoding: UTF-8
+LazyData: false
+Imports:
+    jsonlite,
+    stats
+Suggests:
+    testthat (>= 3.0.0)

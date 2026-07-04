@@ -1,4 +1,4 @@
-import type { AssistantMessage } from "@earendil-works/airis-ai";
+import type { AssistantMessage } from "@sufiyan-sabeel/airis-ai";
 import type { ExtensionAPI } from "@sufiyan-sabeel/airis-cli";
 
 function isAssistantMessage(message: unknown): message is AssistantMessage {

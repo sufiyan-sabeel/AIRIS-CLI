@@ -5,15 +5,16 @@ exports[`WelcomeHeader > snapshot tests > matches snapshot at 36 columns > welco
 ╭────────────────────────────────╮  
 │                                │  
 │               ╲   ╿   ╱        │  
-│          ━━━━╲  ◇  ╱━━━━       │  
+│          ━━━━╲  ◆  ╱━━━━       │  
 │               ╱   ╽   ╲        │  
 │                                │  
 │             AIRIS              │  
 ├────────────────────────────────┤  
-│    Model     mimo-v2.5-free    │  
-│       Provider  opencode       │  
-│Mode      normal · @coding · @au│  
-│ Project   /home/.../airis-cli  │  
+│   MODEL    • mimo-v2.5-free    │  
+│      PROVIDER • opencode       │  
+│MODE     • normal · @coding · @a│  
+│       VERSION  • v2.0.0        │  
+│ PROJECT  • /home/.../airis-cli │  
 ╰────────────────────────────────╯  
                                     "
 `;
@@ -22,18 +23,19 @@ exports[`WelcomeHeader > snapshot tests > matches snapshot at 45 columns > welco
 "                                             
 ╭─────────────────────────────────────────╮  
 │                                         │  
-│              Welcome back               │  
+│             Ready to build              │  
 │                                         │  
 │                     ╲   ╿   ╱           │  
-│                ━━━━╲  ◇  ╱━━━━          │  
+│                ━━━━╲  ◆  ╱━━━━          │  
 │                     ╱   ╽   ╲           │  
 │                                         │  
 │                  AIRIS                  │  
 ├─────────────────────────────────────────┤  
-│        Model     mimo-v2.5-free         │  
-│           Provider  opencode            │  
-│Mode      normal · @coding · @automation │  
-│      Project   /home/.../airis-cli      │  
+│        MODEL    • mimo-v2.5-free        │  
+│           PROVIDER • opencode           │  
+│MODE     • normal · @coding · @automation│  
+│            VERSION  • v2.0.0            │  
+│     PROJECT  • /home/.../airis-cli      │  
 ╰─────────────────────────────────────────╯  
                                              "
 `;
@@ -42,18 +44,19 @@ exports[`WelcomeHeader > snapshot tests > matches snapshot at 50 columns > welco
 "                                                  
 ╭──────────────────────────────────────────────╮  
 │                                              │  
-│                 Welcome back                 │  
+│                Ready to build                │  
 │                                              │  
 │                       ╲   ╿   ╱              │  
-│                   ━━━━╲  ◇  ╱━━━━            │  
+│                   ━━━━╲  ◆  ╱━━━━            │  
 │                       ╱   ╽   ╲              │  
 │                                              │  
 │                    AIRIS                     │  
 ├──────────────────────────────────────────────┤  
-│           Model     mimo-v2.5-free           │  
-│              Provider  opencode              │  
-│   Mode      normal · @coding · @automation   │  
-│        Project   /home/.../airis-cli         │  
+│          MODEL    • mimo-v2.5-free           │  
+│             PROVIDER • opencode              │  
+│  MODE     • normal · @coding · @automation   │  
+│              VERSION  • v2.0.0               │  
+│        PROJECT  • /home/.../airis-cli        │  
 ╰──────────────────────────────────────────────╯  
                                                   "
 `;
@@ -62,18 +65,19 @@ exports[`WelcomeHeader > snapshot tests > matches snapshot at 60 columns > welco
 "                                                            
 ╭────────────────────────────────────────────────────────╮  
 │                                                        │  
-│                      Welcome back                      │  
+│                     Ready to build                     │  
 │                                                        │  
 │                            ╲   ╿   ╱                   │  
-│                        ━━━━╲  ◇  ╱━━━━                 │  
+│                        ━━━━╲  ◆  ╱━━━━                 │  
 │                            ╱   ╽   ╲                   │  
 │                                                        │  
 │                         AIRIS                          │  
 ├────────────────────────────────────────────────────────┤  
-│                Model     mimo-v2.5-free                │  
-│                   Provider  opencode                   │  
-│        Mode      normal · @coding · @automation        │  
-│        Project   /home/user/projects/airis-cli         │  
+│               MODEL    • mimo-v2.5-free                │  
+│                  PROVIDER • opencode                   │  
+│       MODE     • normal · @coding · @automation        │  
+│                   VERSION  • v2.0.0                    │  
+│        PROJECT  • /home/user/projects/airis-cli        │  
 ╰────────────────────────────────────────────────────────╯  
                                                             "
 `;
@@ -82,20 +86,22 @@ exports[`WelcomeHeader > snapshot tests > matches snapshot at 80 columns > welco
 "                                                                                
 ╭────────────────────────────────────────────────────────────────────────────╮  
 │                                                                            │  
-│                                Welcome back                                │  
+│                               Ready to build                               │  
+│                    Plan changes, edit files, run checks                    │  
 │                                                                            │  
 │                                           ╲   ╿   ╱                        │  
-│                                       ━━━━╲  ◇  ╱━━━━                      │  
+│                                       ━━━━╲  ◆  ╱━━━━                      │  
 │                                           ╱   ╽   ╲                        │  
 │                                                                            │  
 │                                 A I R I S                                  │  
 │                     Artificial Intelligence Responsive                     │  
 │                             Integrated System                              │  
+│                           Coding agent · v2.0.0                            │  
 ├────────────────────────────────────────────────────────────────────────────┤  
-│                          Model     mimo-v2.5-free                          │  
-│                             Provider  opencode                             │  
-│                  Mode      normal · @coding · @automation                  │  
-│                  Project   /home/user/projects/airis-cli                   │  
+│                         MODEL    • mimo-v2.5-free                          │  
+│                            PROVIDER • opencode                             │  
+│                 MODE     • normal · @coding · @automation                  │  
+│                  PROJECT  • /home/user/projects/airis-cli                  │  
 ╰────────────────────────────────────────────────────────────────────────────╯  
                                                                                 "
 `;
@@ -104,20 +110,22 @@ exports[`WelcomeHeader > snapshot tests > matches snapshot at 120 columns > welc
 "                                                                                                                        
 ╭────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮  
 │                                                                                                                    │  
-│                                                    Welcome back                                                    │  
+│                                                   Ready to build                                                   │  
+│                                        Plan changes, edit files, run checks                                        │  
 │                                                                                                                    │  
 │                                                               ╲   ╿   ╱                                            │  
-│                                                           ━━━━╲  ◇  ╱━━━━                                          │  
+│                                                           ━━━━╲  ◆  ╱━━━━                                          │  
 │                                                               ╱   ╽   ╲                                            │  
 │                                                                                                                    │  
 │                                                     A I R I S                                                      │  
 │                                         Artificial Intelligence Responsive                                         │  
 │                                                 Integrated System                                                  │  
+│                                               Coding agent · v2.0.0                                                │  
 ├────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤  
-│                                              Model     mimo-v2.5-free                                              │  
-│                                                 Provider  opencode                                                 │  
-│                                      Mode      normal · @coding · @automation                                      │  
-│                                      Project   /home/user/projects/airis-cli                                       │  
+│                                             MODEL    • mimo-v2.5-free                                              │  
+│                                                PROVIDER • opencode                                                 │  
+│                                     MODE     • normal · @coding · @automation                                      │  
+│                                      PROJECT  • /home/user/projects/airis-cli                                      │  
 ╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯  
                                                                                                                         "
 `;

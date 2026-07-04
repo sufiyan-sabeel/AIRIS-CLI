@@ -5,9 +5,11 @@
  */
 
 import { arch, platform } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
-const BIN_DIR = process.env.AIRIS_BIN_DIR ?? join(__dirname, "..", "..", "bin");
+const moduleDir = dirname(fileURLToPath(import.meta.url));
+const BIN_DIR = process.env.AIRIS_BIN_DIR ?? join(moduleDir, "..", "..", "bin");
 
 export interface NativeBinaryConfig {
 	binaryName: string;
