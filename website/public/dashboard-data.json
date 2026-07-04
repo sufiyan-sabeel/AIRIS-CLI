@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-04T01:41:29.963Z",
+  "generatedAt": "2026-07-04T01:50:21.737Z",
   "date": "2026-07-04",
   "dailyFact": {
     "fact": "The project includes native Go binaries for file search (aisearch) and web fetching (aifetch).",
@@ -17,11 +17,11 @@
       "tui"
     ],
     "tsSourceFiles": 1026,
-    "tsxComponents": 15,
+    "tsxComponents": 16,
     "goModules": 5,
     "scriptFiles": 16,
-    "totalSourceLines": 253339,
-    "githubWorkflows": 10,
+    "totalSourceLines": 253717,
+    "githubWorkflows": 11,
     "markdownDocs": 93
   },
   "codeBreakdown": [
@@ -32,7 +32,7 @@
     },
     {
       "label": "React/TSX (.tsx)",
-      "count": 15,
+      "count": 16,
       "color": "#06b6d4"
     },
     {

@@ -9,14 +9,13 @@
  *   - GitHub Actions (daily cron)
  */
 
-import { existsSync, readFileSync, writeFileSync, readdirSync, statSync } from "node:fs";
+import { readFileSync, writeFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = join(fileURLToPath(import.meta.url), "..");
 const REPO_ROOT = join(__dirname, "..");
 const OUTPUT_PATH = join(REPO_ROOT, "website", "public", "dashboard-data.json");
-const FACTS_PATH = join(REPO_ROOT, "website", "public", "daily-facts.json");
 
 // ------- Daily facts pool -------
 const FACTS_POOL = [
