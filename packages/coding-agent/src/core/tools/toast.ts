@@ -1,9 +1,8 @@
 import { spawnSync } from "node:child_process";
 import { existsSync } from "node:fs";
-import type { AgentTool } from "@sufiyan-sabeel/airis-agent-core";
+import type { AgentTool, AgentToolResult } from "@sufiyan-sabeel/airis-agent-core";
 import { type Static, Type } from "typebox";
-import type { ToolDefinition } from "../extensions/types.ts";
-import { invalidArgText } from "./render-utils.ts";
+import type { ExtensionContext, ToolDefinition } from "../extensions/types.ts";
 import { wrapToolDefinition } from "./tool-definition-wrapper.ts";
 
 // ---------------------------------------------------------------------------
@@ -86,40 +85,51 @@ function buildDefinition(operations: ToastOperations): ToolDefinition<typeof toa
 		prepareArguments: (args: unknown): Static<typeof toastSchema> => {
 			const input = args as Record<string, unknown>;
 			if (typeof input?.message !== "string" || input.message.length === 0) {
-				throw invalidArgText("toast", "message must be a non-empty string");
+				throw new Error("toast: message must be a non-empty string");
 			}
 			return {
 				message: input.message,
 				duration: input.duration === "long" ? "long" : "short",
 			} as Static<typeof toastSchema>;
 		},
-		execute: async (_toolCallId, params, signal) => {
+		execute: async (
+			_toolCallId: string,
+			params: Static<typeof toastSchema>,
+			signal: AbortSignal | undefined,
+			_onUpdate: ((partialResult: AgentToolResult<ToastToolDetails>) => void) | undefined,
+			_ctx: ExtensionContext | undefined,
+		): Promise<AgentToolResult<ToastToolDetails>> => {
 			if (signal?.aborted) {
-				return { type: "text", text: "Operation aborted" };
+				return { content: [{ type: "text", text: "Operation aborted" }], details: { available } };
 			}
 
 			if (!available) {
 				return {
-					type: "text",
-					text: "Toast notifications are only available on Android devices with Termux:API installed (`pkg install termux-api`). This system does not support termux-toast.",
+					content: [
+						{
+							type: "text",
+							text: "Toast notifications are only available on Android devices with Termux:API installed (`pkg install termux-api`). This system does not support termux-toast.",
+						},
+					],
+					details: { available },
 				};
 			}
 
-			const { message, duration } = params as Static<typeof toastSchema>;
+			const { message, duration } = params;
 			const truncated = message.length > 50 ? message.slice(0, 47) + "..." : message;
 			const { exitCode, stderr } = operations.show(truncated, duration ?? "short");
 
 			if (exitCode !== 0) {
 				const details = stderr ? `: ${stderr.trim()}` : "";
 				return {
-					type: "text",
-					text: `Toast notification failed (exit ${exitCode})${details}`,
+					content: [{ type: "text", text: `Toast notification failed (exit ${exitCode})${details}` }],
+					details: { available },
 				};
 			}
 
 			return {
-				type: "text",
-				text: `Toast notification displayed: "${truncated}"`,
+				content: [{ type: "text", text: `Toast notification displayed: "${truncated}"` }],
+				details: { available },
 			};
 		},
 	};
@@ -131,14 +141,7 @@ function buildDefinition(operations: ToastOperations): ToolDefinition<typeof toa
 
 export function createToastTool(options?: ToastToolOptions): AgentTool<typeof toastSchema, ToastToolDetails> {
 	const operations = options?.operations ?? defaultToastOperations;
-	return wrapToolDefinition(buildToastToolDefinition(operations));
-}
-
-export function createToastToolDefinition(
-	options?: ToastToolOptions,
-): ToolDefinition<typeof toastSchema, ToastToolDetails> {
-	const operations = options?.operations ?? defaultToastOperations;
-	return buildToastToolDefinition(operations);
+	return wrapToolDefinition(buildDefinition(operations));
 }
 
 export function createToastToolDefinition(
