@@ -16,13 +16,14 @@ import {
 	Lightbulb,
 	Package,
 	RefreshCw,
-	Star,
 	Terminal,
-	Workflow,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+
+// Force static generation at build time for static export
+export const dynamic = "force-static";
 
 interface DashboardData {
 	generatedAt: string;
@@ -161,9 +162,9 @@ export default function DashboardPage() {
 						AIRIS CLI
 					</Link>
 					<nav className="flex items-center gap-4 text-sm" aria-label="Secondary navigation">
-						<a href="/" className="text-muted-foreground transition-colors hover:text-foreground">
+						<Link href="/" className="text-muted-foreground transition-colors hover:text-foreground">
 							Home
-						</a>
+						</Link>
 						<span className="text-muted-foreground/40">/</span>
 						<span className="font-medium">Dashboard</span>
 					</nav>

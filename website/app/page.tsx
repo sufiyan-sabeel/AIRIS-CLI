@@ -37,7 +37,11 @@ export default function Home() {
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link href="#top" aria-label="AIRIS CLI home"><AirisLogo /></Link>
           <nav className="hidden items-center gap-6 md:flex" aria-label="Primary navigation">
-            {nav.map(([label, href]) => <a key={href} href={href} className="text-sm text-muted-foreground transition-colors hover:text-foreground">{label}</a>)}
+            {nav.map(([label, href]) => href.startsWith("/") ? (
+              <Link key={href} href={href} className="text-sm text-muted-foreground transition-colors hover:text-foreground">{label}</Link>
+            ) : (
+              <a key={href} href={href} className="text-sm text-muted-foreground transition-colors hover:text-foreground">{label}</a>
+            ))}
           </nav>
           <div className="flex items-center gap-1 sm:gap-2">
             <MobileNav />
