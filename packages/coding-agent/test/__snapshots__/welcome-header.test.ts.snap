@@ -1,131 +1,157 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`WelcomeHeader > snapshot tests > matches snapshot at 36 columns > welcome-header-36 1`] = `
-"                                    
-╭────────────────────────────────╮  
-│                                │  
-│               ╲   ╿   ╱        │  
-│          ━━━━╲  ◆  ╱━━━━       │  
-│               ╱   ╽   ╲        │  
-│                                │  
-│             AIRIS              │  
-├────────────────────────────────┤  
-│   MODEL    • mimo-v2.5-free    │  
-│      PROVIDER • opencode       │  
-│MODE     • normal · @coding · @a│  
-│       VERSION  • v2.0.0        │  
-│ PROJECT  • /home/.../airis-cli │  
-╰────────────────────────────────╯  
-                                    "
+[
+  "                                    ",
+  "╭────────────────────────────────╮  ",
+  "│                                │  ",
+  "│               ╲   ╿   ╱        │  ",
+  "│          ━━━━╲  ◆  ╱━━━━       │  ",
+  "│               ╱   ╽   ╲        │  ",
+  "│                                │  ",
+  "│             AIRIS              │  ",
+  "├────────────────────────────────┤  ",
+  "│   MODEL    • mimo-v2.5-free    │  ",
+  "│      PROVIDER • opencode       │  ",
+  "│MODE     • normal · @coding · @a│  ",
+  "│       VERSION  • v2.0.0        │  ",
+  "│ PROJECT  • /home/.../airis-cli │  ",
+  "╰────────────────────────────────╯  ",
+  "                                    ",
+]
 `;
 
 exports[`WelcomeHeader > snapshot tests > matches snapshot at 45 columns > welcome-header-45 1`] = `
-"                                             
-╭─────────────────────────────────────────╮  
-│                                         │  
-│             Ready to build              │  
-│                                         │  
-│                     ╲   ╿   ╱           │  
-│                ━━━━╲  ◆  ╱━━━━          │  
-│                     ╱   ╽   ╲           │  
-│                                         │  
-│                  AIRIS                  │  
-├─────────────────────────────────────────┤  
-│        MODEL    • mimo-v2.5-free        │  
-│           PROVIDER • opencode           │  
-│MODE     • normal · @coding · @automation│  
-│            VERSION  • v2.0.0            │  
-│     PROJECT  • /home/.../airis-cli      │  
-╰─────────────────────────────────────────╯  
-                                             "
+[
+  "                                             ",
+  "╭─────────────────────────────────────────╮  ",
+  "│    █████╗ ██╗██████╗ ██╗███████╗        │  ",
+  "│   ██╔══██╗██║██╔══██╗██║██╔════╝        │  ",
+  "│   ███████║██║██████╔╝██║███████╗        │  ",
+  "│   ██╔══██║██║██╔══██╗██║╚════██║        │  ",
+  "│   ██║  ██║██║██║  ██║██║███████║        │  ",
+  "│   ╚═╝  ╚═╝╚═╝╚═╝  ╚═╝╚═╝╚══════╝        │  ",
+  "│                                         │  ",
+  "│   Artificial Intelligence Responsive    │  ",
+  "│   Integrated System                     │  ",
+  "│                                         │  ",
+  "│   AI Coding · Automation · CLI          │  ",
+  "│   KageOS · Umaiz Sufiyan                │  ",
+  "├─────────────────────────────────────────┤  ",
+  "│        MODEL    • mimo-v2.5-free        │  ",
+  "│           PROVIDER • opencode           │  ",
+  "│MODE     • normal · @coding · @automation│  ",
+  "│            VERSION  • v2.0.0            │  ",
+  "│     PROJECT  • /home/.../airis-cli      │  ",
+  "╰─────────────────────────────────────────╯  ",
+  "                                             ",
+]
 `;
 
 exports[`WelcomeHeader > snapshot tests > matches snapshot at 50 columns > welcome-header-50 1`] = `
-"                                                  
-╭──────────────────────────────────────────────╮  
-│                                              │  
-│                Ready to build                │  
-│                                              │  
-│                       ╲   ╿   ╱              │  
-│                   ━━━━╲  ◆  ╱━━━━            │  
-│                       ╱   ╽   ╲              │  
-│                                              │  
-│                    AIRIS                     │  
-├──────────────────────────────────────────────┤  
-│          MODEL    • mimo-v2.5-free           │  
-│             PROVIDER • opencode              │  
-│  MODE     • normal · @coding · @automation   │  
-│              VERSION  • v2.0.0               │  
-│        PROJECT  • /home/.../airis-cli        │  
-╰──────────────────────────────────────────────╯  
-                                                  "
+[
+  "                                                  ",
+  "╭──────────────────────────────────────────────╮  ",
+  "│       █████╗ ██╗██████╗ ██╗███████╗          │  ",
+  "│      ██╔══██╗██║██╔══██╗██║██╔════╝          │  ",
+  "│      ███████║██║██████╔╝██║███████╗          │  ",
+  "│      ██╔══██║██║██╔══██╗██║╚════██║          │  ",
+  "│      ██║  ██║██║██║  ██║██║███████║          │  ",
+  "│      ╚═╝  ╚═╝╚═╝╚═╝  ╚═╝╚═╝╚══════╝          │  ",
+  "│                                              │  ",
+  "│      Artificial Intelligence Responsive      │  ",
+  "│      Integrated System                       │  ",
+  "│                                              │  ",
+  "│      AI Coding · Automation · CLI            │  ",
+  "│      KageOS · Umaiz Sufiyan                  │  ",
+  "├──────────────────────────────────────────────┤  ",
+  "│          MODEL    • mimo-v2.5-free           │  ",
+  "│             PROVIDER • opencode              │  ",
+  "│  MODE     • normal · @coding · @automation   │  ",
+  "│              VERSION  • v2.0.0               │  ",
+  "│        PROJECT  • /home/.../airis-cli        │  ",
+  "╰──────────────────────────────────────────────╯  ",
+  "                                                  ",
+]
 `;
 
 exports[`WelcomeHeader > snapshot tests > matches snapshot at 60 columns > welcome-header-60 1`] = `
-"                                                            
-╭────────────────────────────────────────────────────────╮  
-│                                                        │  
-│                     Ready to build                     │  
-│                                                        │  
-│                            ╲   ╿   ╱                   │  
-│                        ━━━━╲  ◆  ╱━━━━                 │  
-│                            ╱   ╽   ╲                   │  
-│                                                        │  
-│                         AIRIS                          │  
-├────────────────────────────────────────────────────────┤  
-│               MODEL    • mimo-v2.5-free                │  
-│                  PROVIDER • opencode                   │  
-│       MODE     • normal · @coding · @automation        │  
-│                   VERSION  • v2.0.0                    │  
-│        PROJECT  • /home/user/projects/airis-cli        │  
-╰────────────────────────────────────────────────────────╯  
-                                                            "
+[
+  "                                                            ",
+  "╭────────────────────────────────────────────────────────╮  ",
+  "│            █████╗ ██╗██████╗ ██╗███████╗               │  ",
+  "│           ██╔══██╗██║██╔══██╗██║██╔════╝               │  ",
+  "│           ███████║██║██████╔╝██║███████╗               │  ",
+  "│           ██╔══██║██║██╔══██╗██║╚════██║               │  ",
+  "│           ██║  ██║██║██║  ██║██║███████║               │  ",
+  "│           ╚═╝  ╚═╝╚═╝╚═╝  ╚═╝╚═╝╚══════╝               │  ",
+  "│                                                        │  ",
+  "│           Artificial Intelligence Responsive           │  ",
+  "│           Integrated System                            │  ",
+  "│                                                        │  ",
+  "│           AI Coding · Automation · CLI                 │  ",
+  "│           KageOS · Umaiz Sufiyan                       │  ",
+  "├────────────────────────────────────────────────────────┤  ",
+  "│               MODEL    • mimo-v2.5-free                │  ",
+  "│                  PROVIDER • opencode                   │  ",
+  "│       MODE     • normal · @coding · @automation        │  ",
+  "│                   VERSION  • v2.0.0                    │  ",
+  "│        PROJECT  • /home/user/projects/airis-cli        │  ",
+  "╰────────────────────────────────────────────────────────╯  ",
+  "                                                            ",
+]
 `;
 
 exports[`WelcomeHeader > snapshot tests > matches snapshot at 80 columns > welcome-header-80 1`] = `
-"                                                                                
-╭────────────────────────────────────────────────────────────────────────────╮  
-│                                                                            │  
-│                               Ready to build                               │  
-│                    Plan changes, edit files, run checks                    │  
-│                                                                            │  
-│                                           ╲   ╿   ╱                        │  
-│                                       ━━━━╲  ◆  ╱━━━━                      │  
-│                                           ╱   ╽   ╲                        │  
-│                                                                            │  
-│                                 A I R I S                                  │  
-│                     Artificial Intelligence Responsive                     │  
-│                             Integrated System                              │  
-│                           Coding agent · v2.0.0                            │  
-├────────────────────────────────────────────────────────────────────────────┤  
-│                         MODEL    • mimo-v2.5-free                          │  
-│                            PROVIDER • opencode                             │  
-│                 MODE     • normal · @coding · @automation                  │  
-│                  PROJECT  • /home/user/projects/airis-cli                  │  
-╰────────────────────────────────────────────────────────────────────────────╯  
-                                                                                "
+[
+  "                                                                                ",
+  "╭────────────────────────────────────────────────────────────────────────────╮  ",
+  "│                      █████╗ ██╗██████╗ ██╗███████╗                         │  ",
+  "│                     ██╔══██╗██║██╔══██╗██║██╔════╝                         │  ",
+  "│                     ███████║██║██████╔╝██║███████╗                         │  ",
+  "│                     ██╔══██║██║██╔══██╗██║╚════██║                         │  ",
+  "│                     ██║  ██║██║██║  ██║██║███████║                         │  ",
+  "│                     ╚═╝  ╚═╝╚═╝╚═╝  ╚═╝╚═╝╚══════╝                         │  ",
+  "│                                                                            │  ",
+  "│                     Artificial Intelligence Responsive                     │  ",
+  "│                     Integrated System                                      │  ",
+  "│                                                                            │  ",
+  "│                     AI Coding · Automation · CLI                           │  ",
+  "│                     KageOS · Umaiz Sufiyan                                 │  ",
+  "├────────────────────────────────────────────────────────────────────────────┤  ",
+  "│                         MODEL    • mimo-v2.5-free                          │  ",
+  "│                            PROVIDER • opencode                             │  ",
+  "│                 MODE     • normal · @coding · @automation                  │  ",
+  "│                             VERSION  • v2.0.0                              │  ",
+  "│                  PROJECT  • /home/user/projects/airis-cli                  │  ",
+  "╰────────────────────────────────────────────────────────────────────────────╯  ",
+  "                                                                                ",
+]
 `;
 
 exports[`WelcomeHeader > snapshot tests > matches snapshot at 120 columns > welcome-header-120 1`] = `
-"                                                                                                                        
-╭────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮  
-│                                                                                                                    │  
-│                                                   Ready to build                                                   │  
-│                                        Plan changes, edit files, run checks                                        │  
-│                                                                                                                    │  
-│                                                               ╲   ╿   ╱                                            │  
-│                                                           ━━━━╲  ◆  ╱━━━━                                          │  
-│                                                               ╱   ╽   ╲                                            │  
-│                                                                                                                    │  
-│                                                     A I R I S                                                      │  
-│                                         Artificial Intelligence Responsive                                         │  
-│                                                 Integrated System                                                  │  
-│                                               Coding agent · v2.0.0                                                │  
-├────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤  
-│                                             MODEL    • mimo-v2.5-free                                              │  
-│                                                PROVIDER • opencode                                                 │  
-│                                     MODE     • normal · @coding · @automation                                      │  
-│                                      PROJECT  • /home/user/projects/airis-cli                                      │  
-╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯  
-                                                                                                                        "
+[
+  "                                                                                                                        ",
+  "╭────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮  ",
+  "│                                          █████╗ ██╗██████╗ ██╗███████╗                                             │  ",
+  "│                                         ██╔══██╗██║██╔══██╗██║██╔════╝                                             │  ",
+  "│                                         ███████║██║██████╔╝██║███████╗                                             │  ",
+  "│                                         ██╔══██║██║██╔══██╗██║╚════██║                                             │  ",
+  "│                                         ██║  ██║██║██║  ██║██║███████║                                             │  ",
+  "│                                         ╚═╝  ╚═╝╚═╝╚═╝  ╚═╝╚═╝╚══════╝                                             │  ",
+  "│                                                                                                                    │  ",
+  "│                                         Artificial Intelligence Responsive                                         │  ",
+  "│                                         Integrated System                                                          │  ",
+  "│                                                                                                                    │  ",
+  "│                                         AI Coding · Automation · CLI                                               │  ",
+  "│                                         KageOS · Umaiz Sufiyan                                                     │  ",
+  "├────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤  ",
+  "│                                             MODEL    • mimo-v2.5-free                                              │  ",
+  "│                                                PROVIDER • opencode                                                 │  ",
+  "│                                     MODE     • normal · @coding · @automation                                      │  ",
+  "│                                                 VERSION  • v2.0.0                                                  │  ",
+  "│                                      PROJECT  • /home/user/projects/airis-cli                                      │  ",
+  "╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯  ",
+  "                                                                                                                        ",
+]
 `;

@@ -15,6 +15,23 @@ export interface WelcomeHeaderInfo {
 
 const NO_COLOR = !!process.env.NO_COLOR;
 
+const LOGO_LINES: readonly string[] = [
+	" █████╗ ██╗██████╗ ██╗███████╗",
+	"██╔══██╗██║██╔══██╗██║██╔════╝",
+	"███████║██║██████╔╝██║███████╗",
+	"██╔══██║██║██╔══██╗██║╚════██║",
+	"██║  ██║██║██║  ██║██║███████║",
+	"╚═╝  ╚═╝╚═╝╚═╝  ╚═╝╚═╝╚══════╝",
+	"",
+	"Artificial Intelligence Responsive",
+	"Integrated System",
+	"",
+	"AI Coding · Automation · CLI",
+	"KageOS · Umaiz Sufiyan",
+];
+
+const LOGO_BLOCK_WIDTH = Math.max(...LOGO_LINES.map((line) => visibleWidth(line)));
+
 function fg(color: Parameters<Theme["fg"]>[0], text: string): string {
 	if (NO_COLOR) return text;
 	return theme.fg(color, text);
@@ -38,85 +55,25 @@ function truncateMiddle(path: string, maxLen: number): string {
 	return `${parts.slice(0, 2).join("/")}/.../${parts.slice(-1).join("/")}`;
 }
 
-// ─── EMBLEM VARIANTS ──────────────────────────────────────────────────────────
-
-const EMBLEM_FULL: readonly string[] = [
-	"                    ╲   ╿   ╱",
-	"                 ━━━━╲  ◇  ╱━━━━",
-	"                    ╱   ╽   ╲",
-];
-
-const EMBLEM_COMPACT: readonly string[] = ["          ╲   ╿   ╱", "       ━━━━╲  ◇  ╱━━━━", "          ╱   ╽   ╲"];
-
 const EMBLEM_MINIMAL: readonly string[] = ["       ╲   ╿   ╱", "    ━━━━╲  ◇  ╱━━━━", "       ╱   ╽   ╲"];
 
 const EMBLEM_ASCII: readonly string[] = ["         \\   |   /", "       ===\\  <>  /===", "         /   |   \\"];
 
-const NAME_FULL = "A I R I S";
-const NAME_COMPACT = "AIRIS";
 const NAME_MINIMAL = "AIRIS";
 const NAME_ASCII = "AIRIS";
 
-// ─── WIDTH THRESHOLDS ─────────────────────────────────────────────────────────
-
-const WIDTH_FULL = 72;
-const WIDTH_COMPACT = 45;
+const WIDTH_LOGO = LOGO_BLOCK_WIDTH + 4;
 const WIDTH_MINIMAL = 36;
 
-function selectVariant(width: number): {
-	emblem: readonly string[];
-	name: string;
-	boxWidth: number;
-	showSubtitle: boolean;
-	showWelcome: boolean;
-	showMeta: boolean;
-	showShortcuts: boolean;
-} {
-	if (width >= WIDTH_FULL) {
-		return {
-			emblem: EMBLEM_FULL,
-			name: NAME_FULL,
-			boxWidth: Math.min(width - 4, 68),
-			showSubtitle: true,
-			showWelcome: true,
-			showMeta: true,
-			showShortcuts: true,
-		};
-	}
-	if (width >= WIDTH_COMPACT) {
-		return {
-			emblem: EMBLEM_COMPACT,
-			name: NAME_COMPACT,
-			boxWidth: Math.min(width - 4, 56),
-			showSubtitle: false,
-			showWelcome: true,
-			showMeta: true,
-			showShortcuts: true,
-		};
+function selectVariant(width: number): { kind: "logo" | "minimal" | "ascii" } {
+	if (width >= WIDTH_LOGO) {
+		return { kind: "logo" };
 	}
 	if (width >= WIDTH_MINIMAL) {
-		return {
-			emblem: EMBLEM_MINIMAL,
-			name: NAME_MINIMAL,
-			boxWidth: width - 4,
-			showSubtitle: false,
-			showWelcome: false,
-			showMeta: true,
-			showShortcuts: false,
-		};
+		return { kind: "minimal" };
 	}
-	return {
-		emblem: EMBLEM_ASCII,
-		name: NAME_ASCII,
-		boxWidth: width,
-		showSubtitle: false,
-		showWelcome: false,
-		showMeta: true,
-		showShortcuts: false,
-	};
+	return { kind: "ascii" };
 }
-
-// ─── RENDER HELPERS ────────────────────────────────────────────────────────────
 
 function fitContent(content: string, width: number): string {
 	if (visibleWidth(content) <= width) return content;
@@ -150,6 +107,18 @@ function renderBoxLine(content: string, width: number): string {
 	);
 }
 
+function renderBoxBlockLine(content: string, width: number, blockWidth: number): string {
+	const inner = width - 4;
+	const targetWidth = Math.min(blockWidth, inner);
+	const safeContent = padToWidth(fitContent(content, targetWidth), targetWidth);
+	const pad = Math.floor((inner - targetWidth) / 2);
+	const rightPad = inner - targetWidth - pad;
+	return padToWidth(
+		fg("border", "│") + " ".repeat(pad) + safeContent + " ".repeat(rightPad) + fg("border", "│"),
+		width,
+	);
+}
+
 function renderBoxEmpty(width: number): string {
 	return renderBoxLine("", width);
 }
@@ -166,6 +135,19 @@ function renderEmblem(lines: readonly string[], width: number): string[] {
 	return lines.map((line) => renderBoxLine(renderEmblemLine(line), width));
 }
 
+function renderLogoLine(index: number, line: string): string {
+	const paddedLine = padToWidth(line, LOGO_BLOCK_WIDTH);
+	if (!line.trim()) return paddedLine;
+	if (index < 6) return fg("airisOrangeHighlight", bold(paddedLine));
+	if (index < 9) return fg("airisOrangeMuted", paddedLine);
+	if (index === 10) return fg("accent", paddedLine);
+	return fg("dim", paddedLine);
+}
+
+function renderLogo(width: number): string[] {
+	return LOGO_LINES.map((line, index) => renderBoxBlockLine(renderLogoLine(index, line), width, LOGO_BLOCK_WIDTH));
+}
+
 function renderSeparator(width: number): string {
 	if (width < 8) return padToWidth("", width);
 	const inner = width - 4;
@@ -180,8 +162,6 @@ function renderMetaLine(label: string, value: string, width: number): string {
 function renderTitle(name: string): string {
 	return fg("airisOrangeHighlight", bold(name));
 }
-
-// ─── WELCOME HEADER COMPONENT ──────────────────────────────────────────────────
 
 export class WelcomeHeader implements Component {
 	private info: WelcomeHeaderInfo;
@@ -210,82 +190,51 @@ export class WelcomeHeader implements Component {
 		const variant = selectVariant(width);
 		const lines: string[] = [];
 
-		// Top spacer
 		lines.push(padToWidth("", width));
 
-		// Only render box if wide enough
 		if (width >= WIDTH_MINIMAL) {
-			// Box top
 			lines.push(renderBoxTop(width));
 
-			// Welcome message (only for full/compact)
-			if (variant.showWelcome) {
+			if (variant.kind === "logo") {
+				lines.push(...renderLogo(width));
+			} else {
 				lines.push(renderBoxEmpty(width));
-				lines.push(renderBoxLine(fg("accent", bold("Ready to build")), width));
-				if (variant.showSubtitle) {
-					lines.push(renderBoxLine(fg("muted", "Plan changes, edit files, run checks"), width));
-				}
+				lines.push(...renderEmblem(EMBLEM_MINIMAL, width));
+				lines.push(renderBoxEmpty(width));
+				lines.push(renderBoxLine(renderTitle(NAME_MINIMAL), width));
 			}
 
-			// Empty line before emblem
-			lines.push(renderBoxEmpty(width));
+			lines.push(renderSeparator(width));
 
-			// Emblem (diamond with rails)
-			lines.push(...renderEmblem(variant.emblem, width));
-
-			// Empty line after emblem
-			lines.push(renderBoxEmpty(width));
-
-			// Name
-			lines.push(renderBoxLine(renderTitle(variant.name), width));
-
-			// Subtitle (full only)
-			if (variant.showSubtitle) {
-				lines.push(renderBoxLine(fg("airisOrangeMuted", "Artificial Intelligence Responsive"), width));
-				lines.push(renderBoxLine(fg("airisOrangeMuted", "Integrated System"), width));
-				if (this.info.version) {
-					lines.push(renderBoxLine(fg("dim", `Coding agent · v${this.info.version}`), width));
-				}
+			if (this.info.model) {
+				lines.push(renderMetaLine("Model", this.info.model, width));
+			}
+			if (this.info.provider) {
+				lines.push(renderMetaLine("Provider", this.info.provider, width));
+			}
+			if (this.info.mode) {
+				lines.push(renderMetaLine("Mode", this.info.mode, width));
+			}
+			if (this.info.version) {
+				lines.push(renderMetaLine("Version", `v${this.info.version}`, width));
+			}
+			if (this.info.cwd) {
+				const maxPathLen = Math.max(10, width - 24);
+				const shortCwd = truncateMiddle(this.info.cwd, maxPathLen);
+				lines.push(renderMetaLine("Project", shortCwd, width));
 			}
 
-			// Separator
-			if (variant.showMeta) {
-				lines.push(renderSeparator(width));
-
-				// Metadata
-				if (this.info.model) {
-					lines.push(renderMetaLine("Model", this.info.model, width));
-				}
-				if (this.info.provider) {
-					lines.push(renderMetaLine("Provider", this.info.provider, width));
-				}
-				if (this.info.mode) {
-					lines.push(renderMetaLine("Mode", this.info.mode, width));
-				}
-				if (!variant.showSubtitle && this.info.version) {
-					lines.push(renderMetaLine("Version", `v${this.info.version}`, width));
-				}
-				if (this.info.cwd) {
-					const maxPathLen = Math.max(10, width - 24);
-					const shortCwd = truncateMiddle(this.info.cwd, maxPathLen);
-					lines.push(renderMetaLine("Project", shortCwd, width));
-				}
-			}
-
-			// Box bottom
 			lines.push(renderBoxBottom(width));
 		} else {
-			// Minimal: no box, just emblem + name + model
-			lines.push(renderPlainLine(fg("airisOrange", variant.emblem[0]), width));
-			lines.push(renderPlainLine(fg("airisOrange", variant.emblem[1]), width));
-			lines.push(renderPlainLine(fg("airisOrange", variant.emblem[2]), width));
-			lines.push(renderPlainLine(renderTitle(variant.name), width));
+			lines.push(renderPlainLine(fg("airisOrange", EMBLEM_ASCII[0]), width));
+			lines.push(renderPlainLine(fg("airisOrange", EMBLEM_ASCII[1]), width));
+			lines.push(renderPlainLine(fg("airisOrange", EMBLEM_ASCII[2]), width));
+			lines.push(renderPlainLine(renderTitle(NAME_ASCII), width));
 			if (this.info.model) {
 				lines.push(renderPlainLine(fg("dim", `Model: ${this.info.model}`), width));
 			}
 		}
 
-		// Bottom spacer
 		lines.push(padToWidth("", width));
 
 		this.cachedWidth = width;

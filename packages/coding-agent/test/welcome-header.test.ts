@@ -2,10 +2,9 @@ import { visibleWidth } from "@sufiyan-sabeel/airis-tui";
 import { describe, expect, it, vi } from "vitest";
 import { WelcomeHeader, type WelcomeHeaderInfo } from "../src/modes/interactive/components/welcome-header.ts";
 
-// Mock the theme module
 vi.mock("../src/modes/interactive/theme/theme.ts", () => ({
 	theme: {
-		fg: (_color: string, text: string) => text, // Return text as-is for testing
+		fg: (_color: string, text: string) => text,
 		bold: (text: string) => text,
 	},
 }));
@@ -20,92 +19,83 @@ describe("WelcomeHeader", () => {
 	};
 
 	describe("variant selection", () => {
-		it("uses full variant at 120 columns", () => {
+		it("uses the logo banner at 120 columns", () => {
 			const header = new WelcomeHeader(baseInfo);
 			const lines = header.render(120);
-			const hasFullEmblem = lines.some((l) => l.includes("━━━━"));
-			expect(hasFullEmblem).toBe(true);
+			const hasLogoBanner = lines.some((line) => line.includes("██████╗"));
+			expect(hasLogoBanner).toBe(true);
 		});
 
-		it("uses full variant at 72 columns", () => {
+		it("uses the logo banner at 72 columns", () => {
 			const header = new WelcomeHeader(baseInfo);
 			const lines = header.render(72);
-			const hasFullEmblem = lines.some((l) => l.includes("━━━━"));
-			expect(hasFullEmblem).toBe(true);
+			const hasLogoBanner = lines.some((line) => line.includes("██████╗"));
+			expect(hasLogoBanner).toBe(true);
 		});
 
-		it("uses compact variant at 60 columns", () => {
+		it("uses the logo banner at 60 columns", () => {
 			const header = new WelcomeHeader(baseInfo);
 			const lines = header.render(60);
-			const hasCompactEmblem = lines.some((l) => l.includes("━━━━"));
-			expect(hasCompactEmblem).toBe(true);
+			const hasLogoBanner = lines.some((line) => line.includes("██████╗"));
+			expect(hasLogoBanner).toBe(true);
 		});
 
-		it("uses compact variant at 45 columns", () => {
+		it("uses the logo banner at 45 columns", () => {
 			const header = new WelcomeHeader(baseInfo);
 			const lines = header.render(45);
-			const hasCompactEmblem = lines.some((l) => l.includes("━━━━"));
-			expect(hasCompactEmblem).toBe(true);
+			const hasLogoBanner = lines.some((line) => line.includes("██████╗"));
+			expect(hasLogoBanner).toBe(true);
 		});
 
-		it("uses minimal variant at 40 columns", () => {
+		it("uses the minimal fallback at 36 columns", () => {
 			const header = new WelcomeHeader(baseInfo);
-			const lines = header.render(40);
-			const hasMinimalEmblem = lines.some((l) => l.includes("━━━━"));
+			const lines = header.render(36);
+			const hasMinimalEmblem = lines.some((line) => line.includes("━━━━"));
 			expect(hasMinimalEmblem).toBe(true);
 		});
 
-		it("uses ASCII variant at 35 columns", () => {
+		it("uses the ASCII variant at 35 columns", () => {
 			const header = new WelcomeHeader(baseInfo);
 			const lines = header.render(35);
-			const hasAsciiEmblem = lines.some((l) => l.includes("\\") && l.includes("/"));
+			const hasAsciiEmblem = lines.some((line) => line.includes("\\") && line.includes("/"));
 			expect(hasAsciiEmblem).toBe(true);
 		});
 
-		it("uses ASCII variant at 20 columns", () => {
+		it("uses the ASCII variant at 20 columns", () => {
 			const header = new WelcomeHeader(baseInfo);
 			const lines = header.render(20);
-			const hasAsciiEmblem = lines.some((l) => l.includes("\\"));
+			const hasAsciiEmblem = lines.some((line) => line.includes("\\"));
 			expect(hasAsciiEmblem).toBe(true);
 		});
 	});
 
-	describe("name display", () => {
-		it("shows spaced name at 72+ columns", () => {
+	describe("branding display", () => {
+		it("shows the AIRIS text logo at 40+ columns", () => {
 			const header = new WelcomeHeader(baseInfo);
 			const lines = header.render(80);
-			const hasSpacedName = lines.some((l) => l.includes("A I R I S"));
-			expect(hasSpacedName).toBe(true);
+			const hasTextLogo = lines.some((line) => line.includes("██████╗"));
+			expect(hasTextLogo).toBe(true);
 		});
 
-		it("shows compact name at 45-71 columns", () => {
-			const header = new WelcomeHeader(baseInfo);
-			const lines = header.render(60);
-			const hasCompactName = lines.some((l) => l.includes("AIRIS") && !l.includes("A I R I S"));
-			expect(hasCompactName).toBe(true);
-		});
-
-		it("shows minimal name at 36-44 columns", () => {
-			const header = new WelcomeHeader(baseInfo);
-			const lines = header.render(40);
-			const hasMinimalName = lines.some((l) => l.includes("AIRIS"));
-			expect(hasMinimalName).toBe(true);
-		});
-	});
-
-	describe("subtitle display", () => {
-		it("shows subtitle at 72+ columns", () => {
+		it("shows the full subtitle in the logo banner", () => {
 			const header = new WelcomeHeader(baseInfo);
 			const lines = header.render(80);
-			const hasSubtitle = lines.some((l) => l.includes("Artificial Intelligence Responsive"));
+			const hasSubtitle = lines.some((line) => line.includes("Artificial Intelligence Responsive"));
 			expect(hasSubtitle).toBe(true);
 		});
 
-		it("does not show subtitle in compact layout", () => {
+		it("does not show the full subtitle in the minimal layout", () => {
 			const header = new WelcomeHeader(baseInfo);
-			const lines = header.render(60);
-			const hasSubtitle = lines.some((l) => l.includes("Artificial Intelligence Responsive"));
+			const lines = header.render(36);
+			const hasSubtitle = lines.some((line) => line.includes("Artificial Intelligence Responsive"));
 			expect(hasSubtitle).toBe(false);
+		});
+
+		it("shows the compact AIRIS fallback name in the minimal layout", () => {
+			const header = new WelcomeHeader(baseInfo);
+			const lines = header.render(36);
+			const hasMinimalName = lines.some((line) => line.includes("AIRIS"));
+			expect(hasMinimalName).toBe(true);
 		});
 	});
 
@@ -113,28 +103,28 @@ describe("WelcomeHeader", () => {
 		it("shows model information", () => {
 			const header = new WelcomeHeader(baseInfo);
 			const lines = header.render(80);
-			const hasModel = lines.some((l) => l.includes("mimo-v2.5-free"));
+			const hasModel = lines.some((line) => line.includes("mimo-v2.5-free"));
 			expect(hasModel).toBe(true);
 		});
 
 		it("shows provider information", () => {
 			const header = new WelcomeHeader(baseInfo);
 			const lines = header.render(80);
-			const hasProvider = lines.some((l) => l.includes("opencode"));
+			const hasProvider = lines.some((line) => line.includes("opencode"));
 			expect(hasProvider).toBe(true);
 		});
 
 		it("shows mode information", () => {
 			const header = new WelcomeHeader(baseInfo);
 			const lines = header.render(80);
-			const hasMode = lines.some((l) => l.includes("normal"));
+			const hasMode = lines.some((line) => line.includes("normal"));
 			expect(hasMode).toBe(true);
 		});
 
 		it("shows workspace information", () => {
 			const header = new WelcomeHeader(baseInfo);
 			const lines = header.render(80);
-			const hasCwd = lines.some((l) => l.includes("airis-cli"));
+			const hasCwd = lines.some((line) => line.includes("airis-cli"));
 			expect(hasCwd).toBe(true);
 		});
 
@@ -142,7 +132,7 @@ describe("WelcomeHeader", () => {
 			const longPath = "/home/user/very/long/path/to/some/deeply/nested/project/directory";
 			const header = new WelcomeHeader({ ...baseInfo, cwd: longPath });
 			const lines = header.render(50);
-			const hasTruncatedPath = lines.some((l) => l.includes("..."));
+			const hasTruncatedPath = lines.some((line) => line.includes("..."));
 			expect(hasTruncatedPath).toBe(true);
 		});
 	});
@@ -150,7 +140,7 @@ describe("WelcomeHeader", () => {
 	describe("responsive behavior", () => {
 		it("renders without errors at all widths", () => {
 			const header = new WelcomeHeader(baseInfo);
-			const widths = [20, 30, 36, 40, 45, 50, 60, 72, 80, 100, 120];
+			const widths = [20, 30, 36, 38, 40, 45, 50, 60, 72, 80, 100, 120];
 			for (const width of widths) {
 				const lines = header.render(width);
 				expect(Array.isArray(lines)).toBe(true);
@@ -220,37 +210,37 @@ describe("WelcomeHeader", () => {
 		it("matches snapshot at 120 columns", () => {
 			const header = new WelcomeHeader(baseInfo);
 			const lines = header.render(120);
-			expect(lines.join("\n")).toMatchSnapshot("welcome-header-120");
+			expect(lines).toMatchSnapshot("welcome-header-120");
 		});
 
 		it("matches snapshot at 80 columns", () => {
 			const header = new WelcomeHeader(baseInfo);
 			const lines = header.render(80);
-			expect(lines.join("\n")).toMatchSnapshot("welcome-header-80");
+			expect(lines).toMatchSnapshot("welcome-header-80");
 		});
 
 		it("matches snapshot at 60 columns", () => {
 			const header = new WelcomeHeader(baseInfo);
 			const lines = header.render(60);
-			expect(lines.join("\n")).toMatchSnapshot("welcome-header-60");
+			expect(lines).toMatchSnapshot("welcome-header-60");
 		});
 
 		it("matches snapshot at 50 columns", () => {
 			const header = new WelcomeHeader(baseInfo);
 			const lines = header.render(50);
-			expect(lines.join("\n")).toMatchSnapshot("welcome-header-50");
+			expect(lines).toMatchSnapshot("welcome-header-50");
 		});
 
 		it("matches snapshot at 45 columns", () => {
 			const header = new WelcomeHeader(baseInfo);
 			const lines = header.render(45);
-			expect(lines.join("\n")).toMatchSnapshot("welcome-header-45");
+			expect(lines).toMatchSnapshot("welcome-header-45");
 		});
 
 		it("matches snapshot at 36 columns", () => {
 			const header = new WelcomeHeader(baseInfo);
 			const lines = header.render(36);
-			expect(lines.join("\n")).toMatchSnapshot("welcome-header-36");
+			expect(lines).toMatchSnapshot("welcome-header-36");
 		});
 	});
 });
