@@ -12,18 +12,31 @@ export interface AirisWelcomeInfo {
 }
 
 const AIRIS_LOGO_LINES = [
-	"╔════════════════════════════════════════╗",
-	"║              A I R I S               ║",
-	"║ Artificial Intelligence Responsive    ║",
-	"║        Integrated System              ║",
-	"║                                        ║",
-	"║ Multi-platform AI CLI                 ║",
-	"║ Coding + Automation                   ║",
-	"║ Mobile · Windows · Linux              ║",
-	"╚════════════════════════════════════════╝",
+	"╔═══════════════════════════════════════════╗",
+	"║          █████  ██ ██████  ██ █████     ║",
+	"║         ██   ██ ██ ██   ██ ██ ██   ██   ║",
+	"║         ███████ ██ ██████  ██ ███████   ║",
+	"║         ██   ██ ██ ██   ██ ██ ██   ██   ║",
+	"║         ██   ██ ██ ██   ██ ██ ██   ██   ║",
+	"║                                           ║",
+	"║  Artificial Intelligence Responsive      ║",
+	"║        Integrated System                  ║",
+	"║                                           ║",
+	"║  Multi-platform AI CLI                   ║",
+	"║  Coding · Automation · Mobile            ║",
+	"╚═══════════════════════════════════════════╝",
 ] as const;
 
-const AIRIS_COMPACT_LOGO_LINES = ["╔══════════════════╗", "║  A I R I S CLI  ║", "╚══════════════════╝"] as const;
+const AIRIS_COMPACT_LOGO_LINES = [
+	"╔═════════════════════════╗",
+	"║    █████  ██ ██████    ║",
+	"║   ██   ██ ██ ██   ██   ║",
+	"║   ███████ ██ ██████    ║",
+	"║   ██   ██ ██ ██   ██   ║",
+	"║   ██   ██ ██ ██   ██   ║",
+	"║     AIRIS CLI v0.79.7   ║",
+	"╚═════════════════════════╝",
+] as const;
 
 export const AIRIS_TAGLINE = "Multi-platform AI CLI for coding and automation";
 export const AIRIS_ATTRIBUTION = "Built by Umaiz Sufiyan";

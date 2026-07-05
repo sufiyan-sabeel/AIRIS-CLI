@@ -16,19 +16,20 @@ export interface WelcomeHeaderInfo {
 const NO_COLOR = !!process.env.NO_COLOR;
 
 const LOGO_LINES: readonly string[] = [
-	" █████╗ ██╗██████╗ ██╗███████╗",
-	"██╔══██╗██║██╔══██╗██║██╔════╝",
-	"███████║██║██████╔╝██║███████╗",
-	"██╔══██║██║██╔══██╗██║╚════██║",
-	"██║  ██║██║██║  ██║██║███████║",
-	"╚═╝  ╚═╝╚═╝╚═╝  ╚═╝╚═╝╚══════╝",
-	"",
-	"AIRIS CLI",
-	"Multi-platform AI CLI",
-	"Coding + Automation",
-	"Mobile · Windows · Linux",
-	"Code · Search · Automate",
-	"Keyboard-first · Model-aware",
+	"╭──────────────────────────────╮",
+	"│ █████╗ ██╗██████╗ ██╗███████╗│",
+	"│██╔══██╗██║██╔══██╗██║██╔════╝│",
+	"│███████║██║██████╔╝██║███████╗│",
+	"│██╔══██║██║██╔══██╗██║╚════██║│",
+	"│██║  ██║██║██║  ██║██║███████║│",
+	"│╚═╝  ╚═╝╚═╝  ╚═╝╚═╝╚══════╝   │",
+	"│                              │",
+	"│ Artificial Intelligence      │",
+	"│ Responsive Integrated System │",
+	"│                              │",
+	"│ AI Coding · Automation · CLI │",
+	"│ KageOS · Umaiz Sufiyan       │",
+	"╰──────────────────────────────╯",
 ];
 
 const LOGO_BLOCK_WIDTH = Math.max(...LOGO_LINES.map((line) => visibleWidth(line)));
@@ -63,6 +64,34 @@ const EMBLEM_ASCII: readonly string[] = ["         \\   |   /", "       ===\\  <
 const NAME_MINIMAL = "AIRIS CLI";
 const NAME_ASCII = "AIRIS CLI";
 const TAGLINE_MINIMAL = "Multi-platform AI CLI";
+
+// Keybinding hints shown at the bottom of the welcome banner
+const KEYBINDING_HINTS: Array<{ keys: string; label: string }> = [
+	{ keys: "Ctrl+P", label: "Plan mode" },
+	{ keys: "Ctrl+Alt+P", label: "Toggle plan" },
+	{ keys: "Ctrl+L", label: "Clear" },
+	{ keys: "Ctrl+Up/Down", label: "Scroll" },
+	{ keys: "Tab", label: "Complete" },
+];
+
+// Cycling tip messages
+const WELCOME_TIPS: readonly string[] = [
+	"Type your question or describe a task to get started.",
+	"Use /plan to create a structured plan before executing.",
+	"Use /ship for full workflow: request → plan → implement → verify.",
+	"Use @coding to switch to repository coding mode.",
+	"Use Ctrl+P in interactive mode to switch models.",
+	"Use /mission for verified autonomy with contracts and evidence.",
+];
+
+let tipIndex = 0;
+function nextTip(): string {
+	tipIndex = (tipIndex + 1) % WELCOME_TIPS.length;
+	return WELCOME_TIPS[tipIndex];
+}
+function currentTip(): string {
+	return WELCOME_TIPS[tipIndex];
+}
 const WIDTH_LOGO = Math.max(LOGO_BLOCK_WIDTH + 4, 45);
 const WIDTH_MINIMAL = 36;
 const WIDTH_MINIMAL_TAGLINE = 40;
@@ -150,10 +179,20 @@ function renderEmblem(lines: readonly string[], width: number): string[] {
 function renderLogoLine(index: number, line: string): string {
 	const paddedLine = padToWidth(line, LOGO_BLOCK_WIDTH);
 	if (!line.trim()) return paddedLine;
-	if (index < 6) return fg("airisOrangeHighlight", bold(paddedLine));
-	if (index === 7) return fg("accent", bold(paddedLine));
-	if (index === 8) return fg("airisOrangeMuted", paddedLine);
+	// Index 0: top border, Index 13: bottom border - use border color
+	if (index === 0 || index === 13) return fg("border", paddedLine);
+	// Index 1-6: big AIRIS letters - highlight color
+	if (index >= 1 && index <= 6) return fg("airisOrangeHighlight", bold(paddedLine));
+	// Index 7, 9: empty lines - dim
+	if (index === 7 || index === 9) return fg("dim", paddedLine);
+	// Index 8: "Artificial Intelligence" - accent
+	if (index === 8) return fg("accent", paddedLine);
+	// Index 10: "Responsive Integrated System" - accent
 	if (index === 10) return fg("accent", paddedLine);
+	// Index 11: "AI Coding · Automation · CLI" - airisOrangeMuted
+	if (index === 11) return fg("airisOrangeMuted", paddedLine);
+	// Index 12: "KageOS · Umaiz Sufiyan" - dim
+	if (index === 12) return fg("dim", paddedLine);
 	return fg("dim", paddedLine);
 }
 
@@ -193,6 +232,38 @@ function renderMetaLine(label: string, value: string, width: number): string {
 
 function renderTitle(name: string): string {
 	return fg("airisOrangeHighlight", bold(name));
+}
+
+function renderKeybindingHints(width: number): string[] {
+	const inner = width - 4;
+	if (inner < 30) return [];
+	
+	// Group hints into rows of 3
+	const lines: string[] = [];
+	for (let i = 0; i < KEYBINDING_HINTS.length; i += 3) {
+		const group = KEYBINDING_HINTS.slice(i, i + 3);
+		const parts = group.map(
+			(h) => `${fg("accent", h.keys)} ${fg("dim", h.label)}`,
+		);
+		const line = parts.join(fg("borderMuted", " · "));
+		const w = visibleWidth(line);
+		if (w <= inner) {
+			lines.push(renderBoxInsetLine(line, width));
+		} else {
+			// Fall back to individual lines
+			lines.push(...group.map((h) => renderBoxInsetLine(`${fg("accent", h.keys)} ${fg("dim", h.label)}`, width)));
+		}
+	}
+	return lines;
+}
+
+function renderTip(width: number): string[] {
+	const tip = `${fg("success", "✨")} ${fg("muted", currentTip())}`;
+	return [renderBoxInsetLine(tip, width)];
+}
+
+export function rotateTip(): void {
+	nextTip();
 }
 
 export class WelcomeHeader implements Component {
@@ -258,6 +329,10 @@ export class WelcomeHeader implements Component {
 				const shortCwd = truncateMiddle(this.info.cwd, maxPathLen);
 				lines.push(renderMetaLine("Project", shortCwd, width));
 			}
+
+			lines.push(renderSectionDivider("Hints", width));
+			lines.push(...renderKeybindingHints(width));
+			lines.push(...renderTip(width));
 
 			lines.push(renderBoxBottom(width));
 		} else {

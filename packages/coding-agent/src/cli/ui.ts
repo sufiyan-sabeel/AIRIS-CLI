@@ -7,6 +7,15 @@ const MAX_CONTENT_WIDTH = 76;
 
 type StatusKind = "ok" | "warn" | "error" | "info" | "running" | "done";
 
+const STATUS_ICONS: Record<StatusKind, string> = {
+	ok: "✓",
+	warn: "⚠",
+	error: "✗",
+	info: "ℹ",
+	running: "⟳",
+	done: "✓",
+};
+
 const STATUS_LABELS: Record<StatusKind, string> = {
 	ok: "OK",
 	warn: "WARN",
@@ -37,30 +46,59 @@ function colorStatus(kind: StatusKind, text: string): string {
 	}
 }
 
+/** Colored status badge with icon and label. */
 export function status(kind: StatusKind, message: string): string {
-	return `${colorStatus(kind, `[${STATUS_LABELS[kind]}]`)} ${message}`;
+	const icon = STATUS_ICONS[kind];
+	const label = STATUS_LABELS[kind];
+	return `${colorStatus(kind, `${icon} [${label}]`)} ${message}`;
 }
 
+/** Section header with decorative side borders. */
 export function section(title: string): string {
-	return chalk.bold(chalk.cyan(title));
+	const line = chalk.dim("─".repeat(2));
+	return `\n${line} ${chalk.bold(chalk.cyan(title))} ${line}`;
 }
 
+/** Key-value display with consistent alignment. */
 export function keyValue(key: string, value: string, keyWidth = 16): string {
 	return `${chalk.dim(key.padEnd(keyWidth))} ${value}`;
 }
 
+/** Colored box with title and content. */
 export function box(title: string, lines: readonly string[]): string {
 	const width = getOutputWidth();
 	const label = ` ${title} `;
 	const topFill = Math.max(1, width - label.length - 2);
-	const top = `${chalk.dim("+")}${chalk.cyan(label)}${chalk.dim(`${"-".repeat(topFill)}+`)}`;
-	const bottom = chalk.dim(`+${"-".repeat(width - 2)}+`);
+	const top = `${chalk.cyan("┌")}${chalk.cyan(label)}${chalk.dim("─".repeat(topFill))}${chalk.cyan("┐")}`;
+	const bottom = `${chalk.cyan("└")}${chalk.dim("─".repeat(width - 2))}${chalk.cyan("┘")}`;
 	const content = lines.map(
-		(line) => `${chalk.dim("|")} ${line}${" ".repeat(Math.max(0, width - 4 - visibleWidth(line)))} ${chalk.dim("|")}`,
+		(line) => `${chalk.dim("│")} ${line}${" ".repeat(Math.max(0, width - 4 - visibleWidth(line)))} ${chalk.dim("│")}`,
 	);
 	return [top, ...content, bottom].join("\n");
 }
 
+/** Indented command hint with cyan command and dim description. */
 export function commandHint(command: string, description: string): string {
 	return `  ${chalk.cyan(command.padEnd(34))} ${chalk.dim(description)}`;
+}
+
+/** Bold, larger-style title for help output. */
+export function title(text: string): string {
+	return chalk.bold(chalk.cyan(text));
+}
+
+/** Accent-highlighted subtitle text. */
+export function subtitle(text: string): string {
+	return chalk.dim(text);
+}
+
+/** Inline label/value pair for help options. */
+export function optionLine(flag: string, description: string): string {
+	return `  ${chalk.cyan(flag.padEnd(30))} ${chalk.dim(description)}`;
+}
+
+/** Visual separator line. */
+export function separator(width?: number): string {
+	const w = width ?? getOutputWidth();
+	return chalk.dim("─".repeat(Math.max(4, w - 2)));
 }

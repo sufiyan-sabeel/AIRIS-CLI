@@ -1,5 +1,5 @@
 import { Container, getKeybindings, Spacer, Text } from "@sufiyan-sabeel/airis-tui";
-import { APP_NAME } from "../../../config.ts";
+import { APP_NAME, VERSION } from "../../../config.ts";
 import { type TerminalTheme, theme } from "../theme/theme.ts";
 import { getCreatorAttribution, getFullLogo, getTagline } from "./airis-logo.ts";
 import { DynamicBorder } from "./dynamic-border.ts";
@@ -66,8 +66,9 @@ export class FirstTimeSetupComponent extends Container {
 		this.addChild(new Text(theme.fg("accent", getFullLogo().join("\n")), 1, 0));
 		this.addChild(new Text(theme.fg("dim", `${getCreatorAttribution()}  |  Brand: KageOS`), 1, 0));
 		this.addChild(new Spacer(1));
-		this.addChild(new Text(theme.fg("accent", theme.bold(`Welcome to ${APP_NAME.toUpperCase()}`)), 1, 0));
+		this.addChild(new Text(theme.fg("accent", theme.bold(`Welcome to ${APP_NAME.toUpperCase()} v${VERSION}`)), 1, 0));
 		this.addChild(new Text(theme.fg("text", getTagline()), 1, 0));
+		this.addChild(new Text(theme.fg("dim", `Creator: ${getCreatorAttribution()}`), 1, 0));
 		this.addChild(new Text(theme.fg("muted", `Project: ${process.cwd()}`), 1, 0));
 		this.addChild(new Spacer(1));
 		this.addChild(new Text(theme.fg("accent", "Available modes"), 1, 0));

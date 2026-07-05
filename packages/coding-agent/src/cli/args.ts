@@ -224,14 +224,15 @@ export function printHelp(extensionFlags?: ExtensionFlag[]): void {
 					})
 					.join("\n")}\n`
 			: "";
-	console.log(`${chalk.bold(chalk.cyan("AIRIS"))} ${chalk.dim(`v${VERSION}`)}
-Artificial Intelligence Responsive Integrated System
-Creator: Umaiz Sufiyan
-Student developer | KageOS
+	console.log(`${chalk.bold(chalk.cyan("╔═══════════════════════════════════╗"))}
+${chalk.bold(chalk.cyan("║            AIRIS CLI              ║"))}
+${chalk.bold(chalk.cyan("╚═══════════════════════════════════╝"))}
+${chalk.cyan("Artificial Intelligence Responsive Integrated System")}
+${chalk.dim(`v${VERSION} · KageOS · Umaiz Sufiyan`)}
 
 ${section("Usage")}
-  ${APP_NAME} [options] [@files...] [messages...]
-  ${APP_NAME} <command> [args]
+  ${chalk.cyan(APP_NAME)} ${chalk.dim("[options] [@files...] [messages...]")}
+  ${chalk.cyan(APP_NAME)} ${chalk.dim("<command> [args]")}
 
 ${section("Command Categories")}
   ${chalk.cyan("Core")}
@@ -409,6 +410,8 @@ ${section("Environment Variables")}
   MOONSHOT_AAIRIS_KEY                 - Moonshot AI API key
   OPENCODE_AAIRIS_KEY                 - OpenCode Zen/OpenCode Go API key
   KIMI_AAIRIS_KEY                     - Kimi For Coding API key
+  OLLAMA_AAIRIS_KEY                   - Ollama API key (optional for local use)
+  OLLAMA_BASE_URL                     - Ollama server URL (default: http://localhost:11434/v1)
   CLOUDFLARE_AAIRIS_KEY               - Cloudflare API token (Workers AI and AI Gateway)
   CLOUDFLARE_ACCOUNT_ID            - Cloudflare account id (required for both)
   CLOUDFLARE_GATEWAY_ID            - Cloudflare AI Gateway slug (required for AI Gateway)
