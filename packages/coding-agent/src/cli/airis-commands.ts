@@ -661,23 +661,26 @@ async function handleConfigSubcommand(args: string[]): Promise<void> {
 				return;
 			}
 			default:
-				console.error(chalk.red(`Unknown config command: ${subcommand}`));
-				console.error(chalk.dim(`Run ${APP_NAME} config --help`));
+				console.error(status("error", `Unknown config command: ${subcommand}`));
+				console.error(status("info", `Run ${APP_NAME} config --help`));
 				process.exitCode = 1;
 		}
 	} catch (error: unknown) {
 		const message = error instanceof Error ? error.message : String(error);
-		console.error(chalk.red(`Error: ${message}`));
+		console.error(status("error", `Error: ${message}`));
 		process.exitCode = 1;
 	}
 }
 
 function printConfig(settingsManager: SettingsManager): void {
 	header("AIRIS Config");
-	console.log(chalk.dim(`Config: ${getSettingsPath()}`));
-	console.log(chalk.dim(`Agent:  ${getAgentDir()}`));
+	console.log(subtitle(`Config: ${getSettingsPath()}`));
+	console.log(subtitle(`Agent:  ${getAgentDir()}`));
 	console.log();
-	console.log(`${chalk.dim("Key".padEnd(18))}${chalk.dim("Value".padEnd(34))}${chalk.dim("Status")}`);
+	const colK = chalk.cyan(chalk.bold("Key"));
+	const colV = chalk.cyan(chalk.bold("Value"));
+	const colS = chalk.cyan(chalk.bold("Status"));
+	console.log(`${colK.padEnd(20)}${colV.padEnd(34)}${colS}`);
 	for (const key of [
 		"provider",
 		"defaultModel",
@@ -689,9 +692,9 @@ function printConfig(settingsManager: SettingsManager): void {
 		"sessionPath",
 	]) {
 		const value = getConfigValue(settingsManager, key);
-		const displayValue = value || chalk.dim("not set");
-		const valueStatus = value ? chalk.green("configured") : chalk.yellow("default");
-		console.log(`${key.padEnd(18)}${displayValue.padEnd(43)}${valueStatus}`);
+		const displayValue = value ? chalk.cyan(value) : chalk.dim("not set");
+		const valueStatus = value ? status("ok", "configured") : status("warn", "default");
+		console.log(`${key.padEnd(20)}${displayValue.padEnd(34)}${valueStatus}`);
 	}
 }
 
@@ -725,9 +728,13 @@ function printSessionList(sessions: readonly SessionInfo[]): void {
 		return;
 	}
 	header("AIRIS Sessions");
-	console.log(chalk.dim(`Project: ${process.cwd()}`));
+	console.log(subtitle(`Project: ${process.cwd()}`));
 	console.log();
-	console.log(`${"ID".padEnd(28)} ${"Modified".padEnd(20)} ${"Model".padEnd(28)} Title`);
+	const colId = chalk.cyan(chalk.bold("ID"));
+	const colMod = chalk.cyan(chalk.bold("Modified"));
+	const colModl = chalk.cyan(chalk.bold("Model"));
+	const colTitle = chalk.cyan(chalk.bold("Title"));
+	console.log(`${colId.padEnd(28)} ${colMod.padEnd(22)} ${colModl.padEnd(28)} ${colTitle}`);
 	for (const session of sessions.slice(0, 50)) {
 		const modified = session.modified.toISOString().replace("T", " ").slice(0, 19);
 		console.log(
@@ -756,7 +763,7 @@ async function handleSessionCommand(args: string[]): Promise<void> {
 		case "current": {
 			const sessions = await listSessions(false);
 			if (!sessions[0]) {
-				console.log(chalk.dim("No current project session found."));
+				console.log(status("info", "No current project session found."));
 				return;
 			}
 			printSessionList([sessions[0]]);
@@ -766,7 +773,7 @@ async function handleSessionCommand(args: string[]): Promise<void> {
 			const all = args.includes("--all");
 			const sessions = await listSessions(all);
 			if (sessions.length === 0) {
-				console.log(chalk.dim("No sessions to clear."));
+				console.log(status("info", "No sessions to clear."));
 				return;
 			}
 			const confirmed =
@@ -774,7 +781,7 @@ async function handleSessionCommand(args: string[]): Promise<void> {
 				(process.stdin.isTTY && (await promptYesNo(`Delete ${sessions.length} session file(s)?`)));
 			if (!confirmed) {
 				console.error(
-					chalk.yellow(`Refusing to clear sessions without confirmation. Run ${APP_NAME} session clear --yes.`),
+					status("warn", `Refusing to clear sessions without confirmation. Run ${APP_NAME} session clear --yes.`),
 				);
 				process.exitCode = 1;
 				return;
@@ -783,12 +790,12 @@ async function handleSessionCommand(args: string[]): Promise<void> {
 				rmSync(session.path, { force: true });
 			}
 			logSessionEvent("session.clear", { count: sessions.length, all });
-			console.log(chalk.green(`Cleared ${sessions.length} session file(s).`));
+			console.log(status("ok", `Cleared ${sessions.length} session file(s).`));
 			return;
 		}
 		default:
-			console.error(chalk.red(`Unknown session command: ${subcommand}`));
-			console.error(chalk.dim(`Run ${APP_NAME} session --help`));
+			console.error(status("error", `Unknown session command: ${subcommand}`));
+			console.error(status("info", `Run ${APP_NAME} session --help`));
 			process.exitCode = 1;
 	}
 }
@@ -798,34 +805,34 @@ function handleTrustCommand(args: string[]): void {
 	const subcommand = args[0];
 	if (!subcommand) {
 		trustStore.set(process.cwd(), true);
-		console.log(chalk.green(`Trusted ${process.cwd()}`));
+		console.log(status("ok", `Trusted ${process.cwd()}`));
 		return;
 	}
 	if (subcommand === "list") {
 		const entries = trustStore.list();
 		if (entries.length === 0) {
-			console.log(chalk.dim("No trusted or blocked paths saved."));
+			console.log(status("info", "No trusted or blocked paths saved."));
 			return;
 		}
 		for (const entry of entries) {
-			const status = entry.decision ? chalk.green("trusted") : chalk.yellow("blocked");
-			console.log(`${status.padEnd(17)} ${entry.path}`);
+			const statusLabel = entry.decision ? status("ok", "trusted") : status("warn", "blocked");
+			console.log(`${statusLabel.padEnd(17)} ${entry.path}`);
 		}
 		return;
 	}
 	if (subcommand === "revoke") {
 		const target = args[1];
 		if (!target) {
-			console.error(chalk.red("trust revoke requires a path"));
+			console.error(status("error", "trust revoke requires a path"));
 			process.exitCode = 1;
 			return;
 		}
 		trustStore.set(resolve(target), null);
-		console.log(chalk.green(`Revoked trust decision for ${resolve(target)}`));
+		console.log(status("ok", `Revoked trust decision for ${resolve(target)}`));
 		return;
 	}
-	console.error(chalk.red(`Unknown trust command: ${subcommand}`));
-	console.error(chalk.dim(`Run ${APP_NAME} trust --help`));
+	console.error(status("error", `Unknown trust command: ${subcommand}`));
+	console.error(status("info", `Run ${APP_NAME} trust --help`));
 	process.exitCode = 1;
 }
 
@@ -835,35 +842,35 @@ async function handleThemeCommand(args: string[]): Promise<void> {
 		const settingsManager = settingsManagerForGlobalConfig();
 		const current = settingsManager.getTheme() ?? "graphite";
 		for (const theme of getAvailableThemesWithPaths()) {
-			const marker = theme.name === current ? chalk.green("current") : "       ";
-			console.log(`${theme.name.padEnd(18)} ${marker} ${theme.path ? chalk.dim(theme.path) : ""}`);
+			const marker = theme.name === current ? status("ok", "current") : "       ";
+			console.log(`${theme.name.padEnd(18)} ${marker.padEnd(16)} ${theme.path ? chalk.dim(theme.path) : ""}`);
 		}
 		return;
 	}
 	if (subcommand === "set") {
 		const name = args[1];
 		if (!name) {
-			console.error(chalk.red("theme set requires a theme name"));
+			console.error(status("error", "theme set requires a theme name"));
 			process.exitCode = 1;
 			return;
 		}
 		if (!getThemeByName(name)) {
-			console.error(chalk.red(`Unknown theme: ${name}`));
-			console.error(chalk.dim(`Run ${APP_NAME} theme list`));
+			console.error(status("error", `Unknown theme: ${name}`));
+			console.error(status("info", `Run ${APP_NAME} theme list`));
 			process.exitCode = 1;
 			return;
 		}
 		const settingsManager = settingsManagerForGlobalConfig();
 		settingsManager.setTheme(name);
 		await settingsManager.flush();
-		console.log(chalk.green(`Theme set to ${name}`));
+		console.log(status("ok", `Theme set to ${name}`));
 		return;
 	}
 	if (subcommand === "preview") {
 		const name = args[1] ?? settingsManagerForGlobalConfig().getTheme() ?? "graphite";
 		const selected = getThemeByName(name);
 		if (!selected) {
-			console.error(chalk.red(`Unknown theme: ${name}`));
+			console.error(status("error", `Unknown theme: ${name}`));
 			process.exitCode = 1;
 			return;
 		}
@@ -874,8 +881,8 @@ async function handleThemeCommand(args: string[]): Promise<void> {
 		console.log(selected.bg("selectedBg", " selected "));
 		return;
 	}
-	console.error(chalk.red(`Unknown theme command: ${subcommand}`));
-	console.error(chalk.dim(`Run ${APP_NAME} theme --help`));
+	console.error(status("error", `Unknown theme command: ${subcommand}`));
+	console.error(status("info", `Run ${APP_NAME} theme --help`));
 	process.exitCode = 1;
 }
 
@@ -890,7 +897,7 @@ function printChangelog(): void {
 		console.log(readFileSync(changelogPath, "utf-8"));
 		return;
 	}
-	console.log(chalk.dim("No changelog found."));
+	console.log(status("info", "No changelog found."));
 }
 
 export function getSafeModeToolList(

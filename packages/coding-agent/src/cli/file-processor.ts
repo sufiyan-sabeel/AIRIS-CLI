@@ -4,11 +4,11 @@
 
 import { access, readFile, stat } from "node:fs/promises";
 import type { ImageContent } from "@sufiyan-sabeel/airis-ai";
-import chalk from "chalk";
 import { resolve } from "path";
 import { resolveReadPath } from "../core/tools/path-utils.ts";
 import { formatDimensionNote, resizeImage } from "../utils/image-resize.ts";
 import { detectSupportedImageMimeTypeFromFile } from "../utils/mime.ts";
+import { status } from "./ui.ts";
 
 export interface ProcessedFiles {
 	text: string;
@@ -34,7 +34,7 @@ export async function processFileArguments(fileArgs: string[], options?: Process
 		try {
 			await access(absolutePath);
 		} catch {
-			console.error(chalk.red(`Error: File not found: ${absolutePath}`));
+			console.error(status("error", `File not found: ${absolutePath}`));
 			process.exit(1);
 		}
 
@@ -89,7 +89,7 @@ export async function processFileArguments(fileArgs: string[], options?: Process
 				text += `<file name="${absolutePath}">\n${content}\n</file>\n`;
 			} catch (error: unknown) {
 				const message = error instanceof Error ? error.message : String(error);
-				console.error(chalk.red(`Error: Could not read file ${absolutePath}: ${message}`));
+				console.error(status("error", `Could not read file ${absolutePath}: ${message}`));
 				process.exit(1);
 			}
 		}

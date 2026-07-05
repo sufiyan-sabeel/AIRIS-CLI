@@ -2,6 +2,23 @@
 
 ## [Unreleased]
 
+### Added
+
+- Added keybinding hints and rotating tips to the interactive welcome header.
+- Added new UI helpers (`title`, `subtitle`, `optionLine`, `separator`) in `cli/ui.ts` for consistent terminal output.
+- Enhanced existing UI helpers: `status()` now uses color-coded icons (✓ ⚠ ✗ ℹ ⟳), `section()` uses decorative side borders, `box()` uses Unicode box drawing (┌ ┐│ └ ┘).
+- First-time setup dialog now shows version number and creator attribution.
+
+### Changed
+
+- Applied enhanced UI helpers across all CLI commands (`airis-commands.ts`, `args.ts`, `file-processor.ts`) — doctor, tools, config, sessions, theme, and trust output now use consistent icon-based status markers, formatted column headers, and visual separators.
+- Help output (`printHelp`) uses `optionLine()` for consistent indented option formatting.
+- Replaced raw `chalk.red`/`chalk.green`/`chalk.yellow` error and success messages with `status()` calls throughout `airis-commands.ts`.
+
+### Fixed
+
+- Fixed shell installer bugs in `website/public/install.sh` and `docs/install.sh`: archive cleanup before copy, error propagation from `resolve_latest_tag`, unique temp files via `mktemp`, fractional-sleep fallback, and no-TTY failure reporting.
+
 ## [0.79.8] - 2026-07-05
 
 ## [0.79.7] - 2026-07-05

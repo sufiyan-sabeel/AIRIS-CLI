@@ -6,7 +6,7 @@ import type { ThinkingLevel } from "@sufiyan-sabeel/airis-agent-core";
 import chalk from "chalk";
 import { APP_NAME, CONFIG_DIR_NAME, ENV_AGENT_DIR, ENV_SESSION_DIR, VERSION } from "../config.ts";
 import type { ExtensionFlag } from "../core/extensions/types.ts";
-import { box, commandHint, section } from "./ui.ts";
+import { box, commandHint, optionLine, section } from "./ui.ts";
 
 export type Mode = "text" | "json" | "rpc";
 
@@ -328,47 +328,45 @@ ${section("Command Categories")}
     ${APP_NAME} --thinking <level>      Set thinking level
 
 ${section("Options")}
-  --provider <name>              Provider name (default: google)
-  --model <pattern>              Model pattern or ID (supports "provider/id" and optional ":<thinking>")
-  --aairis-key <key>                API key (defaults to env vars)
-  --system-prompt <text>         System prompt (default: coding assistant prompt)
-  --append-system-prompt <text>  Append text or file contents to the system prompt (can be used multiple times)
-  --mode <mode>                  Output mode: text (default), json, or rpc
-  --print, -p                    Non-interactive mode: process prompt and exit
-  --continue, -c                 Continue previous session
-  --resume, -r                   Select a session to resume
-  --session <path|id>            Use specific session file or partial UUID
-  --session-id <id>              Use exact project session ID, creating it if missing
-  --fork <path|id>               Fork specific session file or partial UUID into a new session
-  --session-dir <dir>            Directory for session storage and lookup
-  --no-session                   Don't save session (ephemeral)
-  --name, -n <name>              Set session display name
-  --models <patterns>            Comma-separated model patterns for Ctrl+P cycling
-                                 Supports globs (anthropic/*, *sonnet*) and fuzzy matching
-  --no-tools, -nt                Disable all tools by default (built-in and extension)
-  --no-builtin-tools, -nbt       Disable built-in tools by default but keep extension/custom tools enabled
-  --tools, -t <tools>            Comma-separated allowlist of tool names to enable
-                                 Applies to built-in, extension, and custom tools
-  --exclude-tools, -xt <tools>   Comma-separated denylist of tool names to disable
-                                 Applies to built-in, extension, and custom tools
-  --thinking <level>             Set thinking level: off, minimal, low, medium, high, xhigh
-  --extension, -e <path>         Load an extension file (can be used multiple times)
-  --no-extensions, -ne           Disable extension discovery (explicit -e paths still work)
-  --skill <path>                 Load a skill file or directory (can be used multiple times)
-  --no-skills, -ns               Disable skills discovery and loading
-  --prompt-template <path>       Load a prompt template file or directory (can be used multiple times)
-  --no-prompt-templates, -np     Disable prompt template discovery and loading
-  --theme <path>                 Load a theme file or directory (can be used multiple times)
-  --no-themes                    Disable theme discovery and loading
-  --no-context-files, -nc        Disable AGENTS.md and CLAUDE.md discovery and loading
-  --export <file>                Export session file to HTML and exit
-  --list-models [search]         List available models (with optional fuzzy search)
-  --verbose                      Force verbose startup (overrides quietStartup setting)
-  --approve, -a                  Trust project-local files for this run
-  --no-approve, -na              Ignore project-local files for this run
-  --offline                      Disable startup network operations (same as AIRIS_OFFLINE=1)
-  --help, -h                     Show this help
-  --version, -v                  Show version number
+${optionLine("--provider <name>", "Provider name (default: google)")}
+${optionLine("--model <pattern>", 'Model pattern or ID (supports "provider/id" and optional :<thinking>)')}
+${optionLine("--aairis-key <key>", "API key (defaults to env vars)")}
+${optionLine("--system-prompt <text>", "System prompt (default: coding assistant prompt)")}
+${optionLine("--append-system-prompt <text>", "Append text or file contents to the system prompt")}
+${optionLine("--mode <mode>", "Output mode: text (default), json, or rpc")}
+${optionLine("--print, -p", "Non-interactive mode: process prompt and exit")}
+${optionLine("--continue, -c", "Continue previous session")}
+${optionLine("--resume, -r", "Select a session to resume")}
+${optionLine("--session <path|id>", "Use specific session file or partial UUID")}
+${optionLine("--session-id <id>", "Use exact project session ID, creating it if missing")}
+${optionLine("--fork <path|id>", "Fork session into a new one")}
+${optionLine("--session-dir <dir>", "Directory for session storage and lookup")}
+${optionLine("--no-session", "Don't save session (ephemeral)")}
+${optionLine("--name, -n <name>", "Set session display name")}
+${optionLine("--models <patterns>", "Comma-separated model patterns for Ctrl+P cycling")}
+${optionLine("", "Supports globs (anthropic/*, *sonnet*) and fuzzy matching")}
+${optionLine("--no-tools, -nt", "Disable all tools by default")}
+${optionLine("--no-builtin-tools, -nbt", "Disable built-in tools, keep extension/custom tools")}
+${optionLine("--tools, -t <tools>", "Comma-separated allowlist of tool names to enable")}
+${optionLine("--exclude-tools, -xt <tools>", "Comma-separated denylist of tool names to disable")}
+${optionLine("--thinking <level>", "Thinking level: off, minimal, low, medium, high, xhigh")}
+${optionLine("--extension, -e <path>", "Load an extension file (can be used multiple times)")}
+${optionLine("--no-extensions, -ne", "Disable extension discovery (-e paths still work)")}
+${optionLine("--skill <path>", "Load a skill file or directory")}
+${optionLine("--no-skills, -ns", "Disable skills discovery and loading")}
+${optionLine("--prompt-template <path>", "Load a prompt template file or directory")}
+${optionLine("--no-prompt-templates, -np", "Disable prompt template discovery")}
+${optionLine("--theme <path>", "Load a theme file or directory")}
+${optionLine("--no-themes", "Disable theme discovery and loading")}
+${optionLine("--no-context-files, -nc", "Disable AGENTS.md and CLAUDE.md discovery")}
+${optionLine("--export <file>", "Export session file to HTML and exit")}
+${optionLine("--list-models [search]", "List available models (with optional fuzzy search)")}
+${optionLine("--verbose", "Force verbose startup")}
+${optionLine("--approve, -a", "Trust project-local files for this run")}
+${optionLine("--no-approve, -na", "Ignore project-local files for this run")}
+${optionLine("--offline", "Disable startup network operations")}
+${optionLine("--help, -h", "Show this help")}
+${optionLine("--version, -v", "Show version number")}
 
 Extensions can register additional flags (for example, --plan).${extensionFlagsText}
 
