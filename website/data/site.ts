@@ -25,7 +25,7 @@ export const repo = {
   forksUrl: "https://github.com/sufiyan-sabeel/AIRIS-CLI/fork",
   contributionUrl: "https://github.com/sufiyan-sabeel/AIRIS-CLI",
   packageName: "@sufiyan-sabeel/airis-cli",
-  version: "0.79.3",
+  version: "0.79.7",
   license: "MIT",
   node: ">=22.19.0",
   configDir: "~/.airis/agent",

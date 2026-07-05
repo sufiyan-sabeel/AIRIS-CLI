@@ -143,7 +143,8 @@ run_step() {
 
     if [ -t 1 ] && [ "${AIRIS_NO_SPINNER:-0}" != "1" ]; then
         printf '%s' "${CYAN}•${NC} ${MESSAGE} "
-        "$@" >/tmp/airis-installer-step.log 2>&1 &
+        STEPLOG="$(mktemp -t airis-step-XXXXXX 2>/dev/null || mktemp /tmp/airis-step.XXXXXX)"
+        "$@" >"$STEPLOG" 2>&1 &
         PID=$!
         SPIN='|/-\\'
         I=1
@@ -152,20 +153,20 @@ run_step() {
             printf '\r%s' "${CYAN}•${NC} ${MESSAGE} ${DIM}${C}${NC}"
             I=$((I + 1))
             [ "$I" -gt 4 ] && I=1
-            sleep 0.12
+            sleep 0.12 2>/dev/null || sleep 1
         done
         if wait "$PID"; then
             printf '\r%s\n' "${GREEN}✓${NC} ${MESSAGE}"
-            rm -f /tmp/airis-installer-step.log
+            rm -f "$STEPLOG"
         else
             printf '\r%s\n' "${RED}✗${NC} ${MESSAGE}"
-            cat /tmp/airis-installer-step.log >&2 || true
-            rm -f /tmp/airis-installer-step.log
+            cat "$STEPLOG" >&2 || true
+            rm -f "$STEPLOG"
             exit 1
         fi
     else
         info "$MESSAGE"
-        "$@"
+        "$@" || fail "Step failed: $MESSAGE"
         success "$MESSAGE"
     fi
 }
@@ -182,17 +183,17 @@ link_binary() {
 }
 
 resolve_latest_tag() {
-    EFFECTIVE_URL="$(curl -fsSIL -o /dev/null -w '%{url_effective}' "https://github.com/${REPO}/releases/latest")"
+    EFFECTIVE_URL="$(curl -fsSIL -o /dev/null -w '%{url_effective}' "https://github.com/${REPO}/releases/latest")" || return 1
     TAG="${EFFECTIVE_URL##*/}"
     if [ -z "$TAG" ] || [ "$TAG" = "latest" ]; then
-        fail "Unable to resolve latest AIRIS release tag"
+        return 1
     fi
     printf '%s\n' "$TAG"
 }
 
 source_archive_url() {
     if [ "$VERSION" = "latest" ]; then
-        TAG="$(resolve_latest_tag)"
+        TAG="$(resolve_latest_tag)" || fail "Unable to resolve latest AIRIS release tag"
     else
         TAG="$VERSION"
     fi
@@ -229,6 +230,8 @@ print_header() {
 install_payload() {
     mkdir -p "$INSTALL_DIR" "$BINDIR"
     rm -rf "${INSTALL_DIR:?}"/*
+    # Remove downloaded archives so they aren't copied into the install directory
+    rm -f "$TMPDIR/airis.zip" "$TMPDIR/airis.tar.gz"
     if [ -d "$TMPDIR/airis" ]; then
         cp -R "$TMPDIR/airis/." "$INSTALL_DIR/"
     else

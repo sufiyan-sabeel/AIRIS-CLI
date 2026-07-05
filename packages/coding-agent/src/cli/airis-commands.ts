@@ -29,7 +29,7 @@ import { parseChangelog } from "../utils/changelog.ts";
 import { spawnProcessSync } from "../utils/child-process.ts";
 import { handleImageCommand, printImageHelp } from "../vision/image-command.ts";
 import { printHelp } from "./args.ts";
-import { box, keyValue, section, status } from "./ui.ts";
+import { box, keyValue, section, separator, status, subtitle } from "./ui.ts";
 
 const READ_ONLY_TOOLS = new Set(["read", "grep", "find", "ls"]);
 const TRUST_REQUIRED_TOOLS = new Set(["bash", "edit", "write"]);
@@ -351,12 +351,15 @@ function detectTools(): ToolStatus[] {
 }
 
 function printToolTable(tools: readonly ToolStatus[]): void {
-	console.log(`${chalk.dim("Tool".padEnd(12))}${chalk.dim("Status".padEnd(12))}${chalk.dim("Location / Version")}`);
+	const col1 = chalk.cyan(chalk.bold("Tool"));
+	const col2 = chalk.cyan(chalk.bold("Status"));
+	const col3 = chalk.cyan(chalk.bold("Location / Version"));
+	console.log(`${col1.padEnd(14)}${col2.padEnd(22)}${col3}`);
 	for (const tool of tools) {
-		const marker = tool.installed ? chalk.green("installed") : chalk.yellow("missing");
+		const marker = tool.installed ? status("ok", "installed") : status("warn", "missing");
 		const path = tool.path ? chalk.dim(tool.path) : chalk.dim("not found in PATH");
 		const version = tool.version ? ` ${chalk.dim(tool.version)}` : "";
-		console.log(`${tool.name.padEnd(12)}${marker.padEnd(21)}${path}${version}`);
+		console.log(`${tool.name.padEnd(14)}${marker.padEnd(22)}${path}${version}`);
 	}
 }
 
@@ -487,22 +490,26 @@ function runDoctor(): void {
 	];
 
 	header("AIRIS Doctor");
-	console.log(chalk.dim("Artificial Intelligence Responsive Integrated System | KageOS"));
+	console.log(subtitle("Artificial Intelligence Responsive Integrated System | KageOS"));
 	console.log();
-	console.log(`${chalk.dim("Check".padEnd(20))}${chalk.dim("Status".padEnd(10))}${chalk.dim("Details")}`);
+	const chkCol1 = chalk.cyan(chalk.bold("Check"));
+	const chkCol2 = chalk.cyan(chalk.bold("Status"));
+	const chkCol3 = chalk.cyan(chalk.bold("Details"));
+	console.log(`${chkCol1.padEnd(22)}${chkCol2.padEnd(22)}${chkCol3}`);
 	for (const check of checks) {
 		const marker =
 			check.status === "ok"
-				? chalk.green("[OK]")
+				? status("ok", "OK")
 				: check.status === "warn"
-					? chalk.yellow("[WARN]")
-					: chalk.red("[FAIL]");
-		console.log(`${check.name.padEnd(20)}${marker.padEnd(19)}${check.detail}`);
+					? status("warn", "WARN")
+					: status("error", "FAIL");
+		console.log(`${check.name.padEnd(20)}${marker.padEnd(24)}${check.detail}`);
 		if (check.status !== "ok" && check.fix) {
 			console.log(`  ${status("info", `Fix: ${check.fix}`)}`);
 		}
 	}
 	console.log();
+	console.log(separator());
 	header("Optional Tools");
 	printToolTable(tools);
 	const failed = checks.filter((check) => check.status === "fail").length;

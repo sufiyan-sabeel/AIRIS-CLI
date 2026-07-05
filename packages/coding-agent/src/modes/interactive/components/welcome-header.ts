@@ -17,18 +17,18 @@ const NO_COLOR = !!process.env.NO_COLOR;
 
 const LOGO_LINES: readonly string[] = [
 	"╭──────────────────────────────╮",
-	"│ █████╗ ██╗██████╗ ██╗███████╗│",
-	"│██╔══██╗██║██╔══██╗██║██╔════╝│",
-	"│███████║██║██████╔╝██║███████╗│",
-	"│██╔══██║██║██╔══██╗██║╚════██║│",
-	"│██║  ██║██║██║  ██║██║███████║│",
-	"│╚═╝  ╚═╝╚═╝  ╚═╝╚═╝╚══════╝   │",
-	"│                              │",
-	"│ Artificial Intelligence      │",
-	"│ Responsive Integrated System │",
-	"│                              │",
-	"│ AI Coding · Automation · CLI │",
-	"│ KageOS · Umaiz Sufiyan       │",
+	"│ █████╗ ██╗██████╗ ██╗███████╗",
+	"│██╔══██╗██║██╔══██╗██║██╔════╝",
+	"│███████║██║██████╔╝██║███████╗",
+	"│██╔══██║██║██╔══██╗██║╚════██║",
+	"│██║  ██║██║██║  ██║██║███████║",
+	"│╚═╝  ╚═╝╚═╝  ╚═╝╚═╝╚══════╝",
+	"│",
+	"│ Artificial Intelligence",
+	"│ Responsive Integrated System",
+	"│",
+	"│ AI Coding · Automation · CLI",
+	"│ KageOS · Umaiz Sufiyan",
 	"╰──────────────────────────────╯",
 ];
 
@@ -183,12 +183,12 @@ function renderLogoLine(index: number, line: string): string {
 	if (index === 0 || index === 13) return fg("border", paddedLine);
 	// Index 1-6: big AIRIS letters - highlight color
 	if (index >= 1 && index <= 6) return fg("airisOrangeHighlight", bold(paddedLine));
-	// Index 7, 9: empty lines - dim
-	if (index === 7 || index === 9) return fg("dim", paddedLine);
+	// Index 7, 10: empty lines - dim
+	if (index === 7 || index === 10) return fg("dim", paddedLine);
 	// Index 8: "Artificial Intelligence" - accent
 	if (index === 8) return fg("accent", paddedLine);
-	// Index 10: "Responsive Integrated System" - accent
-	if (index === 10) return fg("accent", paddedLine);
+	// Index 9: "Responsive Integrated System" - accent
+	if (index === 9) return fg("accent", paddedLine);
 	// Index 11: "AI Coding · Automation · CLI" - airisOrangeMuted
 	if (index === 11) return fg("airisOrangeMuted", paddedLine);
 	// Index 12: "KageOS · Umaiz Sufiyan" - dim
@@ -237,14 +237,12 @@ function renderTitle(name: string): string {
 function renderKeybindingHints(width: number): string[] {
 	const inner = width - 4;
 	if (inner < 30) return [];
-	
+
 	// Group hints into rows of 3
 	const lines: string[] = [];
 	for (let i = 0; i < KEYBINDING_HINTS.length; i += 3) {
 		const group = KEYBINDING_HINTS.slice(i, i + 3);
-		const parts = group.map(
-			(h) => `${fg("accent", h.keys)} ${fg("dim", h.label)}`,
-		);
+		const parts = group.map((h) => `${fg("accent", h.keys)} ${fg("dim", h.label)}`);
 		const line = parts.join(fg("borderMuted", " · "));
 		const w = visibleWidth(line);
 		if (w <= inner) {

@@ -74,3 +74,24 @@ AIRIS-automate/
 # Android trash files
 .trashed-*
 **/.trashed-*
+
+# InsForge & AI agent skills
+.insforge
+.agent
+.agents
+.augment
+.claude
+.cline
+.github/copilot*
+.kilocode
+.qoder
+.qwen
+.roo
+.trae
+.windsurf
+
+# Next.js build artifacts
+.next/
+out/
+website/.next/
+website/out/
