@@ -51,9 +51,6 @@
 			"import": "./dist/bedrock-provider.js"
 		}
 	},
-	"bin": {
-		"airis-ai": "./dist/cli.js"
-	},
 	"files": [
 		"dist",
 		"README.md"
