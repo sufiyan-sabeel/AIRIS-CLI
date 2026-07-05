@@ -28,7 +28,7 @@ Verified project metadata:
 | Field | Value |
 | --- | --- |
 | CLI package | `@sufiyan-sabeel/airis-cli` |
-| CLI version | `0.79.6` |
+| CLI version | `0.79.8` |
 | Command | `airis` |
 | Runtime | Node.js `>=22.19.0` |
 | License | MIT |
@@ -162,9 +162,9 @@ airis --help
 
 ### npm package status
 
-The CLI package manifest is named `@sufiyan-sabeel/airis-cli`, and the repository contains an npm publishing workflow. At the time this README was verified, the npm registry returned `404 Not Found` for `@sufiyan-sabeel/airis-cli`, so global npm installation should be treated as **release-pending** until the package is published.
+The CLI package manifest is named `@sufiyan-sabeel/airis-cli`. The repository contains an npm publishing workflow triggered on version tags. Binary releases are available through [GitHub Releases](https://github.com/sufiyan-sabeel/AIRIS-CLI/releases).
 
-When registry publication is confirmed, the expected global install command will be:
+To install from npm when registry access is available:
 
 ```bash
 npm install -g --ignore-scripts @sufiyan-sabeel/airis-cli
@@ -297,6 +297,7 @@ Common provider environment variables verified from source and help output:
 | OpenCode Zen / OpenCode Go | `OPENCODE_AAIRIS_KEY` |
 | Kimi For Coding | `KIMI_AAIRIS_KEY` |
 | Cloudflare Workers AI / AI Gateway | `CLOUDFLARE_AAIRIS_KEY`, `CLOUDFLARE_ACCOUNT_ID`, and gateway settings as needed |
+| Ollama (Local) | `OLLAMA_AAIRIS_KEY` or `OLLAMA_BASE_URL` (default `http://localhost:11434`) |
 | Amazon Bedrock | `AWS_PROFILE`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_BEARER_TOKEN_BEDROCK`, `AWS_REGION` |
 
 For the complete current list, run:
@@ -374,8 +375,8 @@ Do not open public issues for security-sensitive reports. See [`SECURITY.md`](SE
 
 ## Known Limitations
 
-- The npm package name exists in package metadata, but the public npm registry returned `404 Not Found` during this README verification. Use source installation or the GitHub Release installer until npm publication is confirmed.
-- The binary installer requires matching GitHub Release assets for the selected platform and version.
+- Binary packages are published as [GitHub Releases](https://github.com/sufiyan-sabeel/AIRIS-CLI/releases). The binary installer downloads assets matching your platform and version.
+- npm package publishing requires the `@sufiyan-sabeel` npm organization to be set up. Use the binary installer or source installation for now.
 - AIRIS is not a sandbox and should not be treated as an isolation boundary.
 - AI-generated code and shell commands can be incorrect, incomplete, or unsafe; human review is required.
 - Prompt injection from trusted project files is an expected risk for local coding agents.
