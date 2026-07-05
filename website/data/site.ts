@@ -25,7 +25,7 @@ export const repo = {
   forksUrl: "https://github.com/sufiyan-sabeel/AIRIS-CLI/fork",
   contributionUrl: "https://github.com/sufiyan-sabeel/AIRIS-CLI",
   packageName: "@sufiyan-sabeel/airis-cli",
-  version: "0.79.7",
+  version: "0.79.8",
   license: "MIT",
   node: ">=22.19.0",
   configDir: "~/.airis/agent",
@@ -215,6 +215,7 @@ export const providers = [
   ["Kimi For Coding", "KIMI_AAIRIS_KEY"],
   ["MiniMax", "MINIMAX_AAIRIS_KEY"],
   ["NVIDIA NIM", "NVIDIA_AAIRIS_KEY"],
+  ["Ollama (Local)", "OLLAMA_AAIRIS_KEY or OLLAMA_BASE_URL (default http://localhost:11434)"],
 ];
 
 export const docs = [
