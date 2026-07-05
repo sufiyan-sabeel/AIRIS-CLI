@@ -77,18 +77,18 @@ describe("WelcomeHeader", () => {
 			expect(hasTextLogo).toBe(true);
 		});
 
-		it("shows the updated subtitle in the logo banner", () => {
+		it("shows the logo tagline in the logo banner", () => {
 			const header = new WelcomeHeader(baseInfo);
 			const lines = header.render(80);
-			const hasSubtitle = lines.some((line) => line.includes("Multi-platform AI CLI"));
-			expect(hasSubtitle).toBe(true);
+			const hasTagline = lines.some((line) => line.includes("AI Coding · Automation · CLI"));
+			expect(hasTagline).toBe(true);
 		});
 
-		it("does not show the updated subtitle in the minimal layout", () => {
+		it("does not show the logo tagline in the minimal layout", () => {
 			const header = new WelcomeHeader(baseInfo);
 			const lines = header.render(36);
-			const hasSubtitle = lines.some((line) => line.includes("Multi-platform AI CLI"));
-			expect(hasSubtitle).toBe(false);
+			const hasTagline = lines.some((line) => line.includes("AI Coding · Automation · CLI"));
+			expect(hasTagline).toBe(false);
 		});
 
 		it("shows the compact AIRIS fallback name in the minimal layout", () => {
