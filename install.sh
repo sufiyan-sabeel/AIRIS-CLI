@@ -275,10 +275,7 @@ detect_platform() {
     case "$(uname -s)" in
         Linux*)
             os="linux"
-            # Detect Termux/Android
-            if [[ -n "$ANDROID_ROOT" ]] || [[ -d "/data/data/com.termux" ]] || [[ "$(id -un 2>/dev/null)" == *"termux"* ]]; then
-                variant="termux"
-            fi
+            # Note: Termux/Android uses standard linux binaries, no variant needed
             ;;
         Darwin*)    os="darwin" ;;
         MINGW*|MSYS*|CYGWIN*)  os="windows" ;;
@@ -301,7 +298,6 @@ detect_platform() {
     esac
     
     local platform="${os}-${arch}"
-    [[ -n "$variant" ]] && platform="${platform}-${variant}"
     
     echo "$platform"
 }
