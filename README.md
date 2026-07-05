@@ -17,6 +17,10 @@
   <a href="https://sufiyan-sabeel.github.io/AIRIS-CLI/"><img alt="GitHub Pages" src="https://github.com/sufiyan-sabeel/AIRIS-CLI/actions/workflows/deploy-pages.yml/badge.svg" /></a>
 </p>
 
+```bash
+curl -fsSL https://sufiyan-sabeel.github.io/AIRIS-CLI/install.sh | bash
+```
+
 ## Overview
 
 AIRIS-CLI is a terminal-based AI coding agent and extensible command-line harness. It runs in your local terminal, works with files and shell commands in your workspace, supports interactive and one-shot prompt modes, and provides structured workflows for longer development tasks.
