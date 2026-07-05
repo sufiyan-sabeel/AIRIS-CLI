@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.79.7] - 2026-07-05
+
 ### Added
 
 - Added `aisearch` — a bundled Go binary that replaces the external `fd` dependency for file search operations.

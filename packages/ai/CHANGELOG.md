@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.79.7] - 2026-07-05
+
 ### Added
 
 - Added Ollama local model provider for running models locally via Ollama. Supports Llama 3.3, Llama 3.2, Mistral, DeepSeek R1, Qwen 2.5, Phi-4, Code Llama, and more. Models connect to `http://localhost:11434/v1`. No API key required for local use ([#5750](https://github.com/sufiyan-sabeel/AIRIS-CLI/issues/5750)).
