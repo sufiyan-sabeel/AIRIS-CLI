@@ -131,7 +131,7 @@ The web installer is designed to detect Termux and choose Termux-friendly instal
 The GitHub Pages installer downloads release assets from GitHub Releases (`airis-<platform>.tar.gz` or `airis-<platform>.zip`) and installs an `airis` command into a platform-appropriate binary directory.
 
 ```bash
-curl -fsSL https://sufiyan-sabeel.github.io/AIRIS-CLI/install.sh | sh
+curl -fsSL https://sufiyan-sabeel.github.io/AIRIS-CLI/install.sh | bash
 ```
 
 Installer notes:
