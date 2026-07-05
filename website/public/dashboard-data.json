@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-07-04T08:43:07.824Z",
-  "date": "2026-07-04",
+  "generatedAt": "2026-07-05T08:58:21.323Z",
+  "date": "2026-07-05",
   "dailyFact": {
-    "fact": "The project includes native Go binaries for file search (aisearch) and web fetching (aifetch).",
-    "index": 9,
+    "fact": "AIRIS has an extension system that supports custom tools, themes, skills, and providers.",
+    "index": 10,
     "total": 21
   },
   "analysis": {
@@ -20,8 +20,8 @@
     "tsxComponents": 16,
     "goModules": 5,
     "scriptFiles": 16,
-    "totalSourceLines": 217156,
-    "githubWorkflows": 10,
+    "totalSourceLines": 217962,
+    "githubWorkflows": 11,
     "markdownDocs": 93
   },
   "codeBreakdown": [
