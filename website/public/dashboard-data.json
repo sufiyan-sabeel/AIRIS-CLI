@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-07-05T08:58:21.323Z",
-  "date": "2026-07-05",
+  "generatedAt": "2026-07-06T10:44:57.983Z",
+  "date": "2026-07-06",
   "dailyFact": {
-    "fact": "AIRIS has an extension system that supports custom tools, themes, skills, and providers.",
-    "index": 10,
+    "fact": "The Termux installation path allows running AIRIS on Android devices.",
+    "index": 11,
     "total": 21
   },
   "analysis": {
@@ -20,7 +20,7 @@
     "tsxComponents": 16,
     "goModules": 5,
     "scriptFiles": 16,
-    "totalSourceLines": 217962,
+    "totalSourceLines": 217971,
     "githubWorkflows": 11,
     "markdownDocs": 93
   },
