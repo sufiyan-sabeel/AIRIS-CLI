@@ -98,17 +98,45 @@ AIRIS runs locally as a CLI process. When you use cloud AI providers, prompts an
 
 ## Android/Termux
 
-AIRIS includes documented Android support through [Termux](https://termux.dev/).
+AIRIS includes built-in Android support through [Termux](https://termux.dev/). Termux:API commands (`termux-notification`, `termux-toast`, `termux-tts-speak`, `termux-clipboard-set/get`, `termux-dialog`, `termux-vibrate`, `termux-open-url`, `termux-share`, `termux-battery-status`, `termux-location`, `termux-camera-photo`, `termux-sensor`) are recognized and documented as part of the AIRIS agent skill system.
 
-Recommended Termux setup:
+### Recommended Termux setup
 
 ```bash
 pkg update && pkg upgrade
-pkg install nodejs git termux-api
+pkg install nodejs git termux-api android-tools
 mkdir -p ~/.airis/agent
 ```
 
-Termux guidance:
+### Termux:API skill
+
+AIRIS includes a built-in Termux:API skill at [`.airis/skills/termux-api.md`](.airis/skills/termux-api.md) that teaches the agent how to use Android device capabilities. When running in Termux, AIRIS can:
+
+- **`termux-notification`** — Send system notifications with titles, content, buttons, and priority levels
+- **`termux-toast`** — Show brief popup messages (short/long duration, position control)
+- **`termux-tts-speak`** — Speak text aloud with rate, pitch, language, and engine options
+- **`termux-vibrate`** — Trigger haptic feedback with duration control
+- **`termux-clipboard-set`** / **`termux-clipboard-get`** — Read and write the system clipboard
+- **`termux-dialog`** — Show input, confirm, selection, date/time, counter, and custom dialogs
+- **`termux-open-url`** — Open URLs in the default browser
+- **`termux-share`** — Share text or files through Android's share sheet
+- **`termux-battery-status`** — Check battery health, percentage, temperature (JSON output)
+- **`termux-location`** — Get GPS/network location (JSON output)
+- **`termux-camera-photo`** — Take photos with front or back camera
+- **`termux-sensor`** — Read sensor data (accelerometer, etc.)
+
+### Android Debug Bridge (ADB)
+
+AIRIS `airis droid` and `airis automation` commands require ADB for extended Android automation (screen reads, taps, gestures, settings toggles). Install with:
+
+```bash
+pkg install android-tools
+adb devices   # verify connection
+```
+
+ADB is a built-in dependency for the droid/automation command group.
+
+### Termux guidance
 
 - Install Termux from F-Droid or GitHub, not the outdated Play Store build.
 - Keep source checkouts under the Termux home directory (`$HOME`).
@@ -387,7 +415,7 @@ Do not open public issues for security-sensitive reports. See [`SECURITY.md`](SE
 - Cloud provider usage can send prompt text, selected files, and context to configured provider APIs.
 - Termux support depends on Android, Termux package availability, and filesystem behavior. Keep source checkouts in `$HOME`, not Android shared storage.
 - Local image/model workflows may require substantial disk, memory, and platform support.
-- Droid/automation commands depend on Android/ADB or Termux capabilities being available and configured.
+- Droid/automation commands depend on Android/ADB or Termux capabilities being available and configured. ADB must be installed (`pkg install android-tools`) and the device must be authorized.
 
 ## Development
 
