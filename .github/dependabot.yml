@@ -1,0 +1,40 @@
+# Dependabot auto-security-updates
+# See https://docs.github.com/en/code-security/dependabot/dependabot-version-updates
+
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "08:00"
+      timezone: "UTC"
+    # Only security-related dependency updates
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "security"
+    reviewers:
+      - "sufiyan-sabeel"
+    # Allow admin to decide on each update
+    allow:
+      - dependency-type: "production"
+    commit-message:
+      prefix: "fix"
+      prefix-development: "chore"
+      include: "scope"
+    # Automatically rebase PRs if conflicts
+    rebase-strategy: "auto"
+    versioning-strategy: "increase"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "ci"
+      - "security"
+    reviewers:
+      - "sufiyan-sabeel"
