@@ -42,6 +42,7 @@ jobs:
         with:
           node-version: '22.19.0'
           registry-url: 'https://registry.npmjs.org'
+          cache: npm
 
       - name: Build binaries
         run: bash ./scripts/build-binaries.sh
