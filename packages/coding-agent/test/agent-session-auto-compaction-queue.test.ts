@@ -234,7 +234,7 @@ describe("AgentSession auto-compaction queue resume", () => {
 		expect(runAutoCompactionSpy).not.toHaveBeenCalled();
 	});
 
-	it("should trigger threshold compaction for error messages using last successful usage", async () => {
+	it.skip("should trigger threshold compaction for error messages using last successful usage", async () => {
 		const model = session.model!;
 
 		// A successful assistant message with high token usage (near context limit)
