@@ -33,6 +33,7 @@ stages:
   - check
   - test
   - audit
+  - pages
   - go-tools
   - r-tools
 
@@ -85,6 +86,36 @@ security-audit:
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
     - if: $CI_COMMIT_BRANCH == "main"
+
+# ---------------------------------------------------------------------------
+# GitLab Pages (website)
+# ---------------------------------------------------------------------------
+
+pages:
+  stage: pages
+  image: node:22.19.0
+  script:
+    - cd website
+    - npm ci --ignore-scripts --no-audit --no-fund
+    - npm run build
+    - mkdir -p ../public
+    - cp -r out/* ../public/ 2>/dev/null || true
+  artifacts:
+    paths:
+      - public/
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+      changes:
+        - website/**/*
+        - .gitlab-ci.yml
+    - if: $CI_COMMIT_BRANCH == "main"
+      when: never
+  variables:
+    npm_config_ignore_scripts: "false"
+  cache:
+    key: website-$CI_COMMIT_REF_SLUG
+    paths:
+      - website/node_modules/
 
 # ---------------------------------------------------------------------------
 # Go security tools
