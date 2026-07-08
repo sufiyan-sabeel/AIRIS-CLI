@@ -1,26 +1,36 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Check, Copy } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
-export function CopyButton({ value, label = "Copy" }: { value: string; label?: string }) {
+export function CopyButton({ value }: { value: string }) {
   const [copied, setCopied] = useState(false);
+
+  const copy = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {}
+  }, [value]);
+
   return (
-    <Button
-      type="button"
-      size="sm"
-      variant="ghost"
-      className="h-8 px-3"
-      onClick={async () => {
-        await navigator.clipboard.writeText(value);
-        setCopied(true);
-        window.setTimeout(() => setCopied(false), 1400);
-      }}
-      aria-label={`${label} command`}
+    <button
+      onClick={copy}
+      className="inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-[11px] font-medium text-zinc-500 transition-colors hover:bg-white/5 hover:text-zinc-300"
+      aria-label={copied ? "Copied" : "Copy to clipboard"}
     >
-      {copied ? <Check className="h-3.5 w-3.5" aria-hidden /> : <Copy className="h-3.5 w-3.5" aria-hidden />}
-      <span className="sr-only sm:not-sr-only">{copied ? "Copied" : label}</span>
-    </Button>
+      {copied ? (
+        <>
+          <Check className="h-3 w-3 text-emerald-400" />
+          <span className="text-emerald-400">Copied</span>
+        </>
+      ) : (
+        <>
+          <Copy className="h-3 w-3" />
+          <span>Copy</span>
+        </>
+      )}
+    </button>
   );
 }
