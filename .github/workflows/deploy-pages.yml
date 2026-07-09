@@ -33,7 +33,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: website
-        run: npm ci
+        run: npm install --ignore-scripts --no-audit --no-fund --ignore-scripts --no-audit --no-fund
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
