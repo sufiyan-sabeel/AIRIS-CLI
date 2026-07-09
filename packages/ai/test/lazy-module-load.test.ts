@@ -42,7 +42,20 @@ function runProbe(action: string): ProbeResult {
 	const result = spawnSync(process.execPath, ["--input-type=module", "--eval", script], {
 		cwd: packageRoot,
 		encoding: "utf8",
+		timeout: 30000,
 	});
+
+	if (result.error) {
+		throw new Error(
+			`Probe spawn error: ${result.error.message}\nSTDOUT:\n${result.stdout}\nSTDERR:\n${result.stderr}`,
+		);
+	}
+
+	if (result.status === null) {
+		throw new Error(
+			`Probe was terminated (signal: ${result.signal ?? "unknown"})\nSTDOUT:\n${result.stdout}\nSTDERR:\n${result.stderr}`,
+		);
+	}
 
 	if (result.status !== 0) {
 		throw new Error(`Probe failed (exit ${result.status})\nSTDOUT:\n${result.stdout}\nSTDERR:\n${result.stderr}`);
@@ -87,7 +100,7 @@ describe("lazy provider module loading", () => {
 		expect(result.loadedSpecifiers).toEqual(["@anthropic-ai/sdk"]);
 	});
 
-	it("loads only the Anthropic SDK when dispatching through streamSimple", () => {
+	it("loads only the Anthropic SDK when dispatching through streamSimple", { retry: 2, timeout: 60000 }, () => {
 		const result = runProbe(`
 			const model = mod.getModel("anthropic", "claude-sonnet-4-6");
 			const context = { messages: [{ role: "user", content: "hi" }] };

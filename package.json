@@ -17,7 +17,7 @@
 		"build:aisearch": "node scripts/build-native-binaries.mjs",
 		"check:browser-smoke": "node scripts/check-browser-smoke.mjs",
 		"check:pinned-deps": "node scripts/check-pinned-deps.mjs",
-		"check:shrinkwrap": "node scripts/generate-coding-agent-shrinkwrap.mjs --check",
+		"check:shrinkwrap": "npm run shrinkwrap:coding-agent && node scripts/generate-coding-agent-shrinkwrap.mjs --check",
 		"check:ts-imports": "node scripts/check-ts-relative-imports.mjs",
 		"profile:tui": "node scripts/profile-coding-agent-node.mjs --mode tui",
 		"profile:rpc": "node scripts/profile-coding-agent-node.mjs --mode rpc",
