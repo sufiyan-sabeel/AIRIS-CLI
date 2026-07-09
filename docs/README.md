@@ -10,7 +10,6 @@ Professional product website for [AIRIS CLI](https://github.com/sufiyan-sabeel/A
 | `style.css` | Graphite/slate dark theme stylesheet |
 | `script.js` | Interactive functionality, tabs, copy, animations |
 | `install.sh` | One-command curl installer (no git clone) |
-| `netlify.toml` | Netlify deployment configuration |
 | `README.md` | This file |
 
 ## Website Sections
@@ -39,16 +38,6 @@ Open http://localhost:8080 in a browser.
 
 ```bash
 bash -n install.sh
-```
-
-## Netlify Deployment
-
-```bash
-npm install -g netlify-cli
-netlify login
-cd /root/AIRIS-CLI/website
-netlify init
-netlify deploy --prod
 ```
 
 ## Install Command

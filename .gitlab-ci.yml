@@ -1,0 +1,162 @@
+# GitLab CI configuration for AIRIS monorepo
+# Mirrors the GitHub Actions workflows: ci.yml, npm-audit.yml, go-r-ci.yml
+#
+# Triggers:
+#   - Push to main branch
+#   - Merge requests targeting main
+#   - Daily scheduled pipeline (security audit)
+
+image: node:22.19.0
+
+variables:
+  npm_config_ignore_scripts: "true"
+  npm_config_cache: "$CI_PROJECT_DIR/.npm"
+
+cache:
+  key:
+    files:
+      - package-lock.json
+  paths:
+    - .npm/
+    - node_modules/
+    - packages/*/node_modules/
+    - packages/coding-agent/examples/extensions/*/node_modules/
+
+default:
+  before_script:
+    - apt-get update -qq && apt-get install -y -qq libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev fd-find ripgrep 2>/dev/null || true
+    - apt-get install -y -qq fdfind 2>/dev/null || true
+    - npm ci --cache "$npm_config_cache" --prefer-offline --no-audit --no-fund
+
+stages:
+  - build
+  - check
+  - test
+  - audit
+  - pages
+  - go-tools
+  - r-tools
+
+# ---------------------------------------------------------------------------
+# Build stage
+# ---------------------------------------------------------------------------
+
+build:
+  stage: build
+  script:
+    - npm run build
+  artifacts:
+    paths:
+      - packages/**/dist/
+    expire_in: 1 hour
+
+# ---------------------------------------------------------------------------
+# Check stage (linting, type-checking, pinned deps, shrinkwrap)
+# ---------------------------------------------------------------------------
+
+check:
+  stage: check
+  needs: [build]
+  script:
+    - npm run check
+  artifacts:
+    reports:
+      codequality: gl-code-quality-report.json
+
+# ---------------------------------------------------------------------------
+# Test stage
+# ---------------------------------------------------------------------------
+
+test:
+  stage: test
+  needs: [build]
+  script:
+    - npm test --if-present
+  coverage: /^Statements\s*:\s*([^%]+)%/
+
+# ---------------------------------------------------------------------------
+# Security audit (runs daily or on push)
+# ---------------------------------------------------------------------------
+
+security-audit:
+  stage: audit
+  script:
+    - npm audit --omit=dev --audit-level=moderate
+    - npm audit signatures --omit=dev
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - if: $CI_COMMIT_BRANCH == "main"
+
+# ---------------------------------------------------------------------------
+# GitLab Pages (website)
+# ---------------------------------------------------------------------------
+
+pages:
+  stage: pages
+  image: node:22.19.0
+  script:
+    - cd website
+    - npm ci --ignore-scripts --no-audit --no-fund
+    - npm run build
+    - mkdir -p ../public
+    - cp -r out/* ../public/ 2>/dev/null || true
+  artifacts:
+    paths:
+      - public/
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+      changes:
+        - website/**/*
+        - .gitlab-ci.yml
+    - if: $CI_COMMIT_BRANCH == "main"
+      when: never
+  variables:
+    npm_config_ignore_scripts: "false"
+  cache:
+    key: website-$CI_COMMIT_REF_SLUG
+    paths:
+      - website/node_modules/
+
+# ---------------------------------------------------------------------------
+# Go security tools
+# ---------------------------------------------------------------------------
+
+go-tools:
+  stage: go-tools
+  image: golang:1.22
+  rules:
+    - changes:
+        - tools/go/**/*
+        - scripts/airis-go-security.sh
+        - Makefile
+  cache:
+    key: go-$CI_COMMIT_REF_SLUG
+    paths:
+      - tools/go/airis-security/.gopath/
+  before_script:
+    - ""
+  script:
+    - cd tools/go/airis-security
+    - go mod tidy
+    - go vet ./...
+    - go test ./...
+    - go build ./cmd/airis-security
+
+# ---------------------------------------------------------------------------
+# R analytics tools
+# ---------------------------------------------------------------------------
+
+r-tools:
+  stage: r-tools
+  image: rocker/r-ver:4.4
+  rules:
+    - changes:
+        - tools/r/**/*
+        - scripts/airis-r-analyze.sh
+        - Makefile
+  before_script:
+    - apt-get update -qq && apt-get install -y -qq libcurl4-openssl-dev libssl-dev libxml2-dev 2>/dev/null || true
+    - Rscript -e 'install.packages("jsonlite", repos="https://cloud.r-project.org")'
+  script:
+    - cd tools/r/airis.analytics
+    - R CMD check . --no-manual --no-vignettes
