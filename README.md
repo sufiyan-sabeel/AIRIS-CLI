@@ -1,6 +1,6 @@
 # AIRIS-CLI
 
-<<<<<<< HEAD
+
 <p align="center">
   <img src="website/public/airis-logo.svg" alt="AIRIS logo" width="120" />
 </p>
