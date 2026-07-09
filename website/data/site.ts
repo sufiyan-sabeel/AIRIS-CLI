@@ -10,6 +10,8 @@ import {
   ShieldCheck,
   Smartphone,
   TerminalSquare,
+  Terminal,
+  Workflow,
   Wrench,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
@@ -227,10 +229,42 @@ export const docs = [
 
 export const workflowPhases = ["Request", "Contract", "Approval", "Planning", "Implementation", "Formatting", "Testing", "Verification", "Proof", "Commit"];
 
+export const proofCards = [
+  { title: "Install Proof", description: "Verified installation inside a real Android Termux environment using npm.", icon: TerminalSquare },
+  { title: "CLI Launch Proof", description: "AIRIS CLI launching interactively with full command recognition and AI provider connectivity.", icon: Terminal },
+  { title: "Terminal Workflow Proof", description: "Complete workflow from install to running AI-powered coding commands in a real terminal.", icon: Workflow },
+];
+
+export const navItems = [
+  { label: "Features", href: "#features" },
+  { label: "Demo", href: "#demo" },
+  { label: "Termux", href: "#termux" },
+  { label: "AIRIS IDE", href: "#airis-ide" },
+  { label: "Install", href: "#installation" },
+  { label: "Docs", href: "#docs" },
+  { label: "GitHub", href: "https://github.com/sufiyan-sabeel/AIRIS-CLI", external: true },
+];
+
+export const airisIdeFeatures = [
+  "AI-powered code editor with integrated terminal",
+  "Project structure viewer and file explorer",
+  "Automation workflow designer",
+  "Session management and history browser",
+  "Extension and skill marketplace",
+  "Theme and layout customization",
+];
+
+export const termuxCommands = [
+  "pkg update",
+  "pkg install nodejs git",
+  "npm install -g @sufiyan-sabeel/airis-cli",
+  "airis --help",
+];
+
 export const terminalLines = [
-  "$ airis",
-  "$ airis -p \"List all TypeScript files in src/\"",
-  "$ airis ship start \"Add a help command that shows usage examples\"",
-  "$ airis mission \"Add tests\" --verified",
-  "$ airis theme set graphite",
+  "$ npm install -g @sufiyan-sabeel/airis-cli",
+  "$ airis --help",
+  "$ airis doctor",
+  "$ airis @coding \"review this project\"",
+  "$ airis ship start \"Add authentication\"",
 ];
