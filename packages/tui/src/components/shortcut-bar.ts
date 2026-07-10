@@ -25,19 +25,13 @@ const DEFAULT_SHORTCUTS: ShortcutItem[] = [
  */
 export class ShortcutBar implements Component {
 	private items: ShortcutItem[];
-	private compact: boolean;
 
-	constructor(items: ShortcutItem[] = DEFAULT_SHORTCUTS, compact = false) {
+	constructor(items: ShortcutItem[] = DEFAULT_SHORTCUTS) {
 		this.items = items;
-		this.compact = compact;
 	}
 
 	setItems(items: ShortcutItem[]): void {
 		this.items = items;
-	}
-
-	setCompact(compact: boolean): void {
-		this.compact = compact;
 	}
 
 	invalidate(): void {
@@ -52,7 +46,6 @@ export class ShortcutBar implements Component {
 
 		const slate = (s: string) => (noColor ? s : `\x1b[38;2;120;120;140m${s}\x1b[39m`);
 		const blue = (s: string) => (noColor ? s : `\x1b[38;2;96;165;250m${s}\x1b[39m`);
-		const reset = noColor ? "" : "\x1b[39m";
 
 		if (width < 40) {
 			// Ultra-compact: only show critical shortcuts

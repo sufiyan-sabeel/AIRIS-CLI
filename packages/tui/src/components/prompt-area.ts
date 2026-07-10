@@ -1,5 +1,5 @@
 import type { Component } from "../tui.ts";
-import { isNoColor, truncateToWidth, visibleWidth } from "../utils.ts";
+import { isNoColor, truncateToWidth } from "../utils.ts";
 
 export interface PromptAreaData {
 	placeholder?: string;
