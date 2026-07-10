@@ -113,6 +113,14 @@ export function TerminalDemo() {
     return () => clearTimeout(timer);
   }, [prefersReduced]);
 
+  const restart = useCallback(() => {
+    setVisibleLines(0);
+    setStarted(false);
+    setTimeout(() => setStarted(true), prefersReduced ? 50 : 300);
+  }, [prefersReduced]);
+
+  const isComplete = visibleLines >= lines.length;
+
   return (
     <div className="terminal-container">
       <div className="terminal-glow rounded-2xl border border-white/5 bg-zinc-950 shadow-2xl shadow-blue-950/5 dark:bg-[#0a0a0a] sm:rounded-3xl">
@@ -128,6 +136,17 @@ export function TerminalDemo() {
               <span className="h-1.5 w-1.5 rounded-full bg-blue-500" />
               airis@terminal
             </span>
+            {isComplete && (
+              <button
+                type="button"
+                onClick={restart}
+                className="flex h-5 items-center gap-1 rounded-md border border-white/5 px-1.5 text-[10px] text-zinc-500 transition-colors hover:bg-white/5 hover:text-zinc-300 sm:h-5 sm:px-2 sm:text-xs"
+                aria-label="Replay terminal demo"
+              >
+                <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" /></svg>
+                Replay
+              </button>
+            )}
           </div>
           <div className="text-[10px] text-zinc-600 sm:text-xs">~</div>
         </div>

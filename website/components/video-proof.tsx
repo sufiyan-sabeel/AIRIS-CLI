@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { proofCards } from "@/data/site";
 import type { LucideIcon } from "lucide-react";
 
-const VIDEO_PATH = "/AIRIS-CLI/proof/airis-install-demo.mp4";
+const VIDEO_PATH = "/AIRIS-CLI/proof/airis-install-demo-compressed.mp4";
 
 function ProofCard({ title, description, icon: Icon, index }: { title: string; description: string; icon: LucideIcon; index: number }) {
   const card = (
@@ -92,7 +92,7 @@ export function VideoProof() {
               onEnded={handleVideoEnd}
               onClick={togglePlay}
               aria-label="AIRIS CLI installation demo video"
-              poster="/AIRIS-CLI/proof/airis-install-poster.jpg"
+              poster=""
             >
               <source src={VIDEO_PATH} type="video/mp4" />
             </video>
