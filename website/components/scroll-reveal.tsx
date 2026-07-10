@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import type { ReactNode } from "react";
 
@@ -64,12 +64,18 @@ export function ScrollReveal({
   once?: boolean;
   margin?: string;
 }) {
+  const prefersReduced = useReducedMotion();
+  if (prefersReduced) {
+    return <div className={cn(className)}>{children}</div>;
+  }
   const v = variants[variant];
   return (
     <motion.div
       className={cn(className)}
-      initial={v.hidden}
-      whileInView={v.visible}
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      initial={v.hidden as any}
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      whileInView={v.visible as any}
       viewport={{ once, margin }}
       transition={{ duration, delay, ease: [0.16, 1, 0.3, 1] }}
     >
@@ -91,6 +97,10 @@ export function StaggerChildren({
   once?: boolean;
   margin?: string;
 }) {
+  const prefersReduced = useReducedMotion();
+  if (prefersReduced) {
+    return <div className={className}>{children}</div>;
+  }
   return (
     <motion.div
       className={className}
@@ -116,16 +126,19 @@ export function StaggerItem({
   className?: string;
   variant?: AnimationVariant;
 }) {
+  const prefersReduced = useReducedMotion();
+  if (prefersReduced) {
+    return <div className={className}>{children}</div>;
+  }
   const v = variants[variant];
   return (
     <motion.div
       className={className}
       variants={{
-        hidden: v.hidden,
-        visible: {
-          ...v.visible,
-          transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] },
-        },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        hidden: v.hidden as any,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        visible: { ...(v.visible as any), transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } },
       }}
     >
       {children}
