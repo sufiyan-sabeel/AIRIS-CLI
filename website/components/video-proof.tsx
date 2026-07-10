@@ -92,7 +92,7 @@ export function VideoProof() {
               onEnded={handleVideoEnd}
               onClick={togglePlay}
               aria-label="AIRIS CLI installation demo video"
-              poster="/AIRIS-CLI/proof/airis-install-poster.jpg"
+              poster=""
             >
               <source src={VIDEO_PATH} type="video/mp4" />
             </video>

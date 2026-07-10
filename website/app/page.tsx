@@ -23,10 +23,6 @@ import {
   Braces,
   ClipboardCheck,
   TerminalSquare,
-  BookOpen,
-  Command,
-  ChevronDown,
-  Star,
 } from "lucide-react";
 import { AirisLogo } from "@/components/logo";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -40,6 +36,7 @@ import { SectionHeader } from "@/components/section-header";
 import { FeatureCard } from "@/components/feature-card";
 import { CommandExplorer } from "@/components/command-explorer";
 import { ScrollReveal, StaggerChildren, StaggerItem } from "@/components/scroll-reveal";
+import { ScrollToTop } from "@/components/scroll-to-top";
 import {
   repo,
   navItems,
@@ -90,7 +87,7 @@ export default function Home() {
         </div>
       </header>
 
-      <main id="top">
+      <main id="main-content">
         {/* ═══════════════════════════════════════════════════════
            HERO
            ═══════════════════════════════════════════════════════ */}
@@ -101,6 +98,7 @@ export default function Home() {
           <div className="orb-blue absolute -left-32 -top-32 -z-10 h-80 w-80 rounded-full bg-blue-500/10 blur-3xl" aria-hidden />
           <div className="orb-cyan absolute -right-32 top-16 -z-10 h-96 w-96 rounded-full bg-cyan-500/6 blur-3xl" aria-hidden />
           <div className="orb-blue-slow absolute bottom-0 left-1/3 -z-10 h-72 w-72 rounded-full bg-blue-500/5 blur-3xl" aria-hidden />
+          <div className="orb-pulse absolute left-1/2 top-1/3 -z-10 h-[30rem] w-[30rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-500/4 blur-3xl" aria-hidden />
 
           <div className="mx-auto max-w-7xl">
             <div className="fade-up text-center">
@@ -235,13 +233,32 @@ export default function Home() {
               description={`Node.js ${repo.node} required. Choose your preferred installation method below.`}
             />
 
-            <StaggerChildren staggerDelay={0.08} className="grid gap-4 lg:grid-cols-2">
+            <StaggerChildren staggerDelay={0.08} className="grid gap-4 lg:grid-cols-3">
               <StaggerItem>
                 <Card className="glass-card hover-lift h-full">
                   <CardHeader>
                     <div className="flex items-center gap-3">
                       <div className="feature-icon">
                         <Terminal className="h-5 w-5 text-blue-400" />
+                      </div>
+                      <div>
+                        <CardTitle>Quick install</CardTitle>
+                        <CardDescription>One-line curl install</CardDescription>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <CodeBlock code="curl -fsSL https://sufiyan-sabeel.github.io/AIRIS-CLI/install.sh | bash" />
+                  </CardContent>
+                </Card>
+              </StaggerItem>
+
+              <StaggerItem>
+                <Card className="glass-card hover-lift h-full">
+                  <CardHeader>
+                    <div className="flex items-center gap-3">
+                      <div className="feature-icon">
+                        <Github className="h-5 w-5 text-blue-400" />
                       </div>
                       <div>
                         <CardTitle>npm install</CardTitle>
@@ -275,7 +292,7 @@ export default function Home() {
                 </Card>
               </StaggerItem>
 
-              <StaggerItem className="lg:col-span-2">
+              <StaggerItem className="lg:col-span-3">
                 <Card className="glass-card hover-lift">
                   <CardHeader>
                     <div className="flex items-center gap-3">
@@ -696,6 +713,9 @@ export default function Home() {
           </div>
         </div>
       </footer>
+
+      {/* ── SCROLL TO TOP ── */}
+      <ScrollToTop />
     </div>
   );
 }

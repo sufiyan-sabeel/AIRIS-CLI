@@ -137,6 +137,9 @@ img, video, pre, code {
 .orb-blue-slow {
   animation: orb-float 16s ease-in-out infinite 2s;
 }
+.orb-pulse {
+  animation: orb-pulse 8s ease-in-out infinite;
+}
 
 @keyframes orb-float {
   0%, 100% { transform: translate(0, 0) scale(1); }
@@ -432,6 +435,10 @@ img, video, pre, code {
   0%, 100% { border-color: hsl(var(--border) / 0.4); }
   50% { border-color: hsl(213 94% 58% / 0.3); }
 }
+@keyframes orb-pulse {
+  0%, 100% { opacity: 0.4; transform: translate(-50%, -50%) scale(1); }
+  50% { opacity: 0.7; transform: translate(-50%, -50%) scale(1.1); }
+}
 
 .animate-caret { animation: caret 1s steps(1) infinite; }
 .animate-shimmer { background-size: 200% 100%; animation: shimmer 3s ease-in-out infinite; }
@@ -507,6 +514,16 @@ img, video, pre, code {
   .bg-grid-dense {
     background-size: 32px 32px;
   }
+  .terminal-orbit::before,
+  .terminal-orbit::after {
+    inset: -8px;
+  }
+}
+
+@media (max-width: 380px) {
+  html { font-size: 14px; }
+  .feature-icon { width: 2.25rem; height: 2.25rem; }
+  .feature-icon svg { height: 1rem; width: 1rem; }
 }
 
 /* Improved code readability */
