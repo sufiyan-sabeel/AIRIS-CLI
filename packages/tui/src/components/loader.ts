@@ -1,4 +1,5 @@
 import type { TUI } from "../tui.ts";
+import { areAnimationsDisabled, isNoColor } from "../utils.ts";
 import { Text } from "./text.ts";
 
 export interface LoaderIndicatorOptions {
@@ -34,8 +35,8 @@ export class Loader extends Text {
 	) {
 		super("", 1, 0);
 		this.ui = ui;
-		this.spinnerColorFn = spinnerColorFn;
-		this.messageColorFn = messageColorFn;
+		this.spinnerColorFn = isNoColor() ? ((s: string) => s) : spinnerColorFn;
+		this.messageColorFn = isNoColor() ? ((s: string) => s) : messageColorFn;
 		this.message = message;
 		this.setIndicator(indicator);
 	}
@@ -72,6 +73,12 @@ export class Loader extends Text {
 	private restartAnimation(): void {
 		this.stop();
 		if (this.frames.length <= 1) {
+			return;
+		}
+		// Disable animation in CI, non-TTY, or NO_COLOR
+		if (areAnimationsDisabled()) {
+			this.currentFrame = 0;
+			this.updateDisplay();
 			return;
 		}
 		this.intervalId = setInterval(() => {

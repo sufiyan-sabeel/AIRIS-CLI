@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import type { ReactNode } from "react";
 
@@ -64,6 +64,10 @@ export function ScrollReveal({
   once?: boolean;
   margin?: string;
 }) {
+  const prefersReduced = useReducedMotion();
+  if (prefersReduced) {
+    return <div className={cn(className)}>{children}</div>;
+  }
   const v = variants[variant];
   return (
     <motion.div
@@ -91,6 +95,10 @@ export function StaggerChildren({
   once?: boolean;
   margin?: string;
 }) {
+  const prefersReduced = useReducedMotion();
+  if (prefersReduced) {
+    return <div className={className}>{children}</div>;
+  }
   return (
     <motion.div
       className={className}
@@ -116,6 +124,10 @@ export function StaggerItem({
   className?: string;
   variant?: AnimationVariant;
 }) {
+  const prefersReduced = useReducedMotion();
+  if (prefersReduced) {
+    return <div className={className}>{children}</div>;
+  }
   const v = variants[variant];
   return (
     <motion.div

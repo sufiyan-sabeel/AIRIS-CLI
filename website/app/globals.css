@@ -32,12 +32,15 @@
   --ring: 213 94% 58%;
   --accent: 213 94% 58%;
   --accent-foreground: 0 0% 100%;
+  --success: 142 72% 35%;
+  --warning: 38 92% 50%;
+  --error: 0 72% 51%;
 }
 
 .dark {
-  --background: 0 0% 0%;
+  --background: 0 0% 2%;
   --foreground: 0 0% 95%;
-  --card: 0 0% 3%;
+  --card: 0 0% 4%;
   --card-foreground: 0 0% 95%;
   --muted: 0 0% 8%;
   --muted-foreground: 0 0% 55%;
@@ -48,6 +51,9 @@
   --ring: 213 94% 58%;
   --accent: 213 94% 58%;
   --accent-foreground: 0 0% 100%;
+  --success: 142 72% 35%;
+  --warning: 38 92% 50%;
+  --error: 0 72% 51%;
 }
 
 * { box-sizing: border-box; }
@@ -489,3 +495,43 @@ img, video, pre, code {
 
 /* ── Typography ── */
 .text-balance { text-wrap: balance; }
+
+/* Responsive container for terminal preview */
+@media (max-width: 640px) {
+  .hero-gradient {
+    mask-image: none;
+    -webkit-mask-image: none;
+  }
+  .bg-grid,
+  .bg-grid-subtle,
+  .bg-grid-dense {
+    background-size: 32px 32px;
+  }
+}
+
+/* Improved code readability */
+code, pre {
+  text-rendering: optimizeSpeed;
+}
+
+/* Better focus styles */
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Ensure dark mode scrollbar is visible */
+@media (prefers-color-scheme: dark) {
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground) / 0.3);
+  }
+}
+
+/* Safe area for mobile devices */
+@supports (padding: env(safe-area-inset-bottom)) {
+  footer {
+    padding-bottom: calc(12px + env(safe-area-inset-bottom));
+  }
+}
