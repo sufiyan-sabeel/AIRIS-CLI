@@ -72,8 +72,10 @@ export function ScrollReveal({
   return (
     <motion.div
       className={cn(className)}
-      initial={v.hidden}
-      whileInView={v.visible}
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      initial={v.hidden as any}
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      whileInView={v.visible as any}
       viewport={{ once, margin }}
       transition={{ duration, delay, ease: [0.16, 1, 0.3, 1] }}
     >
@@ -133,11 +135,10 @@ export function StaggerItem({
     <motion.div
       className={className}
       variants={{
-        hidden: v.hidden,
-        visible: {
-          ...v.visible,
-          transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] },
-        },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        hidden: v.hidden as any,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        visible: { ...(v.visible as any), transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } },
       }}
     >
       {children}
