@@ -737,6 +737,81 @@ The repository includes the following GitHub Actions workflows:
 
 ---
 
+
+## Website Development
+
+The AIRIS-CLI website is located in the `website/` directory. It is a Next.js 16 static site with Tailwind CSS v4 and Framer Motion.
+
+### Development
+
+```bash
+cd website
+npm install --ignore-scripts
+npm run dev
+```
+
+### Building for Production
+
+```bash
+cd website
+npm run build
+```
+
+Static output is written to `website/out/`. The site is deployed to GitHub Pages.
+
+### GitHub Pages Deployment
+
+Deployed automatically via `.github/workflows/deploy-pages.yml` on changes to `website/` on `main`. Uses Next.js static export with `basePath: "/AIRIS-CLI"`.
+
+### CLI Terminal UI
+
+The TUI package (`packages/tui`) provides reusable components:
+
+- **AirisWordmark**: ASCII wordmark adapting to terminal width
+- **ShortcutBar**: Compact keyboard shortcut display
+- **StatusLine**: Repository path, branch, version, mode
+- **PromptArea**: Input area with contextual status
+- **Loader**: Animated spinner with activity message
+
+### Theme Colors
+
+The CLI uses a graphite/slate palette:
+
+| Role | Color |
+|------|-------|
+| Primary | Muted blue `#60A5FA` |
+| Accent | Soft cyan `#22D3EE` |
+| Success | Soft green `#4ADE80` |
+| Warning | Amber `#FBBF24` |
+| Error | Muted red `#F87171` |
+| Divider | Dark slate `#282832` |
+
+Set theme via: `airis config set theme graphite` or `airis theme set graphite`
+
+### NO_COLOR Support
+
+Set `NO_COLOR=1` to disable all ANSI escape sequences. Animations are also disabled when:
+
+- `CI` environment variable is set
+- Output is not a TTY (piped/redirected)
+- `prefers-reduced-motion` is active (website only)
+
+### Terminal Width Breakpoints
+
+The CLI adapts to terminal width automatically:
+
+- **Narrow (<50 columns)**: Compact single-line prompt, minimal shortcuts, no wordmark
+- **Medium (50-90 columns)**: Standard prompt with context bar, compact shortcuts
+- **Wide (>90 columns)**: Full layout with dividers, multi-row shortcuts, ASCII wordmark
+
+### Troubleshooting
+
+- **Blank display in narrow terminals**: The CLI auto-switches to compact mode. If still broken, check `TERM`.
+- **ANSI corruption in logs**: Set `NO_COLOR=1`.
+- **Slow mobile rendering (Termux)**: Set `export AIRIS_CLEAR_ON_SHRINK=0`.
+
+---
+
 ## Roadmap
 
 The public roadmap is maintained in [`ROADMAP.md`](ROADMAP.md).

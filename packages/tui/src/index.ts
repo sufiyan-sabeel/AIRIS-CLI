@@ -24,7 +24,11 @@ export {
 	type SelectListTruncatePrimaryContext,
 } from "./components/select-list.ts";
 export { type SettingItem, SettingsList, type SettingsListTheme } from "./components/settings-list.ts";
+export { AirisWordmark } from "./components/airis-wordmark.ts";
+export { PromptArea, type PromptAreaData } from "./components/prompt-area.ts";
+export { ShortcutBar, type ShortcutItem } from "./components/shortcut-bar.ts";
 export { Spacer } from "./components/spacer.ts";
+export { StatusLine, type StatusLineData } from "./components/status-line.ts";
 export { Text } from "./components/text.ts";
 export { TruncatedText } from "./components/truncated-text.ts";
 // Editor component interface (for custom editors)
@@ -106,4 +110,10 @@ export {
 	TUI,
 } from "./tui.ts";
 // Utilities
-export { truncateToWidth, visibleWidth, wrapTextWithAnsi } from "./utils.ts";
+export {
+	areAnimationsDisabled,
+	isNoColor,
+	truncateToWidth,
+	visibleWidth,
+	wrapTextWithAnsi,
+} from "./utils.ts";

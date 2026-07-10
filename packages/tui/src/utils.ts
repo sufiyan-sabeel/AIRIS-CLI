@@ -1,5 +1,27 @@
 import { eastAsianWidth } from "get-east-asian-width";
 
+/**
+ * Check if NO_COLOR environment is set, or output is not a TTY.
+ * Respects the https://no-color.org standard.
+ */
+export function isNoColor(): boolean {
+	return (
+		process.env.NO_COLOR !== undefined &&
+		process.env.NO_COLOR !== "" &&
+		process.env.NO_COLOR !== "0"
+	);
+}
+
+/**
+ * Check if animations should be disabled (CI, non-TTY, or NO_COLOR).
+ */
+export function areAnimationsDisabled(): boolean {
+	if (process.env.CI || !process.stdout.isTTY) {
+		return true;
+	}
+	return isNoColor();
+}
+
 // segmenters (shared instance)
 const graphemeSegmenter = new Intl.Segmenter(undefined, { granularity: "grapheme" });
 const wordSegmenter = new Intl.Segmenter(undefined, { granularity: "word" });

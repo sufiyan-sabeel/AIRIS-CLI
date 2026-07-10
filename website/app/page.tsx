@@ -157,7 +157,7 @@ export default function Home() {
 
             {/* Quick Info */}
             <ScrollReveal delay={0.5} duration={0.5}>
-              <dl className="mx-auto mt-12 grid max-w-3xl grid-cols-2 gap-2 text-xs sm:gap-3 sm:text-sm md:grid-cols-4">
+              <dl className="mx-auto mt-12 grid max-w-3xl grid-cols-2 gap-3 text-xs sm:gap-4 sm:text-sm md:grid-cols-4">
                 {[
                   { label: "Creator", value: repo.creator },
                   { label: "Version", value: `v${repo.version}` },
@@ -166,10 +166,10 @@ export default function Home() {
                 ].map((item) => (
                   <div
                     key={item.label}
-                    className="glass-card-static rounded-xl border p-2.5 text-center backdrop-blur-sm sm:rounded-2xl sm:p-4"
+                    className="rounded-xl border border-border/40 bg-card/60 p-3 text-center backdrop-blur-sm sm:rounded-2xl sm:p-4"
                   >
-                    <dt className="text-muted-foreground">{item.label}</dt>
-                    <dd className="mt-0.5 font-medium sm:mt-1">{item.value}</dd>
+                    <dt className="text-xs text-muted-foreground sm:text-sm">{item.label}</dt>
+                    <dd className="mt-1 font-semibold tracking-tight text-foreground">{item.value}</dd>
                   </div>
                 ))}
               </dl>
@@ -180,7 +180,7 @@ export default function Home() {
         {/* ═══════════════════════════════════════════════════════
            FEATURES
            ═══════════════════════════════════════════════════════ */}
-        <section id="features" className="relative isolate overflow-hidden px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
+        <section id="features" aria-labelledby="features-heading" className="relative isolate overflow-hidden px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
           <div className="bg-grid-subtle absolute inset-0 -z-10" aria-hidden />
           <div className="absolute left-1/2 top-24 -z-10 h-64 w-64 -translate-x-1/2 rounded-full bg-blue-500/8 blur-3xl" aria-hidden />
 
@@ -212,7 +212,7 @@ export default function Home() {
         {/* ═══════════════════════════════════════════════════════
            DEMO / VIDEO
            ═══════════════════════════════════════════════════════ */}
-        <section id="demo" className="relative isolate overflow-hidden border-y border-border/50 bg-secondary/30 px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
+        <section id="demo" aria-labelledby="demo-heading" className="relative isolate overflow-hidden border-y border-border/50 bg-secondary/30 px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
           <div className="bg-grid-subtle absolute inset-0 -z-10" aria-hidden />
           <div className="mx-auto max-w-5xl">
             <SectionHeader
@@ -227,7 +227,7 @@ export default function Home() {
         {/* ═══════════════════════════════════════════════════════
            INSTALL
            ═══════════════════════════════════════════════════════ */}
-        <section id="installation" className="px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
+        <section id="installation" aria-labelledby="install-heading" className="px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
           <div className="mx-auto max-w-7xl">
             <SectionHeader
               eyebrow="Installation"
@@ -352,7 +352,7 @@ export default function Home() {
         {/* ═══════════════════════════════════════════════════════
            WORKFLOW
            ═══════════════════════════════════════════════════════ */}
-        <section id="workflow" className="px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
+        <section id="workflow" aria-labelledby="workflow-heading" className="px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
           <div className="mx-auto max-w-7xl">
             <SectionHeader
               eyebrow="airis ship"
@@ -379,7 +379,7 @@ export default function Home() {
         {/* ═══════════════════════════════════════════════════════
            COMMAND EXPLORER
            ═══════════════════════════════════════════════════════ */}
-        <section id="commands" className="border-y border-border/50 bg-secondary/30 px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
+        <section id="commands" aria-labelledby="commands-heading" className="border-y border-border/50 bg-secondary/30 px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
           <div className="bg-grid-dense absolute inset-0 -z-10" aria-hidden />
           <div className="mx-auto max-w-5xl">
             <SectionHeader
@@ -548,7 +548,7 @@ export default function Home() {
         {/* ═══════════════════════════════════════════════════════
            DOCS / PROVIDERS
            ═══════════════════════════════════════════════════════ */}
-        <section id="docs" className="px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
+        <section id="docs" aria-labelledby="docs-heading" className="px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
           <div className="mx-auto max-w-7xl">
             <SectionHeader
               eyebrow="Documentation"
@@ -574,7 +574,7 @@ export default function Home() {
         {/* ═══════════════════════════════════════════════════════
            PROJECT JOURNEY / CREATOR
            ═══════════════════════════════════════════════════════ */}
-        <section id="creator" className="border-y border-border/50 bg-secondary/30 px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
+        <section id="creator" aria-labelledby="creator-heading" className="border-y border-border/50 bg-secondary/30 px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
           <div className="mx-auto max-w-4xl text-center">
             <ScrollReveal>
               <span className="inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-secondary/60 px-3 py-1 text-xs font-medium text-muted-foreground">

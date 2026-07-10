@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-07-06T10:44:57.983Z",
-  "date": "2026-07-06",
+  "generatedAt": "2026-07-10T12:15:33.318Z",
+  "date": "2026-07-10",
   "dailyFact": {
-    "fact": "The Termux installation path allows running AIRIS on Android devices.",
-    "index": 11,
+    "fact": "The repository includes a full CI/CD pipeline with GitHub Actions.",
+    "index": 15,
     "total": 21
   },
   "analysis": {
@@ -16,23 +16,23 @@
       "coding-agent",
       "tui"
     ],
-    "tsSourceFiles": 717,
-    "tsxComponents": 16,
+    "tsSourceFiles": 722,
+    "tsxComponents": 20,
     "goModules": 5,
     "scriptFiles": 16,
-    "totalSourceLines": 217971,
+    "totalSourceLines": 219911,
     "githubWorkflows": 11,
     "markdownDocs": 93
   },
   "codeBreakdown": [
     {
       "label": "TypeScript (.ts)",
-      "count": 717,
+      "count": 722,
       "color": "#3178c6"
     },
     {
       "label": "React/TSX (.tsx)",
-      "count": 16,
+      "count": 20,
       "color": "#06b6d4"
     },
     {

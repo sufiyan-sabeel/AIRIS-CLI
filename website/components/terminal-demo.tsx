@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { repo } from "@/data/site";
 
 const lines = [
@@ -102,15 +102,16 @@ function TypewriterLine({ text, type, speed = 20, onDone }: {
 export function TerminalDemo() {
   const [visibleLines, setVisibleLines] = useState(0);
   const [started, setStarted] = useState(false);
+  const prefersReduced = useReducedMotion();
 
   const advanceLine = useCallback(() => {
     setVisibleLines((p) => Math.min(p + 1, lines.length));
   }, []);
 
   useEffect(() => {
-    const timer = setTimeout(() => setStarted(true), 400);
+    const timer = setTimeout(() => setStarted(true), prefersReduced ? 100 : 400);
     return () => clearTimeout(timer);
-  }, []);
+  }, [prefersReduced]);
 
   return (
     <div className="terminal-container">
@@ -137,8 +138,25 @@ export function TerminalDemo() {
           aria-label="Interactive terminal demo showing AIRIS CLI commands and output"
           role="log"
         >
-          <AnimatePresence mode="popLayout">
-            {started && (
+          {started && (
+            prefersReduced ? (
+              <div className="space-y-0.5">
+                {lines.slice(0, visibleLines).map((line, i) => {
+                  if (line.type === "blank") {
+                    return <div key={i} className="h-3" />;
+                  }
+                  return (
+                    <div key={i} className={`whitespace-pre-wrap font-mono text-xs leading-6 sm:text-sm sm:leading-7 ${line.type === "input" ? "text-zinc-100" : "text-zinc-400"}`}>
+                      {line.type === "input" && (
+                        <span className="mr-2 select-none text-emerald-400 font-medium">$</span>
+                      )}
+                      {formatLine(line.text)}
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <AnimatePresence mode="popLayout">
               <motion.div
                 key="terminal-content"
                 initial={{ opacity: 0 }}
@@ -182,8 +200,9 @@ export function TerminalDemo() {
                   </div>
                 )}
               </motion.div>
-            )}
-          </AnimatePresence>
+              </AnimatePresence>
+            )
+          )}
 
           {/* Subtle bottom gradient fade */}
           <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-[#0a0a0a] to-transparent" />

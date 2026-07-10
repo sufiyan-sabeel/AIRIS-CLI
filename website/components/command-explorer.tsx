@@ -69,7 +69,7 @@ export function CommandExplorer() {
                       <p><span className="text-muted-foreground">Example:</span> <code className="font-mono">{command.examples[0]}</code></p>
                     </div>
                   </div>
-                  <CopyButton value={command.examples[0]} label="Copy example" />
+                  <CopyButton value={command.examples[0]} />
                 </div>
               </CardContent>
             </Card>
