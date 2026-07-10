@@ -138,6 +138,7 @@ describe("StatusLine", () => {
 
 	it("should handle narrow widths with truncation", async () => {
 		setupNoColor();
+		const { visibleWidth } = await import("../src/utils.ts");
 		const { StatusLine } = await import("../src/components/status-line.ts");
 
 		const line = new StatusLine({
@@ -148,8 +149,9 @@ describe("StatusLine", () => {
 
 		const rendered = line.render(30);
 		assert.ok(rendered.length >= 1);
-		// Should be truncated to fit 30 columns
-		assert.ok(rendered[0].length <= 35);
+		// Use visibleWidth to properly measure display width (strips ANSI)
+		const displayWidth = visibleWidth(rendered[0]);
+		assert.ok(displayWidth <= 35, `Display width ${displayWidth} exceeds 35 cols`);
 	});
 
 	it("should handle empty data", async () => {
