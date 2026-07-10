@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { proofCards } from "@/data/site";
 import type { LucideIcon } from "lucide-react";
 
-const VIDEO_PATH = "/AIRIS-CLI/proof/airis-install-demo.mp4";
+const VIDEO_PATH = "/AIRIS-CLI/proof/airis-install-demo-compressed.mp4";
 
 function ProofCard({ title, description, icon: Icon, index }: { title: string; description: string; icon: LucideIcon; index: number }) {
   const card = (
