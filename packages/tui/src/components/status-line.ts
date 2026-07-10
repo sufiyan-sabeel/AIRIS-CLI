@@ -86,8 +86,6 @@ export class StatusLine implements Component {
 		const separator = slate(" · ");
 		let fullLine = parts.join(separator);
 
-		const separatorLen = visibleWidth(separator);
-
 		if (visibleWidth(fullLine) > width) {
 			// Need to truncate. Keep left repo path + branch, drop from right
 			const keepLeft = [this.data.repoPath, this.data.branch]
