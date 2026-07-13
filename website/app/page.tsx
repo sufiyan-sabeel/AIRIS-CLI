@@ -23,10 +23,14 @@ import {
   Braces,
   ClipboardCheck,
   TerminalSquare,
+  MessageSquare,
+  Eye,
+  Code2,
+  BookOpen,
+  Users,
 } from "lucide-react";
-import { AirisLogo } from "@/components/logo";
-import { ThemeToggle } from "@/components/theme-toggle";
-import { MobileNav } from "@/components/mobile-nav";
+import { Header } from "@/components/header";
+import { Footer } from "@/components/footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CodeBlock } from "@/components/code-block";
@@ -37,6 +41,7 @@ import { FeatureCard } from "@/components/feature-card";
 import { CommandExplorer } from "@/components/command-explorer";
 import { ScrollReveal, StaggerChildren, StaggerItem } from "@/components/scroll-reveal";
 import { ScrollToTop } from "@/components/scroll-to-top";
+import { Badge } from "@/components/ui/badge";
 import {
   repo,
   navItems,
@@ -50,42 +55,7 @@ import {
 export default function Home() {
   return (
     <div className="min-h-screen bg-background text-foreground">
-      {/* ── HEADER ── */}
-      <header className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl">
-        <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:h-16 sm:px-6 lg:px-8">
-          <Link href="#top" aria-label="AIRIS CLI home">
-            <AirisLogo />
-          </Link>
-
-          <nav className="hidden items-center gap-1 md:flex" aria-label="Primary navigation">
-            {navItems.filter(n => !n.external).map((item) => (
-              <a
-                key={item.href}
-                href={item.href}
-                className="rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-              >
-                {item.label}
-              </a>
-            ))}
-          </nav>
-
-          <div className="flex items-center gap-1 sm:gap-2">
-            <MobileNav />
-            <ThemeToggle />
-            <Button asChild size="sm" variant="ghost" className="max-sm:hidden">
-              <a href={repo.url} target="_blank" rel="noreferrer" aria-label="GitHub repository">
-                <Github className="h-4 w-4" />
-                <span>GitHub</span>
-              </a>
-            </Button>
-            <Button asChild size="sm" variant="primary" className="hidden lg:inline-flex">
-              <a href="#installation">
-                Get Started <ArrowRight className="h-3.5 w-3.5" />
-              </a>
-            </Button>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       <main id="main-content">
         {/* ═══════════════════════════════════════════════════════
@@ -472,7 +442,7 @@ export default function Home() {
         </section>
 
         {/* ═══════════════════════════════════════════════════════
-           AIRIS IDE (COMING SOON)
+           AIRIS IDE
            ═══════════════════════════════════════════════════════ */}
         <section id="airis-ide" className="relative isolate overflow-hidden border-y border-border/50 bg-secondary/30 px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
           <div className="bg-grid-subtle absolute inset-0 -z-10" aria-hidden />
@@ -482,24 +452,31 @@ export default function Home() {
             <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
               <ScrollReveal variant="slide-left">
                 <div className="flex items-center gap-3">
-                  <span className="inline-flex items-center rounded-full border border-border/60 bg-secondary/60 px-3 py-1 text-xs font-medium text-muted-foreground">
-                    Coming Soon
+                  <span className="inline-flex items-center rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-xs font-medium text-emerald-300">
+                    Available Now
                   </span>
-                  <span className="inline-flex items-center rounded-full border border-amber-400/20 bg-amber-400/10 px-3 py-1 text-xs font-medium text-amber-300">
-                    Planned
+                  <span className="inline-flex items-center rounded-full border border-border/60 bg-secondary/60 px-3 py-1 text-xs font-medium text-muted-foreground">
+                    Web + Mobile PWA
                   </span>
                 </div>
-                <h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl lg:text-5xl">AIRIS IDE</h2>
+                <h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl lg:text-5xl">AIRIS Web IDE</h2>
                 <p className="mt-5 text-base leading-7 text-muted-foreground sm:text-lg sm:leading-8">
-                  AIRIS IDE is a planned future interface for AIRIS workflows. It is not released yet.
+                  A full-featured code editor with AI assistance, file explorer, terminal, and project management —
+                  running entirely in your browser with PWA support for mobile.
                 </p>
                 <p className="mt-3 text-sm leading-6 text-muted-foreground">
-                  The IDE will aim to bring AI coding workflows, project views, automation, and terminal power into a modern visual interface.
+                  Features Monaco editor, AI chat panel, file tree, integrated terminal, diff viewer, and multi-provider AI support.
+                  Installable on Android and iOS via &quot;Add to Home Screen&quot;.
                 </p>
                 <div className="mt-7 flex flex-wrap gap-3">
+                  <Button asChild size="lg" variant="primary">
+                    <Link href="/ide">
+                      <Sparkles className="h-4 w-4" /> Try AIRIS IDE <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </Button>
                   <Button asChild size="lg" variant="outline">
                     <a href={repo.url} target="_blank" rel="noreferrer">
-                      <Sparkles className="h-4 w-4" /> View Roadmap <ChevronRight className="h-4 w-4" />
+                      View Roadmap <ChevronRight className="h-4 w-4" />
                     </a>
                   </Button>
                 </div>
@@ -514,7 +491,7 @@ export default function Home() {
                       <span className="h-2.5 w-2.5 rounded-full bg-emerald-400 sm:h-3 sm:w-3" />
                     </div>
                     <span className="ml-3 rounded-full border border-violet-400/20 bg-violet-400/10 px-2 py-0.5 font-mono text-xs text-violet-200">
-                      airis-ide (planned)
+                      airis-ide (active)
                     </span>
                   </div>
                   <div className="space-y-3 p-5 font-mono text-xs leading-6 text-zinc-400 sm:p-6 sm:text-sm sm:leading-7">
@@ -528,8 +505,8 @@ export default function Home() {
                         <Icon className="h-3.5 w-3.5 text-violet-400" /> {text}
                       </div>
                     ))}
-                    <div className="mt-3 rounded-xl border border-dashed border-violet-400/20 bg-violet-400/[0.04] p-3.5 text-center text-xs text-violet-300 sm:mt-4 sm:p-4 sm:text-sm">
-                      Development not started yet
+                    <div className="mt-3 rounded-xl border border-emerald-400/20 bg-emerald-400/[0.04] p-3.5 text-center text-xs text-emerald-300 sm:mt-4 sm:p-4 sm:text-sm">
+                      Available now — open in your browser
                     </div>
                   </div>
                 </div>
@@ -686,33 +663,7 @@ export default function Home() {
         </section>
       </main>
 
-      {/* ═══════════════════════════════════════════════════════
-         FOOTER
-         ═══════════════════════════════════════════════════════ */}
-      <footer className="border-t border-border/50 px-4 py-12 sm:px-6 lg:px-8">
-        <div className="mx-auto flex max-w-7xl flex-col gap-6 md:flex-row md:items-center md:justify-between">
-          <div>
-            <AirisLogo />
-            <p className="mt-3 max-w-xl text-sm text-muted-foreground">
-              {repo.fullName}. Created by {repo.creator} for {repo.organization}. License: {repo.license}.
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-3 text-sm">
-            <a className="text-muted-foreground transition-colors hover:text-foreground" href={repo.url} target="_blank" rel="noreferrer">
-              Repository <ExternalLink className="inline h-3 w-3" />
-            </a>
-            <a className="text-muted-foreground transition-colors hover:text-foreground" href="#features">Features</a>
-            <a className="text-muted-foreground transition-colors hover:text-foreground" href="#demo">Demo</a>
-            <a className="text-muted-foreground transition-colors hover:text-foreground" href="#installation">Install</a>
-            <a className="text-muted-foreground transition-colors hover:text-foreground" href="#commands">Commands</a>
-            <a className="text-muted-foreground transition-colors hover:text-foreground" href="#termux">Termux</a>
-            <a className="text-muted-foreground transition-colors hover:text-foreground" href="#airis-ide">AIRIS IDE</a>
-            <a className="text-muted-foreground transition-colors hover:text-foreground" href={`${repo.url}/blob/main/LICENSE`} target="_blank" rel="noreferrer">
-              License
-            </a>
-          </div>
-        </div>
-      </footer>
+      <Footer />
 
       {/* ── SCROLL TO TOP ── */}
       <ScrollToTop />

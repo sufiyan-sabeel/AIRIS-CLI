@@ -3,11 +3,14 @@ dotenv.config();
 
 import express from 'express';
 import cors from 'cors';
+import { createServer } from 'http';
 import chatRoutes from './routes/chat';
 import cliRoutes from './routes/cli';
 import taskRoutes from './routes/tasks';
 import authRoutes from './routes/auth';
 import systemRoutes from './routes/system';
+import updateRoutes from './routes/update';
+import { setupWebSocket } from './websocket';
 import { initDatabase, closeDatabase, saveToDisk } from './config/database';
 import { isFirebaseInitialized } from './config/firebase';
 import { MemoryService } from './services/memoryService';
@@ -16,6 +19,7 @@ async function main(): Promise<void> {
   await initDatabase();
 
   const app = express();
+  const server = createServer(app);
   const PORT = parseInt(process.env.PORT || '3000', 10);
 
   const corsOrigins = process.env.CORS_ORIGINS || '*';
@@ -45,6 +49,10 @@ async function main(): Promise<void> {
   app.use('/api/tasks', taskRoutes);
   app.use('/api/auth', authRoutes);
   app.use('/api/system', systemRoutes);
+  app.use('/api/update', updateRoutes);
+
+  // Setup WebSocket for IDE support
+  const wss = setupWebSocket(server);
 
   app.get('/api/history', (req, res) => {
     try {
@@ -73,7 +81,7 @@ async function main(): Promise<void> {
     res.status(404).json({ error: 'Not found' });
   });
 
-  app.listen(PORT, '0.0.0.0', () => {
+  server.listen(PORT, '0.0.0.0', () => {
     console.log(`[Server] AIRIS Backend running on port ${PORT}`);
     console.log(`[Server] Health: http://localhost:${PORT}/health`);
     console.log(`[Server] System: http://localhost:${PORT}/api/system/health`);

@@ -236,12 +236,13 @@ export const proofCards = [
 ];
 
 export const navItems = [
-  { label: "Features", href: "#features" },
-  { label: "Demo", href: "#demo" },
-  { label: "Termux", href: "#termux" },
-  { label: "AIRIS IDE", href: "#airis-ide" },
-  { label: "Install", href: "#installation" },
-  { label: "Docs", href: "#docs" },
+  { label: "Features", href: "/features" },
+  { label: "AI Models", href: "/ai-models" },
+  { label: "Brain & Agents", href: "/brain" },
+  { label: "Workflow", href: "/workflow" },
+  { label: "Pricing", href: "/pricing" },
+  { label: "Docs", href: "/docs" },
+  { label: "IDE", href: "/ide" },
   { label: "GitHub", href: "https://github.com/sufiyan-sabeel/AIRIS-CLI", external: true },
 ];
 

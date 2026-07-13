@@ -17,20 +17,21 @@ const jetbrainsMono = JetBrains_Mono({
   preload: true,
 });
 
-const title = "AIRIS CLI — Modern AI command-line development assistant";
+const title = "AIRIS — Next-Generation AI Operating System";
 const description =
-  "AIRIS CLI is a local-first AI coding agent for the terminal by Umaiz Sufiyan and KageOS, with file tools, shell execution, sessions, verified autonomy, and ship workflows.";
+  "AIRIS is an AI Operating System that combines ChatGPT, Cursor, GitHub, VS Code AI tools, workflow automation, intelligent agents, and system management into one cohesive ecosystem. Built for developers, by developers.";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://sufiyan-sabeel.github.io/AIRIS-CLI/"),
-  title: { default: title, template: "%s | AIRIS CLI" },
+  title: { default: title, template: "%s | AIRIS" },
   description,
-  applicationName: "AIRIS CLI",
+  applicationName: "AIRIS",
   authors: [{ name: "Umaiz Sufiyan" }],
   creator: "Umaiz Sufiyan",
   publisher: "KageOS",
   keywords: [
-    "AIRIS CLI",
+    "AIRIS",
+    "AI Operating System",
     "AI coding agent",
     "terminal assistant",
     "command-line development assistant",
@@ -39,19 +40,22 @@ export const metadata: Metadata = {
     "AI developer tools",
     "terminal AI",
     "open source CLI",
+    "workflow automation",
+    "AI agents",
+    "code editor",
   ],
   alternates: { canonical: "/" },
   openGraph: {
     type: "website",
-    title: "AIRIS CLI — AI-Powered Command-Line Assistant",
+    title: "AIRIS — AI-Powered Operating System for Development",
     description,
     url: "/",
-    siteName: "AIRIS CLI",
+    siteName: "AIRIS",
     locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
-    title: "AIRIS CLI — AI-Powered Command-Line Assistant",
+    title: "AIRIS — AI-Powered Operating System for Development",
     description,
   },
   icons: {
@@ -77,7 +81,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   colorScheme: "dark light",
   themeColor: [
-    { media: "(prefers-color-scheme: dark)", color: "#09090b" },
+    { media: "(prefers-color-scheme: dark)", color: "#000000" },
     { media: "(prefers-color-scheme: light)", color: "#ffffff" },
   ],
 };
@@ -85,9 +89,9 @@ export const viewport: Viewport = {
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  name: "AIRIS CLI",
+  name: "AIRIS",
   applicationCategory: "DeveloperApplication",
-  operatingSystem: "Linux, macOS, Windows, Android (Termux)",
+  operatingSystem: "Linux, macOS, Windows, Android (Termux), Web",
   description,
   author: {
     "@type": "Person",
@@ -111,6 +115,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#000000" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="mobile-web-app-capable" content="yes" />
       </head>
       <body className="font-sans antialiased">
         <a

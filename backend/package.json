@@ -16,13 +16,15 @@
     "express": "4.21.0",
     "openai": "4.77.0",
     "@google/generative-ai": "0.24.0",
-    "uuid": "11.0.0"
+    "uuid": "11.0.0",
+    "ws": "8.18.0"
   },
   "devDependencies": {
     "@types/express": "5.0.0",
     "@types/cors": "2.8.17",
     "@types/node": "22.10.0",
     "@types/uuid": "10.0.0",
+    "@types/ws": "8.5.14",
     "typescript": "5.7.2",
     "ts-node": "10.9.2"
   },
