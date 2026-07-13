@@ -1,3 +1,11 @@
+---
+name: termux-api
+description: >-
+  Use Android device capabilities via Termux:API when running AIRIS in Termux
+  (Android terminal emulator). Provides notifications, TTS, clipboard, dialog,
+  camera, sensors, location, battery, and storage commands.
+---
+
 # Termux:API Skill
 
 Use Android device capabilities via Termux:API when running AIRIS in Termux (Android terminal emulator).
