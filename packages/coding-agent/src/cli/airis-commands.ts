@@ -28,6 +28,7 @@ import { getAvailableThemesWithPaths, getThemeByName } from "../modes/interactiv
 import { parseChangelog } from "../utils/changelog.ts";
 import { spawnProcessSync } from "../utils/child-process.ts";
 import { handleImageCommand, printImageHelp } from "../vision/image-command.ts";
+import { handleGameCommand, printGameHeader } from "../utils/games.ts";
 import { printHelp } from "./args.ts";
 import { box, keyValue, section, separator, status, subtitle } from "./ui.ts";
 
@@ -208,6 +209,9 @@ function printCommandHelp(command?: string): void {
 		case "image":
 			printImageHelp();
 			return;
+		case "game":
+			printGameHeader();
+			return;
 		default:
 			printHelp();
 	}
@@ -241,6 +245,7 @@ export async function handleAirisCommand(args: string[]): Promise<boolean> {
 				"failures",
 				"ship",
 				"image",
+				"game",
 			].includes(command)
 		) {
 			printCommandHelp(command);
@@ -253,6 +258,11 @@ export async function handleAirisCommand(args: string[]): Promise<boolean> {
 	}
 
 	if (await handleImageCommand(args)) {
+		return true;
+	}
+
+	const gameResult = await handleGameCommand(args);
+	if (gameResult.played) {
 		return true;
 	}
 

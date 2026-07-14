@@ -46,6 +46,8 @@ export interface Args {
 	noContextFiles?: boolean;
 	listModels?: string | true;
 	offline?: boolean;
+	noAnimation?: boolean;
+	lowResource?: boolean;
 	verbose?: boolean;
 	projectTrustOverride?: boolean;
 	messages: string[];
@@ -185,6 +187,10 @@ export function parseArgs(args: string[]): Args {
 			result.projectTrustOverride = true;
 		} else if (arg === "--no-approve" || arg === "-na") {
 			result.projectTrustOverride = false;
+		} else if (arg === "--no-animation") {
+			result.noAnimation = true;
+		} else if (arg === "--low-resource") {
+			result.lowResource = true;
 		} else if (arg === "--offline") {
 			result.offline = true;
 		} else if (arg.startsWith("@")) {
@@ -365,6 +371,8 @@ ${optionLine("--verbose", "Force verbose startup")}
 ${optionLine("--approve, -a", "Trust project-local files for this run")}
 ${optionLine("--no-approve, -na", "Ignore project-local files for this run")}
 ${optionLine("--offline", "Disable startup network operations")}
+${optionLine("--no-animation", "Disable animated UI effects (spinners, loading bars)")}
+${optionLine("--low-resource", "Low-resource mode for Termux/mobile (disables animations, compact output)")}
 ${optionLine("--help, -h", "Show this help")}
 ${optionLine("--version, -v", "Show version number")}
 

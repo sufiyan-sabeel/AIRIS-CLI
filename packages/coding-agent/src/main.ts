@@ -54,6 +54,7 @@ import { hasTrustRequiringProjectResources, ProjectTrustStore } from "./core/tru
 import { runMigrations, showDeprecationWarnings } from "./migrations.ts";
 import { InteractiveMode, runPrintMode, runRpcMode } from "./modes/index.ts";
 import { initTheme, stopThemeWatcher } from "./modes/interactive/theme/theme.ts";
+import { animationsEnabled, startupSplash } from "./utils/visual-effects.ts";
 import { handleConfigCommand, handlePackageCommand } from "./package-manager-cli.ts";
 import { isLocalPath, normalizePath, resolvePath } from "./utils/paths.ts";
 import { cleanupWindowsSelfUpdateQuarantine } from "./utils/windows-self-update.ts";
@@ -520,6 +521,14 @@ export async function main(args: string[], options?: MainOptions) {
 	}
 	time("parseArgs");
 
+	// Propagate animation and resource flags to env vars for visual-effects.ts
+	if (parsed.noAnimation) {
+		process.env.NO_ANIMATION = "1";
+	}
+	if (parsed.lowResource) {
+		process.env.LOW_RESOURCE = "1";
+	}
+
 	if (parsed.version) {
 		console.log(VERSION);
 		process.exit(0);
@@ -796,6 +805,11 @@ export async function main(args: string[], options?: MainOptions) {
 	time("prepareInitialMessage");
 	initTheme(settingsManager.getTheme(), appMode === "interactive");
 	time("initTheme");
+
+	// Show startup splash in interactive mode
+	if (appMode === "interactive" && animationsEnabled() && parsed.verbose !== false) {
+		console.error(startupSplash(VERSION));
+	}
 
 	// Show deprecation warnings in interactive mode
 	if (appMode === "interactive" && deprecationWarnings.length > 0) {
