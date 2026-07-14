@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-07-10T12:15:33.318Z",
-  "date": "2026-07-10",
+  "generatedAt": "2026-07-14T08:13:42.927Z",
+  "date": "2026-07-14",
   "dailyFact": {
-    "fact": "The repository includes a full CI/CD pipeline with GitHub Actions.",
-    "index": 15,
+    "fact": "AIRIS has a trust system that controls access to project-local resources and mutation tools.",
+    "index": 19,
     "total": 21
   },
   "analysis": {
@@ -17,12 +17,12 @@
       "tui"
     ],
     "tsSourceFiles": 722,
-    "tsxComponents": 20,
+    "tsxComponents": 45,
     "goModules": 5,
     "scriptFiles": 16,
-    "totalSourceLines": 219911,
+    "totalSourceLines": 224993,
     "githubWorkflows": 11,
-    "markdownDocs": 93
+    "markdownDocs": 94
   },
   "codeBreakdown": [
     {
@@ -32,7 +32,7 @@
     },
     {
       "label": "React/TSX (.tsx)",
-      "count": 20,
+      "count": 45,
       "color": "#06b6d4"
     },
     {
@@ -47,7 +47,7 @@
     },
     {
       "label": "Markdown docs",
-      "count": 93,
+      "count": 94,
       "color": "#8b5cf6"
     }
   ]
