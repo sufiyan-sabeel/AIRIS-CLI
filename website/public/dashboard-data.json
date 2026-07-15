@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-07-14T08:13:42.927Z",
-  "date": "2026-07-14",
+  "generatedAt": "2026-07-15T08:20:53.713Z",
+  "date": "2026-07-15",
   "dailyFact": {
-    "fact": "AIRIS has a trust system that controls access to project-local resources and mutation tools.",
-    "index": 19,
+    "fact": "The coding agent can read, write, edit, grep, find, and ls files in the project.",
+    "index": 20,
     "total": 21
   },
   "analysis": {
@@ -16,18 +16,18 @@
       "coding-agent",
       "tui"
     ],
-    "tsSourceFiles": 722,
+    "tsSourceFiles": 724,
     "tsxComponents": 45,
     "goModules": 5,
     "scriptFiles": 16,
-    "totalSourceLines": 224993,
+    "totalSourceLines": 226446,
     "githubWorkflows": 11,
     "markdownDocs": 94
   },
   "codeBreakdown": [
     {
       "label": "TypeScript (.ts)",
-      "count": 722,
+      "count": 724,
       "color": "#3178c6"
     },
     {
