@@ -147,6 +147,21 @@ export interface BashToolOptions {
 	shellPath?: string;
 	/** Hook to adjust command, cwd, or env before execution */
 	spawnHook?: BashSpawnHook;
+	/**
+	 * Maximum timeout in seconds. Overrides any larger timeout passed by the caller.
+	 * Default: undefined (no limit beyond caller-provided timeout).
+	 * Set to 300 (5 min) for safe default enforcement.
+	 */
+	maxTimeout?: number;
+	/**
+	 * Dangerous command patterns that should be blocked.
+	 * Each pattern is tested against the full command string.
+	 */
+	deniedCommands?: RegExp[];
+	/**
+	 * Command patterns that should trigger a warning but not block execution.
+	 */
+	warnOnCommands?: RegExp[];
 }
 
 const BASH_PREVIEW_LINES = 5;
@@ -286,6 +301,29 @@ export function createBashToolDefinition(
 			onUpdate?,
 			_ctx?,
 		) {
+			// Enforce max timeout
+			const cappedTimeout = options?.maxTimeout !== undefined && timeout !== undefined
+				? Math.min(timeout, options.maxTimeout)
+				: timeout;
+
+			// Check denied commands
+			const denied = options?.deniedCommands ?? [];
+			for (const pattern of denied) {
+				if (pattern.test(command)) {
+					throw new Error(`Command denied by security policy: pattern /${pattern.source}/ matched`);
+				}
+			}
+
+			// Warn on risky commands (logged but not blocked)
+			const warnOn = options?.warnOnCommands ?? [];
+			for (const pattern of warnOn) {
+				if (pattern.test(command)) {
+					// Emit warning through onUpdate if available
+					console.warn(`[security] Risky command detected: /${pattern.source}/ in: ${command.slice(0, 100)}`);
+					break;
+				}
+			}
+
 			const resolvedCommand = commandPrefix ? `${commandPrefix}\n${command}` : command;
 			const spawnContext = resolveSpawnContext(resolvedCommand, cwd, spawnHook);
 			const output = new OutputAccumulator({ tempFilePrefix: "airis-bash" });
@@ -375,7 +413,7 @@ export function createBashToolDefinition(
 					const result = await ops.exec(spawnContext.command, spawnContext.cwd, {
 						onData: handleData,
 						signal,
-						timeout,
+						timeout: cappedTimeout,
 						env: spawnContext.env,
 					});
 					exitCode = result.exitCode;
@@ -387,7 +425,10 @@ export function createBashToolDefinition(
 					}
 					if (err instanceof Error && err.message.startsWith("timeout:")) {
 						const timeoutSecs = err.message.split(":")[1];
-						throw new Error(appendStatus(text, `Command timed out after ${timeoutSecs} seconds`));
+						const capNote = options?.maxTimeout !== undefined && timeout !== undefined && timeout > options.maxTimeout
+							? ` (capped from ${timeout}s by maxTimeout policy)`
+							: "";
+						throw new Error(appendStatus(text, `Command timed out after ${timeoutSecs} seconds${capNote}`));
 					}
 					throw err;
 				}

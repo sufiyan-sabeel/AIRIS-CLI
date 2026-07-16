@@ -86,6 +86,7 @@ import { formatMissingSessionCwdPrompt, MissingSessionCwdError } from "../../cor
 import { type SessionContext, SessionManager } from "../../core/session-manager.ts";
 import { BUILTIN_SLASH_COMMANDS } from "../../core/slash-commands.ts";
 import type { SourceInfo } from "../../core/source-info.ts";
+import { generateCacheReport } from "../../core/cache-stats.ts";
 import { isInstallTelemetryEnabled } from "../../core/telemetry.ts";
 import type { TruncationResult } from "../../core/tools/truncate.ts";
 import { hasTrustRequiringProjectResources, ProjectTrustStore } from "../../core/trust-manager.ts";
@@ -125,6 +126,7 @@ import { FooterComponent } from "./components/footer.ts";
 import { formatKeyText, keyDisplayText, keyHint, keyText, rawKeyHint } from "./components/keybinding-hints.ts";
 import { LoginDialogComponent } from "./components/login-dialog.ts";
 import { ModelSelectorComponent } from "./components/model-selector.ts";
+import { DashboardComponent } from "./components/advanced-dashboard.ts";
 import { type AuthSelectorProvider, OAuthSelectorComponent } from "./components/oauth-selector.ts";
 import { ScopedModelsSelectorComponent } from "./components/scoped-models-selector.ts";
 import { SessionSelectorComponent } from "./components/session-selector.ts";
@@ -297,6 +299,9 @@ export class InteractiveMode {
 	private editorContainer: Container;
 	private footer: FooterComponent;
 	private footerDataProvider: FooterDataProvider;
+	// Dashboard component for advanced session statistics
+	private dashboard: DashboardComponent | undefined = undefined;
+	private dashboardVisible = false;
 	// Stored so the same manager can be injected into custom editors, selectors, and extension UI.
 	private keybindings: KeybindingsManager;
 	private version: string;
@@ -2537,6 +2542,7 @@ export class InteractiveMode {
 		this.defaultEditor.onAction("app.model.select", () => this.showModelSelector());
 		this.defaultEditor.onAction("app.tools.expand", () => this.toggleToolOutputExpansion());
 		this.defaultEditor.onAction("app.thinking.toggle", () => this.toggleThinkingBlockVisibility());
+		this.defaultEditor.onAction("app.dashboard.toggle", () => this.toggleDashboard());
 		this.defaultEditor.onAction("app.editor.external", () => this.openExternalEditor());
 		this.defaultEditor.onAction("app.message.followUp", () => this.handleFollowUp());
 		this.defaultEditor.onAction("app.message.dequeue", () => this.handleDequeue());
@@ -2735,6 +2741,12 @@ export class InteractiveMode {
 				this.editor.setText("");
 				return;
 			}
+			if (text === "/audit" || text.startsWith("/audit ")) {
+				const auditArgs = text === "/audit" ? "" : text.slice(6).trim();
+				this.handleAuditCommand(auditArgs);
+				this.editor.setText("");
+				return;
+			}
 			if (text === "/ide") {
 				this.handleIdeCommand();
 				this.editor.setText("");
@@ -2751,6 +2763,12 @@ export class InteractiveMode {
 				this.editor.setText("");
 				return;
 			}
+			if (text === "/project" || text.startsWith("/project ")) {
+				const projectArgs = text === "/project" ? "" : text.slice(8).trim();
+				this.handleProjectCommand(projectArgs);
+				this.editor.setText("");
+				return;
+			}
 			if (text === "/stats") {
 				this.handleStatsCommand();
 				this.editor.setText("");
@@ -2758,6 +2776,11 @@ export class InteractiveMode {
 			}
 			if (text === "/tools") {
 				this.handleToolsCommand();
+				this.editor.setText("");
+				return;
+			}
+			if (text === "/cache-report") {
+				this.handleCacheReportCommand();
 				this.editor.setText("");
 				return;
 			}
@@ -2778,6 +2801,36 @@ export class InteractiveMode {
 			}
 			if (text === "/recap") {
 				this.handleRecapCommand();
+				this.editor.setText("");
+				return;
+			}
+			if (text === "/health") {
+				this.handleHealthCommand();
+				this.editor.setText("");
+				return;
+			}
+			if (text === "/diagnostics") {
+				this.handleDiagnosticsCommand();
+				this.editor.setText("");
+				return;
+			}
+			if (text === "/security") {
+				this.handleSecurityCommand();
+				this.editor.setText("");
+				return;
+			}
+			if (text === "/deps-audit") {
+				this.handleDepsAuditCommand();
+				this.editor.setText("");
+				return;
+			}
+			if (text === "/provider-health") {
+				this.handleProviderHealthCommand();
+				this.editor.setText("");
+				return;
+			}
+			if (text === "/models") {
+				this.handleModelsCommand();
 				this.editor.setText("");
 				return;
 			}
@@ -3819,6 +3872,27 @@ export class InteractiveMode {
 		}
 
 		this.showStatus(`Thinking blocks: ${this.hideThinkingBlock ? "hidden" : "visible"}`);
+	}
+
+	private toggleDashboard(): void {
+		this.dashboardVisible = !this.dashboardVisible;
+
+		if (this.dashboardVisible) {
+			// Create dashboard if not exists
+			if (!this.dashboard) {
+				this.dashboard = new DashboardComponent(this.session, this.footerDataProvider);
+			}
+			// Add to widget container below editor
+			this.widgetContainerBelow.addChild(this.dashboard);
+			this.showStatus("Dashboard: visible");
+		} else {
+			// Remove dashboard from widget container
+			if (this.dashboard) {
+				this.widgetContainerBelow.removeChild(this.dashboard);
+			}
+			this.showStatus("Dashboard: hidden");
+		}
+		this.ui.requestRender();
 	}
 
 	private async openExternalEditor(): Promise<void> {
@@ -6097,6 +6171,85 @@ Type any command or just describe what you want to do.
 		this.ui.requestRender();
 	}
 
+	private handleAuditCommand(args: string): void {
+		const parts = args.trim().split(/\s+/);
+		const subcommand = parts[0]?.toLowerCase() ?? "";
+
+		const auditLog = this.session.getAuditLog();
+		if (!auditLog) {
+			this.chatContainer.addChild(new Spacer(1));
+			this.chatContainer.addChild(new DynamicBorder());
+			this.chatContainer.addChild(new Text(theme.fg("muted", "Audit log not available for this session."), 1, 0));
+			this.chatContainer.addChild(new DynamicBorder());
+			this.ui.requestRender();
+			return;
+		}
+
+		switch (subcommand) {
+			case "export": {
+				const limit = parseInt(parts[1] ?? "100", 10);
+				const typeFilter = (parts[2] ?? "") as never;
+				const text = auditLog.exportText({
+					limit: isNaN(limit) ? 100 : limit,
+					type: typeFilter || undefined,
+				});
+				this.chatContainer.addChild(new Spacer(1));
+				this.chatContainer.addChild(new DynamicBorder());
+				this.chatContainer.addChild(new Text(theme.bold(theme.fg("accent", "Audit Log Export")), 1, 0));
+				this.chatContainer.addChild(new Spacer(1));
+				this.chatContainer.addChild(new Text(text.slice(0, 4000), 1, 0));
+				this.chatContainer.addChild(new DynamicBorder());
+				this.ui.requestRender();
+				break;
+			}
+			case "clear": {
+				auditLog.clear();
+				this.chatContainer.addChild(new Spacer(1));
+				this.chatContainer.addChild(new DynamicBorder());
+				this.chatContainer.addChild(new Text(theme.fg("success", "Audit log cleared."), 1, 0));
+				this.chatContainer.addChild(new DynamicBorder());
+				this.ui.requestRender();
+				break;
+			}
+			case "status":
+			default: {
+				const stats = auditLog.getStats();
+				let auditText = "**Audit Log Status**\n\n";
+				auditText += `| Metric | Value |\n`;
+				auditText += `|--------|-------|\n`;
+				auditText += `| Total Entries | ${stats.totalEntries} |\n`;
+				auditText += `| Storage Size | ${(stats.storageSizeBytes / 1024).toFixed(1)} KB |\n`;
+				auditText += `| Path | \`${stats.storagePath}\` |\n`;
+				if (stats.firstEntry) auditText += `| First Entry | ${stats.firstEntry} |\n`;
+				if (stats.lastEntry) auditText += `| Last Entry | ${stats.lastEntry} |\n`;
+
+				if (Object.keys(stats.entryTypes).length > 0) {
+					auditText += `\n**Entry Types:**\n\n`;
+					auditText += `| Type | Count |\n`;
+					auditText += `|------|-------|\n`;
+					for (const [type, count] of Object.entries(stats.entryTypes)) {
+						auditText += `| ${type} | ${count} |\n`;
+					}
+				}
+
+				auditText += `\n**Commands:**\n`;
+				auditText += "- `/audit` - Show status\n";
+				auditText += "- `/audit status` - Show status\n";
+				auditText += "- `/audit export [limit] [type]` - Export entries\n";
+				auditText += "- `/audit clear` - Clear the log\n";
+
+				this.chatContainer.addChild(new Spacer(1));
+				this.chatContainer.addChild(new DynamicBorder());
+				this.chatContainer.addChild(new Text(theme.bold(theme.fg("accent", "Audit Log")), 1, 0));
+				this.chatContainer.addChild(new Spacer(1));
+				this.chatContainer.addChild(new Markdown(auditText.trim(), 1, 1, this.getMarkdownThemeWithSettings()));
+				this.chatContainer.addChild(new DynamicBorder());
+				this.ui.requestRender();
+				break;
+			}
+		}
+	}
+
 	private handleIdeCommand(): void {
 		const cwd = this.sessionManager.getCwd();
 
@@ -6232,6 +6385,60 @@ Type any command or just describe what you want to do.
 		this.ui.requestRender();
 	}
 
+	private handleProjectCommand(args: string): void {
+		const parts = args.trim().split(/\s+/);
+		const subcommand = parts[0]?.toLowerCase() ?? "";
+
+		const projectLearning = this.session.getProjectLearning();
+
+		switch (subcommand) {
+			case "clear": {
+				projectLearning.clear();
+				projectLearning.save();
+				this.chatContainer.addChild(new Spacer(1));
+				this.chatContainer.addChild(new DynamicBorder());
+				this.chatContainer.addChild(new Text(theme.fg("success", "Project profile cleared."), 1, 0));
+				this.chatContainer.addChild(new DynamicBorder());
+				this.ui.requestRender();
+				break;
+			}
+			case "note": {
+				const note = parts.slice(1).join(" ");
+				if (note) {
+					projectLearning.addNote(note);
+					projectLearning.save();
+					this.chatContainer.addChild(new Spacer(1));
+					this.chatContainer.addChild(new DynamicBorder());
+					this.chatContainer.addChild(new Text(theme.fg("success", `Note added: ${note}`), 1, 0));
+					this.chatContainer.addChild(new DynamicBorder());
+					this.ui.requestRender();
+				}
+				break;
+			}
+			case "save": {
+				projectLearning.save();
+				this.chatContainer.addChild(new Spacer(1));
+				this.chatContainer.addChild(new DynamicBorder());
+				this.chatContainer.addChild(new Text(theme.fg("success", "Project profile saved."), 1, 0));
+				this.chatContainer.addChild(new DynamicBorder());
+				this.ui.requestRender();
+				break;
+			}
+			case "status":
+			default: {
+				const summary = projectLearning.getSummary();
+				this.chatContainer.addChild(new Spacer(1));
+				this.chatContainer.addChild(new DynamicBorder());
+				this.chatContainer.addChild(new Text(theme.bold(theme.fg("accent", "Project Profile")), 1, 0));
+				this.chatContainer.addChild(new Spacer(1));
+				this.chatContainer.addChild(new Markdown(summary, 1, 1, this.getMarkdownThemeWithSettings()));
+				this.chatContainer.addChild(new DynamicBorder());
+				this.ui.requestRender();
+				break;
+			}
+		}
+	}
+
 	private handleStatsCommand(): void {
 		const entries = this.sessionManager.getEntries();
 		const messages = entries.filter((e) => e.type === "message");
@@ -6317,6 +6524,58 @@ Type any command or just describe what you want to do.
 		this.chatContainer.addChild(new Text(theme.bold(theme.fg("accent", "Tool Definitions")), 1, 0));
 		this.chatContainer.addChild(new Spacer(1));
 		this.chatContainer.addChild(new Markdown(toolsText.trim(), 1, 1, this.getMarkdownThemeWithSettings()));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.ui.requestRender();
+	}
+
+	private handleCacheReportCommand(): void {
+		const entries = this.sessionManager.getEntries();
+		const models = {
+			getModel: (provider: string, modelId: string) => {
+				const model = this.session.modelRegistry.getModel(provider, modelId);
+				return model ? { cost: { cacheRead: model.cost?.cacheRead ?? 0 } } : undefined;
+			},
+		};
+
+		const cacheReport = generateCacheReport(entries, models);
+
+		if (!cacheReport || cacheReport.waste.missCount === 0) {
+			this.chatContainer.addChild(new Spacer(1));
+			this.chatContainer.addChild(new DynamicBorder());
+			this.chatContainer.addChild(
+				new Text(theme.fg("muted", "No cache misses detected in this session."), 1, 0),
+			);
+			this.chatContainer.addChild(new DynamicBorder());
+			this.ui.requestRender();
+			return;
+		}
+
+		let reportText = "**Cache Report**\n\n";
+		reportText += `| Metric | Value |\n`;
+		reportText += `|--------|-------|\n`;
+		reportText += `| Hit Rate | ${cacheReport.hitRate.toFixed(1)}% |\n`;
+		reportText += `| Miss Count | ${cacheReport.waste.missCount} |\n`;
+		reportText += `| Wasted Tokens | ${cacheReport.waste.missedTokens.toLocaleString()} |\n`;
+		reportText += `| Wasted Cost | $${cacheReport.waste.missedCost.toFixed(6)} |\n`;
+		reportText += `| Model Changes | ${cacheReport.modelChangeCount} |\n`;
+
+		if (cacheReport.misses.size > 0) {
+			reportText += `\n**Miss Details:**\n\n`;
+			reportText += `| Turn | Missed Tokens | Cost | Idle Time | Model Changed |\n`;
+			reportText += `|------|---------------|------|-----------|---------------|\n`;
+			let turnIndex = 0;
+			for (const [message, miss] of cacheReport.misses) {
+				turnIndex++;
+				const idleStr = miss.idleMs > 60000 ? `${Math.round(miss.idleMs / 60000)}m` : `${miss.idleMs}ms`;
+				reportText += `| ${turnIndex} | ${miss.missedTokens.toLocaleString()} | $${miss.missedCost.toFixed(6)} | ${idleStr} | ${miss.modelChanged ? "Yes" : "No"} |\n`;
+			}
+		}
+
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.chatContainer.addChild(new Text(theme.bold(theme.fg("accent", "Cache Report")), 1, 0));
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new Markdown(reportText.trim(), 1, 1, this.getMarkdownThemeWithSettings()));
 		this.chatContainer.addChild(new DynamicBorder());
 		this.ui.requestRender();
 	}
@@ -6933,6 +7192,125 @@ Type any command or just describe what you want to do.
 		this.chatContainer.addChild(new Text(theme.bold(theme.fg("accent", "Tasks")), 1, 0));
 		this.chatContainer.addChild(new Spacer(1));
 		this.chatContainer.addChild(new Markdown(tasksText.trim(), 1, 1, this.getMarkdownThemeWithSettings()));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.ui.requestRender();
+	}
+
+	private async handleHealthCommand(): Promise<void> {
+		const { runHealthChecks, formatHealthReport } = await import("../../core/health-service.ts");
+		const report = runHealthChecks();
+		const healthText = formatHealthReport(report);
+
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.chatContainer.addChild(new Text(theme.bold(theme.fg("accent", "Health Check")), 1, 0));
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new Text(healthText, 1, 0));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.ui.requestRender();
+	}
+
+	private async handleDiagnosticsCommand(): Promise<void> {
+		const { collectDiagnostics, formatDiagnostics } = await import("../../core/health-service.ts");
+		const slashCommands = BUILTIN_SLASH_COMMANDS.map((c) => ({
+			name: c.name,
+			description: c.description ?? "",
+			source: "builtin" as const,
+			sourceInfo: { source: "builtin" as const },
+		}));
+		const extRunner = this.session["_extensionRunner"];
+		const extensions = extRunner ? extRunner.getExtensions() : new Map();
+		const extensionCount = extensions.size;
+		const skillCount = this.skills?.length ?? 0;
+
+		const info = collectDiagnostics({
+			version: "0.79.9",
+			slashCommands,
+			extensionCount,
+			skillCount,
+			activeToolNames: this.session.getAllTools().map((t) => t.name),
+			sessionCount: 1,
+		});
+		const diagText = formatDiagnostics(info);
+
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.chatContainer.addChild(new Text(theme.bold(theme.fg("accent", "Diagnostics")), 1, 0));
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new Text(diagText, 1, 0));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.ui.requestRender();
+	}
+
+	private async handleSecurityCommand(): Promise<void> {
+		const { runSecurityAudit, formatSecurityAudit } = await import("../../core/security-auditor.ts");
+		const report = runSecurityAudit({
+			cwd: this.sessionManager.getCwd(),
+		});
+		const secText = formatSecurityAudit(report);
+
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.chatContainer.addChild(new Text(theme.bold(theme.fg("accent", "Security Audit")), 1, 0));
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new Text(secText, 1, 0));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.ui.requestRender();
+	}
+
+	private async handleDepsAuditCommand(): Promise<void> {
+		const { runDependencyAudit, formatDependencyAudit } = await import("../../core/security-auditor.ts");
+		const cwd = this.sessionManager.getCwd();
+		const report = runDependencyAudit(cwd);
+		const depsText = formatDependencyAudit(report);
+
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.chatContainer.addChild(new Text(theme.bold(theme.fg("accent", "Dependency Audit")), 1, 0));
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new Text(depsText, 1, 0));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.ui.requestRender();
+	}
+
+	private async handleProviderHealthCommand(): Promise<void> {
+		const { ProviderHealthTracker } = await import("../../core/provider-health.ts");
+		const tracker = new ProviderHealthTracker();
+		const healthText = tracker.formatHealthReport();
+
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.chatContainer.addChild(new Text(theme.bold(theme.fg("accent", "Provider Health")), 1, 0));
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new Text(healthText, 1, 0));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.ui.requestRender();
+	}
+
+	private handleModelsCommand(): void {
+		const registry = this.session.modelRegistry;
+		const providers = registry.getProviders();
+		const defaultModels = registry.getDefaultModels();
+
+		let modelsText = "**Available Models**\n\n";
+		modelsText += "| Provider | Default Model | Models |\n";
+		modelsText += "|----------|---------------|--------|\n";
+
+		for (const provider of providers.slice(0, 30)) {
+			const models = registry.getProviderModels(provider);
+			const defaultModel = defaultModels[provider] ?? "-";
+			modelsText += `| ${provider} | ${defaultModel} | ${models ? models.length : "?"} |\n`;
+		}
+
+		if (providers.length > 30) {
+			modelsText += `| ... and ${providers.length - 30} more | | |\n`;
+		}
+
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.chatContainer.addChild(new Text(theme.bold(theme.fg("accent", "Models")), 1, 0));
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new Markdown(modelsText.trim(), 1, 1, this.getMarkdownThemeWithSettings()));
 		this.chatContainer.addChild(new DynamicBorder());
 		this.ui.requestRender();
 	}

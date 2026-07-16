@@ -8,12 +8,27 @@
 - Added new UI helpers (`title`, `subtitle`, `optionLine`, `separator`) in `cli/ui.ts` for consistent terminal output.
 - Enhanced existing UI helpers: `status()` now uses color-coded icons (✓ ⚠ ✗ ℹ ⟳), `section()` uses decorative side borders, `box()` uses Unicode box drawing (┌ ┐│ └ ┘).
 - First-time setup dialog now shows version number and creator attribution.
+- **Security**: Added `/health` command — runs system health checks (agent directory, memory, core tools, session directory).
+- **Security**: Added `/diagnostics` command — shows system version, extension/skill counts, active tools, config paths, and memory usage.
+- **Security**: Added `/security` command — runs security audit (sandbox status, project trust, env files, dependency pinning, audit logging).
+- **Security**: Added `/deps-audit` command — audits project dependencies for version pinning and lifecycle scripts.
+- **Security**: Added `/provider-health` command — shows per-provider health scores (success rate, latency, error breakdown) with recovery recommendations.
+- **Security**: Added `/models` command — lists available providers, default models, and model counts.
+- **Security**: Added `search` slash command to the built-in command list.
+- **Security**: Added `provider-health.ts` — persistent provider health tracking with scoring (0.0–1.0), error classification, and recovery recommendations.
+- **Security**: Added `health-service.ts` — system health checks and diagnostic info collection.
+- **Security**: Added `security-auditor.ts` — security audit framework with dependency pinning checks, environment file scanning, and configuration review.
+- **Security**: Added dangerous command detection to the bash tool via `deniedCommands` and `warnOnCommands` options in `BashToolOptions`.
+- **Security**: Added server-side timeout cap (`maxTimeout`) to the bash tool to enforce maximum execution time limits.
+- **Security**: Added extension security warnings for extensions with lifecycle hooks.
 
 ### Changed
 
 - Applied enhanced UI helpers across all CLI commands (`airis-commands.ts`, `args.ts`, `file-processor.ts`) — doctor, tools, config, sessions, theme, and trust output now use consistent icon-based status markers, formatted column headers, and visual separators.
 - Help output (`printHelp`) uses `optionLine()` for consistent indented option formatting.
 - Replaced raw `chalk.red`/`chalk.green`/`chalk.yellow` error and success messages with `status()` calls throughout `airis-commands.ts`.
+- Bash tool execute function now enforces `maxTimeout` server-side cap when configured.
+- Bash tool now checks `deniedCommands` and `warnOnCommands` patterns before execution.
 
 ### Fixed
 
