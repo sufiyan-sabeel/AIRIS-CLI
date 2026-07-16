@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.79.9] - 2026-07-15
+
 ### Added
 
 - Added keybinding hints and rotating tips to the interactive welcome header.
