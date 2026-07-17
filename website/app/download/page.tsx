@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Check, Cpu, Monitor, ExternalLink } from "lucide-react";
+import { ArrowRight, Check, Cpu, Monitor, ExternalLink, Terminal } from "lucide-react";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { Button } from "@/components/ui/button";
