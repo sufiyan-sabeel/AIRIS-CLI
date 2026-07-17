@@ -14,8 +14,8 @@
  */
 
 import { appendFileSync, existsSync, mkdirSync, readFileSync, renameSync, unlinkSync, writeFileSync } from "node:fs";
-import { dirname, join } from "node:path";
-import type { AssistantMessage, ToolResultMessage } from "@sufiyan-sabeel/airis-ai";
+import { join } from "node:path";
+import type { AssistantMessage } from "@sufiyan-sabeel/airis-ai";
 import { getAgentDir } from "../config.ts";
 
 // ============================================================================
@@ -301,7 +301,7 @@ export class AuditLog {
 			const lines = content.trimEnd().split("\n");
 			const keep = Math.max(this._config.maxEntries / 2, 100);
 			const trimmed = lines.slice(-keep);
-			writeFileSync(this._logPath, trimmed.join("\n") + "\n");
+			writeFileSync(this._logPath, `${trimmed.join("\n")}\n`);
 			this._entriesWritten = trimmed.length;
 		} catch {
 			// Silently fail rotation

@@ -6,11 +6,10 @@
  * Respects NO_COLOR, NO_ANIMATION, LOW_RESOURCE environment variables.
  */
 
-import { isAbsolute, relative, resolve, sep } from "node:path";
 import { type Component } from "@sufiyan-sabeel/airis-tui";
 import type { AgentSession } from "../../../core/agent-session.ts";
 import type { ReadonlyFooterDataProvider } from "../../../core/footer-data-provider.ts";
-import { computeCacheWaste, formatCacheReport, generateCacheReport } from "../../../core/cache-stats.ts";
+import { generateCacheReport } from "../../../core/cache-stats.ts";
 import { theme } from "../theme/theme.ts";
 
 // ============================================================================
@@ -258,7 +257,7 @@ function getUnlockedAchievements(stats: SessionStats, cache: CacheStats): Achiev
 
 export class DashboardComponent implements Component {
 	private session: AgentSession;
-	private footerData: ReadonlyFooterDataProvider;
+	private _footerData: ReadonlyFooterDataProvider;
 	private options: Required<DashboardOptions>;
 	private lastRender = 0;
 	private cachedOutput = "";
@@ -270,7 +269,7 @@ export class DashboardComponent implements Component {
 		options: DashboardOptions = {},
 	) {
 		this.session = session;
-		this.footerData = footerData;
+		this._footerData = footerData;
 		this.options = {
 			showSessionStats: options.showSessionStats ?? true,
 			showCacheStats: options.showCacheStats ?? true,
@@ -349,7 +348,7 @@ export class DashboardComponent implements Component {
 		return lines;
 	}
 
-	private renderHeader(width: number): string {
+	private renderHeader(_width: number): string {
 		const title = "AIRIS DASHBOARD";
 		const spinner = getFrame(FRAMES.spinner, this.options.animationSpeed);
 		const pulse = getFrame(FRAMES.pulse, this.options.animationSpeed);

@@ -33,7 +33,7 @@
 
 import { existsSync, readFileSync } from "node:fs";
 import { homedir } from "node:os";
-import { join, normalize, relative, resolve } from "node:path";
+import { join, normalize, resolve } from "node:path";
 import type {
 	AutocompleteItem,
 	ExtensionAPI,
@@ -92,7 +92,7 @@ export function detectSecrets(input: string): Array<{ name: string; match: strin
 	for (const pattern of SECRET_PATTERNS) {
 		const match = input.match(pattern.regex);
 		if (match) {
-			found.push({ name: pattern.name, match: match[0].slice(0, 20) + "..." });
+			found.push({ name: pattern.name, match: `${match[0].slice(0, 20)}...` });
 		}
 	}
 	return found;
@@ -407,7 +407,6 @@ export default function sandboxExtension(airis: ExtensionAPI) {
 					ctx.ui.notify(`Sandbox config reloaded (${status})`, "info");
 					break;
 				}
-				case "status":
 				default: {
 					const lines = [
 						`Sandbox: ${enabled ? "✅ enabled" : "❌ disabled"}`,

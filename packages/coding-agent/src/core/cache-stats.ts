@@ -168,7 +168,7 @@ export interface CacheReport {
 	modelChangeCount: number;
 }
 
-function computeAggregates(entries: SessionEntry[], models: ModelPriceSource): AggregateCounts {
+function computeAggregates(entries: SessionEntry[], _models: ModelPriceSource): AggregateCounts {
 	let totalPromptTokens = 0;
 	let totalCacheRead = 0;
 	let modelChangeCount = 0;
@@ -246,7 +246,7 @@ export function formatCacheReport(report: CacheReport): string {
 		lines.push("Miss Details:");
 		lines.push("-------------");
 		let index = 0;
-		for (const [message, miss] of report.misses) {
+		for (const [, miss] of report.misses) {
 			index++;
 			const idleStr = miss.idleMs > 60000
 				? `${Math.round(miss.idleMs / 60000)}m`

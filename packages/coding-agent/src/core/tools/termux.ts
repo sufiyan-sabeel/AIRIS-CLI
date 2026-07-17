@@ -1,4 +1,4 @@
-import { spawnSync, execSync } from "node:child_process";
+import { spawnSync } from "node:child_process";
 import { existsSync } from "node:fs";
 import type { AgentTool, AgentToolResult } from "@sufiyan-sabeel/airis-agent-core";
 import { type Static, Type } from "typebox";
@@ -17,7 +17,7 @@ function isTermuxAvailable(): boolean {
 	);
 }
 
-function runTermuxCommand(args: string[], timeoutMs = 15_000): { exitCode: number | null; stdout: string; stderr: string } {
+function _runTermuxCommand(args: string[], timeoutMs = 15_000): { exitCode: number | null; stdout: string; stderr: string } {
 	const result = spawnSync("termux-notification", args, {
 		stdio: ["ignore", "pipe", "pipe"],
 		timeout: timeoutMs,

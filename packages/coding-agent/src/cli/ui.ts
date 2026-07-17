@@ -120,7 +120,6 @@ export function statsCard(title: string, items: Array<{ label: string; value: st
 /** Colorful table renderer with aligned columns. */
 export function table(headers: readonly string[], rows: readonly (readonly string[])[]): string {
 	if (rows.length === 0) return "";
-	const colCount = headers.length;
 	const widths = headers.map((h, i) =>
 		Math.max(h.length, ...rows.map((r) => (r[i] ?? "").length)),
 	);

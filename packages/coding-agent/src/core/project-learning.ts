@@ -326,7 +326,6 @@ export class ProjectLearning {
 		if (fileCount > 0) {
 			lines.push("");
 			lines.push("**Top File Patterns (confidence):**");
-			const maxCount = Math.max(...Object.values(p.filePatterns), 1);
 			const sorted = Object.entries(p.filePatterns)
 				.sort((a, b) => b[1] - a[1])
 				.slice(0, 10);

@@ -318,7 +318,7 @@ export function runDependencyAudit(cwd: string): DependencyAuditReport {
 		return {
 			timestamp: new Date().toISOString(),
 			dependencies: [],
-			warnings: ["No package.json found at " + cwd],
+			warnings: [`No package.json found at ${cwd}`],
 			summary: { total: 0, pinned: 0, hasLifecycleScripts: 0 },
 		};
 	}

@@ -17,15 +17,13 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { getAgentDir } from "../config.ts";
 
-export interface ProviderProbeTransport {
-	(opts: {
-		url: string;
-		method: string;
-		headers: Record<string, string>;
-		body?: string;
-		timeoutMs?: number;
-	}): Promise<{ status: number; ok: boolean; body: string; ms: number; error?: string }>;
-}
+export type ProviderProbeTransport = (opts: {
+	url: string;
+	method: string;
+	headers: Record<string, string>;
+	body?: string;
+	timeoutMs?: number;
+}) => Promise<{ status: number; ok: boolean; body: string; ms: number; error?: string }>;
 
 export interface DiscoveredModel {
 	id: string;
@@ -100,7 +98,7 @@ function normalizeBaseUrl(url: string): string {
 	return url.replace(/\/+$/, "");
 }
 
-function classifyCompatibility(
+export function classifyCompatibility(
 	body: string,
 	providerHint: string | undefined,
 ): "openai-compatible" | "anthropic" | "unknown" {
@@ -110,7 +108,7 @@ function classifyCompatibility(
 	try {
 		const parsed = JSON.parse(body) as { data?: unknown; models?: unknown; type?: string };
 		if (Array.isArray(parsed.data) || Array.isArray(parsed.models)) return "openai-compatible";
-		if (parsed.type === "provider" || body.includes('"id"') && body.includes('"type"')) {
+		if (parsed.type === "provider" || (body.includes('"id"') && body.includes('"type"'))) {
 			if (body.includes('"content"')) return "anthropic";
 		}
 	} catch {
@@ -119,10 +117,7 @@ function classifyCompatibility(
 	return "unknown";
 }
 
-function inferModelCapabilities(
-	id: string,
-	meta: Record<string, unknown>,
-): DiscoveredModel {
+function inferModelCapabilities(id: string, meta: Record<string, unknown>): DiscoveredModel {
 	const lower = id.toLowerCase();
 	const modality = String(meta.modality ?? meta.architecture ?? "");
 	const supportsImages =
@@ -142,7 +137,7 @@ function inferModelCapabilities(
 		contextWindow,
 		supportsChat: true,
 		supportsImages,
-		supportsTools: lower.includes("instruct") ? false : true,
+		supportsTools: !lower.includes("instruct"),
 		supportsJson: true,
 	};
 }
@@ -150,7 +145,6 @@ function inferModelCapabilities(
 /** Parse a model list from a probe response body. */
 export function discoverModels(
 	body: string,
-	compatibleWith: "openai-compatible" | "anthropic" | "unknown",
 ): DiscoveredModel[] {
 	if (!body) return [];
 	try {
@@ -188,7 +182,7 @@ export async function probeProvider(input: ProviderProbeInput): Promise<Provider
 			headers["anthropic-version"] = "2023-06-01";
 			authMethod = "header";
 		} else {
-			headers["authorization"] = `Bearer ${input.apiKey}`;
+			headers.authorization = `Bearer ${input.apiKey}`;
 			authMethod = "bearer";
 		}
 	}
@@ -206,7 +200,7 @@ export async function probeProvider(input: ProviderProbeInput): Promise<Provider
 
 	const firstSuccess = successful[0];
 	const compatibleWith = classifyCompatibility(firstSuccess?.body ?? "", input.providerHint);
-	const models = discoverModels(firstSuccess?.body ?? "", compatibleWith);
+	const models = discoverModels(firstSuccess?.body ?? "");
 
 	const capabilities: ProviderCapabilities = {
 		chat: models.length > 0 || compatibleWith !== "unknown",
@@ -215,9 +209,7 @@ export async function probeProvider(input: ProviderProbeInput): Promise<Provider
 		streaming: compatibleWith === "openai-compatible",
 	};
 
-	const error = reachable
-		? undefined
-		: results[0]?.error ?? `HTTP ${results[0]?.status ?? 0}`;
+	const error = reachable ? undefined : (results[0]?.error ?? `HTTP ${results[0]?.status ?? 0}`);
 
 	return {
 		baseUrl,
