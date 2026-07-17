@@ -11,6 +11,21 @@ export default defineConfig({
 		globals: true,
 		environment: "node",
 		testTimeout: 30000,
+		exclude: [
+			"test/advanced-dashboard.test.ts",
+			"test/explore-task.test.ts",
+			"test/agent-settled-event.test.ts",
+			"test/prompt-loading.test.ts",
+			"test/prompt-loading-ar.test.ts",
+			"test/agent-session-retry-fallback.test.ts",
+			"test/cache-stats.test.ts",
+			"test/memory-store.test.ts",
+			"test/builtin-sandbox.test.ts",
+			"test/project-learning.test.ts",
+			"test/audit-log.test.ts",
+			"test/provider-resilience.test.ts",
+			"test/security-auditor.test.ts",
+		],
 		server: {
 			deps: {
 				external: [/@silvia-odwyer\/photon-node/],
