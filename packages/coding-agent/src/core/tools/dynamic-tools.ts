@@ -8,6 +8,7 @@
  */
 import type { ToolDefinition, ToolExecutionMode } from "../extensions/types.ts";
 import type { ToolName, ToolsOptions } from "./index.ts";
+import type { TSchema } from "typebox";
 
 /**
  * Extended tool definition with dynamic registration metadata
@@ -35,9 +36,10 @@ export interface DynamicToolDefinition<TArgs extends TSchema = TSchema, TResult 
 /**
  * Dynamic tool factory function
  */
-export interface DynamicToolFactory<TArgs = any, TResult = any> {
-	(args: TArgs, context: DynamicToolContext): Promise<TResult>;
-}
+export type DynamicToolFactory<TArgs = any, TResult = any> = (
+	args: TArgs,
+	context: DynamicToolContext,
+) => Promise<TResult>;
 
 /**
  * Context provided to dynamic tools during execution
@@ -118,7 +120,18 @@ export class DynamicToolRegistry {
 	 * Register a dynamic tool at runtime
 	 */
 	register(options: ToolRegistrationOptions): DynamicToolDefinition {
-		const { name, description, inputSchema, factory, executionMode, source, version, tags, requiresConfirmation, timeoutMs } = options;
+		const {
+			name,
+			description,
+			inputSchema,
+			factory,
+			executionMode,
+			source,
+			version,
+			tags,
+			requiresConfirmation,
+			timeoutMs,
+		} = options;
 
 		if (this.tools.has(name)) {
 			throw new Error(`Tool "${name}" already registered`);
@@ -281,11 +294,7 @@ export function registerDynamicTool(options: ToolRegistrationOptions): DynamicTo
 /**
  * Create a tool executor for a dynamic tool
  */
-export async function executeDynamicTool(
-	name: string,
-	args: unknown,
-	context: DynamicToolContext,
-): Promise<unknown> {
+export async function executeDynamicTool(name: string, args: unknown, context: DynamicToolContext): Promise<unknown> {
 	const factory = dynamicToolRegistry.getFactory(name);
 	if (!factory) {
 		throw new Error(`Dynamic tool "${name}" not found`);
