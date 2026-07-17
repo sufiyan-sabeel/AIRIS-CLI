@@ -52,6 +52,7 @@ export interface AppKeybindings {
 	"app.tree.filter.all": true;
 	"app.tree.filter.cycleForward": true;
 	"app.tree.filter.cycleBackward": true;
+	"app.dashboard.toggle": true;
 }
 
 export type AppKeybinding = keyof AppKeybindings;

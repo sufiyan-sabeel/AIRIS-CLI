@@ -7218,10 +7218,9 @@ Type any command or just describe what you want to do.
 			source: "builtin" as const,
 			sourceInfo: { source: "builtin" as const },
 		}));
-		const extRunner = this.session["_extensionRunner"];
-		const extensions = extRunner ? extRunner.getExtensions() : new Map();
-		const extensionCount = extensions.size;
-		const skillCount = this.skills?.length ?? 0;
+		const extResult = this.session.resourceLoader.getExtensions();
+		const extensionCount = extResult.extensions.length;
+		const skillCount = this.session.resourceLoader.getSkills().skills.length;
 
 		const info = collectDiagnostics({
 			version: "0.79.9",

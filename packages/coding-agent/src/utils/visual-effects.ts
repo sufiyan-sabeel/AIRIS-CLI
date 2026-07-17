@@ -9,6 +9,7 @@
  */
 
 import chalk from "chalk";
+import type { ChalkInstance } from "chalk";
 import { sleep } from "./sleep.ts";
 import { stripAnsi } from "./ansi.ts";
 
@@ -120,7 +121,7 @@ export function indicator(
 		done: "\u2713",
 		pending: "\u25CB",
 	};
-	const colors: Record<string, chalk.Chalk> = {
+	const colors: Record<string, ChalkInstance> = {
 		success: chalk.green,
 		warning: chalk.yellow,
 		error: chalk.red,
@@ -251,10 +252,10 @@ export async function withSpinner<T>(
 			process.stderr.write(`\r${" ".repeat(40)}\r`);
 		}
 		return result;
-	} catch (error) {
+	} catch (err) {
 		clearInterval(interval);
-		process.stderr.write(`\r${error("Failed")}\n`);
-		throw error;
+		process.stderr.write(`\r${chalk.red("Failed")}\n`);
+		throw err;
 	}
 }
 
@@ -268,8 +269,8 @@ export async function withSpinner<T>(
  */
 export function gradientText(
 	text: string,
-	startColor: chalk.Chalk = chalk.cyan,
-	endColor: chalk.Chalk = chalk.magenta,
+	startColor: ChalkInstance = chalk.cyan,
+	endColor: ChalkInstance = chalk.magenta,
 ): string {
 	if (isNoColor() || text.length <= 1) {
 		return text;
@@ -304,7 +305,7 @@ export function asciiBanner(lines: readonly string[], accent = true): string {
 export interface DashboardItem {
 	label: string;
 	value: string;
-	color?: chalk.Chalk;
+	color?: ChalkInstance;
 }
 
 /**

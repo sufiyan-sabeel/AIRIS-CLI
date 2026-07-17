@@ -84,7 +84,9 @@ import {
 	wrapRegisteredTools,
 } from "./extensions/index.ts";
 import { emitSessionShutdownEvent } from "./extensions/runner.ts";
+import { AuditLog, getSharedAuditLog } from "./audit-log.ts";
 import type { BashExecutionMessage, CustomMessage } from "./messages.ts";
+import { ProjectLearning } from "./project-learning.ts";
 import type { ModelRegistry } from "./model-registry.ts";
 import { expandPromptTemplate, type PromptTemplate } from "./prompt-templates.ts";
 import type { ResourceExtensionPaths, ResourceLoader } from "./resource-loader.ts";
@@ -3513,5 +3515,29 @@ export class AgentSession {
 	 */
 	get extensionRunner(): ExtensionRunner {
 		return this._extensionRunner;
+	}
+
+	private _auditLog: AuditLog | undefined = undefined;
+
+	/**
+	 * Get the audit log for this session.
+	 */
+	getAuditLog(): AuditLog | undefined {
+		if (!this._auditLog) {
+			this._auditLog = getSharedAuditLog(this.sessionId);
+		}
+		return this._auditLog;
+	}
+
+	private _projectLearning: ProjectLearning | undefined = undefined;
+
+	/**
+	 * Get the project learning instance for this session.
+	 */
+	getProjectLearning(): ProjectLearning {
+		if (!this._projectLearning) {
+			this._projectLearning = new ProjectLearning();
+		}
+		return this._projectLearning;
 	}
 }

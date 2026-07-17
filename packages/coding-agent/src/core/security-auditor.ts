@@ -409,7 +409,7 @@ export function formatDependencyAudit(report: DependencyAuditReport): string {
 		lines.push("Dependencies:");
 		for (const dep of report.dependencies) {
 			const pinFlag = dep.isPinned ? "" : " (range)";
-			const lifecycleFlag = dep.hasLifecycleScripts ? " [lifecycle scripts]" : "";
+			const lifecycleFlag = dep.hasScripts ? " [lifecycle scripts]" : "";
 			lines.push(`  ${dep.name}@${dep.version} [${dep.type}]${pinFlag}${lifecycleFlag}`);
 		}
 	}

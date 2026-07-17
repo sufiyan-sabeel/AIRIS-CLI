@@ -636,6 +636,45 @@ export class ModelRegistry {
 	}
 
 	/**
+	 * Get a model by provider and ID (alias for find).
+	 */
+	getModel(provider: string, modelId: string): Model<Api> | undefined {
+		return this.find(provider, modelId);
+	}
+
+	/**
+	 * Get all unique provider names that have models.
+	 */
+	getProviders(): string[] {
+		const providerSet = new Set<string>();
+		for (const model of this.models) {
+			providerSet.add(model.provider);
+		}
+		return [...providerSet].sort();
+	}
+
+	/**
+	 * Get default model ID for each provider.
+	 */
+	getDefaultModels(): Record<string, string> {
+		const defaults: Record<string, string> = {};
+		for (const provider of this.getProviders()) {
+			const models = this.getProviderModels(provider);
+			if (models.length > 0) {
+				defaults[provider] = models[0].id;
+			}
+		}
+		return defaults;
+	}
+
+	/**
+	 * Get all models for a specific provider.
+	 */
+	getProviderModels(provider: string): Model<Api>[] {
+		return this.models.filter((m) => m.provider === provider);
+	}
+
+	/**
 	 * Get API key for a model.
 	 */
 	hasConfiguredAuth(model: Model<Api>): boolean {

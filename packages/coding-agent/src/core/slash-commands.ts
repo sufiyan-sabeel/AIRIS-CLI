@@ -1,7 +1,7 @@
 import { APP_NAME } from "../config.ts";
 import type { SourceInfo } from "./source-info.ts";
 
-export type SlashCommandSource = "extension" | "prompt" | "skill";
+export type SlashCommandSource = "extension" | "prompt" | "skill" | "builtin";
 
 export interface SlashCommandInfo {
 	name: string;
