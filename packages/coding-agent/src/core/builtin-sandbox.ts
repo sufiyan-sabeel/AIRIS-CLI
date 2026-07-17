@@ -73,7 +73,7 @@ export const DEFAULT_CONFIG: SandboxConfig = {
 
 const SECRET_PATTERNS: Array<{ name: string; regex: RegExp }> = [
 	{ name: "AWS Access Key", regex: /(?:AKIA|ASIA|ABIA|ACCA)[A-Z0-9]{16}/ },
-	{ name: "AWS Secret Key", regex: /(?:(?i)aws_secret_access_key|(?i)aws_secret_key)["'\s]*[:=]["'\s]*[A-Za-z0-9\/+=]{40}/ },
+	{ name: "AWS Secret Key", regex: /(?:aws_secret_access_key|aws_secret_key)["'\s]*[:=]["'\s]*[A-Za-z0-9\/+=]{40}/i },
 	{ name: "GitHub Token", regex: /(?:ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9_]{36,}/ },
 	{ name: "GitHub Fine-Grained Token", regex: /github_pat_[A-Za-z0-9_]{82,}/ },
 	{ name: "OpenAI API Key", regex: /sk-[A-Za-z0-9]{32,}/ },
@@ -83,7 +83,7 @@ const SECRET_PATTERNS: Array<{ name: string; regex: RegExp }> = [
 	{ name: "SSH Private Key", regex: /-----BEGIN\s+(?:RSA|DSA|EC|OPENSSH)\s+PRIVATE\s+KEY-----/ },
 	{ name: "JWT Token", regex: /eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}/ },
 	{ name: "npm Token", regex: /npm_[A-Za-z0-9]{36,}/ },
-	{ name: "Generic Secret", regex: /(?:(?i)api[_-]?key|(?i)secret|(?i)password|(?i)token)["'\s]*[:=]["'\s]*[A-Za-z0-9_\\-]{16,}/ },
+	{ name: "Generic Secret", regex: /(?:api[_-]?key|secret|password|token)["'\s]*[:=]["'\s]*[A-Za-z0-9_\\-]{16,}/i },
 ];
 
 /** Detect secrets in a string. Returns array of {name, match} for each found secret. */
@@ -321,7 +321,7 @@ export default function sandboxExtension(airis: ExtensionAPI) {
 					if (targetPath && !targetPath.startsWith("/dev/")) {
 						const pathCheck = isPathAllowed(targetPath, "write", config, cwd);
 						if (!pathCheck.allowed) {
-							const blockResult: SandboxBlockResult = { block: true, reason: pathCheck.reason };
+							const blockResult: SandboxBlockResult = { block: true, reason: pathCheck.reason ?? "Blocked by sandbox rules" };
 							return blockResult;
 						}
 					}
@@ -335,7 +335,7 @@ export default function sandboxExtension(airis: ExtensionAPI) {
 			if (filePath) {
 				const pathCheck = isPathAllowed(filePath, "read", config, cwd);
 				if (!pathCheck.allowed) {
-					const blockResult: SandboxBlockResult = { block: true, reason: pathCheck.reason };
+					const blockResult: SandboxBlockResult = { block: true, reason: pathCheck.reason ?? "Blocked by sandbox rules" };
 					return blockResult;
 				}
 			}
@@ -347,7 +347,7 @@ export default function sandboxExtension(airis: ExtensionAPI) {
 			if (filePath) {
 				const pathCheck = isPathAllowed(filePath, "write", config, cwd);
 				if (!pathCheck.allowed) {
-					const blockResult: SandboxBlockResult = { block: true, reason: pathCheck.reason };
+					const blockResult: SandboxBlockResult = { block: true, reason: pathCheck.reason ?? "Blocked by sandbox rules" };
 					return blockResult;
 				}
 			}
@@ -364,7 +364,7 @@ export default function sandboxExtension(airis: ExtensionAPI) {
 					cwd,
 				);
 				if (!pathCheck.allowed) {
-					const blockResult: SandboxBlockResult = { block: true, reason: pathCheck.reason };
+					const blockResult: SandboxBlockResult = { block: true, reason: pathCheck.reason ?? "Blocked by sandbox rules" };
 					return blockResult;
 				}
 			}

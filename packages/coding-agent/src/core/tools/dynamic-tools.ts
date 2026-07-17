@@ -7,7 +7,6 @@
  * Part of AIRIS enhancement suite - fully backward compatible.
  */
 import type { ToolDefinition, ToolExecutionMode } from "../extensions/types.ts";
-import type { TSchema } from "../extensions/types.ts";
 import type { ToolName, ToolsOptions } from "./index.ts";
 
 /**
