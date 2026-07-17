@@ -34,6 +34,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join, normalize } from "node:path";
+import { getAgentDir } from "../config.ts";
 import type {
 	AutocompleteItem,
 	ExtensionAPI,
@@ -41,7 +42,6 @@ import type {
 	ExtensionContext,
 	ToolCallEvent,
 } from "./extensions/types.ts";
-import { getAgentDir } from "../config.ts";
 
 // ============================================================================
 // Types
@@ -73,17 +73,17 @@ export const DEFAULT_CONFIG: SandboxConfig = {
 
 const SECRET_PATTERNS: Array<{ name: string; regex: RegExp }> = [
 	{ name: "AWS Access Key", regex: /(?:AKIA|ASIA|ABIA|ACCA)[A-Z0-9]{16}/ },
-	{ name: "AWS Secret Key", regex: /(?:aws_secret_access_key|aws_secret_key)["'\s]*[:=]["'\s]*[A-Za-z0-9\/+=]{40}/i },
+	{ name: "AWS Secret Key", regex: /(?:aws_secret_access_key|aws_secret_key)["'\s]*[:=]["'\s]*[A-Za-z0-9/+=]{40}/i },
 	{ name: "GitHub Token", regex: /(?:ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9_]{36,}/ },
 	{ name: "GitHub Fine-Grained Token", regex: /github_pat_[A-Za-z0-9_]{82,}/ },
 	{ name: "OpenAI API Key", regex: /sk-[A-Za-z0-9]{32,}/ },
 	{ name: "Anthropic API Key", regex: /sk-ant-[A-Za-z0-9]{32,}/ },
 	{ name: "Slack Token", regex: /xox[baprs]-[A-Za-z0-9-]{10,}/ },
-	{ name: "Google API Key", regex: /AIza[A-Za-z0-9_\\-]{35}/ },
+	{ name: "Google API Key", regex: /AIza[A-Za-z0-9_-]{35}/ },
 	{ name: "SSH Private Key", regex: /-----BEGIN\s+(?:RSA|DSA|EC|OPENSSH)\s+PRIVATE\s+KEY-----/ },
 	{ name: "JWT Token", regex: /eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}/ },
 	{ name: "npm Token", regex: /npm_[A-Za-z0-9]{36,}/ },
-	{ name: "Generic Secret", regex: /(?:api[_-]?key|secret|password|token)["'\s]*[:=]["'\s]*[A-Za-z0-9_\\-]{16,}/i },
+	{ name: "Generic Secret", regex: /(?:api[_-]?key|secret|password|token)["'\s]*[:=]["'\s]*[A-Za-z0-9_-]{16,}/i },
 ];
 
 /** Detect secrets in a string. Returns array of {name, match} for each found secret. */
@@ -281,7 +281,12 @@ export default function sandboxExtension(airis: ExtensionAPI) {
 		if (!enabled) return undefined;
 
 		// Only intercept file-accessing tools
-		if (event.toolName !== "bash" && event.toolName !== "read" && event.toolName !== "edit" && event.toolName !== "write") {
+		if (
+			event.toolName !== "bash" &&
+			event.toolName !== "read" &&
+			event.toolName !== "edit" &&
+			event.toolName !== "write"
+		) {
 			return undefined;
 		}
 
@@ -291,14 +296,21 @@ export default function sandboxExtension(airis: ExtensionAPI) {
 			const cmd = (event.input as { command?: string }).command ?? "";
 			// Check for destructive commands
 			const destructivePatterns = [
-				/\brm\s+-rf\b/i, /\brm\s+--recursive\b/i,
-				/\bchmod\b/i, /\bchown\b/i,
-				/\bdd\s+if=/i, /\bmkfs\b/i, /\bformat\b/i,
+				/\brm\s+-rf\b/i,
+				/\brm\s+--recursive\b/i,
+				/\bchmod\b/i,
+				/\bchown\b/i,
+				/\bdd\s+if=/i,
+				/\bmkfs\b/i,
+				/\bformat\b/i,
 				/\b>:|>>\s+.*(?:\.env|\.key|\.pem|\.p12|\.cert)\b/i,
 			];
 			for (const pattern of destructivePatterns) {
 				if (pattern.test(cmd)) {
-					const blockResult: SandboxBlockResult = { block: true, reason: `Sandbox blocked destructive command: ${cmd.slice(0, 100)}` };
+					const blockResult: SandboxBlockResult = {
+						block: true,
+						reason: `Sandbox blocked destructive command: ${cmd.slice(0, 100)}`,
+					};
 					return blockResult;
 				}
 			}
@@ -321,7 +333,10 @@ export default function sandboxExtension(airis: ExtensionAPI) {
 					if (targetPath && !targetPath.startsWith("/dev/")) {
 						const pathCheck = isPathAllowed(targetPath, "write", config, cwd);
 						if (!pathCheck.allowed) {
-							const blockResult: SandboxBlockResult = { block: true, reason: pathCheck.reason ?? "Blocked by sandbox rules" };
+							const blockResult: SandboxBlockResult = {
+								block: true,
+								reason: pathCheck.reason ?? "Blocked by sandbox rules",
+							};
 							return blockResult;
 						}
 					}
@@ -335,7 +350,10 @@ export default function sandboxExtension(airis: ExtensionAPI) {
 			if (filePath) {
 				const pathCheck = isPathAllowed(filePath, "read", config, cwd);
 				if (!pathCheck.allowed) {
-					const blockResult: SandboxBlockResult = { block: true, reason: pathCheck.reason ?? "Blocked by sandbox rules" };
+					const blockResult: SandboxBlockResult = {
+						block: true,
+						reason: pathCheck.reason ?? "Blocked by sandbox rules",
+					};
 					return blockResult;
 				}
 			}
@@ -347,7 +365,10 @@ export default function sandboxExtension(airis: ExtensionAPI) {
 			if (filePath) {
 				const pathCheck = isPathAllowed(filePath, "write", config, cwd);
 				if (!pathCheck.allowed) {
-					const blockResult: SandboxBlockResult = { block: true, reason: pathCheck.reason ?? "Blocked by sandbox rules" };
+					const blockResult: SandboxBlockResult = {
+						block: true,
+						reason: pathCheck.reason ?? "Blocked by sandbox rules",
+					};
 					return blockResult;
 				}
 			}
@@ -357,14 +378,12 @@ export default function sandboxExtension(airis: ExtensionAPI) {
 		if (event.toolName === "write") {
 			const filePath = resolvePathWithTilde((event.input as { path?: string }).path ?? "");
 			if (filePath) {
-				const pathCheck = isPathAllowed(
-					filePath.startsWith(homedir()) ? filePath : filePath,
-					"write",
-					config,
-					cwd,
-				);
+				const pathCheck = isPathAllowed(filePath.startsWith(homedir()) ? filePath : filePath, "write", config, cwd);
 				if (!pathCheck.allowed) {
-					const blockResult: SandboxBlockResult = { block: true, reason: pathCheck.reason ?? "Blocked by sandbox rules" };
+					const blockResult: SandboxBlockResult = {
+						block: true,
+						reason: pathCheck.reason ?? "Blocked by sandbox rules",
+					};
 					return blockResult;
 				}
 			}
@@ -382,8 +401,8 @@ export default function sandboxExtension(airis: ExtensionAPI) {
 		description: "Manage sandbox configuration",
 		getArgumentCompletions: (prefix: string): AutocompleteItem[] => {
 			const subcommands = ["enable", "disable", "status", "reload"];
-			if (!prefix) return subcommands.map((s) => ({ label: s } as AutocompleteItem));
-			return subcommands.filter((s) => s.startsWith(prefix)).map((s) => ({ label: s } as AutocompleteItem));
+			if (!prefix) return subcommands.map((s) => ({ label: s }) as AutocompleteItem);
+			return subcommands.filter((s) => s.startsWith(prefix)).map((s) => ({ label: s }) as AutocompleteItem);
 		},
 		handler: async (args: string, ctx: ExtensionCommandContext) => {
 			const parts = args.trim().split(/\s+/);

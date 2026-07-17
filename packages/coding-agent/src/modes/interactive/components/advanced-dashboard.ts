@@ -6,10 +6,10 @@
  * Respects NO_COLOR, NO_ANIMATION, LOW_RESOURCE environment variables.
  */
 
-import { type Component } from "@sufiyan-sabeel/airis-tui";
+import type { Component } from "@sufiyan-sabeel/airis-tui";
 import type { AgentSession } from "../../../core/agent-session.ts";
-import type { ReadonlyFooterDataProvider } from "../../../core/footer-data-provider.ts";
 import { generateCacheReport } from "../../../core/cache-stats.ts";
+import type { ReadonlyFooterDataProvider } from "../../../core/footer-data-provider.ts";
 import { theme } from "../theme/theme.ts";
 
 // ============================================================================
@@ -262,11 +262,7 @@ export class DashboardComponent implements Component {
 	private cachedOutput = "";
 	private achievements: Achievement[] = [];
 
-	constructor(
-		session: AgentSession,
-		footerData: ReadonlyFooterDataProvider,
-		options: DashboardOptions = {},
-	) {
+	constructor(session: AgentSession, footerData: ReadonlyFooterDataProvider, options: DashboardOptions = {}) {
 		this.session = session;
 		this.options = {
 			showSessionStats: options.showSessionStats ?? true,
@@ -365,11 +361,7 @@ export class DashboardComponent implements Component {
 		const pad = " ".repeat(2);
 
 		const formatNumber = (n: number) =>
-			n >= 1000000
-				? `${(n / 1000000).toFixed(1)}M`
-				: n >= 1000
-					? `${(n / 1000).toFixed(1)}k`
-					: n.toString();
+			n >= 1000000 ? `${(n / 1000000).toFixed(1)}M` : n >= 1000 ? `${(n / 1000).toFixed(1)}k` : n.toString();
 
 		const uptimeHours = Math.floor(stats.uptime / 3600000);
 		const uptimeMinutes = Math.floor((stats.uptime % 3600000) / 60000);
@@ -399,8 +391,7 @@ export class DashboardComponent implements Component {
 		const pad = " ".repeat(2);
 
 		const hitRatePct = (cache.hitRate * 100).toFixed(1);
-		const hitRateColor =
-			cache.hitRate >= 0.8 ? "success" : cache.hitRate >= 0.5 ? "warning" : "error";
+		const hitRateColor = cache.hitRate >= 0.8 ? "success" : cache.hitRate >= 0.5 ? "warning" : "error";
 
 		// Visual bar for hit rate
 		const barWidth = 20;
@@ -475,7 +466,9 @@ export class DashboardComponent implements Component {
 
 		for (const achievement of this.achievements.slice(0, 5)) {
 			const icon = NO_COLOR ? achievement.icon : theme.fg(achievement.color as any, achievement.icon);
-			lines.push(`${pad}${icon} ${theme.fg("text", achievement.name)} ${theme.fg("muted", `─ ${achievement.description}`)}`);
+			lines.push(
+				`${pad}${icon} ${theme.fg("text", achievement.name)} ${theme.fg("muted", `─ ${achievement.description}`)}`,
+			);
 		}
 
 		if (this.achievements.length > 5) {
@@ -512,11 +505,7 @@ export function renderMiniDashboard(
 	});
 
 	const hitRate = (cacheReport.hitRate * 100).toFixed(0);
-	const parts = [
-		`📊 ${stats.messageCount} msg`,
-		`🔧 ${stats.toolCalls} tools`,
-		`💾 ${hitRate}% cache`,
-	];
+	const parts = [`📊 ${stats.messageCount} msg`, `🔧 ${stats.toolCalls} tools`, `💾 ${hitRate}% cache`];
 
 	if (NO_COLOR) {
 		return parts.join(" | ");

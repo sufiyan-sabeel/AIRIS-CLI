@@ -2,21 +2,23 @@
  * Tests for advanced-dashboard.ts - Advanced dashboard component
  */
 
-import { describe, expect, it, beforeEach, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { AgentSession } from "../src/core/agent-session.ts";
+import { generateCacheReport } from "../src/core/cache-stats.ts";
 import type { ReadonlyFooterDataProvider } from "../src/core/footer-data-provider.ts";
 import {
-	DashboardComponent,
 	createDashboard,
-	renderMiniDashboard,
+	DashboardComponent,
 	type DashboardOptions,
+	renderMiniDashboard,
 } from "../src/modes/interactive/components/advanced-dashboard.ts";
-import { generateCacheReport } from "../src/core/cache-stats.ts";
 
-function createMockSession(overrides: Partial<{
-	entries: any[];
-	state: any;
-}> = {}): AgentSession {
+function createMockSession(
+	overrides: Partial<{
+		entries: any[];
+		state: any;
+	}> = {},
+): AgentSession {
 	const defaultEntries = [
 		{
 			type: "message",

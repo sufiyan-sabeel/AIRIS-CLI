@@ -3,9 +3,9 @@
  * Verifies that .airis/prompts/ar.md is discoverable by the prompt loader
  */
 
-import { describe, expect, it } from "vitest";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { describe, expect, it } from "vitest";
 import { loadPromptTemplates } from "../src/core/prompt-templates.ts";
 import { createSyntheticSourceInfo } from "../src/core/source-info.ts";
 

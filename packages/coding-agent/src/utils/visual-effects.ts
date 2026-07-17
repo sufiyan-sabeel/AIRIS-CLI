@@ -8,10 +8,10 @@
  * Respects NO_COLOR, NO_ANIMATION, and LOW_RESOURCE environment variables.
  */
 
-import chalk from "chalk";
 import type { ChalkInstance } from "chalk";
-import { sleep } from "./sleep.ts";
+import chalk from "chalk";
 import { stripAnsi } from "./ansi.ts";
+import { sleep } from "./sleep.ts";
 
 // ============================================================================
 // Environment / Mode Detection
@@ -19,20 +19,12 @@ import { stripAnsi } from "./ansi.ts";
 
 /** Whether the terminal has NO_COLOR set (no color output). */
 export function isNoColor(): boolean {
-	return (
-		!!process.env.NO_COLOR ||
-		process.argv.includes("--no-color") ||
-		process.argv.includes("--no-colors")
-	);
+	return !!process.env.NO_COLOR || process.argv.includes("--no-color") || process.argv.includes("--no-colors");
 }
 
 /** Whether animations are disabled. */
 export function isNoAnimation(): boolean {
-	return (
-		!!process.env.NO_ANIMATION ||
-		process.argv.includes("--no-animation") ||
-		isNoColor()
-	);
+	return !!process.env.NO_ANIMATION || process.argv.includes("--no-animation") || isNoColor();
 }
 
 /** Whether the user wants low-resource mode (Termux, mobile, etc.). */
@@ -196,7 +188,18 @@ export function progressBar(current: number, total: number, width = 30): string 
 // Spinner / Animated Loading
 // ============================================================================
 
-const SPINNER_FRAMES = ["\u280B", "\u2819", "\u2839", "\u2838", "\u283C", "\u2834", "\u2826", "\u2827", "\u2807", "\u280F"];
+const SPINNER_FRAMES = [
+	"\u280B",
+	"\u2819",
+	"\u2839",
+	"\u2838",
+	"\u283C",
+	"\u2834",
+	"\u2826",
+	"\u2827",
+	"\u2807",
+	"\u280F",
+];
 const SPINNER_FRAMES_SIMPLE = ["-", "\\", "|", "/"];
 
 /**
@@ -229,11 +232,7 @@ export function createSpinner(message?: string): {
  * Wrap a promise with an animated spinner that writes to stderr.
  * Falls back silently if animations are disabled or stderr isn't a TTY.
  */
-export async function withSpinner<T>(
-	promise: Promise<T>,
-	message: string,
-	doneMessage?: string,
-): Promise<T> {
+export async function withSpinner<T>(promise: Promise<T>, message: string, doneMessage?: string): Promise<T> {
 	if (!animationsEnabled() || !process.stderr.isTTY) {
 		return promise;
 	}
@@ -347,9 +346,7 @@ export function dashboardCard(title: string, items: DashboardItem[], width?: num
 		const line = `  ${labelStr} ${valueStr}`;
 		const truncated = line.length > innerWidth ? `${line.slice(0, innerWidth - 3)}...` : line;
 		const padRight2 = Math.max(0, innerWidth - stripAnsi(truncated).length);
-		lines.push(
-			`${borderColor("\u2502")}${truncated}${" ".repeat(padRight2)}${borderColor("\u2502")}`,
-		);
+		lines.push(`${borderColor("\u2502")}${truncated}${" ".repeat(padRight2)}${borderColor("\u2502")}`);
 	}
 
 	lines.push(`${borderColor("\u2514")}${borderColor("\u2500".repeat(innerWidth))}${borderColor("\u2518")}`);
@@ -384,12 +381,8 @@ export function colorfulTable(
 	// Calculate column widths
 	const colCount = columns.length;
 	const headerWidths = columns.map((col) => col.header.length);
-	const dataWidths = columns.map((_, colIdx) =>
-		Math.max(0, ...rows.map((row) => (row[colIdx] ?? "").length)),
-	);
-	const widths = columns.map(
-		(col, i) => col.width ?? Math.max(headerWidths[i], dataWidths[i]) + 2,
-	);
+	const dataWidths = columns.map((_, colIdx) => Math.max(0, ...rows.map((row) => (row[colIdx] ?? "").length)));
+	const widths = columns.map((col, i) => col.width ?? Math.max(headerWidths[i], dataWidths[i]) + 2);
 
 	// Shrink columns if needed
 	let totalWidth = widths.reduce((a, b) => a + b, 0) + colCount - 1;
@@ -442,9 +435,7 @@ export function colorfulTable(
 	lines.push(`  ${headerCells}`);
 
 	// Separator
-	const sep = columns
-		.map((_, i) => separatorColor("\u2500".repeat(widths[i])))
-		.join(`${separatorColor("\u253C")}`);
+	const sep = columns.map((_, i) => separatorColor("\u2500".repeat(widths[i]))).join(`${separatorColor("\u253C")}`);
 	lines.push(`  ${sep}`);
 
 	// Data rows
@@ -661,10 +652,7 @@ export async function showLoadingAnimation(
  * Show a simple indeterminate progress bar animation on stderr.
  * Clears itself after done.
  */
-export async function showIndeterminateBar(
-	message: string,
-	stopSignal: Promise<void>,
-): Promise<void> {
+export async function showIndeterminateBar(message: string, stopSignal: Promise<void>): Promise<void> {
 	if (!animationsEnabled() || !process.stderr.isTTY) {
 		await stopSignal;
 		return;

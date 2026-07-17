@@ -93,9 +93,7 @@ export async function playSnake(options?: SnakeGameOptions): Promise<void> {
 	const scoreText = chalk.dim("Score:");
 	const instructions = chalk.dim("WASD to move | Q to quit");
 
-	let snake: Position[] = [
-		{ x: Math.floor(width / 2), y: Math.floor(height / 2) },
-	];
+	const snake: Position[] = [{ x: Math.floor(width / 2), y: Math.floor(height / 2) }];
 	let direction: Direction = "right";
 	let nextDirection: Direction = "right";
 	let food: Position = { x: 0, y: 0 };
@@ -331,7 +329,9 @@ export async function playGuess(): Promise<void> {
 		}
 	}
 
-	const fail = isNoColor() ? `Out of attempts! The number was ${secret}` : `${chalk.red("\u2717")} ${chalk.bold.red("Out of attempts!")} ${chalk.dim(`The number was ${chalk.cyan(secret)}`)}`;
+	const fail = isNoColor()
+		? `Out of attempts! The number was ${secret}`
+		: `${chalk.red("\u2717")} ${chalk.bold.red("Out of attempts!")} ${chalk.dim(`The number was ${chalk.cyan(secret)}`)}`;
 	console.log(`\n  ${fail}`);
 }
 
@@ -381,7 +381,9 @@ export async function playMemory(): Promise<void> {
 		const lines: string[] = [];
 		lines.push("");
 		if (!isNoColor()) {
-			lines.push(`  ${title}     ${matchesText} ${chalk.green(matches)}/${pairs}  ${attemptsText} ${chalk.cyan(attempts)}`);
+			lines.push(
+				`  ${title}     ${matchesText} ${chalk.green(matches)}/${pairs}  ${attemptsText} ${chalk.cyan(attempts)}`,
+			);
 			lines.push(`  ${chalk.dim("\u2500".repeat(35))}`);
 		} else {
 			lines.push(`  ${title}     Matches: ${matches}/${pairs}  Attempts: ${attempts}`);
@@ -402,9 +404,7 @@ export async function playMemory(): Promise<void> {
 			lines.push(`  ${row.join(" ")}`);
 		}
 
-		const instr = isNoColor()
-			? "Pick two cards (1-16):"
-			: chalk.dim("Pick two cards (1-16) or 0 to quit:");
+		const instr = isNoColor() ? "Pick two cards (1-16):" : chalk.dim("Pick two cards (1-16) or 0 to quit:");
 		lines.push(`  ${instr}`);
 		return lines.join("\n");
 	};
@@ -412,13 +412,7 @@ export async function playMemory(): Promise<void> {
 	console.log(renderBoard());
 
 	while (matches < pairs) {
-		const card1 = await readNumber(
-			isNoColor()
-				? "  First card: "
-				: `  ${chalk.dim("First card:")} `,
-			0,
-			totalCards,
-		);
+		const card1 = await readNumber(isNoColor() ? "  First card: " : `  ${chalk.dim("First card:")} `, 0, totalCards);
 		if (card1 === 0) {
 			console.log(chalk.dim("Game cancelled."));
 			return;
@@ -439,9 +433,7 @@ export async function playMemory(): Promise<void> {
 		console.log(renderBoard());
 
 		const card2 = await readNumber(
-			isNoColor()
-				? "  Second card: "
-				: `  ${chalk.dim("Second card:")} `,
+			isNoColor() ? "  Second card: " : `  ${chalk.dim("Second card:")} `,
 			0,
 			totalCards,
 		);

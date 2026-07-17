@@ -2,13 +2,22 @@ import { existsSync, mkdirSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { ProviderHealthTracker } from "../src/core/provider-health.ts";
 import {
 	CircuitBreaker,
 	computeRetryDecision,
 	ResiliencePolicy,
 	runResilient,
 } from "../src/core/provider-resilience.ts";
-import { ProviderHealthTracker } from "../src/core/provider-health.ts";
+
+let tmpDir: string;
+beforeEach(() => {
+	tmpDir = join(tmpdir(), `airis-resilience-test-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+	mkdirSync(tmpDir, { recursive: true });
+});
+afterEach(() => {
+	if (existsSync(tmpDir)) rmSync(tmpDir, { recursive: true, force: true });
+});
 
 describe("CircuitBreaker", () => {
 	it("starts closed and allows attempts", () => {
@@ -134,10 +143,7 @@ describe("computeRetryDecision", () => {
 describe("ResiliencePolicy", () => {
 	it("selects the healthiest closed provider", () => {
 		const policy = new ResiliencePolicy();
-		const picked = policy.selectProvider(
-			["a", "b"],
-			(p) => (p === "a" ? 0.3 : 0.9),
-		);
+		const picked = policy.selectProvider(["a", "b"], (p) => (p === "a" ? 0.3 : 0.9));
 		expect(picked).toBe("b");
 	});
 

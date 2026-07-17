@@ -2,11 +2,11 @@
  * Tests for Provider Health — Per-provider health tracking, scoring, and failure diagnostics
  */
 
-import { describe, expect, it, beforeEach, afterEach } from "vitest";
-import { ProviderHealthTracker } from "../src/core/provider-health.ts";
-import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { ProviderHealthTracker } from "../src/core/provider-health.ts";
 
 describe("ProviderHealthTracker", () => {
 	let tempDir: string;
@@ -60,9 +60,27 @@ describe("ProviderHealthTracker", () => {
 		});
 
 		it("tracks multiple calls and computes averages", () => {
-			tracker.recordCall({ provider: "openai", modelId: "gpt-4", success: true, latencyMs: 500, timestamp: Date.now() });
-			tracker.recordCall({ provider: "openai", modelId: "gpt-4", success: true, latencyMs: 1500, timestamp: Date.now() });
-			tracker.recordCall({ provider: "openai", modelId: "gpt-4", success: true, latencyMs: 1000, timestamp: Date.now() });
+			tracker.recordCall({
+				provider: "openai",
+				modelId: "gpt-4",
+				success: true,
+				latencyMs: 500,
+				timestamp: Date.now(),
+			});
+			tracker.recordCall({
+				provider: "openai",
+				modelId: "gpt-4",
+				success: true,
+				latencyMs: 1500,
+				timestamp: Date.now(),
+			});
+			tracker.recordCall({
+				provider: "openai",
+				modelId: "gpt-4",
+				success: true,
+				latencyMs: 1000,
+				timestamp: Date.now(),
+			});
 
 			const stats = tracker.getProviderHealth("openai", "gpt-4");
 			expect(stats).toBeDefined();
@@ -133,7 +151,14 @@ describe("ProviderHealthTracker", () => {
 	describe("getRecentFailures", () => {
 		it("returns recent failures", () => {
 			tracker.recordCall({ provider: "a", modelId: "m", success: true, latencyMs: 100, timestamp: Date.now() });
-			tracker.recordCall({ provider: "a", modelId: "m", success: false, latencyMs: 100, errorType: "timeout", timestamp: Date.now() });
+			tracker.recordCall({
+				provider: "a",
+				modelId: "m",
+				success: false,
+				latencyMs: 100,
+				errorType: "timeout",
+				timestamp: Date.now(),
+			});
 
 			const failures = tracker.getRecentFailures(5);
 			expect(failures.length).toBe(1);
@@ -177,7 +202,15 @@ describe("ProviderHealthTracker", () => {
 
 	describe("getRecoveryRecommendation", () => {
 		it("returns recommendations for each error type", () => {
-			const types = ["timeout", "auth", "rate-limit", "server-error", "network", "invalid-request", "unknown"] as const;
+			const types = [
+				"timeout",
+				"auth",
+				"rate-limit",
+				"server-error",
+				"network",
+				"invalid-request",
+				"unknown",
+			] as const;
 			for (const t of types) {
 				const rec = ProviderHealthTracker.getRecoveryRecommendation(t);
 				expect(rec).toBeTruthy();
@@ -221,7 +254,7 @@ describe("ProviderHealthTracker", () => {
 			tracker.recordCall({ provider: "p", modelId: "m", success: true, latencyMs: 100, timestamp: Date.now() });
 
 			// Create a new tracker with same path
-			const tracker2 = new ProviderHealthTracker(tempDir + "/provider-health.json");
+			const tracker2 = new ProviderHealthTracker(`${tempDir}/provider-health.json`);
 			const stats = tracker2.getProviderHealth("p", "m");
 			expect(stats).toBeDefined();
 			expect(stats!.totalCalls).toBe(1);

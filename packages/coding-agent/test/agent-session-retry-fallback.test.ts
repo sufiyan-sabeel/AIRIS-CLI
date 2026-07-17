@@ -270,10 +270,7 @@ describe("AgentSession model fallback", () => {
 		// First fallback is invalid (nonexistent model), second should be tried
 		const created = createFailingSession({
 			maxRetries: 0,
-			fallbackModels: [
-				"anthropic/nonexistent-model",
-				"openai/gpt-4o",
-			],
+			fallbackModels: ["anthropic/nonexistent-model", "openai/gpt-4o"],
 		});
 
 		const fallbackToModels: string[] = [];
@@ -431,11 +428,7 @@ describe("AgentSession model fallback", () => {
 	it("chains through multiple fallback models", async () => {
 		const created = createFailingSession({
 			maxRetries: 0,
-			fallbackModels: [
-				"openai/gpt-4o",
-				"anthropic/claude-sonnet-4-5",
-				"openai/gpt-4o-mini",
-			],
+			fallbackModels: ["openai/gpt-4o", "anthropic/claude-sonnet-4-5", "openai/gpt-4o-mini"],
 		});
 
 		const chain: string[] = [];
