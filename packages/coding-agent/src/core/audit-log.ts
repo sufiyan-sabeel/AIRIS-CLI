@@ -111,7 +111,7 @@ export class AuditLog {
 		};
 
 		try {
-			appendFileSync(this._logPath, JSON.stringify(entry) + "\n");
+			appendFileSync(this._logPath, `${JSON.stringify(entry)}\n`);
 			this._entriesWritten++;
 
 			// Rotate if exceeded max entries
@@ -275,7 +275,7 @@ export class AuditLog {
 		if (existsSync(this._logPath)) {
 			// Rename as backup before clearing
 			try {
-				const backupPath = this._logPath + ".bak";
+				const backupPath = `${this._logPath}.bak`;
 				renameSync(this._logPath, backupPath);
 			} catch {
 				// If rename fails, just delete
