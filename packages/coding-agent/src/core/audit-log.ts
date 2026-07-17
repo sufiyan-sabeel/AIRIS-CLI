@@ -134,7 +134,7 @@ export class AuditLog {
 	}
 
 	/** Log a tool result */
-	logToolResult(toolName: string, toolCallId: string, isError: boolean, details?: unknown): void {
+	logToolResult(toolName: string, toolCallId: string, isError: boolean, _details?: unknown): void {
 		this.log("tool_result", {
 			toolName,
 			toolCallId,
