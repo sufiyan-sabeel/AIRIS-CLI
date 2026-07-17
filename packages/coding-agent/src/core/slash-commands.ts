@@ -72,4 +72,13 @@ export const BUILTIN_SLASH_COMMANDS: ReadonlyArray<BuiltinSlashCommand> = [
 	{ name: "deps-audit", description: "Audit project dependencies for version safety" },
 	{ name: "provider-health", description: "Show provider health scores and call history" },
 	{ name: "models", description: "List available models and provider mappings" },
+	{ name: "providers", description: "Explore providers: health, circuits, and saved profiles" },
+	{ name: "provider-test", description: "Probe a provider endpoint for connectivity, models, and latency" },
+	{ name: "provider-info", description: "Show a saved provider profile" },
+	{ name: "jobs", description: "View and manage background/scheduled jobs" },
+	{ name: "memory", description: "Show cross-session memory and learned project facts" },
+	{ name: "repo", description: "Show repository intelligence: structure, graph, and change impact" },
+	{ name: "cost", description: "Show token usage and estimated cost" },
+	{ name: "timeline", description: "Show a session execution timeline from the audit log" },
+	{ name: "suggest", description: "Suggest slash commands based on current context" },
 ];

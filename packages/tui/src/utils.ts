@@ -5,11 +5,7 @@ import { eastAsianWidth } from "get-east-asian-width";
  * Respects the https://no-color.org standard.
  */
 export function isNoColor(): boolean {
-	return (
-		process.env.NO_COLOR !== undefined &&
-		process.env.NO_COLOR !== "" &&
-		process.env.NO_COLOR !== "0"
-	);
+	return process.env.NO_COLOR !== undefined && process.env.NO_COLOR !== "" && process.env.NO_COLOR !== "0";
 }
 
 /**

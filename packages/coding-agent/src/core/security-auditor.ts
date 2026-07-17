@@ -129,7 +129,8 @@ function checkEnvFiles(cwd: string): SecurityCheckResult {
 			status: "warn",
 			message: `Environment files found: ${found.join(", ")}`,
 			details: { files: found },
-			recommendation: "Ensure .env files are in .gitignore. Use `.env.example` for documentation instead of committing secrets.",
+			recommendation:
+				"Ensure .env files are in .gitignore. Use `.env.example` for documentation instead of committing secrets.",
 		};
 	}
 	return {
@@ -153,7 +154,10 @@ function checkDependencySecurity(cwd: string): SecurityCheckResult {
 	try {
 		const raw = readFileSync(pkgPath, "utf-8");
 		const pkg = JSON.parse(raw) as Record<string, unknown>;
-		const deps = { ...(pkg.dependencies as Record<string, string> ?? {}), ...(pkg.devDependencies as Record<string, string> ?? {}) };
+		const deps = {
+			...((pkg.dependencies as Record<string, string>) ?? {}),
+			...((pkg.devDependencies as Record<string, string>) ?? {}),
+		};
 		const totalDeps = Object.keys(deps).length;
 
 		if (totalDeps === 0) {
@@ -176,7 +180,8 @@ function checkDependencySecurity(cwd: string): SecurityCheckResult {
 				status: "warn",
 				message: `${totalDeps} dependencies total, ${unpinned.length} use version ranges (not pinned)`,
 				details: { totalDeps, unpinnedDeps: unpinned.length, unpinnedNames: unpinned.slice(0, 10).map(([n]) => n) },
-				recommendation: "Pin dependencies to exact versions to prevent supply chain attacks. Use `npm run check:pinned-deps`.",
+				recommendation:
+					"Pin dependencies to exact versions to prevent supply chain attacks. Use `npm run check:pinned-deps`.",
 			};
 		}
 
@@ -260,10 +265,7 @@ export function runSecurityAudit(options?: {
 		info: checks.filter((c) => c.status === "info").length,
 	};
 
-	const overall: "ok" | "warn" | "error" =
-		summary.error > 0 ? "error" :
-		summary.warn > 0 ? "warn" :
-		"ok";
+	const overall: "ok" | "warn" | "error" = summary.error > 0 ? "error" : summary.warn > 0 ? "warn" : "ok";
 
 	return {
 		timestamp: new Date().toISOString(),
@@ -283,17 +285,28 @@ export function formatSecurityAudit(report: SecurityAuditReport): string {
 	lines.push(`AIRIS Security Audit (${statusIcon})`);
 	lines.push(`Timestamp: ${report.timestamp}`);
 	lines.push("");
-	lines.push(`Summary: ${report.summary.ok}/${report.summary.total} passed, ${report.summary.warn} warnings, ${report.summary.error} errors, ${report.summary.info} info`);
+	lines.push(
+		`Summary: ${report.summary.ok}/${report.summary.total} passed, ${report.summary.warn} warnings, ${report.summary.error} errors, ${report.summary.info} info`,
+	);
 	lines.push("");
 
 	for (const check of report.checks) {
 		let icon: string;
 		switch (check.status) {
-			case "ok": icon = "  OK"; break;
-			case "warn": icon = " WARN"; break;
-			case "error": icon = " FAIL"; break;
-			case "info": icon = " INFO"; break;
-			default: icon = ` ${check.status}`;
+			case "ok":
+				icon = "  OK";
+				break;
+			case "warn":
+				icon = " WARN";
+				break;
+			case "error":
+				icon = " FAIL";
+				break;
+			case "info":
+				icon = " INFO";
+				break;
+			default:
+				icon = ` ${check.status}`;
 		}
 		lines.push(`${icon}  ${check.name}`);
 		lines.push(`     ${check.message}`);
@@ -336,7 +349,12 @@ export function runDependencyAudit(cwd: string): DependencyAuditReport {
 
 		const addDeps = (deps: Record<string, string>, type: "dependency" | "devDependency") => {
 			for (const [name, version] of Object.entries(deps)) {
-				const isPinned = !version.startsWith("^") && !version.startsWith("~") && !version.includes("x") && version !== "*" && version !== "latest";
+				const isPinned =
+					!version.startsWith("^") &&
+					!version.startsWith("~") &&
+					!version.includes("x") &&
+					version !== "*" &&
+					version !== "latest";
 				const scriptsWithLifecycle = lifecycleScripts.filter((s) => allScripts[s]);
 
 				dependencies.push({
@@ -355,7 +373,9 @@ export function runDependencyAudit(cwd: string): DependencyAuditReport {
 
 		const totalScripts = Object.keys(allScripts).length;
 		if (totalScripts > 0 && lifecycleScripts.some((s) => allScripts[s])) {
-			warnings.push(`Package has lifecycle scripts (${lifecycleScripts.filter((s) => allScripts[s]).join(", ")}) — these run on install`);
+			warnings.push(
+				`Package has lifecycle scripts (${lifecycleScripts.filter((s) => allScripts[s]).join(", ")}) — these run on install`,
+			);
 		}
 
 		const unpinned = dependencies.filter((d) => !d.isPinned);
@@ -402,7 +422,9 @@ export function formatDependencyAudit(report: DependencyAuditReport): string {
 		lines.push("");
 	}
 
-	lines.push(`Dependencies: ${report.summary.total} total, ${report.summary.pinned} pinned, ${report.summary.hasLifecycleScripts} with lifecycle scripts`);
+	lines.push(
+		`Dependencies: ${report.summary.total} total, ${report.summary.pinned} pinned, ${report.summary.hasLifecycleScripts} with lifecycle scripts`,
+	);
 	lines.push("");
 
 	if (report.dependencies.length > 0) {

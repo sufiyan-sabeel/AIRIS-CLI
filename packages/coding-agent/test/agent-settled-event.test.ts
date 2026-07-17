@@ -2,11 +2,11 @@
  * Tests for agent_settled event - verifies event emission and handling
  */
 
-import { describe, expect, it } from "vitest";
-import { fauxAssistantMessage, registerFauxProvider } from "@sufiyan-sabeel/airis-ai";
 import { existsSync, mkdirSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { fauxAssistantMessage, registerFauxProvider } from "@sufiyan-sabeel/airis-ai";
+import { describe, expect, it } from "vitest";
 import {
 	type CreateAgentSessionRuntimeFactory,
 	createAgentSessionFromServices,
@@ -14,8 +14,8 @@ import {
 	createAgentSessionServices,
 } from "../src/core/agent-session-runtime.ts";
 import { AuthStorage } from "../src/core/auth-storage.ts";
-import { SessionManager } from "../src/core/session-manager.ts";
 import type { AgentSettledEvent } from "../src/core/extensions/types.ts";
+import { SessionManager } from "../src/core/session-manager.ts";
 
 describe("AgentSessionRuntime agent_settled event", () => {
 	const cleanups: Array<() => Promise<void> | void> = [];

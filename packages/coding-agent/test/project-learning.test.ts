@@ -12,11 +12,17 @@
  * - Edge cases (empty, corrupted)
  */
 
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { computeConfidence, detectProjectFeatures, learnCommand, learnFilePattern, ProjectLearning } from "../src/core/project-learning.ts";
+import {
+	computeConfidence,
+	detectProjectFeatures,
+	learnCommand,
+	learnFilePattern,
+	ProjectLearning,
+} from "../src/core/project-learning.ts";
 
 // ============================================================================
 // detectProjectFeatures Tests
@@ -62,7 +68,7 @@ describe("detectProjectFeatures", () => {
 	it("detects Go from go.mod", () => {
 		const dir = mkdtempSync(join(tmpdir(), "pl-test-go-"));
 		try {
-			writeFileSync(join(dir, "go.mod"), 'module example.com/test\n');
+			writeFileSync(join(dir, "go.mod"), "module example.com/test\n");
 			const features = detectProjectFeatures(dir);
 			expect(features.language).toBe("go");
 		} finally {
@@ -73,7 +79,7 @@ describe("detectProjectFeatures", () => {
 	it("detects Python from requirements.txt", () => {
 		const dir = mkdtempSync(join(tmpdir(), "pl-test-py-"));
 		try {
-			writeFileSync(join(dir, "requirements.txt"), 'flask\n');
+			writeFileSync(join(dir, "requirements.txt"), "flask\n");
 			const features = detectProjectFeatures(dir);
 			expect(features.language).toBe("python");
 		} finally {
@@ -157,19 +163,19 @@ describe("learnFilePattern", () => {
 describe("learnCommand", () => {
 	it("tracks base commands", () => {
 		const result = learnCommand("npm run build", {});
-		expect(result["npm"]).toBe(1);
+		expect(result.npm).toBe(1);
 	});
 
 	it("increments existing command counts", () => {
-		let cmds = { "npm": 3 };
+		let cmds = { npm: 3 };
 		cmds = learnCommand("npm test", cmds);
-		expect(cmds["npm"]).toBe(4);
+		expect(cmds.npm).toBe(4);
 	});
 
 	it("extracts first word as command", () => {
 		const result = learnCommand("git push origin main", {});
-		expect(result["git"]).toBe(1);
-		expect(result["push"]).toBeUndefined();
+		expect(result.git).toBe(1);
+		expect(result.push).toBeUndefined();
 	});
 
 	it("handles empty command gracefully", () => {
@@ -248,14 +254,14 @@ describe("ProjectLearning", () => {
 		pl.learnCommand("npm run build");
 		pl.learnCommand("npm test");
 		const profile = pl.profile;
-		expect(profile.commonCommands["npm"]).toBe(2);
+		expect(profile.commonCommands.npm).toBe(2);
 	});
 
 	it("deduplicates same command within session", () => {
 		pl.learnCommand("npm run build");
 		pl.learnCommand("npm run build"); // duplicate
 		const profile = pl.profile;
-		expect(profile.commonCommands["npm"]).toBe(1);
+		expect(profile.commonCommands.npm).toBe(1);
 	});
 
 	it("skips .airis/ internal files", () => {

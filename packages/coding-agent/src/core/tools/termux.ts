@@ -17,7 +17,10 @@ function isTermuxAvailable(): boolean {
 	);
 }
 
-function _runTermuxCommand(args: string[], timeoutMs = 15_000): { exitCode: number | null; stdout: string; stderr: string } {
+function _runTermuxCommand(
+	args: string[],
+	timeoutMs = 15_000,
+): { exitCode: number | null; stdout: string; stderr: string } {
 	const result = spawnSync("termux-notification", args, {
 		stdio: ["ignore", "pipe", "pipe"],
 		timeout: timeoutMs,
@@ -51,7 +54,11 @@ function execTermux(cmd: string, timeoutMs = 15_000): { exitCode: number | null;
 const termuxNotifySchema = Type.Object({
 	title: Type.String({ description: "Notification title" }),
 	content: Type.String({ description: "Notification body text" }),
-	priority: Type.Optional(Type.Union([Type.Literal("high"), Type.Literal("default"), Type.Literal("low"), Type.Literal("min")], { description: "Notification priority" })),
+	priority: Type.Optional(
+		Type.Union([Type.Literal("high"), Type.Literal("default"), Type.Literal("low"), Type.Literal("min")], {
+			description: "Notification priority",
+		}),
+	),
 	id: Type.Optional(Type.String({ description: "Unique notification ID" })),
 	button1: Type.Optional(Type.String({ description: "Button 1 label" })),
 	button1Action: Type.Optional(Type.String({ description: "Button 1 action command" })),
@@ -62,7 +69,11 @@ const termuxNotifySchema = Type.Object({
 const termuxToastSchema = Type.Object({
 	text: Type.String({ description: "Toast message" }),
 	short: Type.Optional(Type.Boolean({ description: "Short duration (default: true)", default: true })),
-	position: Type.Optional(Type.Union([Type.Literal("top"), Type.Literal("middle"), Type.Literal("bottom")], { description: "Toast position" })),
+	position: Type.Optional(
+		Type.Union([Type.Literal("top"), Type.Literal("middle"), Type.Literal("bottom")], {
+			description: "Toast position",
+		}),
+	),
 });
 
 const termuxTtsSchema = Type.Object({
@@ -99,8 +110,18 @@ const termuxShareSchema = Type.Object({
 const termuxBatteryStatusSchema = Type.Object({});
 
 const termuxLocationSchema = Type.Object({
-	provider: Type.Optional(Type.Union([Type.Literal("gps"), Type.Literal("network"), Type.Literal("passive")], { description: "Location provider", default: "gps" })),
-	request: Type.Optional(Type.Union([Type.Literal("single"), Type.Literal("update"), Type.Literal("last")], { description: "Request type", default: "single" })),
+	provider: Type.Optional(
+		Type.Union([Type.Literal("gps"), Type.Literal("network"), Type.Literal("passive")], {
+			description: "Location provider",
+			default: "gps",
+		}),
+	),
+	request: Type.Optional(
+		Type.Union([Type.Literal("single"), Type.Literal("update"), Type.Literal("last")], {
+			description: "Request type",
+			default: "single",
+		}),
+	),
 });
 
 const termuxCameraPhotoSchema = Type.Object({
@@ -121,16 +142,19 @@ const termuxSensorListSchema = Type.Object({});
 const termuxSensorCleanupSchema = Type.Object({});
 
 const termuxDialogSchema = Type.Object({
-	type: Type.Union([
-		Type.Literal("text"),
-		Type.Literal("confirm"),
-		Type.Literal("sheet"),
-		Type.Literal("radio"),
-		Type.Literal("checkbox"),
-		Type.Literal("date"),
-		Type.Literal("time"),
-		Type.Literal("counter"),
-	], { description: "Dialog type" }),
+	type: Type.Union(
+		[
+			Type.Literal("text"),
+			Type.Literal("confirm"),
+			Type.Literal("sheet"),
+			Type.Literal("radio"),
+			Type.Literal("checkbox"),
+			Type.Literal("date"),
+			Type.Literal("time"),
+			Type.Literal("counter"),
+		],
+		{ description: "Dialog type" },
+	),
 	title: Type.Optional(Type.String({ description: "Dialog title" })),
 	text: Type.Optional(Type.String({ description: "Dialog text / prompt" })),
 	values: Type.Optional(Type.String({ description: "Comma-separated values for sheet/radio/checkbox" })),
@@ -411,7 +435,8 @@ const defaultTermuxLocationOps: TermuxLocationOperations = {
 
 const defaultTermuxCameraPhotoOps: TermuxCameraPhotoOperations = {
 	isAvailable: isTermuxAvailable,
-	execute: (params) => execTermux(`termux-camera-photo -c ${params.camera ?? 0} '${params.output.replace(/'/g, "'\\''")}'`),
+	execute: (params) =>
+		execTermux(`termux-camera-photo -c ${params.camera ?? 0} '${params.output.replace(/'/g, "'\\''")}'`),
 };
 
 const defaultTermuxCameraInfoOps: TermuxCameraInfoOperations = {
@@ -421,7 +446,10 @@ const defaultTermuxCameraInfoOps: TermuxCameraInfoOperations = {
 
 const defaultTermuxSensorOps: TermuxSensorOperations = {
 	isAvailable: isTermuxAvailable,
-	execute: (params) => execTermux(`termux-sensor -s '${params.sensor.replace(/'/g, "'\\''")}' -n ${params.count ?? 1} -d ${params.delay ?? 100}`),
+	execute: (params) =>
+		execTermux(
+			`termux-sensor -s '${params.sensor.replace(/'/g, "'\\''")}' -n ${params.count ?? 1} -d ${params.delay ?? 100}`,
+		),
 };
 
 const defaultTermuxSensorListOps: TermuxSensorListOperations = {
@@ -492,7 +520,10 @@ function buildTermuxDefinition<T extends Type.Static<Type.AnyType>>(
 	label: string,
 	description: string,
 	schema: Type.TSchema,
-	operations: { isAvailable: () => boolean; execute: (params: T) => { exitCode: number | null; stdout: string; stderr: string } },
+	operations: {
+		isAvailable: () => boolean;
+		execute: (params: T) => { exitCode: number | null; stdout: string; stderr: string };
+	},
 	promptGuidelines?: string[],
 ): ToolDefinition<typeof schema, TermuxToolDetails> {
 	const available = operations.isAvailable();
@@ -551,7 +582,10 @@ function buildTermuxSimpleDefinition(
 	label: string,
 	description: string,
 	schema: Type.TSchema,
-	operations: { isAvailable: () => boolean; execute: () => { exitCode: number | null; stdout: string; stderr: string } },
+	operations: {
+		isAvailable: () => boolean;
+		execute: () => { exitCode: number | null; stdout: string; stderr: string };
+	},
 	promptGuidelines?: string[],
 ): ToolDefinition<typeof schema, TermuxToolDetails> {
 	const available = operations.isAvailable();
@@ -612,11 +646,32 @@ function buildTermuxSimpleDefinition(
 export interface TermuxNotifyToolOptions {
 	operations?: TermuxNotifyOperations;
 }
-export function createTermuxNotifyTool(options?: TermuxNotifyToolOptions): AgentTool<typeof termuxNotifySchema, TermuxToolDetails> {
-	return wrapToolDefinition(buildTermuxDefinition(
+export function createTermuxNotifyTool(
+	options?: TermuxNotifyToolOptions,
+): AgentTool<typeof termuxNotifySchema, TermuxToolDetails> {
+	return wrapToolDefinition(
+		buildTermuxDefinition(
+			"termux-notify",
+			"Termux Notify",
+			"Send an Android notification via Termux:API with title, content, priority, and optional action buttons",
+			termuxNotifySchema,
+			options?.operations ?? defaultTermuxNotifyOps,
+			[
+				"- Use termux-notify to send system notifications with titles and body text.",
+				"- Supports priority levels: high, default, low, min.",
+				"- Add action buttons with button1/button1Action and button2/button2Action.",
+				"- Not available on desktop platforms (Linux/macOS/Windows).",
+			],
+		),
+	);
+}
+export function createTermuxNotifyToolDefinition(
+	options?: TermuxNotifyToolOptions,
+): ToolDefinition<typeof termuxNotifySchema, TermuxToolDetails> {
+	return buildTermuxDefinition(
 		"termux-notify",
 		"Termux Notify",
-		"Send an Android notification via Termux:API with title, content, priority, and optional action buttons",
+		"Send an Android notification via Termux:API",
 		termuxNotifySchema,
 		options?.operations ?? defaultTermuxNotifyOps,
 		[
@@ -625,22 +680,36 @@ export function createTermuxNotifyTool(options?: TermuxNotifyToolOptions): Agent
 			"- Add action buttons with button1/button1Action and button2/button2Action.",
 			"- Not available on desktop platforms (Linux/macOS/Windows).",
 		],
-	));
-}
-export function createTermuxNotifyToolDefinition(options?: TermuxNotifyToolOptions): ToolDefinition<typeof termuxNotifySchema, TermuxToolDetails> {
-	return buildTermuxDefinition("termux-notify", "Termux Notify", "Send an Android notification via Termux:API", termuxNotifySchema, options?.operations ?? defaultTermuxNotifyOps, [
-		"- Use termux-notify to send system notifications with titles and body text.",
-		"- Supports priority levels: high, default, low, min.",
-		"- Add action buttons with button1/button1Action and button2/button2Action.",
-		"- Not available on desktop platforms (Linux/macOS/Windows).",
-	]);
+	);
 }
 
 export interface TermuxToastToolOptions {
 	operations?: TermuxToastOperations;
 }
-export function createTermuxToastTool(options?: TermuxToastToolOptions): AgentTool<typeof termuxToastSchema, TermuxToolDetails> {
-	return wrapToolDefinition(buildTermuxDefinition(
+export function createTermuxToastTool(
+	options?: TermuxToastToolOptions,
+): AgentTool<typeof termuxToastSchema, TermuxToolDetails> {
+	return wrapToolDefinition(
+		buildTermuxDefinition(
+			"termux-toast",
+			"Termux Toast",
+			"Show a brief toast popup on Android via Termux:API",
+			termuxToastSchema,
+			options?.operations ?? defaultTermuxToastOps,
+			[
+				"- Use termux-toast to display short popup messages on Android.",
+				"- Keep messages concise (~50 chars).",
+				"- Position: top, middle, bottom (default: bottom).",
+				"- Duration: short (~2s) or long (~3.5s).",
+				"- Not available on desktop platforms.",
+			],
+		),
+	);
+}
+export function createTermuxToastToolDefinition(
+	options?: TermuxToastToolOptions,
+): ToolDefinition<typeof termuxToastSchema, TermuxToolDetails> {
+	return buildTermuxDefinition(
 		"termux-toast",
 		"Termux Toast",
 		"Show a brief toast popup on Android via Termux:API",
@@ -653,26 +722,38 @@ export function createTermuxToastTool(options?: TermuxToastToolOptions): AgentTo
 			"- Duration: short (~2s) or long (~3.5s).",
 			"- Not available on desktop platforms.",
 		],
-	));
-}
-export function createTermuxToastToolDefinition(options?: TermuxToastToolOptions): ToolDefinition<typeof termuxToastSchema, TermuxToolDetails> {
-	return buildTermuxDefinition("termux-toast", "Termux Toast", "Show a brief toast popup on Android via Termux:API", termuxToastSchema, options?.operations ?? defaultTermuxToastOps, [
-		"- Use termux-toast to display short popup messages on Android.",
-		"- Keep messages concise (~50 chars).",
-		"- Position: top, middle, bottom (default: bottom).",
-		"- Duration: short (~2s) or long (~3.5s).",
-		"- Not available on desktop platforms.",
-	]);
+	);
 }
 
 export interface TermuxTtsToolOptions {
 	operations?: TermuxTtsOperations;
 }
-export function createTermuxTtsTool(options?: TermuxTtsToolOptions): AgentTool<typeof termuxTtsSchema, TermuxToolDetails> {
-	return wrapToolDefinition(buildTermuxDefinition(
+export function createTermuxTtsTool(
+	options?: TermuxTtsToolOptions,
+): AgentTool<typeof termuxTtsSchema, TermuxToolDetails> {
+	return wrapToolDefinition(
+		buildTermuxDefinition(
+			"termux-tts",
+			"Termux TTS",
+			"Text-to-speech via Termux:API with rate, pitch, locale, and engine options",
+			termuxTtsSchema,
+			options?.operations ?? defaultTermuxTtsOps,
+			[
+				"- Use termux-tts to speak text aloud on Android.",
+				"- Rate: 0.5-2.0 (default 1.0). Pitch: 0.5-2.0 (default 1.0).",
+				"- Locale: e.g., en-US, fr-FR. Engine: from termux-tts-engines.",
+				"- Not available on desktop platforms.",
+			],
+		),
+	);
+}
+export function createTermuxTtsToolDefinition(
+	options?: TermuxTtsToolOptions,
+): ToolDefinition<typeof termuxTtsSchema, TermuxToolDetails> {
+	return buildTermuxDefinition(
 		"termux-tts",
 		"Termux TTS",
-		"Text-to-speech via Termux:API with rate, pitch, locale, and engine options",
+		"Text-to-speech via Termux:API",
 		termuxTtsSchema,
 		options?.operations ?? defaultTermuxTtsOps,
 		[
@@ -681,42 +762,65 @@ export function createTermuxTtsTool(options?: TermuxTtsToolOptions): AgentTool<t
 			"- Locale: e.g., en-US, fr-FR. Engine: from termux-tts-engines.",
 			"- Not available on desktop platforms.",
 		],
-	));
-}
-export function createTermuxTtsToolDefinition(options?: TermuxTtsToolOptions): ToolDefinition<typeof termuxTtsSchema, TermuxToolDetails> {
-	return buildTermuxDefinition("termux-tts", "Termux TTS", "Text-to-speech via Termux:API", termuxTtsSchema, options?.operations ?? defaultTermuxTtsOps, [
-		"- Use termux-tts to speak text aloud on Android.",
-		"- Rate: 0.5-2.0 (default 1.0). Pitch: 0.5-2.0 (default 1.0).",
-		"- Locale: e.g., en-US, fr-FR. Engine: from termux-tts-engines.",
-		"- Not available on desktop platforms.",
-	]);
+	);
 }
 
 export interface TermuxTtsEnginesToolOptions {
 	operations?: TermuxTtsEnginesOperations;
 }
-export function createTermuxTtsEnginesTool(options?: TermuxTtsEnginesToolOptions): AgentTool<typeof termuxTtsEnginesSchema, TermuxToolDetails> {
-	return wrapToolDefinition(buildTermuxSimpleDefinition(
+export function createTermuxTtsEnginesTool(
+	options?: TermuxTtsEnginesToolOptions,
+): AgentTool<typeof termuxTtsEnginesSchema, TermuxToolDetails> {
+	return wrapToolDefinition(
+		buildTermuxSimpleDefinition(
+			"termux-tts-engines",
+			"Termux TTS Engines",
+			"List available TTS engines via Termux:API",
+			termuxTtsEnginesSchema,
+			options?.operations ?? defaultTermuxTtsEnginesOps,
+			["- Lists installed TTS engines on Android.", "- Use engine name with termux-tts."],
+		),
+	);
+}
+export function createTermuxTtsEnginesToolDefinition(
+	options?: TermuxTtsEnginesToolOptions,
+): ToolDefinition<typeof termuxTtsEnginesSchema, TermuxToolDetails> {
+	return buildTermuxSimpleDefinition(
 		"termux-tts-engines",
 		"Termux TTS Engines",
 		"List available TTS engines via Termux:API",
 		termuxTtsEnginesSchema,
 		options?.operations ?? defaultTermuxTtsEnginesOps,
 		["- Lists installed TTS engines on Android.", "- Use engine name with termux-tts."],
-	));
-}
-export function createTermuxTtsEnginesToolDefinition(options?: TermuxTtsEnginesToolOptions): ToolDefinition<typeof termuxTtsEnginesSchema, TermuxToolDetails> {
-	return buildTermuxSimpleDefinition("termux-tts-engines", "Termux TTS Engines", "List available TTS engines via Termux:API", termuxTtsEnginesSchema, options?.operations ?? defaultTermuxTtsEnginesOps, [
-		"- Lists installed TTS engines on Android.",
-		"- Use engine name with termux-tts.",
-	]);
+	);
 }
 
 export interface TermuxVibrateToolOptions {
 	operations?: TermuxVibrateOperations;
 }
-export function createTermuxVibrateTool(options?: TermuxVibrateToolOptions): AgentTool<typeof termuxVibrateSchema, TermuxToolDetails> {
-	return wrapToolDefinition(buildTermuxDefinition(
+export function createTermuxVibrateTool(
+	options?: TermuxVibrateToolOptions,
+): AgentTool<typeof termuxVibrateSchema, TermuxToolDetails> {
+	return wrapToolDefinition(
+		buildTermuxDefinition(
+			"termux-vibrate",
+			"Termux Vibrate",
+			"Vibrate the Android device via Termux:API",
+			termuxVibrateSchema,
+			options?.operations ?? defaultTermuxVibrateOps,
+			[
+				"- Use termux-vibrate for haptic feedback.",
+				"- Duration in ms (default 200).",
+				"- Force: vibrate even in silent mode.",
+				"- Not available on desktop platforms.",
+			],
+		),
+	);
+}
+export function createTermuxVibrateToolDefinition(
+	options?: TermuxVibrateToolOptions,
+): ToolDefinition<typeof termuxVibrateSchema, TermuxToolDetails> {
+	return buildTermuxDefinition(
 		"termux-vibrate",
 		"Termux Vibrate",
 		"Vibrate the Android device via Termux:API",
@@ -728,215 +832,397 @@ export function createTermuxVibrateTool(options?: TermuxVibrateToolOptions): Age
 			"- Force: vibrate even in silent mode.",
 			"- Not available on desktop platforms.",
 		],
-	));
-}
-export function createTermuxVibrateToolDefinition(options?: TermuxVibrateToolOptions): ToolDefinition<typeof termuxVibrateSchema, TermuxToolDetails> {
-	return buildTermuxDefinition("termux-vibrate", "Termux Vibrate", "Vibrate the Android device via Termux:API", termuxVibrateSchema, options?.operations ?? defaultTermuxVibrateOps, [
-		"- Use termux-vibrate for haptic feedback.",
-		"- Duration in ms (default 200).",
-		"- Force: vibrate even in silent mode.",
-		"- Not available on desktop platforms.",
-	]);
+	);
 }
 
 export interface TermuxClipboardSetToolOptions {
 	operations?: TermuxClipboardSetOperations;
 }
-export function createTermuxClipboardSetTool(options?: TermuxClipboardSetToolOptions): AgentTool<typeof termuxClipboardSetSchema, TermuxToolDetails> {
-	return wrapToolDefinition(buildTermuxDefinition(
+export function createTermuxClipboardSetTool(
+	options?: TermuxClipboardSetToolOptions,
+): AgentTool<typeof termuxClipboardSetSchema, TermuxToolDetails> {
+	return wrapToolDefinition(
+		buildTermuxDefinition(
+			"termux-clipboard-set",
+			"Termux Clipboard Set",
+			"Copy text to Android clipboard via Termux:API",
+			termuxClipboardSetSchema,
+			options?.operations ?? defaultTermuxClipboardSetOps,
+			["- Copies text to system clipboard on Android.", "- Use termux-clipboard-get to read back."],
+		),
+	);
+}
+export function createTermuxClipboardSetToolDefinition(
+	options?: TermuxClipboardSetToolOptions,
+): ToolDefinition<typeof termuxClipboardSetSchema, TermuxToolDetails> {
+	return buildTermuxDefinition(
 		"termux-clipboard-set",
 		"Termux Clipboard Set",
 		"Copy text to Android clipboard via Termux:API",
 		termuxClipboardSetSchema,
 		options?.operations ?? defaultTermuxClipboardSetOps,
 		["- Copies text to system clipboard on Android.", "- Use termux-clipboard-get to read back."],
-	));
-}
-export function createTermuxClipboardSetToolDefinition(options?: TermuxClipboardSetToolOptions): ToolDefinition<typeof termuxClipboardSetSchema, TermuxToolDetails> {
-	return buildTermuxDefinition("termux-clipboard-set", "Termux Clipboard Set", "Copy text to Android clipboard via Termux:API", termuxClipboardSetSchema, options?.operations ?? defaultTermuxClipboardSetOps, [
-		"- Copies text to system clipboard on Android.",
-		"- Use termux-clipboard-get to read back.",
-	]);
+	);
 }
 
 export interface TermuxClipboardGetToolOptions {
 	operations?: TermuxClipboardGetOperations;
 }
-export function createTermuxClipboardGetTool(options?: TermuxClipboardGetToolOptions): AgentTool<typeof termuxClipboardGetSchema, TermuxToolDetails> {
-	return wrapToolDefinition(buildTermuxSimpleDefinition(
+export function createTermuxClipboardGetTool(
+	options?: TermuxClipboardGetToolOptions,
+): AgentTool<typeof termuxClipboardGetSchema, TermuxToolDetails> {
+	return wrapToolDefinition(
+		buildTermuxSimpleDefinition(
+			"termux-clipboard-get",
+			"Termux Clipboard Get",
+			"Read text from Android clipboard via Termux:API",
+			termuxClipboardGetSchema,
+			options?.operations ?? defaultTermuxClipboardGetOps,
+			["- Reads current clipboard content on Android."],
+		),
+	);
+}
+export function createTermuxClipboardGetToolDefinition(
+	options?: TermuxClipboardGetToolOptions,
+): ToolDefinition<typeof termuxClipboardGetSchema, TermuxToolDetails> {
+	return buildTermuxSimpleDefinition(
 		"termux-clipboard-get",
 		"Termux Clipboard Get",
 		"Read text from Android clipboard via Termux:API",
 		termuxClipboardGetSchema,
 		options?.operations ?? defaultTermuxClipboardGetOps,
 		["- Reads current clipboard content on Android."],
-	));
-}
-export function createTermuxClipboardGetToolDefinition(options?: TermuxClipboardGetToolOptions): ToolDefinition<typeof termuxClipboardGetSchema, TermuxToolDetails> {
-	return buildTermuxSimpleDefinition("termux-clipboard-get", "Termux Clipboard Get", "Read text from Android clipboard via Termux:API", termuxClipboardGetSchema, options?.operations ?? defaultTermuxClipboardGetOps, ["- Reads current clipboard content on Android."]);
+	);
 }
 
 export interface TermuxOpenUrlToolOptions {
 	operations?: TermuxOpenUrlOperations;
 }
-export function createTermuxOpenUrlTool(options?: TermuxOpenUrlToolOptions): AgentTool<typeof termuxOpenUrlSchema, TermuxToolDetails> {
-	return wrapToolDefinition(buildTermuxDefinition(
+export function createTermuxOpenUrlTool(
+	options?: TermuxOpenUrlToolOptions,
+): AgentTool<typeof termuxOpenUrlSchema, TermuxToolDetails> {
+	return wrapToolDefinition(
+		buildTermuxDefinition(
+			"termux-open-url",
+			"Termux Open URL",
+			"Open a URL in the default Android browser via Termux:API",
+			termuxOpenUrlSchema,
+			options?.operations ?? defaultTermuxOpenUrlOps,
+			["- Opens URLs in the default browser on Android."],
+		),
+	);
+}
+export function createTermuxOpenUrlToolDefinition(
+	options?: TermuxOpenUrlToolOptions,
+): ToolDefinition<typeof termuxOpenUrlSchema, TermuxToolDetails> {
+	return buildTermuxDefinition(
 		"termux-open-url",
 		"Termux Open URL",
 		"Open a URL in the default Android browser via Termux:API",
 		termuxOpenUrlSchema,
 		options?.operations ?? defaultTermuxOpenUrlOps,
 		["- Opens URLs in the default browser on Android."],
-	));
-}
-export function createTermuxOpenUrlToolDefinition(options?: TermuxOpenUrlToolOptions): ToolDefinition<typeof termuxOpenUrlSchema, TermuxToolDetails> {
-	return buildTermuxDefinition("termux-open-url", "Termux Open URL", "Open a URL in the default Android browser via Termux:API", termuxOpenUrlSchema, options?.operations ?? defaultTermuxOpenUrlOps, ["- Opens URLs in the default browser on Android."]);
+	);
 }
 
 export interface TermuxShareToolOptions {
 	operations?: TermuxShareOperations;
 }
-export function createTermuxShareTool(options?: TermuxShareToolOptions): AgentTool<typeof termuxShareSchema, TermuxToolDetails> {
-	return wrapToolDefinition(buildTermuxDefinition(
+export function createTermuxShareTool(
+	options?: TermuxShareToolOptions,
+): AgentTool<typeof termuxShareSchema, TermuxToolDetails> {
+	return wrapToolDefinition(
+		buildTermuxDefinition(
+			"termux-share",
+			"Termux Share",
+			"Share text or files through Android share sheet via Termux:API",
+			termuxShareSchema,
+			options?.operations ?? defaultTermuxShareOps,
+			[
+				"- Shares text or files via Android share sheet.",
+				"- Provide text, file path, or both.",
+				"- Custom chooser title optional.",
+			],
+		),
+	);
+}
+export function createTermuxShareToolDefinition(
+	options?: TermuxShareToolOptions,
+): ToolDefinition<typeof termuxShareSchema, TermuxToolDetails> {
+	return buildTermuxDefinition(
 		"termux-share",
 		"Termux Share",
 		"Share text or files through Android share sheet via Termux:API",
 		termuxShareSchema,
 		options?.operations ?? defaultTermuxShareOps,
-		["- Shares text or files via Android share sheet.", "- Provide text, file path, or both.", "- Custom chooser title optional."],
-	));
-}
-export function createTermuxShareToolDefinition(options?: TermuxShareToolOptions): ToolDefinition<typeof termuxShareSchema, TermuxToolDetails> {
-	return buildTermuxDefinition("termux-share", "Termux Share", "Share text or files through Android share sheet via Termux:API", termuxShareSchema, options?.operations ?? defaultTermuxShareOps, ["- Shares text or files via Android share sheet.", "- Provide text, file path, or both.", "- Custom chooser title optional."]);
+		[
+			"- Shares text or files via Android share sheet.",
+			"- Provide text, file path, or both.",
+			"- Custom chooser title optional.",
+		],
+	);
 }
 
 export interface TermuxBatteryStatusToolOptions {
 	operations?: TermuxBatteryStatusOperations;
 }
-export function createTermuxBatteryStatusTool(options?: TermuxBatteryStatusToolOptions): AgentTool<typeof termuxBatteryStatusSchema, TermuxToolDetails> {
-	return wrapToolDefinition(buildTermuxSimpleDefinition(
+export function createTermuxBatteryStatusTool(
+	options?: TermuxBatteryStatusToolOptions,
+): AgentTool<typeof termuxBatteryStatusSchema, TermuxToolDetails> {
+	return wrapToolDefinition(
+		buildTermuxSimpleDefinition(
+			"termux-battery-status",
+			"Termux Battery Status",
+			"Get battery status (percentage, temperature, health, etc.) via Termux:API",
+			termuxBatteryStatusSchema,
+			options?.operations ?? defaultTermuxBatteryStatusOps,
+			["- Returns JSON with battery percentage, temperature, health, charging status, etc."],
+		),
+	);
+}
+export function createTermuxBatteryStatusToolDefinition(
+	options?: TermuxBatteryStatusToolOptions,
+): ToolDefinition<typeof termuxBatteryStatusSchema, TermuxToolDetails> {
+	return buildTermuxSimpleDefinition(
 		"termux-battery-status",
 		"Termux Battery Status",
-		"Get battery status (percentage, temperature, health, etc.) via Termux:API",
+		"Get battery status via Termux:API",
 		termuxBatteryStatusSchema,
 		options?.operations ?? defaultTermuxBatteryStatusOps,
 		["- Returns JSON with battery percentage, temperature, health, charging status, etc."],
-	));
-}
-export function createTermuxBatteryStatusToolDefinition(options?: TermuxBatteryStatusToolOptions): ToolDefinition<typeof termuxBatteryStatusSchema, TermuxToolDetails> {
-	return buildTermuxSimpleDefinition("termux-battery-status", "Termux Battery Status", "Get battery status via Termux:API", termuxBatteryStatusSchema, options?.operations ?? defaultTermuxBatteryStatusOps, ["- Returns JSON with battery percentage, temperature, health, charging status, etc."]);
+	);
 }
 
 export interface TermuxLocationToolOptions {
 	operations?: TermuxLocationOperations;
 }
-export function createTermuxLocationTool(options?: TermuxLocationToolOptions): AgentTool<typeof termuxLocationSchema, TermuxToolDetails> {
-	return wrapToolDefinition(buildTermuxDefinition(
+export function createTermuxLocationTool(
+	options?: TermuxLocationToolOptions,
+): AgentTool<typeof termuxLocationSchema, TermuxToolDetails> {
+	return wrapToolDefinition(
+		buildTermuxDefinition(
+			"termux-location",
+			"Termux Location",
+			"Get GPS/network location via Termux:API",
+			termuxLocationSchema,
+			options?.operations ?? defaultTermuxLocationOps,
+			[
+				"- Provider: gps (accurate), network (fast), passive (battery-efficient).",
+				"- Request: single (one-time), update (continuous), last (cached).",
+				"- Returns JSON with latitude, longitude, altitude, accuracy, etc.",
+			],
+		),
+	);
+}
+export function createTermuxLocationToolDefinition(
+	options?: TermuxLocationToolOptions,
+): ToolDefinition<typeof termuxLocationSchema, TermuxToolDetails> {
+	return buildTermuxDefinition(
 		"termux-location",
 		"Termux Location",
 		"Get GPS/network location via Termux:API",
 		termuxLocationSchema,
 		options?.operations ?? defaultTermuxLocationOps,
-		["- Provider: gps (accurate), network (fast), passive (battery-efficient).", "- Request: single (one-time), update (continuous), last (cached).", "- Returns JSON with latitude, longitude, altitude, accuracy, etc."],
-	));
-}
-export function createTermuxLocationToolDefinition(options?: TermuxLocationToolOptions): ToolDefinition<typeof termuxLocationSchema, TermuxToolDetails> {
-	return buildTermuxDefinition("termux-location", "Termux Location", "Get GPS/network location via Termux:API", termuxLocationSchema, options?.operations ?? defaultTermuxLocationOps, ["- Provider: gps (accurate), network (fast), passive (battery-efficient).", "- Request: single (one-time), update (continuous), last (cached).", "- Returns JSON with latitude, longitude, altitude, accuracy, etc."]);
+		[
+			"- Provider: gps (accurate), network (fast), passive (battery-efficient).",
+			"- Request: single (one-time), update (continuous), last (cached).",
+			"- Returns JSON with latitude, longitude, altitude, accuracy, etc.",
+		],
+	);
 }
 
 export interface TermuxCameraPhotoToolOptions {
 	operations?: TermuxCameraPhotoOperations;
 }
-export function createTermuxCameraPhotoTool(options?: TermuxCameraPhotoToolOptions): AgentTool<typeof termuxCameraPhotoSchema, TermuxToolDetails> {
-	return wrapToolDefinition(buildTermuxDefinition(
+export function createTermuxCameraPhotoTool(
+	options?: TermuxCameraPhotoToolOptions,
+): AgentTool<typeof termuxCameraPhotoSchema, TermuxToolDetails> {
+	return wrapToolDefinition(
+		buildTermuxDefinition(
+			"termux-camera-photo",
+			"Termux Camera Photo",
+			"Take a photo using device camera via Termux:API",
+			termuxCameraPhotoSchema,
+			options?.operations ?? defaultTermuxCameraPhotoOps,
+			["- Camera ID: 0 (back), 1 (front).", "- Specify output file path.", "- Requires camera permission."],
+		),
+	);
+}
+export function createTermuxCameraPhotoToolDefinition(
+	options?: TermuxCameraPhotoToolOptions,
+): ToolDefinition<typeof termuxCameraPhotoSchema, TermuxToolDetails> {
+	return buildTermuxDefinition(
 		"termux-camera-photo",
 		"Termux Camera Photo",
 		"Take a photo using device camera via Termux:API",
 		termuxCameraPhotoSchema,
 		options?.operations ?? defaultTermuxCameraPhotoOps,
 		["- Camera ID: 0 (back), 1 (front).", "- Specify output file path.", "- Requires camera permission."],
-	));
-}
-export function createTermuxCameraPhotoToolDefinition(options?: TermuxCameraPhotoToolOptions): ToolDefinition<typeof termuxCameraPhotoSchema, TermuxToolDetails> {
-	return buildTermuxDefinition("termux-camera-photo", "Termux Camera Photo", "Take a photo using device camera via Termux:API", termuxCameraPhotoSchema, options?.operations ?? defaultTermuxCameraPhotoOps, ["- Camera ID: 0 (back), 1 (front).", "- Specify output file path.", "- Requires camera permission."]);
+	);
 }
 
 export interface TermuxCameraInfoToolOptions {
 	operations?: TermuxCameraInfoOperations;
 }
-export function createTermuxCameraInfoTool(options?: TermuxCameraInfoToolOptions): AgentTool<typeof termuxCameraInfoSchema, TermuxToolDetails> {
-	return wrapToolDefinition(buildTermuxSimpleDefinition(
+export function createTermuxCameraInfoTool(
+	options?: TermuxCameraInfoToolOptions,
+): AgentTool<typeof termuxCameraInfoSchema, TermuxToolDetails> {
+	return wrapToolDefinition(
+		buildTermuxSimpleDefinition(
+			"termux-camera-info",
+			"Termux Camera Info",
+			"Get camera information via Termux:API",
+			termuxCameraInfoSchema,
+			options?.operations ?? defaultTermuxCameraInfoOps,
+			["- Lists available cameras with IDs and capabilities."],
+		),
+	);
+}
+export function createTermuxCameraInfoToolDefinition(
+	options?: TermuxCameraInfoToolOptions,
+): ToolDefinition<typeof termuxCameraInfoSchema, TermuxToolDetails> {
+	return buildTermuxSimpleDefinition(
 		"termux-camera-info",
 		"Termux Camera Info",
 		"Get camera information via Termux:API",
 		termuxCameraInfoSchema,
 		options?.operations ?? defaultTermuxCameraInfoOps,
 		["- Lists available cameras with IDs and capabilities."],
-	));
-}
-export function createTermuxCameraInfoToolDefinition(options?: TermuxCameraInfoToolOptions): ToolDefinition<typeof termuxCameraInfoSchema, TermuxToolDetails> {
-	return buildTermuxSimpleDefinition("termux-camera-info", "Termux Camera Info", "Get camera information via Termux:API", termuxCameraInfoSchema, options?.operations ?? defaultTermuxCameraInfoOps, ["- Lists available cameras with IDs and capabilities."]);
+	);
 }
 
 export interface TermuxSensorToolOptions {
 	operations?: TermuxSensorOperations;
 }
-export function createTermuxSensorTool(options?: TermuxSensorToolOptions): AgentTool<typeof termuxSensorSchema, TermuxToolDetails> {
-	return wrapToolDefinition(buildTermuxDefinition(
+export function createTermuxSensorTool(
+	options?: TermuxSensorToolOptions,
+): AgentTool<typeof termuxSensorSchema, TermuxToolDetails> {
+	return wrapToolDefinition(
+		buildTermuxDefinition(
+			"termux-sensor",
+			"Termux Sensor",
+			"Read sensor data (accelerometer, gyroscope, light, etc.) via Termux:API",
+			termuxSensorSchema,
+			options?.operations ?? defaultTermuxSensorOps,
+			[
+				"- Sensor name: Accelerometer, Gyroscope, Light, Proximity, etc.",
+				"- Count: number of readings (default 1).",
+				"- Delay: ms between readings (default 100).",
+				"- Use termux-sensor-list to see available sensors.",
+			],
+		),
+	);
+}
+export function createTermuxSensorToolDefinition(
+	options?: TermuxSensorToolOptions,
+): ToolDefinition<typeof termuxSensorSchema, TermuxToolDetails> {
+	return buildTermuxDefinition(
 		"termux-sensor",
 		"Termux Sensor",
-		"Read sensor data (accelerometer, gyroscope, light, etc.) via Termux:API",
+		"Read sensor data via Termux:API",
 		termuxSensorSchema,
 		options?.operations ?? defaultTermuxSensorOps,
-		["- Sensor name: Accelerometer, Gyroscope, Light, Proximity, etc.", "- Count: number of readings (default 1).", "- Delay: ms between readings (default 100).", "- Use termux-sensor-list to see available sensors."],
-	));
-}
-export function createTermuxSensorToolDefinition(options?: TermuxSensorToolOptions): ToolDefinition<typeof termuxSensorSchema, TermuxToolDetails> {
-	return buildTermuxDefinition("termux-sensor", "Termux Sensor", "Read sensor data via Termux:API", termuxSensorSchema, options?.operations ?? defaultTermuxSensorOps, ["- Sensor name: Accelerometer, Gyroscope, Light, Proximity, etc.", "- Count: number of readings (default 1).", "- Delay: ms between readings (default 100).", "- Use termux-sensor-list to see available sensors."]);
+		[
+			"- Sensor name: Accelerometer, Gyroscope, Light, Proximity, etc.",
+			"- Count: number of readings (default 1).",
+			"- Delay: ms between readings (default 100).",
+			"- Use termux-sensor-list to see available sensors.",
+		],
+	);
 }
 
 export interface TermuxSensorListToolOptions {
 	operations?: TermuxSensorListOperations;
 }
-export function createTermuxSensorListTool(options?: TermuxSensorListToolOptions): AgentTool<typeof termuxSensorListSchema, TermuxToolDetails> {
-	return wrapToolDefinition(buildTermuxSimpleDefinition(
+export function createTermuxSensorListTool(
+	options?: TermuxSensorListToolOptions,
+): AgentTool<typeof termuxSensorListSchema, TermuxToolDetails> {
+	return wrapToolDefinition(
+		buildTermuxSimpleDefinition(
+			"termux-sensor-list",
+			"Termux Sensor List",
+			"List available sensors via Termux:API",
+			termuxSensorListSchema,
+			options?.operations ?? defaultTermuxSensorListOps,
+			["- Returns list of available sensor names."],
+		),
+	);
+}
+export function createTermuxSensorListToolDefinition(
+	options?: TermuxSensorListToolOptions,
+): ToolDefinition<typeof termuxSensorListSchema, TermuxToolDetails> {
+	return buildTermuxSimpleDefinition(
 		"termux-sensor-list",
 		"Termux Sensor List",
 		"List available sensors via Termux:API",
 		termuxSensorListSchema,
 		options?.operations ?? defaultTermuxSensorListOps,
 		["- Returns list of available sensor names."],
-	));
-}
-export function createTermuxSensorListToolDefinition(options?: TermuxSensorListToolOptions): ToolDefinition<typeof termuxSensorListSchema, TermuxToolDetails> {
-	return buildTermuxSimpleDefinition("termux-sensor-list", "Termux Sensor List", "List available sensors via Termux:API", termuxSensorListSchema, options?.operations ?? defaultTermuxSensorListOps, ["- Returns list of available sensor names."]);
+	);
 }
 
 export interface TermuxSensorCleanupToolOptions {
 	operations?: TermuxSensorCleanupOperations;
 }
-export function createTermuxSensorCleanupTool(options?: TermuxSensorCleanupToolOptions): AgentTool<typeof termuxSensorCleanupSchema, TermuxToolDetails> {
-	return wrapToolDefinition(buildTermuxSimpleDefinition(
+export function createTermuxSensorCleanupTool(
+	options?: TermuxSensorCleanupToolOptions,
+): AgentTool<typeof termuxSensorCleanupSchema, TermuxToolDetails> {
+	return wrapToolDefinition(
+		buildTermuxSimpleDefinition(
+			"termux-sensor-cleanup",
+			"Termux Sensor Cleanup",
+			"Clean up sensor listeners via Termux:API",
+			termuxSensorCleanupSchema,
+			options?.operations ?? defaultTermuxSensorCleanupOps,
+			["- Releases sensor resources after use."],
+		),
+	);
+}
+export function createTermuxSensorCleanupToolDefinition(
+	options?: TermuxSensorCleanupToolOptions,
+): ToolDefinition<typeof termuxSensorCleanupSchema, TermuxToolDetails> {
+	return buildTermuxSimpleDefinition(
 		"termux-sensor-cleanup",
 		"Termux Sensor Cleanup",
 		"Clean up sensor listeners via Termux:API",
 		termuxSensorCleanupSchema,
 		options?.operations ?? defaultTermuxSensorCleanupOps,
 		["- Releases sensor resources after use."],
-	));
-}
-export function createTermuxSensorCleanupToolDefinition(options?: TermuxSensorCleanupToolOptions): ToolDefinition<typeof termuxSensorCleanupSchema, TermuxToolDetails> {
-	return buildTermuxSimpleDefinition("termux-sensor-cleanup", "Termux Sensor Cleanup", "Clean up sensor listeners via Termux:API", termuxSensorCleanupSchema, options?.operations ?? defaultTermuxSensorCleanupOps, ["- Releases sensor resources after use."]);
+	);
 }
 
 export interface TermuxDialogToolOptions {
 	operations?: TermuxDialogOperations;
 }
-export function createTermuxDialogTool(options?: TermuxDialogToolOptions): AgentTool<typeof termuxDialogSchema, TermuxToolDetails> {
-	return wrapToolDefinition(buildTermuxDefinition(
+export function createTermuxDialogTool(
+	options?: TermuxDialogToolOptions,
+): AgentTool<typeof termuxDialogSchema, TermuxToolDetails> {
+	return wrapToolDefinition(
+		buildTermuxDefinition(
+			"termux-dialog",
+			"Termux Dialog",
+			"Show dialogs (text input, confirm, selection, date/time, counter) via Termux:API",
+			termuxDialogSchema,
+			options?.operations ?? defaultTermuxDialogOps,
+			[
+				"- Types: text, confirm, sheet, radio, checkbox, date, time, counter.",
+				"- Text: single-line input with default value.",
+				"- Confirm: yes/no dialog.",
+				"- Sheet/radio/checkbox: selection from comma-separated values.",
+				"- Date/time: native pickers.",
+				"- Counter: numeric input with min/max.",
+				"- Returns JSON with user response.",
+			],
+		),
+	);
+}
+export function createTermuxDialogToolDefinition(
+	options?: TermuxDialogToolOptions,
+): ToolDefinition<typeof termuxDialogSchema, TermuxToolDetails> {
+	return buildTermuxDefinition(
 		"termux-dialog",
 		"Termux Dialog",
-		"Show dialogs (text input, confirm, selection, date/time, counter) via Termux:API",
+		"Show dialogs via Termux:API",
 		termuxDialogSchema,
 		options?.operations ?? defaultTermuxDialogOps,
 		[
@@ -948,135 +1234,215 @@ export function createTermuxDialogTool(options?: TermuxDialogToolOptions): Agent
 			"- Counter: numeric input with min/max.",
 			"- Returns JSON with user response.",
 		],
-	));
-}
-export function createTermuxDialogToolDefinition(options?: TermuxDialogToolOptions): ToolDefinition<typeof termuxDialogSchema, TermuxToolDetails> {
-	return buildTermuxDefinition("termux-dialog", "Termux Dialog", "Show dialogs via Termux:API", termuxDialogSchema, options?.operations ?? defaultTermuxDialogOps, [
-		"- Types: text, confirm, sheet, radio, checkbox, date, time, counter.",
-		"- Text: single-line input with default value.",
-		"- Confirm: yes/no dialog.",
-		"- Sheet/radio/checkbox: selection from comma-separated values.",
-		"- Date/time: native pickers.",
-		"- Counter: numeric input with min/max.",
-		"- Returns JSON with user response.",
-	]);
+	);
 }
 
 export interface TermuxTelephonyDeviceInfoToolOptions {
 	operations?: TermuxTelephonyDeviceInfoOperations;
 }
-export function createTermuxTelephonyDeviceInfoTool(options?: TermuxTelephonyDeviceInfoToolOptions): AgentTool<typeof termuxTelephonyDeviceInfoSchema, TermuxToolDetails> {
-	return wrapToolDefinition(buildTermuxSimpleDefinition(
+export function createTermuxTelephonyDeviceInfoTool(
+	options?: TermuxTelephonyDeviceInfoToolOptions,
+): AgentTool<typeof termuxTelephonyDeviceInfoSchema, TermuxToolDetails> {
+	return wrapToolDefinition(
+		buildTermuxSimpleDefinition(
+			"termux-telephony-deviceinfo",
+			"Termux Telephony Device Info",
+			"Get telephony device info (IMEI, network, etc.) via Termux:API",
+			termuxTelephonyDeviceInfoSchema,
+			options?.operations ?? defaultTermuxTelephonyDeviceInfoOps,
+			["- Returns JSON with IMEI, network operator, SIM state, etc."],
+		),
+	);
+}
+export function createTermuxTelephonyDeviceInfoToolDefinition(
+	options?: TermuxTelephonyDeviceInfoToolOptions,
+): ToolDefinition<typeof termuxTelephonyDeviceInfoSchema, TermuxToolDetails> {
+	return buildTermuxSimpleDefinition(
 		"termux-telephony-deviceinfo",
 		"Termux Telephony Device Info",
-		"Get telephony device info (IMEI, network, etc.) via Termux:API",
+		"Get telephony device info via Termux:API",
 		termuxTelephonyDeviceInfoSchema,
 		options?.operations ?? defaultTermuxTelephonyDeviceInfoOps,
 		["- Returns JSON with IMEI, network operator, SIM state, etc."],
-	));
-}
-export function createTermuxTelephonyDeviceInfoToolDefinition(options?: TermuxTelephonyDeviceInfoToolOptions): ToolDefinition<typeof termuxTelephonyDeviceInfoSchema, TermuxToolDetails> {
-	return buildTermuxSimpleDefinition("termux-telephony-deviceinfo", "Termux Telephony Device Info", "Get telephony device info via Termux:API", termuxTelephonyDeviceInfoSchema, options?.operations ?? defaultTermuxTelephonyDeviceInfoOps, ["- Returns JSON with IMEI, network operator, SIM state, etc."]);
+	);
 }
 
 export interface TermuxWifiConnectionInfoToolOptions {
 	operations?: TermuxWifiConnectionInfoOperations;
 }
-export function createTermuxWifiConnectionInfoTool(options?: TermuxWifiConnectionInfoToolOptions): AgentTool<typeof termuxWifiConnectionInfoSchema, TermuxToolDetails> {
-	return wrapToolDefinition(buildTermuxSimpleDefinition(
+export function createTermuxWifiConnectionInfoTool(
+	options?: TermuxWifiConnectionInfoToolOptions,
+): AgentTool<typeof termuxWifiConnectionInfoSchema, TermuxToolDetails> {
+	return wrapToolDefinition(
+		buildTermuxSimpleDefinition(
+			"termux-wifi-connectioninfo",
+			"Termux WiFi Connection Info",
+			"Get current WiFi connection info via Termux:API",
+			termuxWifiConnectionInfoSchema,
+			options?.operations ?? defaultTermuxWifiConnectionInfoOps,
+			["- Returns JSON with SSID, BSSID, IP, signal strength, etc."],
+		),
+	);
+}
+export function createTermuxWifiConnectionInfoToolDefinition(
+	options?: TermuxWifiConnectionInfoToolOptions,
+): ToolDefinition<typeof termuxWifiConnectionInfoSchema, TermuxToolDetails> {
+	return buildTermuxSimpleDefinition(
 		"termux-wifi-connectioninfo",
 		"Termux WiFi Connection Info",
 		"Get current WiFi connection info via Termux:API",
 		termuxWifiConnectionInfoSchema,
 		options?.operations ?? defaultTermuxWifiConnectionInfoOps,
 		["- Returns JSON with SSID, BSSID, IP, signal strength, etc."],
-	));
-}
-export function createTermuxWifiConnectionInfoToolDefinition(options?: TermuxWifiConnectionInfoToolOptions): ToolDefinition<typeof termuxWifiConnectionInfoSchema, TermuxToolDetails> {
-	return buildTermuxSimpleDefinition("termux-wifi-connectioninfo", "Termux WiFi Connection Info", "Get current WiFi connection info via Termux:API", termuxWifiConnectionInfoSchema, options?.operations ?? defaultTermuxWifiConnectionInfoOps, ["- Returns JSON with SSID, BSSID, IP, signal strength, etc."]);
+	);
 }
 
 export interface TermuxWifiScanInfoToolOptions {
 	operations?: TermuxWifiScanInfoOperations;
 }
-export function createTermuxWifiScanInfoTool(options?: TermuxWifiScanInfoToolOptions): AgentTool<typeof termuxWifiScanInfoSchema, TermuxToolDetails> {
-	return wrapToolDefinition(buildTermuxSimpleDefinition(
+export function createTermuxWifiScanInfoTool(
+	options?: TermuxWifiScanInfoToolOptions,
+): AgentTool<typeof termuxWifiScanInfoSchema, TermuxToolDetails> {
+	return wrapToolDefinition(
+		buildTermuxSimpleDefinition(
+			"termux-wifi-scaninfo",
+			"Termux WiFi Scan Info",
+			"Scan for WiFi networks via Termux:API",
+			termuxWifiScanInfoSchema,
+			options?.operations ?? defaultTermuxWifiScanInfoOps,
+			["- Returns JSON array of networks with SSID, BSSID, signal, frequency, etc."],
+		),
+	);
+}
+export function createTermuxWifiScanInfoToolDefinition(
+	options?: TermuxWifiScanInfoToolOptions,
+): ToolDefinition<typeof termuxWifiScanInfoSchema, TermuxToolDetails> {
+	return buildTermuxSimpleDefinition(
 		"termux-wifi-scaninfo",
 		"Termux WiFi Scan Info",
 		"Scan for WiFi networks via Termux:API",
 		termuxWifiScanInfoSchema,
 		options?.operations ?? defaultTermuxWifiScanInfoOps,
 		["- Returns JSON array of networks with SSID, BSSID, signal, frequency, etc."],
-	));
-}
-export function createTermuxWifiScanInfoToolDefinition(options?: TermuxWifiScanInfoToolOptions): ToolDefinition<typeof termuxWifiScanInfoSchema, TermuxToolDetails> {
-	return buildTermuxSimpleDefinition("termux-wifi-scaninfo", "Termux WiFi Scan Info", "Scan for WiFi networks via Termux:API", termuxWifiScanInfoSchema, options?.operations ?? defaultTermuxWifiScanInfoOps, ["- Returns JSON array of networks with SSID, BSSID, signal, frequency, etc."]);
+	);
 }
 
 export interface TermuxAudioInfoToolOptions {
 	operations?: TermuxAudioInfoOperations;
 }
-export function createTermuxAudioInfoTool(options?: TermuxAudioInfoToolOptions): AgentTool<typeof termuxAudioInfoSchema, TermuxToolDetails> {
-	return wrapToolDefinition(buildTermuxSimpleDefinition(
+export function createTermuxAudioInfoTool(
+	options?: TermuxAudioInfoToolOptions,
+): AgentTool<typeof termuxAudioInfoSchema, TermuxToolDetails> {
+	return wrapToolDefinition(
+		buildTermuxSimpleDefinition(
+			"termux-audio-info",
+			"Termux Audio Info",
+			"Get audio info via Termux:API",
+			termuxAudioInfoSchema,
+			options?.operations ?? defaultTermuxAudioInfoOps,
+			["- Returns JSON with audio mode, volume, etc."],
+		),
+	);
+}
+export function createTermuxAudioInfoToolDefinition(
+	options?: TermuxAudioInfoToolOptions,
+): ToolDefinition<typeof termuxAudioInfoSchema, TermuxToolDetails> {
+	return buildTermuxSimpleDefinition(
 		"termux-audio-info",
 		"Termux Audio Info",
 		"Get audio info via Termux:API",
 		termuxAudioInfoSchema,
 		options?.operations ?? defaultTermuxAudioInfoOps,
 		["- Returns JSON with audio mode, volume, etc."],
-	));
-}
-export function createTermuxAudioInfoToolDefinition(options?: TermuxAudioInfoToolOptions): ToolDefinition<typeof termuxAudioInfoSchema, TermuxToolDetails> {
-	return buildTermuxSimpleDefinition("termux-audio-info", "Termux Audio Info", "Get audio info via Termux:API", termuxAudioInfoSchema, options?.operations ?? defaultTermuxAudioInfoOps, ["- Returns JSON with audio mode, volume, etc."]);
+	);
 }
 
 export interface TermuxBrightnessToolOptions {
 	operations?: TermuxBrightnessOperations;
 }
-export function createTermuxBrightnessTool(options?: TermuxBrightnessToolOptions): AgentTool<typeof termuxBrightnessSchema, TermuxToolDetails> {
-	return wrapToolDefinition(buildTermuxDefinition(
+export function createTermuxBrightnessTool(
+	options?: TermuxBrightnessToolOptions,
+): AgentTool<typeof termuxBrightnessSchema, TermuxToolDetails> {
+	return wrapToolDefinition(
+		buildTermuxDefinition(
+			"termux-brightness",
+			"Termux Brightness",
+			"Set screen brightness via Termux:API",
+			termuxBrightnessSchema,
+			options?.operations ?? defaultTermuxBrightnessOps,
+			["- Level: 0-255 (0=darkest, 255=brightest)."],
+		),
+	);
+}
+export function createTermuxBrightnessToolDefinition(
+	options?: TermuxBrightnessToolOptions,
+): ToolDefinition<typeof termuxBrightnessSchema, TermuxToolDetails> {
+	return buildTermuxDefinition(
 		"termux-brightness",
 		"Termux Brightness",
 		"Set screen brightness via Termux:API",
 		termuxBrightnessSchema,
 		options?.operations ?? defaultTermuxBrightnessOps,
 		["- Level: 0-255 (0=darkest, 255=brightest)."],
-	));
-}
-export function createTermuxBrightnessToolDefinition(options?: TermuxBrightnessToolOptions): ToolDefinition<typeof termuxBrightnessSchema, TermuxToolDetails> {
-	return buildTermuxDefinition("termux-brightness", "Termux Brightness", "Set screen brightness via Termux:API", termuxBrightnessSchema, options?.operations ?? defaultTermuxBrightnessOps, ["- Level: 0-255 (0=darkest, 255=brightest)."]);
+	);
 }
 
 export interface TermuxMediaScanToolOptions {
 	operations?: TermuxMediaScanOperations;
 }
-export function createTermuxMediaScanTool(options?: TermuxMediaScanToolOptions): AgentTool<typeof termuxMediaScanSchema, TermuxToolDetails> {
-	return wrapToolDefinition(buildTermuxDefinition(
+export function createTermuxMediaScanTool(
+	options?: TermuxMediaScanToolOptions,
+): AgentTool<typeof termuxMediaScanSchema, TermuxToolDetails> {
+	return wrapToolDefinition(
+		buildTermuxDefinition(
+			"termux-media-scan",
+			"Termux Media Scan",
+			"Scan a file for Android media database via Termux:API",
+			termuxMediaScanSchema,
+			options?.operations ?? defaultTermuxMediaScanOps,
+			["- Adds file to media gallery/database.", "- Useful after downloading/creating media files."],
+		),
+	);
+}
+export function createTermuxMediaScanToolDefinition(
+	options?: TermuxMediaScanToolOptions,
+): ToolDefinition<typeof termuxMediaScanSchema, TermuxToolDetails> {
+	return buildTermuxDefinition(
 		"termux-media-scan",
 		"Termux Media Scan",
 		"Scan a file for Android media database via Termux:API",
 		termuxMediaScanSchema,
 		options?.operations ?? defaultTermuxMediaScanOps,
 		["- Adds file to media gallery/database.", "- Useful after downloading/creating media files."],
-	));
-}
-export function createTermuxMediaScanToolDefinition(options?: TermuxMediaScanToolOptions): ToolDefinition<typeof termuxMediaScanSchema, TermuxToolDetails> {
-	return buildTermuxDefinition("termux-media-scan", "Termux Media Scan", "Scan a file for Android media database via Termux:API", termuxMediaScanSchema, options?.operations ?? defaultTermuxMediaScanOps, ["- Adds file to media gallery/database.", "- Useful after downloading/creating media files."]);
+	);
 }
 
 export interface TermuxStorageGetToolOptions {
 	operations?: TermuxStorageGetOperations;
 }
-export function createTermuxStorageGetTool(options?: TermuxStorageGetToolOptions): AgentTool<typeof termuxStorageGetSchema, TermuxToolDetails> {
-	return wrapToolDefinition(buildTermuxDefinition(
+export function createTermuxStorageGetTool(
+	options?: TermuxStorageGetToolOptions,
+): AgentTool<typeof termuxStorageGetSchema, TermuxToolDetails> {
+	return wrapToolDefinition(
+		buildTermuxDefinition(
+			"termux-storage-get",
+			"Termux Storage Get",
+			"Get a file from shared storage via Termux:API",
+			termuxStorageGetSchema,
+			options?.operations ?? defaultTermuxStorageGetOps,
+			["- Opens system file picker to select a file.", "- Saves selected file to specified output path."],
+		),
+	);
+}
+export function createTermuxStorageGetToolDefinition(
+	options?: TermuxStorageGetToolOptions,
+): ToolDefinition<typeof termuxStorageGetSchema, TermuxToolDetails> {
+	return buildTermuxDefinition(
 		"termux-storage-get",
 		"Termux Storage Get",
 		"Get a file from shared storage via Termux:API",
 		termuxStorageGetSchema,
 		options?.operations ?? defaultTermuxStorageGetOps,
 		["- Opens system file picker to select a file.", "- Saves selected file to specified output path."],
-	));
-}
-export function createTermuxStorageGetToolDefinition(options?: TermuxStorageGetToolOptions): ToolDefinition<typeof termuxStorageGetSchema, TermuxToolDetails> {
-	return buildTermuxDefinition("termux-storage-get", "Termux Storage Get", "Get a file from shared storage via Termux:API", termuxStorageGetSchema, options?.operations ?? defaultTermuxStorageGetOps, ["- Opens system file picker to select a file.", "- Saves selected file to specified output path."]);
+	);
 }

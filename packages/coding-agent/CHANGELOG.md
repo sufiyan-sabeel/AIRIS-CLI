@@ -2,6 +2,41 @@
 
 ## [Unreleased]
 
+### Added
+
+- **Reliability**: Provider resilience layer (`core/provider-resilience.ts`) — per-provider circuit breakers, adaptive exponential-backoff retries, degraded-mode policy, and aggregated recovery suggestions. Reuses `provider-health.ts`.
+- **Provider enhancement**: `core/provider-probe.ts` — connectivity validation, model auto-fetch + cache, capability detection, latency/availability sampling, and persisted provider profiles. New commands `/providers`, `/provider-test`, `/provider-info`.
+- **Agent runtime**: `core/job-scheduler.ts` — persistent job queue with one-shot/interval/cron scheduling, detached execution, resumption, and cancellation. New command `/jobs`.
+- **Memory**: `core/memory-store.ts` — cross-session structured memory (facts, preferences, decisions, notes) with keyword/recency recall. New command `/memory`.
+- **Repository intelligence**: `core/repo-intelligence.ts` — file/language index, intra-repo import graph, entry-point detection, and transitive change-impact. New command `/repo`.
+- **Observability**: `core/usage-tracker.ts` — per-session token and estimated-cost tracking by provider/model. New command `/cost`.
+- **Developer experience**: `/timeline` (execution timeline from the audit log) and `/suggest` (context-aware command recommendations via `core/command-suggestions.ts`).
+- Unit tests for all new modules: `provider-resilience`, `job-scheduler`, `memory-store`, `provider-probe`, `usage-tracker`, `command-suggestions`, `repo-intelligence`.
+
+### Changed
+
+- Slash command registry extended with the new commands above.
+- Added secret detection to sandbox (12 patterns: AWS keys, GitHub tokens, OpenAI/Anthropic API keys, SSH keys, JWTs, etc.).
+- Added `computeConfidence()` scoring to project learning with frequency and session-awareness.
+- Added per-session dedup to project learning (prevents duplicate pattern counting).
+- Added `rejectConvention()` and `rejectedPatterns` persistence to project learning.
+- Added secret detection tests (9 test cases).
+
+### Changed
+
+- Project learning: enhanced `getSummary()` with confidence bars and session counts.
+- Builtin sandbox: exported `globMatch`, `isPathAllowed`, `normalizeAndResolve`, `deepMergeConfig`, `DEFAULT_CONFIG`, `SandboxConfig`, `detectSecrets` for testing.
+- Project profile: `rejectedPatterns` field added (backward-compatible).
+
+### Fixed
+
+- Sandbox: bash commands with hardcoded secrets are now blocked with a descriptive message.
+- Sandbox: glob matching now checks basename for filename-only patterns (e.g., `*.pem` matches `/path/to/cert.pem`).
+
+### Removed
+
+- Removed stale `dynamic-tools.test.ts` (test for deleted DynamicToolRegistry).
+
 ## [0.79.9] - 2026-07-15
 
 ### Added

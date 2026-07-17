@@ -1,5 +1,5 @@
-import { after, describe, it } from "node:test";
 import assert from "node:assert";
+import { after, describe, it } from "node:test";
 
 // Mock process.env and process.stdout before importing modules under test
 const ORIGINAL_ENV = { ...process.env };
@@ -175,11 +175,14 @@ describe("PromptArea", () => {
 		setupNoColor();
 		const { PromptArea } = await import("../src/components/prompt-area.ts");
 
-		const prompt = new PromptArea({
-			provider: "Gemini",
-			model: "gemini-2.0-flash",
-			mode: "code",
-		}, "Use /btw for side questions");
+		const prompt = new PromptArea(
+			{
+				provider: "Gemini",
+				model: "gemini-2.0-flash",
+				mode: "code",
+			},
+			"Use /btw for side questions",
+		);
 
 		const rendered = prompt.render(80);
 		assert.ok(rendered.length >= 3);

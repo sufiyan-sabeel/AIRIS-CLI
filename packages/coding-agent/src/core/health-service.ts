@@ -165,17 +165,8 @@ function checkSessionDir(): HealthCheckResult {
 /**
  * Run all health checks and produce a report.
  */
-export function runHealthChecks(
-	options?: {
-		additionalChecks?: HealthCheckResult[];
-	},
-): HealthReport {
-	const checks: HealthCheckResult[] = [
-		checkAgentDir(),
-		checkMemory(),
-		checkTools(),
-		checkSessionDir(),
-	];
+export function runHealthChecks(options?: { additionalChecks?: HealthCheckResult[] }): HealthReport {
+	const checks: HealthCheckResult[] = [checkAgentDir(), checkMemory(), checkTools(), checkSessionDir()];
 
 	if (options?.additionalChecks) {
 		checks.push(...options.additionalChecks);
@@ -188,10 +179,7 @@ export function runHealthChecks(
 		error: checks.filter((c) => c.status === "error").length,
 	};
 
-	const overall: "ok" | "warn" | "error" =
-		summary.error > 0 ? "error" :
-		summary.warn > 0 ? "warn" :
-		"ok";
+	const overall: "ok" | "warn" | "error" = summary.error > 0 ? "error" : summary.warn > 0 ? "warn" : "ok";
 
 	return {
 		overall,
@@ -211,7 +199,9 @@ export function formatHealthReport(report: HealthReport): string {
 	lines.push(`AIRIS Health Check (${statusIcon})`);
 	lines.push(`Timestamp: ${report.timestamp}`);
 	lines.push("");
-	lines.push(`Summary: ${report.summary.ok}/${report.summary.total} passed, ${report.summary.warn} warnings, ${report.summary.error} errors`);
+	lines.push(
+		`Summary: ${report.summary.ok}/${report.summary.total} passed, ${report.summary.warn} warnings, ${report.summary.error} errors`,
+	);
 	lines.push("");
 
 	for (const check of report.checks) {

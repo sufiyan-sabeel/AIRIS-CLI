@@ -59,9 +59,7 @@ export class PromptArea implements Component {
 			const info: string[] = [];
 			if (this.data.provider) info.push(slate(this.data.provider));
 			if (this.data.mode) info.push(slate(this.data.mode));
-			lines.push(
-				info.join(slate(" · ")) + slate("  ·  ") + blue("esc stop"),
-			);
+			lines.push(info.join(slate(" · ")) + slate("  ·  ") + blue("esc stop"));
 			return lines;
 		}
 
@@ -84,10 +82,7 @@ export class PromptArea implements Component {
 
 		// Wide: full layout
 		if (this.tip) {
-			const tip = truncateToWidth(
-				slate(`Tip: ${this.tip}`),
-				width - 2,
-			);
+			const tip = truncateToWidth(slate(`Tip: ${this.tip}`), width - 2);
 			lines.push(tip);
 		}
 

@@ -14,7 +14,7 @@
  * - Disabled state
  */
 
-import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
@@ -100,7 +100,14 @@ describe("AuditLog", () => {
 			provider: "anthropic",
 			model: "claude-sonnet-4-5",
 			stopReason: "stop" as const,
-			usage: { input: 10, output: 20, cacheRead: 5, cacheWrite: 5, totalTokens: 30, cost: { input: 0.1, output: 0.2, cacheRead: 0.05, cacheWrite: 0.05, total: 0.3 } },
+			usage: {
+				input: 10,
+				output: 20,
+				cacheRead: 5,
+				cacheWrite: 5,
+				totalTokens: 30,
+				cost: { input: 0.1, output: 0.2, cacheRead: 0.05, cacheWrite: 0.05, total: 0.3 },
+			},
 			timestamp: Date.now(),
 		};
 		auditLog.logModelResponse(msg);
@@ -253,7 +260,7 @@ describe("AuditLog", () => {
 		const originalPath = auditLog.logPath;
 		auditLog.clear();
 		// Backup should exist
-		expect(existsSync(originalPath + ".bak")).toBe(true);
+		expect(existsSync(`${originalPath}.bak`)).toBe(true);
 	});
 
 	// ====================================================================

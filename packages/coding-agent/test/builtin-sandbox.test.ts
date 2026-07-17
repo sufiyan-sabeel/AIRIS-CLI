@@ -14,11 +14,11 @@ import { describe, expect, it } from "vitest";
 import {
 	DEFAULT_CONFIG,
 	deepMergeConfig,
+	detectSecrets,
 	globMatch,
 	isPathAllowed,
 	matchesAny,
 	normalizeAndResolve,
-	detectSecrets,
 } from "../src/core/builtin-sandbox.ts";
 
 // ============================================================================
@@ -265,7 +265,13 @@ describe("sandbox deepMergeConfig", () => {
 	});
 
 	it("appends deny lists instead of replacing", () => {
-		const base = { enabled: false, denyRead: ["*.pem"], denyWrite: [] as string[], allowRead: [] as string[], allowWrite: [] as string[] };
+		const base = {
+			enabled: false,
+			denyRead: ["*.pem"],
+			denyWrite: [] as string[],
+			allowRead: [] as string[],
+			allowWrite: [] as string[],
+		};
 		const result = deepMergeConfig(base, { denyRead: ["*.key"] });
 		expect(result.denyRead).toContain("*.pem");
 		expect(result.denyRead).toContain("*.key");
@@ -331,7 +337,9 @@ describe("detectSecrets", () => {
 	});
 
 	it("detects JWT Token", () => {
-		const result = detectSecrets("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.dozjgNryP4J3jVNHqjc9kTX8NqG8i6YicKJqaF7oJKI");
+		const result = detectSecrets(
+			"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.dozjgNryP4J3jVNHqjc9kTX8NqG8i6YicKJqaF7oJKI",
+		);
 		expect(result.length).toBeGreaterThan(0);
 		expect(result[0].name).toContain("JWT");
 	});

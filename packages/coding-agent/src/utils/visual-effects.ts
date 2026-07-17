@@ -332,7 +332,7 @@ export function dashboardCard(title: string, items: DashboardItem[], width?: num
 	const titleColor = chalk.bold.cyan;
 
 	lines.push(`${borderColor("\u250C")}${borderColor("\u2500".repeat(innerWidth))}${borderColor("\u2510")}`);
-	const label = ` ${titleColor(title)} `;
+	const _label = ` ${titleColor(title)} `;
 	const padRight = innerWidth - title.length - 2;
 	lines.push(
 		`${borderColor("\u2502")}${" ".repeat(1)}${titleColor(title)}${" ".repeat(Math.max(1, padRight))}${borderColor("\u2502")}`,
@@ -602,7 +602,7 @@ export function randomAirisFact(): string {
 // ASCII Animation / Loading Screen
 // ============================================================================
 
-const LOADING_FRAMES = [
+const _LOADING_FRAMES = [
 	`${chalk.cyan("\u25E0")}${chalk.dim("\u25E3\u25E3\u25E3\u25E3")}`,
 	`${chalk.dim("\u25E2")}${chalk.cyan("\u25E0")}${chalk.dim("\u25E3\u25E3\u25E3")}`,
 	`${chalk.dim("\u25E2\u25E2")}${chalk.cyan("\u25E0")}${chalk.dim("\u25E3\u25E3")}`,

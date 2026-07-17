@@ -22,7 +22,7 @@ function clearScreen(): void {
 	process.stdout.write("\x1b[2J\x1b[H");
 }
 
-function readKey(prompt: string): Promise<string> {
+function _readKey(prompt: string): Promise<string> {
 	return new Promise((resolve) => {
 		const rl = createInterface({
 			input: process.stdin,

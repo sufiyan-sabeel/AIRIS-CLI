@@ -3,10 +3,7 @@
  */
 
 import { describe, expect, it } from "vitest";
-import {
-	extractSymbols,
-	formatExploreResultForContext,
-} from "../src/core/adaptive/explore-task.ts";
+import { extractSymbols, formatExploreResultForContext } from "../src/core/adaptive/explore-task.ts";
 import type { ExploreTaskResult } from "../src/core/adaptive/types.ts";
 
 describe("Explore Task - Multi-language Symbol Extraction", () => {

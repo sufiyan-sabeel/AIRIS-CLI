@@ -87,13 +87,7 @@ export class MemoryStore {
 	}
 
 	/** Add or update a memory entry. Returns the stored entry. */
-	add(input: {
-		kind: MemoryKind;
-		text: string;
-		project?: string;
-		tags?: string[];
-		confidence?: number;
-	}): MemoryEntry {
+	add(input: { kind: MemoryKind; text: string; project?: string; tags?: string[]; confidence?: number }): MemoryEntry {
 		const now = this.now();
 		const text = input.text.slice(0, MAX_TEXT);
 		const tags = (input.tags ?? []).slice(0, MAX_TAGS);
@@ -101,11 +95,7 @@ export class MemoryStore {
 
 		// Merge with an existing entry of the same kind + text + project.
 		for (const entry of Object.values(this.store.entries)) {
-			if (
-				entry.kind === input.kind &&
-				entry.text === text &&
-				entry.project === input.project
-			) {
+			if (entry.kind === input.kind && entry.text === text && entry.project === input.project) {
 				entry.tags = [...new Set([...entry.tags, ...tags])];
 				entry.confidence = Math.max(entry.confidence, confidence);
 				entry.updatedAt = now;

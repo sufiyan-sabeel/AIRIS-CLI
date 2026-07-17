@@ -50,18 +50,14 @@ export class ShortcutBar implements Component {
 		if (width < 40) {
 			// Ultra-compact: only show critical shortcuts
 			const critical = this.items.slice(0, Math.min(3, this.items.length));
-			const parts = critical.map(
-				(item) => `${blue(item.key)} ${slate(item.label)}`,
-			);
+			const parts = critical.map((item) => `${blue(item.key)} ${slate(item.label)}`);
 			return [parts.join(" · ")];
 		}
 
 		if (width < 60) {
 			// Compact: show first 4 with dots
 			const visible = this.items.slice(0, Math.min(4, this.items.length));
-			const parts = visible.map(
-				(item) => `${blue(item.key)} ${slate(item.label)}`,
-			);
+			const parts = visible.map((item) => `${blue(item.key)} ${slate(item.label)}`);
 			return [parts.join(" · ")];
 		}
 

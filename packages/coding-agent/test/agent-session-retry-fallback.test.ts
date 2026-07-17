@@ -15,9 +15,9 @@
 import { existsSync, mkdirSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { Agent, type AgentEvent } from "@sufiyan-sabeel/airis-agent-core";
+import { Agent } from "@sufiyan-sabeel/airis-agent-core";
 import { type AssistantMessage, type AssistantMessageEvent, EventStream, getModel } from "@sufiyan-sabeel/airis-ai";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { AgentSession } from "../src/core/agent-session.ts";
 import { AuthStorage } from "../src/core/auth-storage.ts";
 import { ModelRegistry } from "../src/core/model-registry.ts";
@@ -90,7 +90,7 @@ describe("AgentSession model fallback", () => {
 		const maxRetries = options?.maxRetries ?? 1;
 		const fallbackModels = options?.fallbackModels ?? [];
 		const errorMessage = options?.errorMessage ?? "overloaded_error";
-		const alwaysFail = options?.alwaysFail ?? true;
+		const _alwaysFail = options?.alwaysFail ?? true;
 		let callCount = 0;
 
 		const model = getModel("anthropic", "claude-sonnet-4-5")!;

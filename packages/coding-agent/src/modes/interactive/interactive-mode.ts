@@ -63,6 +63,7 @@ import {
 import { type AgentSession, type AgentSessionEvent, parseSkillBlock } from "../../core/agent-session.ts";
 import { type AgentSessionRuntime, SessionImportFileNotFoundError } from "../../core/agent-session-runtime.ts";
 import { type AirisWelcomeInfo, createAirisWelcome } from "../../core/airis-welcome.ts";
+import { generateCacheReport } from "../../core/cache-stats.ts";
 import type {
 	AutocompleteProviderFactory,
 	EditorFactory,
@@ -86,7 +87,6 @@ import { formatMissingSessionCwdPrompt, MissingSessionCwdError } from "../../cor
 import { type SessionContext, SessionManager } from "../../core/session-manager.ts";
 import { BUILTIN_SLASH_COMMANDS } from "../../core/slash-commands.ts";
 import type { SourceInfo } from "../../core/source-info.ts";
-import { generateCacheReport } from "../../core/cache-stats.ts";
 import { isInstallTelemetryEnabled } from "../../core/telemetry.ts";
 import type { TruncationResult } from "../../core/tools/truncate.ts";
 import { hasTrustRequiringProjectResources, ProjectTrustStore } from "../../core/trust-manager.ts";
@@ -6227,7 +6227,7 @@ Type any command or just describe what you want to do.
 				const limit = parseInt(parts[1] ?? "100", 10);
 				const typeFilter = (parts[2] ?? "") as never;
 				const text = auditLog.exportText({
-					limit: isNaN(limit) ? 100 : limit,
+					limit: Number.isNaN(limit) ? 100 : limit,
 					type: typeFilter || undefined,
 				});
 				this.chatContainer.addChild(new Spacer(1));
@@ -6248,7 +6248,6 @@ Type any command or just describe what you want to do.
 				this.ui.requestRender();
 				break;
 			}
-			case "status":
 			default: {
 				const stats = auditLog.getStats();
 				let auditText = "**Audit Log Status**\n\n";
@@ -6461,7 +6460,6 @@ Type any command or just describe what you want to do.
 				this.ui.requestRender();
 				break;
 			}
-			case "status":
 			default: {
 				const summary = projectLearning.getSummary();
 				this.chatContainer.addChild(new Spacer(1));
@@ -6579,9 +6577,7 @@ Type any command or just describe what you want to do.
 		if (!cacheReport || cacheReport.waste.missCount === 0) {
 			this.chatContainer.addChild(new Spacer(1));
 			this.chatContainer.addChild(new DynamicBorder());
-			this.chatContainer.addChild(
-				new Text(theme.fg("muted", "No cache misses detected in this session."), 1, 0),
-			);
+			this.chatContainer.addChild(new Text(theme.fg("muted", "No cache misses detected in this session."), 1, 0));
 			this.chatContainer.addChild(new DynamicBorder());
 			this.ui.requestRender();
 			return;
@@ -6601,7 +6597,7 @@ Type any command or just describe what you want to do.
 			reportText += `| Turn | Missed Tokens | Cost | Idle Time | Model Changed |\n`;
 			reportText += `|------|---------------|------|-----------|---------------|\n`;
 			let turnIndex = 0;
-			for (const [message, miss] of cacheReport.misses) {
+			for (const [, miss] of cacheReport.misses) {
 				turnIndex++;
 				const idleStr = miss.idleMs > 60000 ? `${Math.round(miss.idleMs / 60000)}m` : `${miss.idleMs}ms`;
 				reportText += `| ${turnIndex} | ${miss.missedTokens.toLocaleString()} | $${miss.missedCost.toFixed(6)} | ${idleStr} | ${miss.modelChanged ? "Yes" : "No"} |\n`;
@@ -7253,7 +7249,12 @@ Type any command or just describe what you want to do.
 			name: c.name,
 			description: c.description ?? "",
 			source: "builtin" as const,
-			sourceInfo: { source: "builtin" as const, path: "builtin", scope: "project" as const, origin: "package" as const },
+			sourceInfo: {
+				source: "builtin" as const,
+				path: "builtin",
+				scope: "project" as const,
+				origin: "package" as const,
+			},
 		}));
 		const extResult = this.session.resourceLoader.getExtensions();
 		const extensionCount = extResult.extensions.length;
@@ -7317,7 +7318,10 @@ Type any command or just describe what you want to do.
 			text += "\n\nResilience\n=========\n";
 			for (const name of providerNames) {
 				const state = policy.getCircuit(name).getState();
-				const healthScore = health[`${name}/unknown`]?.healthScore ?? health[Object.keys(health).find((k) => k.startsWith(`${name}/`)) ?? ""]?.healthScore ?? 1;
+				const healthScore =
+					health[`${name}/unknown`]?.healthScore ??
+					health[Object.keys(health).find((k) => k.startsWith(`${name}/`)) ?? ""]?.healthScore ??
+					1;
 				text += `- ${name}: circuit=${state}, health=${(healthScore * 100).toFixed(0)}%\n`;
 			}
 			text += "\nAutomatic per-call failover uses these circuits during model requests.";
@@ -7338,12 +7342,16 @@ Type any command or just describe what you want to do.
 			this.chatContainer.addChild(new DynamicBorder());
 			this.chatContainer.addChild(new Text(theme.bold(theme.fg("accent", "Provider Test")), 1, 0));
 			this.chatContainer.addChild(new Spacer(1));
-			this.chatContainer.addChild(new Text("Usage: /provider-test <url> [--key <apiKey>] [--hint openai|anthropic|openrouter]", 1, 0));
+			this.chatContainer.addChild(
+				new Text("Usage: /provider-test <url> [--key <apiKey>] [--hint openai|anthropic|openrouter]", 1, 0),
+			);
 			this.chatContainer.addChild(new DynamicBorder());
 			this.ui.requestRender();
 			return;
 		}
-		const { probeProvider, saveProviderProfile, formatProviderProfile } = await import("../../core/provider-probe.ts");
+		const { probeProvider, saveProviderProfile, formatProviderProfile } = await import(
+			"../../core/provider-probe.ts"
+		);
 		const profile = await probeProvider({
 			baseUrl: parsed.url,
 			apiKey: parsed.key,
@@ -7387,7 +7395,9 @@ Type any command or just describe what you want to do.
 			return;
 		}
 		const profile = getProviderProfile(url);
-		const body = profile ? formatProviderProfile(profile) : `No saved profile for ${url}. Run /provider-test ${url} first.`;
+		const body = profile
+			? formatProviderProfile(profile)
+			: `No saved profile for ${url}. Run /provider-test ${url} first.`;
 		this.chatContainer.addChild(new Spacer(1));
 		this.chatContainer.addChild(new DynamicBorder());
 		this.chatContainer.addChild(new Text(theme.bold(theme.fg("accent", "Provider Info")), 1, 0));
@@ -7408,7 +7418,8 @@ Type any command or just describe what you want to do.
 			text += `Counts: queued=${counts.queued} running=${counts.running} scheduled=${counts.scheduled} completed=${counts.completed} failed=${counts.failed} cancelled=${counts.cancelled}\n\n`;
 			const jobs = scheduler.list();
 			if (jobs.length === 0) {
-				text += "No jobs yet. Use: /jobs enqueue <command> [--at <epochMs>] [--every <ms>] [--cron \"m h dom mon dow\"] [--recurring] [--retries N]\n";
+				text +=
+					'No jobs yet. Use: /jobs enqueue <command> [--at <epochMs>] [--every <ms>] [--cron "m h dom mon dow"] [--recurring] [--retries N]\n';
 			} else {
 				for (const j of jobs.slice(0, 30)) {
 					const next = j.nextRunAt ? ` next=${new Date(j.nextRunAt).toISOString()}` : "";
@@ -7430,7 +7441,8 @@ Type any command or just describe what you want to do.
 		} else if (sub.startsWith("enqueue ")) {
 			const parsed = this.parseJobEnqueue(sub.slice(8).trim());
 			if (!parsed.command) {
-				text = "Usage: /jobs enqueue <command> [--at <epochMs>] [--every <ms>] [--cron \"m h dom mon dow\"] [--recurring] [--retries N]";
+				text =
+					'Usage: /jobs enqueue <command> [--at <epochMs>] [--every <ms>] [--cron "m h dom mon dow"] [--recurring] [--retries N]';
 			} else {
 				const record = scheduler.enqueue(parsed);
 				text = `Enqueued ${record.id} (${record.state}): ${record.name}`;
@@ -7456,12 +7468,20 @@ Type any command or just describe what you want to do.
 	} {
 		const tokens = args.match(/"[^"]*"|'[^']*'|\S+/g) ?? [];
 		let command = "";
-		const result: { name: string; command: string; schedule?: { kind: "once" | "interval" | "cron"; at?: number; intervalMs?: number; cron?: string }; recurring?: boolean; maxRetries?: number } = { name: "", command: "" };
+		const result: {
+			name: string;
+			command: string;
+			schedule?: { kind: "once" | "interval" | "cron"; at?: number; intervalMs?: number; cron?: string };
+			recurring?: boolean;
+			maxRetries?: number;
+		} = { name: "", command: "" };
 		for (let i = 0; i < tokens.length; i++) {
 			const t = tokens[i];
 			if (t === "--at" && tokens[i + 1]) result.schedule = { kind: "once", at: Number(tokens[++i]) };
-			else if (t === "--every" && tokens[i + 1]) result.schedule = { kind: "interval", intervalMs: Number(tokens[++i]) };
-			else if (t === "--cron" && tokens[i + 1]) result.schedule = { kind: "cron", cron: tokens[++i].replace(/^"|"$/g, "") };
+			else if (t === "--every" && tokens[i + 1])
+				result.schedule = { kind: "interval", intervalMs: Number(tokens[++i]) };
+			else if (t === "--cron" && tokens[i + 1])
+				result.schedule = { kind: "cron", cron: tokens[++i].replace(/^"|"$/g, "") };
 			else if (t === "--recurring") result.recurring = true;
 			else if (t === "--retries" && tokens[i + 1]) result.maxRetries = Number(tokens[++i]);
 			else command += (command ? " " : "") + t;
@@ -7481,10 +7501,16 @@ Type any command or just describe what you want to do.
 			text = "Cross-session memory cleared.";
 		} else if (sub === "") {
 			const entries = store.list().slice(0, 30);
-			text = entries.length === 0 ? "No memory stored yet." : `Memory (${entries.length})\n================\n` + entries.map((e) => `- [${e.kind}] ${e.text}`).join("\n");
+			text =
+				entries.length === 0
+					? "No memory stored yet."
+					: `Memory (${entries.length})\n================\n${entries.map((e) => `- [${e.kind}] ${e.text}`).join("\n")}`;
 		} else {
 			const results = store.recall(sub, { limit: 15 });
-			text = results.length === 0 ? `No memory matched: ${sub}` : `Recall: ${sub}\n================\n` + results.map((e) => `- [${e.kind}] ${e.text}`).join("\n");
+			text =
+				results.length === 0
+					? `No memory matched: ${sub}`
+					: `Recall: ${sub}\n================\n${results.map((e) => `- [${e.kind}] ${e.text}`).join("\n")}`;
 		}
 		this.chatContainer.addChild(new Spacer(1));
 		this.chatContainer.addChild(new DynamicBorder());

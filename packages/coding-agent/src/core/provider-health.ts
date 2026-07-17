@@ -129,27 +129,22 @@ export class ProviderHealthTracker {
 
 	private _computeHealthScore(stats: ProviderHealthStats): number {
 		// Base score from success rate
-		const successRate = stats.totalCalls > 0
-			? stats.successCount / stats.totalCalls
-			: 1.0;
+		const successRate = stats.totalCalls > 0 ? stats.successCount / stats.totalCalls : 1.0;
 
 		// Penalty for recent failures (last 10 calls weighted more)
 		const recentCalls = this._store.calls
-			.filter((c) => c.provider === Object.keys(this._store.providers).find(
-				(k) => this._store.providers[k] === stats,
-			))
+			.filter(
+				(c) => c.provider === Object.keys(this._store.providers).find((k) => this._store.providers[k] === stats),
+			)
 			.slice(-10);
-		const recentSuccessRate = recentCalls.length > 0
-			? recentCalls.filter((c) => c.success).length / recentCalls.length
-			: successRate;
+		const recentSuccessRate =
+			recentCalls.length > 0 ? recentCalls.filter((c) => c.success).length / recentCalls.length : successRate;
 
 		// Penalty for high latency (relative: >10s avg = penalty)
-		const latencyPenalty = stats.avgLatencyMs > 10000
-			? Math.min(0.3, (stats.avgLatencyMs - 10000) / 60000)
-			: 0;
+		const latencyPenalty = stats.avgLatencyMs > 10000 ? Math.min(0.3, (stats.avgLatencyMs - 10000) / 60000) : 0;
 
 		// Weighted score
-		const score = (successRate * 0.5 + recentSuccessRate * 0.4) - latencyPenalty;
+		const score = successRate * 0.5 + recentSuccessRate * 0.4 - latencyPenalty;
 		return Math.max(0, Math.min(1, score));
 	}
 
@@ -164,9 +159,7 @@ export class ProviderHealthTracker {
 
 		// Update per-provider stats
 		const providerKey = `${call.provider}/${call.modelId}`;
-		const providerCalls = this._store.calls.filter(
-			(c) => c.provider === call.provider && c.modelId === call.modelId,
-		);
+		const providerCalls = this._store.calls.filter((c) => c.provider === call.provider && c.modelId === call.modelId);
 		const latencies = providerCalls.map((c) => c.latencyMs);
 		const successCount = providerCalls.filter((c) => c.success).length;
 		const failureCount = providerCalls.filter((c) => !c.success).length;
@@ -181,9 +174,7 @@ export class ProviderHealthTracker {
 			totalCalls: providerCalls.length,
 			successCount,
 			failureCount,
-			avgLatencyMs: latencies.length > 0
-				? latencies.reduce((a, b) => a + b, 0) / latencies.length
-				: 0,
+			avgLatencyMs: latencies.length > 0 ? latencies.reduce((a, b) => a + b, 0) / latencies.length : 0,
 			p50LatencyMs: this._computePercentile(latencies, 50),
 			p95LatencyMs: this._computePercentile(latencies, 95),
 			healthScore: 1.0,
@@ -220,19 +211,29 @@ export class ProviderHealthTracker {
 
 	/** Get recent failures (last N). */
 	getRecentFailures(count = 10): ProviderCallRecord[] {
-		return this._store.calls
-			.filter((c) => !c.success)
-			.slice(-count);
+		return this._store.calls.filter((c) => !c.success).slice(-count);
 	}
 
 	/** Classify an error message into an error type. */
 	static classifyError(errorMessage: string): ProviderErrorType {
 		const lower = errorMessage.toLowerCase();
 		if (lower.includes("timeout") || lower.includes("timed out")) return "timeout";
-		if (lower.includes("auth") || lower.includes("unauthorized") || lower.includes("401") || lower.includes("403")) return "auth";
-		if (lower.includes("rate limit") || lower.includes("429") || lower.includes("too many requests")) return "rate-limit";
-		if (lower.includes("5") && (lower.includes("500") || lower.includes("502") || lower.includes("503") || lower.includes("504"))) return "server-error";
-		if (lower.includes("network") || lower.includes("econnrefused") || lower.includes("enotfound") || lower.includes("econnreset")) return "network";
+		if (lower.includes("auth") || lower.includes("unauthorized") || lower.includes("401") || lower.includes("403"))
+			return "auth";
+		if (lower.includes("rate limit") || lower.includes("429") || lower.includes("too many requests"))
+			return "rate-limit";
+		if (
+			lower.includes("5") &&
+			(lower.includes("500") || lower.includes("502") || lower.includes("503") || lower.includes("504"))
+		)
+			return "server-error";
+		if (
+			lower.includes("network") ||
+			lower.includes("econnrefused") ||
+			lower.includes("enotfound") ||
+			lower.includes("econnreset")
+		)
+			return "network";
 		if (lower.includes("invalid") || lower.includes("400") || lower.includes("bad request")) return "invalid-request";
 		return "unknown";
 	}
@@ -276,24 +277,24 @@ export class ProviderHealthTracker {
 
 		for (const [key, stats] of providers) {
 			const [provider, model] = key.split("/", 2);
-			const status = stats.healthScore >= 0.8
-				? "healthy"
-				: stats.healthScore >= 0.5
-					? "degraded"
-					: "unhealthy";
+			const status = stats.healthScore >= 0.8 ? "healthy" : stats.healthScore >= 0.5 ? "degraded" : "unhealthy";
 			lines.push(`Provider: ${provider}`);
 			lines.push(`  Model: ${model}`);
 			lines.push(`  Status: ${status} (score: ${(stats.healthScore * 100).toFixed(0)}%)`);
 			lines.push(`  Calls: ${stats.totalCalls} total, ${stats.successCount} success, ${stats.failureCount} failed`);
-			lines.push(`  Latency: avg=${stats.avgLatencyMs.toFixed(0)}ms, p50=${stats.p50LatencyMs.toFixed(0)}ms, p95=${stats.p95LatencyMs.toFixed(0)}ms`);
+			lines.push(
+				`  Latency: avg=${stats.avgLatencyMs.toFixed(0)}ms, p50=${stats.p50LatencyMs.toFixed(0)}ms, p95=${stats.p95LatencyMs.toFixed(0)}ms`,
+			);
 			if (stats.lastErrorType) {
 				lines.push(`  Last error: [${stats.lastErrorType}] ${stats.lastErrorMessage?.slice(0, 80) ?? "unknown"}`);
 				lines.push(`  Recommendation: ${ProviderHealthTracker.getRecoveryRecommendation(stats.lastErrorType)}`);
 			}
 			if (Object.keys(stats.errorBreakdown).length > 0) {
-				lines.push(`  Error breakdown: ${Object.entries(stats.errorBreakdown)
-					.map(([t, c]) => `${t}=${c}`)
-					.join(", ")}`);
+				lines.push(
+					`  Error breakdown: ${Object.entries(stats.errorBreakdown)
+						.map(([t, c]) => `${t}=${c}`)
+						.join(", ")}`,
+				);
 			}
 			lines.push("");
 		}

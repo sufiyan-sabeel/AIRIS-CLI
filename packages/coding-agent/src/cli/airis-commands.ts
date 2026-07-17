@@ -27,8 +27,8 @@ import { handleVerifiedAutonomyCommand } from "../core/verified-autonomy/cli.ts"
 import { getAvailableThemesWithPaths, getThemeByName } from "../modes/interactive/theme/theme.ts";
 import { parseChangelog } from "../utils/changelog.ts";
 import { spawnProcessSync } from "../utils/child-process.ts";
-import { handleImageCommand, printImageHelp } from "../vision/image-command.ts";
 import { handleGameCommand, printGameHeader } from "../utils/games.ts";
+import { handleImageCommand, printImageHelp } from "../vision/image-command.ts";
 import { printHelp } from "./args.ts";
 import { box, keyValue, section, separator, status, subtitle } from "./ui.ts";
 

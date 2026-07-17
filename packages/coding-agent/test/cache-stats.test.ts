@@ -2,24 +2,20 @@
  * Tests for cache-stats.ts - cache waste detection and reporting
  */
 
-import { describe, expect, it } from "vitest";
 import type { AssistantMessage } from "@sufiyan-sabeel/airis-ai";
-import type { SessionEntry } from "../src/core/session-manager.ts";
+import { describe, expect, it } from "vitest";
 import {
-	computeCacheWaste,
+	CACHE_TTL_MS,
 	collectCacheMisses,
+	computeCacheWaste,
 	detectCacheMiss,
 	generateCacheReport,
-	CACHE_TTL_MS,
-	NOISE_FLOOR_TOKENS,
-	type CacheMiss,
-	type CacheWasteTotals,
 	type ModelPriceSource,
+	NOISE_FLOOR_TOKENS,
 } from "../src/core/cache-stats.ts";
+import type { SessionEntry } from "../src/core/session-manager.ts";
 
-function createAssistantMessage(
-	override: Partial<AssistantMessage> = {},
-): AssistantMessage {
+function createAssistantMessage(override: Partial<AssistantMessage> = {}): AssistantMessage {
 	const base: AssistantMessage = {
 		role: "assistant",
 		content: [{ type: "text", text: "response" }],
@@ -420,7 +416,19 @@ describe("cache-stats", () => {
 
 		it("returns zero hit rate when no cache activity", () => {
 			const entries: SessionEntry[] = [
-				createEntry(createAssistantMessage({ timestamp: 1000, usage: { ...mockModels.getModel("anthropic", "claude-sonnet-4-5")!.cost, input: 100, output: 50, cacheRead: 0, cacheWrite: 0, totalTokens: 150 } })),
+				createEntry(
+					createAssistantMessage({
+						timestamp: 1000,
+						usage: {
+							...mockModels.getModel("anthropic", "claude-sonnet-4-5")!.cost,
+							input: 100,
+							output: 50,
+							cacheRead: 0,
+							cacheWrite: 0,
+							totalTokens: 150,
+						},
+					}),
+				),
 			];
 
 			const report = generateCacheReport(entries, mockModels);

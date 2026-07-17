@@ -8,6 +8,7 @@ export {
 	CombinedAutocompleteProvider,
 	type SlashCommand,
 } from "./autocomplete.ts";
+export { AirisWordmark } from "./components/airis-wordmark.ts";
 // Components
 export { Box } from "./components/box.ts";
 export { CancellableLoader } from "./components/cancellable-loader.ts";
@@ -16,6 +17,7 @@ export { Image, type ImageOptions, type ImageTheme } from "./components/image.ts
 export { Input } from "./components/input.ts";
 export { Loader, type LoaderIndicatorOptions } from "./components/loader.ts";
 export { type DefaultTextStyle, Markdown, type MarkdownOptions, type MarkdownTheme } from "./components/markdown.ts";
+export { PromptArea, type PromptAreaData } from "./components/prompt-area.ts";
 export {
 	type SelectItem,
 	SelectList,
@@ -24,8 +26,6 @@ export {
 	type SelectListTruncatePrimaryContext,
 } from "./components/select-list.ts";
 export { type SettingItem, SettingsList, type SettingsListTheme } from "./components/settings-list.ts";
-export { AirisWordmark } from "./components/airis-wordmark.ts";
-export { PromptArea, type PromptAreaData } from "./components/prompt-area.ts";
 export { ShortcutBar, type ShortcutItem } from "./components/shortcut-bar.ts";
 export { Spacer } from "./components/spacer.ts";
 export { StatusLine, type StatusLineData } from "./components/status-line.ts";

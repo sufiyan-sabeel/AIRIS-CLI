@@ -6,9 +6,10 @@
  *
  * Part of AIRIS enhancement suite - fully backward compatible.
  */
+
+import type { TSchema } from "typebox";
 import type { ToolDefinition, ToolExecutionMode } from "../extensions/types.ts";
 import type { ToolName, ToolsOptions } from "./index.ts";
-import type { TSchema } from "typebox";
 
 /**
  * Extended tool definition with dynamic registration metadata

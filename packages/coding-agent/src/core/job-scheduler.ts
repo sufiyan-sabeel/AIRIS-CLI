@@ -15,18 +15,12 @@
  *   session runtime), which keeps timing deterministic and testable.
  */
 
-import { existsSync, mkdirSync, readFileSync, writeFileSync, createWriteStream } from "node:fs";
 import { spawn } from "node:child_process";
+import { createWriteStream, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { getAgentDir } from "../config.ts";
 
-export type JobState =
-	| "queued"
-	| "running"
-	| "completed"
-	| "failed"
-	| "cancelled"
-	| "scheduled";
+export type JobState = "queued" | "running" | "completed" | "failed" | "cancelled" | "scheduled";
 
 export type ScheduleKind = "once" | "interval" | "cron";
 

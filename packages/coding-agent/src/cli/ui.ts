@@ -120,21 +120,10 @@ export function statsCard(title: string, items: Array<{ label: string; value: st
 /** Colorful table renderer with aligned columns. */
 export function table(headers: readonly string[], rows: readonly (readonly string[])[]): string {
 	if (rows.length === 0) return "";
-	const widths = headers.map((h, i) =>
-		Math.max(h.length, ...rows.map((r) => (r[i] ?? "").length)),
-	);
-	const headerLine = headers
-		.map((h, i) => chalk.cyan(chalk.bold(h.padEnd(widths[i]))))
-		.join(chalk.dim(" | "));
-	const sep = widths
-		.map((w) => chalk.dim("─".repeat(w)))
-		.join(chalk.dim("┼"));
-	const dataLines = rows.map(
-		(row) =>
-			row
-				.map((cell, i) => cell.padEnd(widths[i]))
-				.join(chalk.dim(" | ")),
-	);
+	const widths = headers.map((h, i) => Math.max(h.length, ...rows.map((r) => (r[i] ?? "").length)));
+	const headerLine = headers.map((h, i) => chalk.cyan(chalk.bold(h.padEnd(widths[i])))).join(chalk.dim(" | "));
+	const sep = widths.map((w) => chalk.dim("─".repeat(w))).join(chalk.dim("┼"));
+	const dataLines = rows.map((row) => row.map((cell, i) => cell.padEnd(widths[i])).join(chalk.dim(" | ")));
 	return [headerLine, sep, ...dataLines].join("\n");
 }
 
@@ -152,7 +141,7 @@ export function progressBar(current: number, total: number, width = 20): string 
 export function badge(kind: StatusKind, text: string): string {
 	const label = STATUS_LABELS[kind];
 	const colored = colorStatus(kind, label);
-	return `${chalk.dim("[")}${colored}${chalk.dim("\]")} ${text}`;
+	return `${chalk.dim("[")}${colored}${chalk.dim("]")} ${text}`;
 }
 
 /** Completion message with checkmark. */

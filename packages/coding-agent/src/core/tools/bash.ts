@@ -302,9 +302,10 @@ export function createBashToolDefinition(
 			_ctx?,
 		) {
 			// Enforce max timeout
-			const cappedTimeout = options?.maxTimeout !== undefined && timeout !== undefined
-				? Math.min(timeout, options.maxTimeout)
-				: timeout;
+			const cappedTimeout =
+				options?.maxTimeout !== undefined && timeout !== undefined
+					? Math.min(timeout, options.maxTimeout)
+					: timeout;
 
 			// Check denied commands
 			const denied = options?.deniedCommands ?? [];
@@ -425,9 +426,10 @@ export function createBashToolDefinition(
 					}
 					if (err instanceof Error && err.message.startsWith("timeout:")) {
 						const timeoutSecs = err.message.split(":")[1];
-						const capNote = options?.maxTimeout !== undefined && timeout !== undefined && timeout > options.maxTimeout
-							? ` (capped from ${timeout}s by maxTimeout policy)`
-							: "";
+						const capNote =
+							options?.maxTimeout !== undefined && timeout !== undefined && timeout > options.maxTimeout
+								? ` (capped from ${timeout}s by maxTimeout policy)`
+								: "";
 						throw new Error(appendStatus(text, `Command timed out after ${timeoutSecs} seconds${capNote}`));
 					}
 					throw err;

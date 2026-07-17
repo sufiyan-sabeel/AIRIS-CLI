@@ -88,9 +88,7 @@ export class StatusLine implements Component {
 
 		if (visibleWidth(fullLine) > width) {
 			// Need to truncate. Keep left repo path + branch, drop from right
-			const keepLeft = [this.data.repoPath, this.data.branch]
-				.filter(Boolean)
-				.join(separator);
+			const keepLeft = [this.data.repoPath, this.data.branch].filter(Boolean).join(separator);
 
 			if (visibleWidth(keepLeft) + 3 <= width) {
 				fullLine = truncateToWidth(fullLine, width);

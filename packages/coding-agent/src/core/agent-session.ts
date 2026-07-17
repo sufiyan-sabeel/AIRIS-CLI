@@ -41,6 +41,7 @@ import { resolvePath } from "../utils/paths.ts";
 import { sleep } from "../utils/sleep.ts";
 import { createAskQuestionToolDefinition } from "./adaptive/ask-question.ts";
 import { AdaptiveBrainController } from "./adaptive/controller.ts";
+import { type AuditLog, getSharedAuditLog } from "./audit-log.ts";
 import { formatNoApiKeyFoundMessage, formatNoModelSelectedMessage } from "./auth-guidance.ts";
 import { type BashResult, executeBashWithOperations } from "./bash-executor.ts";
 import { logCliEvent } from "./cli-logs.ts";
@@ -84,10 +85,9 @@ import {
 	wrapRegisteredTools,
 } from "./extensions/index.ts";
 import { emitSessionShutdownEvent } from "./extensions/runner.ts";
-import { AuditLog, getSharedAuditLog } from "./audit-log.ts";
 import type { BashExecutionMessage, CustomMessage } from "./messages.ts";
-import { ProjectLearning } from "./project-learning.ts";
 import type { ModelRegistry } from "./model-registry.ts";
+import { ProjectLearning } from "./project-learning.ts";
 import { expandPromptTemplate, type PromptTemplate } from "./prompt-templates.ts";
 import type { ResourceExtensionPaths, ResourceLoader } from "./resource-loader.ts";
 import { getRouteLogPrefix, parseRoute } from "./router.ts";

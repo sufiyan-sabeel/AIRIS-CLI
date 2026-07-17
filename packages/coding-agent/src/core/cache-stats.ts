@@ -202,16 +202,11 @@ function computeAggregates(entries: SessionEntry[], _models: ModelPriceSource): 
  * Generate a comprehensive cache report for the given session entries.
  * Returns hit rate, waste totals, and per-message cache miss details.
  */
-export function generateCacheReport(
-	entries: SessionEntry[],
-	models: ModelPriceSource,
-): CacheReport {
+export function generateCacheReport(entries: SessionEntry[], models: ModelPriceSource): CacheReport {
 	const { prev: _prev, totals, misses } = scan(entries, models);
 	const { totalPromptTokens, totalCacheRead, modelChangeCount } = computeAggregates(entries, models);
 
-	const hitRate = totalPromptTokens > 0
-		? (totalCacheRead / totalPromptTokens) * 100
-		: 0;
+	const hitRate = totalPromptTokens > 0 ? (totalCacheRead / totalPromptTokens) * 100 : 0;
 
 	return {
 		hitRate,
@@ -248,10 +243,10 @@ export function formatCacheReport(report: CacheReport): string {
 		let index = 0;
 		for (const [, miss] of report.misses) {
 			index++;
-			const idleStr = miss.idleMs > 60000
-				? `${Math.round(miss.idleMs / 60000)}m`
-				: `${miss.idleMs}ms`;
-			lines.push(`  ${index}. Missed ${miss.missedTokens.toLocaleString()} tokens ($${miss.missedCost.toFixed(6)}), idle ${idleStr}, model changed: ${miss.modelChanged}`);
+			const idleStr = miss.idleMs > 60000 ? `${Math.round(miss.idleMs / 60000)}m` : `${miss.idleMs}ms`;
+			lines.push(
+				`  ${index}. Missed ${miss.missedTokens.toLocaleString()} tokens ($${miss.missedCost.toFixed(6)}), idle ${idleStr}, model changed: ${miss.modelChanged}`,
+			);
 		}
 	}
 

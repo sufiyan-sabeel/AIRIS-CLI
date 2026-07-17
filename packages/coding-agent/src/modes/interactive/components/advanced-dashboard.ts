@@ -262,7 +262,7 @@ export class DashboardComponent implements Component {
 	private cachedOutput = "";
 	private achievements: Achievement[] = [];
 
-	constructor(session: AgentSession, footerData: ReadonlyFooterDataProvider, options: DashboardOptions = {}) {
+	constructor(session: AgentSession, _footerData: ReadonlyFooterDataProvider, options: DashboardOptions = {}) {
 		this.session = session;
 		this.options = {
 			showSessionStats: options.showSessionStats ?? true,
@@ -432,7 +432,7 @@ export class DashboardComponent implements Component {
 	}
 
 	private renderThinkingIndicator(width: number): string[] {
-		const cardWidth = Math.min(width - 4, 60);
+		const _cardWidth = Math.min(width - 4, 60);
 		const pad = " ".repeat(2);
 
 		const levels = ["minimal", "low", "medium", "high", "adaptive"];
@@ -440,7 +440,7 @@ export class DashboardComponent implements Component {
 		const levelIndex = levels.indexOf(currentLevel);
 
 		const bar = levels
-			.map((l, i) => {
+			.map((_l, i) => {
 				const filled = i <= levelIndex;
 				return filled ? theme.fg("primary", "█") : theme.fg("muted", "░");
 			})
@@ -496,8 +496,8 @@ export function createDashboard(
  */
 export function renderMiniDashboard(
 	session: AgentSession,
-	footerData: ReadonlyFooterDataProvider,
-	width: number,
+	_footerData: ReadonlyFooterDataProvider,
+	_width: number,
 ): string {
 	const stats = computeSessionStats(session);
 	const cacheReport = generateCacheReport(session.entries, {

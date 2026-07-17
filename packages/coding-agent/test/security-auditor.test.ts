@@ -4,10 +4,10 @@
 
 import { describe, expect, it } from "vitest";
 import {
-	runSecurityAudit,
+	formatDependencyAudit,
 	formatSecurityAudit,
 	runDependencyAudit,
-	formatDependencyAudit,
+	runSecurityAudit,
 } from "../src/core/security-auditor.ts";
 
 describe("Security Auditor", () => {
@@ -67,9 +67,7 @@ describe("Security Auditor", () => {
 
 		it("includes additional checks when provided", () => {
 			const report = runSecurityAudit({
-				additionalChecks: [
-					{ name: "custom", status: "warn", message: "Custom check", recommendation: "Fix it" },
-				],
+				additionalChecks: [{ name: "custom", status: "warn", message: "Custom check", recommendation: "Fix it" }],
 			});
 			const check = report.checks.find((c) => c.name === "custom");
 			expect(check).toBeDefined();
@@ -79,9 +77,7 @@ describe("Security Auditor", () => {
 
 		it("sets overall to error when checks fail", () => {
 			const report = runSecurityAudit({
-				additionalChecks: [
-					{ name: "fail", status: "error", message: "Broke" },
-				],
+				additionalChecks: [{ name: "fail", status: "error", message: "Broke" }],
 			});
 			expect(report.overall).toBe("error");
 		});

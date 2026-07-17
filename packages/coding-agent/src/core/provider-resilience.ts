@@ -149,10 +149,7 @@ export interface RetryDecision {
 	reason: string;
 }
 
-const NON_RETRYABLE: ReadonlySet<ProviderErrorType> = new Set([
-	"auth",
-	"invalid-request",
-]);
+const NON_RETRYABLE: ReadonlySet<ProviderErrorType> = new Set(["auth", "invalid-request"]);
 
 /**
  * Compute an adaptive retry decision.
@@ -300,9 +297,7 @@ export class ResiliencePolicy {
 			if (entry) {
 				const stats = entry[1];
 				if (stats.lastErrorType) {
-					suggestions.add(
-						`${provider}: ${ProviderHealthTracker.getRecoveryRecommendation(stats.lastErrorType)}`,
-					);
+					suggestions.add(`${provider}: ${ProviderHealthTracker.getRecoveryRecommendation(stats.lastErrorType)}`);
 				}
 			}
 		}
@@ -345,9 +340,7 @@ export interface ResilientRunResult {
 	lastErrorType?: ProviderErrorType;
 }
 
-export async function runResilient(
-	options: ResilientRunOptions,
-): Promise<ResilientRunResult> {
+export async function runResilient(options: ResilientRunOptions): Promise<ResilientRunResult> {
 	const maxAttempts = options.maxAttempts ?? 3;
 	const sleep = options.sleep ?? ((ms: number) => new Promise((r) => setTimeout(r, ms)));
 	const nowFn = options.now ?? Date.now;

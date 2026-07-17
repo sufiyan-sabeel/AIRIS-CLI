@@ -3,7 +3,12 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { runHealthChecks, formatHealthReport, collectDiagnostics, formatDiagnostics } from "../src/core/health-service.ts";
+import {
+	collectDiagnostics,
+	formatDiagnostics,
+	formatHealthReport,
+	runHealthChecks,
+} from "../src/core/health-service.ts";
 import type { SlashCommandInfo } from "../src/core/slash-commands.ts";
 
 describe("Health Service", () => {
@@ -40,9 +45,7 @@ describe("Health Service", () => {
 
 		it("includes additional checks when provided", () => {
 			const report = runHealthChecks({
-				additionalChecks: [
-					{ name: "custom-check", status: "ok", message: "Custom check passed" },
-				],
+				additionalChecks: [{ name: "custom-check", status: "ok", message: "Custom check passed" }],
 			});
 			const check = report.checks.find((c) => c.name === "custom-check");
 			expect(check).toBeDefined();
@@ -51,9 +54,7 @@ describe("Health Service", () => {
 
 		it("sets overall to warn when there are warnings", () => {
 			const report = runHealthChecks({
-				additionalChecks: [
-					{ name: "warn-check", status: "warn", message: "Warning" },
-				],
+				additionalChecks: [{ name: "warn-check", status: "warn", message: "Warning" }],
 			});
 			expect(report.overall).toBe("warn");
 			expect(report.summary.warn).toBeGreaterThanOrEqual(1);
@@ -61,9 +62,7 @@ describe("Health Service", () => {
 
 		it("sets overall to error when there are errors", () => {
 			const report = runHealthChecks({
-				additionalChecks: [
-					{ name: "error-check", status: "error", message: "Error" },
-				],
+				additionalChecks: [{ name: "error-check", status: "error", message: "Error" }],
 			});
 			expect(report.overall).toBe("error");
 			expect(report.summary.error).toBeGreaterThanOrEqual(1);
@@ -154,7 +153,9 @@ describe("Health Service", () => {
 		it("formats diagnostic info", () => {
 			const info = collectDiagnostics({
 				version: "0.79.9",
-				slashCommands: [{ name: "test", description: "Test", source: "builtin", sourceInfo: { source: "builtin" } }],
+				slashCommands: [
+					{ name: "test", description: "Test", source: "builtin", sourceInfo: { source: "builtin" } },
+				],
 				extensionCount: 1,
 				skillCount: 2,
 				activeToolNames: ["read", "bash"],

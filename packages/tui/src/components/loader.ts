@@ -35,8 +35,8 @@ export class Loader extends Text {
 	) {
 		super("", 1, 0);
 		this.ui = ui;
-		this.spinnerColorFn = isNoColor() ? ((s: string) => s) : spinnerColorFn;
-		this.messageColorFn = isNoColor() ? ((s: string) => s) : messageColorFn;
+		this.spinnerColorFn = isNoColor() ? (s: string) => s : spinnerColorFn;
+		this.messageColorFn = isNoColor() ? (s: string) => s : messageColorFn;
 		this.message = message;
 		this.setIndicator(indicator);
 	}

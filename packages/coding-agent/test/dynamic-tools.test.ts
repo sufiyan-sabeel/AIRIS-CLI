@@ -2,15 +2,15 @@
  * Tests for dynamic-tools.ts - Dynamic tool registry
  */
 
-import { describe, expect, it, beforeEach, afterEach } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
-	DynamicToolRegistry,
-	dynamicToolRegistry,
-	registerDynamicTool,
-	executeDynamicTool,
-	getAllToolNames,
 	createAllToolDefinitions,
 	type DynamicToolContext,
+	DynamicToolRegistry,
+	dynamicToolRegistry,
+	executeDynamicTool,
+	getAllToolNames,
+	registerDynamicTool,
 	type ToolRegistrationOptions,
 } from "../src/core/tools/dynamic-tools.ts";
 import type { ToolName, ToolsOptions } from "../src/core/tools/index.ts";
@@ -114,13 +114,13 @@ describe("dynamic-tools", () => {
 		});
 
 		it("gets factory for a tool", () => {
-			let callCount = 0;
+			let _callCount = 0;
 			const options: ToolRegistrationOptions = {
 				name: "factory_tool",
 				description: "Has factory",
 				inputSchema: { type: "object", properties: {} },
 				factory: async () => {
-					callCount++;
+					_callCount++;
 					return { content: [{ type: "text", text: "ok" }] };
 				},
 				source: "test",
@@ -238,7 +238,7 @@ describe("dynamic-tools", () => {
 			expect(stats.totalTools).toBe(1);
 			expect(stats.cachedTools).toBe(1);
 			expect(stats.totalHits).toBe(2);
-			expect(stats.bySource["test_source"]).toBe(1);
+			expect(stats.bySource.test_source).toBe(1);
 		});
 
 		it("clears all tools", () => {

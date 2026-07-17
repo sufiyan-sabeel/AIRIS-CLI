@@ -143,9 +143,7 @@ function inferModelCapabilities(id: string, meta: Record<string, unknown>): Disc
 }
 
 /** Parse a model list from a probe response body. */
-export function discoverModels(
-	body: string,
-): DiscoveredModel[] {
+export function discoverModels(body: string): DiscoveredModel[] {
 	if (!body) return [];
 	try {
 		const parsed = JSON.parse(body) as {

@@ -4,10 +4,10 @@ import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
 	computeNextRun,
-	JobScheduler,
-	nextCronRun,
 	type JobExecutor,
 	type JobExecutorResult,
+	JobScheduler,
+	nextCronRun,
 } from "../src/core/job-scheduler.ts";
 
 let tmpDir: string;

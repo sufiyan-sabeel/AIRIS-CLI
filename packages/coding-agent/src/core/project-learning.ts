@@ -96,7 +96,10 @@ export function detectProjectFeatures(cwd: string): DetectionResult {
 
 			if (allDeps.some((d) => /^typescript/.test(d)) || existsSync(join(cwd, "tsconfig.json"))) {
 				result.language = "typescript";
-			} else if (allDeps.some((d) => /^(@babel\/preset-env|babel-jest)/.test(d)) || existsSync(join(cwd, "babel.config"))) {
+			} else if (
+				allDeps.some((d) => /^(@babel\/preset-env|babel-jest)/.test(d)) ||
+				existsSync(join(cwd, "babel.config"))
+			) {
 				result.language = "javascript";
 			}
 		}
@@ -179,7 +182,7 @@ export class ProjectLearning {
 	private _profilePath: string;
 	private _profile: ProjectProfile;
 	private _dirty = false;
-	/** Per-session dedup set */ 
+	/** Per-session dedup set */
 	private _sessionSeenPatterns = new Set<string>();
 
 	constructor(cwd: string) {
@@ -193,7 +196,13 @@ export class ProjectLearning {
 	}
 
 	get profile(): ProjectProfile {
-		return { ...this._profile, filePatterns: { ...this._profile.filePatterns }, commonCommands: { ...this._profile.commonCommands }, conventions: [...this._profile.conventions], notes: [...this._profile.notes] };
+		return {
+			...this._profile,
+			filePatterns: { ...this._profile.filePatterns },
+			commonCommands: { ...this._profile.commonCommands },
+			conventions: [...this._profile.conventions],
+			notes: [...this._profile.notes],
+		};
 	}
 
 	get dirty(): boolean {

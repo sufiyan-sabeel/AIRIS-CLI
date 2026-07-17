@@ -2,9 +2,9 @@
  * Tests for prompt loading verification - confirms .airis/prompts/ar.md is discoverable
  */
 
-import { describe, expect, it } from "vitest";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { describe, expect, it } from "vitest";
 import { loadPromptTemplates } from "../src/core/prompt-templates.ts";
 
 describe("prompt loading - architecture review (ar.md)", () => {
