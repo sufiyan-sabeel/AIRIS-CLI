@@ -35,6 +35,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join, normalize, relative, resolve } from "node:path";
 import type {
+	AutocompleteItem,
 	ExtensionAPI,
 	ExtensionCommandContext,
 	ExtensionContext,
@@ -250,6 +251,8 @@ export function isPathAllowed(
 // Extension
 // ============================================================================
 
+type SandboxBlockResult = { block: true; reason: string };
+
 export default function sandboxExtension(airis: ExtensionAPI) {
 	const agentDir = getAgentDir();
 	const localCwd = process.cwd();
@@ -295,7 +298,7 @@ export default function sandboxExtension(airis: ExtensionAPI) {
 			];
 			for (const pattern of destructivePatterns) {
 				if (pattern.test(cmd)) {
-					const blockResult: ToolCallEventResult = { block: true, reason: `Sandbox blocked destructive command: ${cmd.slice(0, 100)}` };
+					const blockResult: SandboxBlockResult = { block: true, reason: `Sandbox blocked destructive command: ${cmd.slice(0, 100)}` };
 					return blockResult;
 				}
 			}
@@ -303,7 +306,7 @@ export default function sandboxExtension(airis: ExtensionAPI) {
 			const secrets = detectSecrets(cmd);
 			if (secrets.length > 0) {
 				const secretNames = secrets.map((s) => s.name).join(", ");
-				const blockResult: ToolCallEventResult = {
+				const blockResult: SandboxBlockResult = {
 					block: true,
 					reason: `Sandbox blocked command containing potential secrets: ${secretNames}. Use environment variables instead of hardcoding credentials.`,
 				};
@@ -318,7 +321,7 @@ export default function sandboxExtension(airis: ExtensionAPI) {
 					if (targetPath && !targetPath.startsWith("/dev/")) {
 						const pathCheck = isPathAllowed(targetPath, "write", config, cwd);
 						if (!pathCheck.allowed) {
-							const blockResult: ToolCallEventResult = { block: true, reason: pathCheck.reason };
+							const blockResult: SandboxBlockResult = { block: true, reason: pathCheck.reason };
 							return blockResult;
 						}
 					}
@@ -332,7 +335,7 @@ export default function sandboxExtension(airis: ExtensionAPI) {
 			if (filePath) {
 				const pathCheck = isPathAllowed(filePath, "read", config, cwd);
 				if (!pathCheck.allowed) {
-					const blockResult: ToolCallEventResult = { block: true, reason: pathCheck.reason };
+					const blockResult: SandboxBlockResult = { block: true, reason: pathCheck.reason };
 					return blockResult;
 				}
 			}
@@ -344,7 +347,7 @@ export default function sandboxExtension(airis: ExtensionAPI) {
 			if (filePath) {
 				const pathCheck = isPathAllowed(filePath, "write", config, cwd);
 				if (!pathCheck.allowed) {
-					const blockResult: ToolCallEventResult = { block: true, reason: pathCheck.reason };
+					const blockResult: SandboxBlockResult = { block: true, reason: pathCheck.reason };
 					return blockResult;
 				}
 			}
@@ -361,7 +364,7 @@ export default function sandboxExtension(airis: ExtensionAPI) {
 					cwd,
 				);
 				if (!pathCheck.allowed) {
-					const blockResult: ToolCallEventResult = { block: true, reason: pathCheck.reason };
+					const blockResult: SandboxBlockResult = { block: true, reason: pathCheck.reason };
 					return blockResult;
 				}
 			}
@@ -377,10 +380,10 @@ export default function sandboxExtension(airis: ExtensionAPI) {
 
 	airis.registerCommand("sandbox", {
 		description: "Manage sandbox configuration",
-		getArgumentCompletions: (prefix: string) => {
+		getArgumentCompletions: (prefix: string): AutocompleteItem[] => {
 			const subcommands = ["enable", "disable", "status", "reload"];
-			if (!prefix) return subcommands.map((s) => ({ label: s }));
-			return subcommands.filter((s) => s.startsWith(prefix)).map((s) => ({ label: s }));
+			if (!prefix) return subcommands.map((s) => ({ label: s } as AutocompleteItem));
+			return subcommands.filter((s) => s.startsWith(prefix)).map((s) => ({ label: s } as AutocompleteItem));
 		},
 		handler: async (args: string, ctx: ExtensionCommandContext) => {
 			const parts = args.trim().split(/\s+/);

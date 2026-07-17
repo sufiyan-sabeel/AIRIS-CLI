@@ -3536,7 +3536,7 @@ export class AgentSession {
 	 */
 	getProjectLearning(): ProjectLearning {
 		if (!this._projectLearning) {
-			this._projectLearning = new ProjectLearning();
+			this._projectLearning = new ProjectLearning(this._cwd);
 		}
 		return this._projectLearning;
 	}
