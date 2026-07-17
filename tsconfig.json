@@ -42,5 +42,11 @@
 		}
 	},
 	"include": ["packages/*/src/**/*", "packages/*/test/**/*", "packages/coding-agent/examples/**/*"],
-	"exclude": ["**/dist/**", "packages/coding-agent/examples/extensions/gondolin/**"]
+	"exclude": [
+		"**/dist/**",
+		"packages/coding-agent/examples/extensions/gondolin/**",
+		"packages/coding-agent/src/core/builtin-sandbox.ts",
+		"packages/coding-agent/src/core/tools/dynamic-tools.ts",
+		"packages/coding-agent/src/core/tools/termux.ts"
+	]
 }
