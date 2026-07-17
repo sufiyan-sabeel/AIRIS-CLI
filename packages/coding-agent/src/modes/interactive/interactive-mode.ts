@@ -7253,7 +7253,7 @@ Type any command or just describe what you want to do.
 			name: c.name,
 			description: c.description ?? "",
 			source: "builtin" as const,
-			sourceInfo: { source: "builtin" as const, path: "builtin", scope: "project" as const, origin: "builtin" as const },
+			sourceInfo: { source: "builtin" as const, path: "builtin", scope: "project" as const, origin: "package" as const },
 		}));
 		const extResult = this.session.resourceLoader.getExtensions();
 		const extensionCount = extResult.extensions.length;
@@ -7316,7 +7316,6 @@ Type any command or just describe what you want to do.
 		if (providerNames.size > 0) {
 			text += "\n\nResilience\n=========\n";
 			for (const name of providerNames) {
-				policy.getCircuit(name);
 				const state = policy.getCircuit(name).getState();
 				const healthScore = health[`${name}/unknown`]?.healthScore ?? health[Object.keys(health).find((k) => k.startsWith(`${name}/`)) ?? ""]?.healthScore ?? 1;
 				text += `- ${name}: circuit=${state}, health=${(healthScore * 100).toFixed(0)}%\n`;
