@@ -80,6 +80,7 @@ export type { ExecOptions, ExecResult } from "../exec.ts";
 export type { BuildSystemPromptOptions } from "../system-prompt.ts";
 export type { AgentToolResult, AgentToolUpdateCallback, ToolExecutionMode };
 export type { AppKeybinding, KeybindingsManager } from "../keybindings.ts";
+export type { AutocompleteItem } from "@sufiyan-sabeel/airis-tui";
 
 // ============================================================================
 // UI Context

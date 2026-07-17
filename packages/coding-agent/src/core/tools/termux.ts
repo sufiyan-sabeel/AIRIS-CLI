@@ -437,7 +437,7 @@ const defaultTermuxSensorCleanupOps: TermuxSensorCleanupOperations = {
 const defaultTermuxDialogOps: TermuxDialogOperations = {
 	isAvailable: isTermuxAvailable,
 	execute: (params) => {
-		const args = [params.type];
+		const args: string[] = [params.type];
 		if (params.title) args.push("-t", `'${params.title.replace(/'/g, "'\\''")}'`);
 		if (params.text) args.push("-i", `'${params.text.replace(/'/g, "'\\''")}'`);
 		if (params.values) args.push("-v", `'${params.values.replace(/'/g, "'\\''")}'`);

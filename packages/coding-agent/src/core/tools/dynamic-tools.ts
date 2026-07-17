@@ -7,12 +7,14 @@
  * Part of AIRIS enhancement suite - fully backward compatible.
  */
 import type { ToolDefinition, ToolExecutionMode } from "../extensions/types.ts";
+import type { TSchema } from "../extensions/types.ts";
 import type { ToolName, ToolsOptions } from "./index.ts";
 
 /**
  * Extended tool definition with dynamic registration metadata
  */
-export interface DynamicToolDefinition<TArgs = any, TResult = any> extends ToolDefinition<TArgs, TResult> {
+export interface DynamicToolDefinition<TArgs extends TSchema = TSchema, TResult = any>
+	extends ToolDefinition<TArgs, TResult> {
 	/** Unique identifier for the dynamic tool */
 	dynamicId: string;
 	/** Source of the tool (extension name, plugin name, etc.) */
@@ -23,6 +25,12 @@ export interface DynamicToolDefinition<TArgs = any, TResult = any> extends ToolD
 	version?: string;
 	/** Tags for categorization */
 	tags?: string[];
+	/** JSON Schema for tool input */
+	inputSchema?: TArgs;
+	/** Whether user confirmation is required before execution */
+	requiresConfirmation?: boolean;
+	/** Execution timeout in milliseconds */
+	timeoutMs?: number;
 }
 
 /**
