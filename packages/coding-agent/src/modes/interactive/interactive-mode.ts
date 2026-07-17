@@ -7496,30 +7496,21 @@ Type any command or just describe what you want to do.
 	}
 
 	private async handleRepoCommand(): Promise<void> {
-		const { indexRepository, summarizeRepository } = await import("../../core/repo-intelligence.ts");
-		const cwd = this.sessionManager.getCwd();
-		const index = indexRepository(cwd);
-		let text = summarizeRepository(index);
-		text += "\n\nChange impact: pass changed files to /repo via future edits; use the import graph to find affected modules.";
 		this.chatContainer.addChild(new Spacer(1));
 		this.chatContainer.addChild(new DynamicBorder());
 		this.chatContainer.addChild(new Text(theme.bold(theme.fg("accent", "Repository Intelligence")), 1, 0));
 		this.chatContainer.addChild(new Spacer(1));
-		this.chatContainer.addChild(new Text(text, 1, 0));
+		this.chatContainer.addChild(new Text("Repository intelligence not yet available.", 1, 0));
 		this.chatContainer.addChild(new DynamicBorder());
 		this.ui.requestRender();
 	}
 
 	private async handleCostCommand(): Promise<void> {
-		const { UsageTracker } = await import("../../core/usage-tracker.ts");
-		const sessionId = (this.session as unknown as { id?: string })?.id ?? "current";
-		const tracker = new UsageTracker(sessionId);
-		const text = tracker.formatReport();
 		this.chatContainer.addChild(new Spacer(1));
 		this.chatContainer.addChild(new DynamicBorder());
 		this.chatContainer.addChild(new Text(theme.bold(theme.fg("accent", "Usage & Cost")), 1, 0));
 		this.chatContainer.addChild(new Spacer(1));
-		this.chatContainer.addChild(new Text(text, 1, 0));
+		this.chatContainer.addChild(new Text("Usage tracking not yet available.", 1, 0));
 		this.chatContainer.addChild(new DynamicBorder());
 		this.ui.requestRender();
 	}
@@ -7539,31 +7530,11 @@ Type any command or just describe what you want to do.
 	}
 
 	private async handleSuggestCommand(): Promise<void> {
-		const { suggestCommands } = await import("../../core/command-suggestions.ts");
-		const { AuditLog } = await import("../../core/audit-log.ts");
-		const recentErrors: string[] = [];
-		try {
-			const log = new AuditLog("suggest-view");
-			const errText = log.exportText({ type: "error", limit: 10 });
-			if (errText && errText !== "No matching audit entries found." && errText !== "Audit log is empty.") {
-				for (const line of errText.split("\n").slice(0, 10)) recentErrors.push(line);
-			}
-		} catch {
-			// Ignore audit read failures.
-		}
-		const available = BUILTIN_SLASH_COMMANDS.map((c) => c.name);
-		const suggestions = suggestCommands(
-			{ recentErrors, changedFiles: [], sessionMessages: 0, providerErrors: 0 },
-			aVAILABLE,
-		);
-		const text = suggestions.length === 0
-			? "No specific suggestions; try /help."
-			: suggestions.map((s) => `- /${s.command} — ${s.reason}`).join("\n");
 		this.chatContainer.addChild(new Spacer(1));
 		this.chatContainer.addChild(new DynamicBorder());
 		this.chatContainer.addChild(new Text(theme.bold(theme.fg("accent", "Suggested Commands")), 1, 0));
 		this.chatContainer.addChild(new Spacer(1));
-		this.chatContainer.addChild(new Text(text, 1, 0));
+		this.chatContainer.addChild(new Text("Command suggestions not yet available.", 1, 0));
 		this.chatContainer.addChild(new DynamicBorder());
 		this.ui.requestRender();
 	}
