@@ -1,47 +1,11 @@
 import Link from "next/link";
-import { ArrowRight, Check, Github, Terminal, Smartphone, Cpu, Apple, Monitor, Package, Download as DownloadIcon, ExternalLink } from "lucide-react";
+import { ArrowRight, Check, Cpu, Monitor, ExternalLink } from "lucide-react";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CodeBlock } from "@/components/code-block";
-import { ScrollReveal, StaggerChildren, StaggerItem } from "@/components/scroll-reveal";
-import { Badge } from "@/components/ui/badge";
-
-const installMethods = [
-  {
-    icon: Terminal,
-    title: "Quick Install (curl)",
-    description: "One-line installation for Linux, macOS, and WSL",
-    code: 'curl -fsSL https://sufiyan-sabeel.github.io/AIRIS-CLI/install.sh | bash',
-    badge: "Recommended",
-    badgeColor: "bg-blue-400/10 text-blue-300 border-blue-400/20",
-  },
-  {
-    icon: Package,
-    title: "npm Global Install",
-    description: "Install via npm package manager",
-    code: 'npm install -g @sufiyan-sabeel/airis-cli',
-    badge: "Latest",
-    badgeColor: "bg-emerald-400/10 text-emerald-300 border-emerald-400/20",
-  },
-  {
-    icon: Github,
-    title: "Build from Source",
-    description: "Clone repository and build manually",
-    code: 'git clone https://github.com/sufiyan-sabeel/AIRIS-CLI.git\ncd AIRIS-CLI\nnpm install --ignore-scripts\nnpm run build\nnpm link',
-    badge: "Developer",
-    badgeColor: "bg-purple-400/10 text-purple-300 border-purple-400/20",
-  },
-  {
-    icon: Smartphone,
-    title: "Termux (Android)",
-    description: "Install on Android via Termux terminal",
-    code: 'pkg update && pkg upgrade\npkg install nodejs git\nnpm install -g @sufiyan-sabeel/airis-cli\nairis --version',
-    badge: "Mobile",
-    badgeColor: "bg-amber-400/10 text-amber-300 border-amber-400/20",
-  },
-];
+import { ScrollReveal } from "@/components/scroll-reveal";
+import { InteractiveTerminal } from "@/components/interactive-terminal";
 
 const requirements = [
   { icon: Cpu, label: "Node.js", value: ">= 22.19.0" },
@@ -93,36 +57,10 @@ export default function DownloadPage() {
 
         {/* Install Methods */}
         <section className="px-4 py-10 sm:px-6 sm:py-16 lg:px-8">
-          <div className="mx-auto max-w-7xl">
-            <StaggerChildren staggerDelay={0.08} className="grid gap-4 lg:grid-cols-2">
-              {installMethods.map((method) => (
-                <StaggerItem key={method.title}>
-                  <Card className="glass-card hover-lift shine-card">
-                    <CardHeader>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className="feature-icon">
-                            <method.icon className="h-5 w-5 text-blue-400" />
-                          </div>
-                          <div>
-                            <CardTitle>{method.title}</CardTitle>
-                            <CardDescription>{method.description}</CardDescription>
-                          </div>
-                        </div>
-                        {method.badge && (
-                          <Badge className={`${method.badgeColor} text-[10px]`}>
-                            {method.badge}
-                          </Badge>
-                        )}
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <CodeBlock code={method.code} />
-                    </CardContent>
-                  </Card>
-                </StaggerItem>
-              ))}
-            </StaggerChildren>
+          <div className="mx-auto max-w-5xl">
+            <ScrollReveal>
+              <InteractiveTerminal />
+            </ScrollReveal>
           </div>
         </section>
 

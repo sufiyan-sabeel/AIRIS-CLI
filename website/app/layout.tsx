@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Providers } from "@/components/providers";
+import { ScrollProgress } from "@/components/scroll-progress";
+import { SmoothScrollProvider } from "@/components/smooth-scroll";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -128,7 +130,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         >
           Skip to content
         </a>
-        <Providers>{children}</Providers>
+        <ScrollProgress />
+        <Providers>
+          <SmoothScrollProvider>
+            {children}
+          </SmoothScrollProvider>
+        </Providers>
       </body>
     </html>
   );

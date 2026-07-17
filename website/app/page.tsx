@@ -1,7 +1,10 @@
+"use client";
+
+import { useState, useCallback, useEffect, Suspense } from "react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import {
   ArrowRight,
-  ExternalLink,
   Github,
   KeyRound,
   Smartphone,
@@ -15,25 +18,13 @@ import {
   Globe,
   Zap,
   ChevronRight,
-  Layers3,
-  FileCode2,
-  GitBranch,
-  Palette,
-  Wrench,
-  Braces,
-  ClipboardCheck,
-  TerminalSquare,
-  MessageSquare,
-  Eye,
-  Code2,
-  BookOpen,
-  Users,
 } from "lucide-react";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CodeBlock } from "@/components/code-block";
+import { AirisTerminal } from "@/components/airis-terminal";
 import { TerminalDemo } from "@/components/terminal-demo";
 import { VideoProof } from "@/components/video-proof";
 import { SectionHeader } from "@/components/section-header";
@@ -41,10 +32,12 @@ import { FeatureCard } from "@/components/feature-card";
 import { CommandExplorer } from "@/components/command-explorer";
 import { ScrollReveal, StaggerChildren, StaggerItem } from "@/components/scroll-reveal";
 import { ScrollToTop } from "@/components/scroll-to-top";
-import { Badge } from "@/components/ui/badge";
+import { MagneticButton } from "@/components/magnetic-button";
+import { ParticleField } from "@/components/particle-field";
+import { TiltCard } from "@/components/tilt-card";
+import { ArchitectureExplorer } from "@/components/architecture-explorer";
 import {
   repo,
-  navItems,
   features,
   providers,
   workflowPhases,
@@ -52,7 +45,47 @@ import {
   termuxCommands,
 } from "@/data/site";
 
+// Lazy-load heavy 3D components with SSR disabled (React 19 compat)
+const HeroScene = dynamic(
+  () => import("@/components/three/hero-scene").then((m) => ({ default: m.HeroScene })),
+  { ssr: false, loading: () => null }
+);
+const DashboardPreview = dynamic(
+  () => import("@/components/dashboard-preview").then((m) => ({
+    default: m.DashboardPreview,
+  })),
+  { ssr: false }
+);
+
+function HeroSceneFallback() {
+  return null;
+}
+
 export default function Home() {
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [scrollProgress, setScrollProgress] = useState(0);
+
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    setMousePos({
+      x: (e.clientX / window.innerWidth) * 2 - 1,
+      y: (e.clientY / window.innerHeight) * 2 - 1,
+    });
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, [handleMouseMove]);
+
+  useEffect(() => {
+    const onScroll = () => {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      setScrollProgress(max > 0 ? window.scrollY / max : 0);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Header />
@@ -64,6 +97,18 @@ export default function Home() {
         <section className="hero-gradient relative isolate overflow-hidden border-b border-border/50 px-4 pb-16 pt-16 sm:pb-24 sm:pt-20 lg:px-8 lg:pb-28 lg:pt-24">
           <div className="bg-grid absolute inset-0 -z-10 opacity-70" aria-hidden />
           <div className="scanline absolute inset-x-0 top-0 -z-10 h-1/2 opacity-20" aria-hidden />
+          
+          {/* 3D Hero Scene */}
+          <Suspense fallback={<HeroSceneFallback />}>
+            <HeroScene
+              mouseX={mousePos.x}
+              mouseY={mousePos.y}
+              scrollProgress={scrollProgress}
+            />
+          </Suspense>
+          
+          {/* Canvas particle field (fallback for reduced motion or when 3D is loading) */}
+          <ParticleField particleCount={30} connectDistance={120} speed={0.15} />
 
           <div className="orb-blue absolute -left-32 -top-32 -z-10 h-80 w-80 rounded-full bg-blue-500/10 blur-3xl" aria-hidden />
           <div className="orb-cyan absolute -right-32 top-16 -z-10 h-96 w-96 rounded-full bg-cyan-500/6 blur-3xl" aria-hidden />
@@ -92,11 +137,13 @@ export default function Home() {
 
               {/* CTAs */}
               <div className="fade-up fade-up-delay-1 mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:flex-wrap">
-                <Button asChild size="lg" className="pulse-cta">
-                  <a href="#installation">
-                    Install AIRIS <ArrowRight className="h-4 w-4" />
-                  </a>
-                </Button>
+                <MagneticButton asChild>
+                  <Button asChild size="lg" className="pulse-cta">
+                    <a href="#installation">
+                      Install AIRIS <ArrowRight className="h-4 w-4" />
+                    </a>
+                  </Button>
+                </MagneticButton>
                 <Button asChild size="lg" variant="outline">
                   <a href="#demo">
                     <Monitor className="h-4 w-4" /> Watch Demo
@@ -165,12 +212,14 @@ export default function Home() {
             >
               {features.map((feature) => (
                 <StaggerItem key={feature.title}>
-                  <FeatureCard
-                    icon={feature.icon}
-                    title={feature.title}
-                    description={feature.description}
-                    evidence={feature.evidence}
-                  />
+                  <TiltCard tiltDegree={4} scale={1.02}>
+                    <FeatureCard
+                      icon={feature.icon}
+                      title={feature.title}
+                      description={feature.description}
+                      evidence={feature.evidence}
+                    />
+                  </TiltCard>
                 </StaggerItem>
               ))}
             </StaggerChildren>
@@ -381,6 +430,23 @@ export default function Home() {
         </section>
 
         {/* ═══════════════════════════════════════════════════════
+           AIRIS TERMINAL SHOWCASE
+           ═══════════════════════════════════════════════════════ */}
+        <section id="airis-terminal" aria-labelledby="terminal-heading" className="relative isolate overflow-hidden border-y border-border/50 bg-secondary/30 px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
+          <div className="bg-grid-subtle absolute inset-0 -z-10" aria-hidden />
+          <div className="mx-auto max-w-5xl">
+            <SectionHeader
+              eyebrow="Interactive Terminal"
+              title="Experience AIRIS in action"
+              description="Explore real AIRIS commands and see their output. Each command demonstrates a different capability of the system."
+            />
+            <ScrollReveal variant="scale-in">
+              <AirisTerminal />
+            </ScrollReveal>
+          </div>
+        </section>
+
+        {/* ═══════════════════════════════════════════════════════
            TERMUX / ANDROID
            ═══════════════════════════════════════════════════════ */}
         <section id="termux" className="relative isolate overflow-hidden px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
@@ -438,6 +504,44 @@ export default function Home() {
                 </p>
               </ScrollReveal>
             </div>
+          </div>
+        </section>
+
+        {/* ═══════════════════════════════════════════════════════
+           DASHBOARD PREVIEW
+           ═══════════════════════════════════════════════════════ */}
+        <section id="dashboard-preview" aria-labelledby="dashboard-heading" className="px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
+          <div className="mx-auto max-w-7xl">
+            <SectionHeader
+              eyebrow="Live Dashboard"
+              title="Real-time intelligence at a glance"
+              description="Monitor agent activity, token usage, cache analytics, and provider health in a live-updating dashboard."
+            />
+            <ScrollReveal variant="fade-up">
+              <Suspense fallback={
+                <div className="flex h-64 items-center justify-center rounded-2xl border border-border/40 bg-card/50">
+                  <p className="text-sm text-muted-foreground">Loading dashboard preview...</p>
+                </div>
+              }>
+                <DashboardPreview />
+              </Suspense>
+            </ScrollReveal>
+          </div>
+        </section>
+
+        {/* ═══════════════════════════════════════════════════════
+           ARCHITECTURE EXPLORER
+           ═══════════════════════════════════════════════════════ */}
+        <section id="architecture" aria-labelledby="architecture-heading" className="border-y border-border/50 bg-secondary/30 px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
+          <div className="mx-auto max-w-7xl">
+            <SectionHeader
+              eyebrow="System Architecture"
+              title="Explore the AIRIS ecosystem"
+              description="Interactive system map showing how Agent Core, Memory, Tools, Extensions, Providers, and the Dashboard interconnect."
+            />
+            <ScrollReveal variant="scale-in">
+              <ArchitectureExplorer />
+            </ScrollReveal>
           </div>
         </section>
 

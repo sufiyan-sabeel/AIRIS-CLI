@@ -35,7 +35,7 @@ export function Header() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 glass-nav">
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:h-16 sm:px-6 lg:px-8">
         <Link href="/" aria-label="AIRIS home" className="shrink-0">
           <AirisLogo />

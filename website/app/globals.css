@@ -92,8 +92,13 @@ img, video, pre, code {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: hsl(var(--muted)); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: hsl(var(--muted-foreground)); }
+@media (prefers-color-scheme: dark) {
+  ::-webkit-scrollbar-thumb { background: hsl(var(--muted-foreground) / 0.3); }
+}
 
-/* ── Grid Background Patterns ── */
+/* ═══════════════════════════════════════════════
+   GRID BACKGROUND PATTERNS
+   ═══════════════════════════════════════════════ */
 .bg-grid {
   background-image:
     linear-gradient(to right, hsl(213 94% 58% / 0.08) 1px, transparent 1px),
@@ -118,7 +123,39 @@ img, video, pre, code {
   mask-image: radial-gradient(ellipse 60% 50% at 50% 50%, black 20%, transparent 65%);
 }
 
-/* ── Hero Gradient ── */
+/* ═══════════════════════════════════════════════
+   AURORA BACKGROUND
+   ═══════════════════════════════════════════════ */
+.aurora {
+  position: relative;
+  overflow: hidden;
+}
+
+.aurora::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(ellipse 80% 50% at 0% 50%, hsl(213 94% 58% / 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse 60% 40% at 50% 0%, hsl(190 95% 50% / 0.04) 0%, transparent 50%),
+    radial-gradient(ellipse 50% 60% at 100% 50%, hsl(270 95% 60% / 0.04) 0%, transparent 50%),
+    radial-gradient(ellipse 70% 30% at 50% 100%, hsl(190 95% 50% / 0.03) 0%, transparent 50%);
+  background-size: 200% 200%;
+  animation: aurora-shift 25s ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes aurora-shift {
+  0%, 100% { background-position: 0% 50%; }
+  25% { background-position: 100% 0%; }
+  50% { background-position: 50% 100%; }
+  75% { background-position: 0% 100%; }
+}
+
+/* ═══════════════════════════════════════════════
+   HERO GRADIENT
+   ═══════════════════════════════════════════════ */
 .hero-gradient {
   background:
     radial-gradient(ellipse 80% 50% at 50% 0%, hsl(213 94% 58% / 0.1), transparent 60%),
@@ -127,16 +164,12 @@ img, video, pre, code {
     radial-gradient(ellipse 60% 40% at 50% 85%, hsl(213 94% 58% / 0.04), transparent 50%);
 }
 
-/* ── Floating Gradient Orbs ── */
-.orb-blue {
-  animation: orb-float 12s ease-in-out infinite;
-}
-.orb-cyan {
-  animation: orb-float 10s ease-in-out infinite reverse;
-}
-.orb-blue-slow {
-  animation: orb-float 16s ease-in-out infinite 2s;
-}
+/* ═══════════════════════════════════════════════
+   FLOATING GRADIENT ORBS
+   ═══════════════════════════════════════════════ */
+.orb-blue { animation: orb-float 12s ease-in-out infinite; }
+.orb-cyan { animation: orb-float 10s ease-in-out infinite reverse; }
+.orb-blue-slow { animation: orb-float 16s ease-in-out infinite 2s; }
 .orb-pulse {
   animation: orb-pulse 8s ease-in-out infinite;
 }
@@ -148,7 +181,14 @@ img, video, pre, code {
   75% { transform: translate(-15px, -10px) scale(1.02); }
 }
 
-/* ── Gradient Text ── */
+@keyframes orb-pulse {
+  0%, 100% { opacity: 0.4; transform: translate(-50%, -50%) scale(1); }
+  50% { opacity: 0.7; transform: translate(-50%, -50%) scale(1.1); }
+}
+
+/* ═══════════════════════════════════════════════
+   GRADIENT TEXT
+   ═══════════════════════════════════════════════ */
 .gradient-text {
   background: linear-gradient(135deg, hsl(var(--foreground)) 0%, hsl(213 94% 58%) 45%, hsl(190 95% 50%) 100%);
   background-size: 200% 200%;
@@ -172,7 +212,9 @@ img, video, pre, code {
   color: transparent;
 }
 
-/* ── Glass Card ── */
+/* ═══════════════════════════════════════════════
+   GLASSMORPHISM
+   ═══════════════════════════════════════════════ */
 .glass-card {
   background: hsl(var(--card) / 0.85);
   box-shadow:
@@ -192,7 +234,21 @@ img, video, pre, code {
   -webkit-backdrop-filter: blur(12px);
 }
 
-/* ── Hover Lift ── */
+.glass-nav {
+  background: hsl(var(--background) / 0.7);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  border-bottom: 1px solid hsl(var(--border) / 0.3);
+}
+
+.glass-nav-scrolled {
+  background: hsl(var(--background) / 0.85);
+  box-shadow: 0 1px 0 hsl(var(--border) / 0.2), 0 4px 20px hsl(0 0% 0% / 0.05);
+}
+
+/* ═══════════════════════════════════════════════
+   HOVER LIFT & DEPTH SHADOWS
+   ═══════════════════════════════════════════════ */
 .hover-lift {
   transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1),
     border-color 300ms ease,
@@ -207,7 +263,26 @@ img, video, pre, code {
     0 1px 0 hsl(var(--ring) / 0.2);
 }
 
-/* ── Shine Effect ── */
+.depth-shadow {
+  box-shadow:
+    0 1px 0 hsl(var(--border) / 0.2),
+    0 2px 4px hsl(0 0% 0% / 0.02),
+    0 8px 24px hsl(0 0% 0% / 0.06),
+    0 20px 60px hsl(0 0% 0% / 0.08);
+  transition: box-shadow 300ms ease;
+}
+
+.depth-shadow:hover {
+  box-shadow:
+    0 1px 0 hsl(var(--ring) / 0.3),
+    0 4px 12px hsl(213 94% 58% / 0.08),
+    0 12px 40px hsl(0 0% 0% / 0.1),
+    0 30px 80px hsl(213 94% 58% / 0.06);
+}
+
+/* ═══════════════════════════════════════════════
+   SHINE EFFECT
+   ═══════════════════════════════════════════════ */
 .shine-card {
   position: relative;
   overflow: hidden;
@@ -231,7 +306,14 @@ img, video, pre, code {
   animation: shine 1.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* ── CTA Button Glow ── */
+@keyframes shine {
+  from { transform: translateX(-120%); }
+  to { transform: translateX(120%); }
+}
+
+/* ═══════════════════════════════════════════════
+   CTA BUTTON GLOW & PULSE
+   ═══════════════════════════════════════════════ */
 .pulse-cta {
   position: relative;
   isolation: isolate;
@@ -259,10 +341,70 @@ img, video, pre, code {
   animation: cta-pulse 3s ease-in-out infinite;
 }
 
-/* ── Terminal Container ── */
+@keyframes cta-pulse {
+  0%, 100% { opacity: 0.35; transform: scale(0.98); }
+  50% { opacity: 0.7; transform: scale(1.03); }
+}
+
+/* ═══════════════════════════════════════════════
+   GLOW HOVER (generic interactive glow)
+   ═══════════════════════════════════════════════ */
+.glow-hover {
+  transition: box-shadow 300ms ease, transform 300ms ease;
+}
+
+.glow-hover:hover {
+  box-shadow: 0 0 30px hsl(213 94% 58% / 0.15), 0 0 60px hsl(213 94% 58% / 0.05);
+  transform: translateY(-1px);
+}
+
+/* ═══════════════════════════════════════════════
+   MAGNETIC BUTTON (base - JS adds magnetic effect)
+   ═══════════════════════════════════════════════ */
+.magnetic-btn {
+  transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+
+/* ═══════════════════════════════════════════════
+   ANIMATED BORDER
+   ═══════════════════════════════════════════════ */
+.animated-border {
+  position: relative;
+  border: 1px solid transparent;
+  background-clip: padding-box;
+}
+
+.animated-border::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: conic-gradient(
+    from 0deg,
+    transparent,
+    hsl(213 94% 58% / 0.3),
+    hsl(190 95% 50% / 0.2),
+    transparent 70%
+  );
+  z-index: -1;
+  animation: border-spin 4s linear infinite;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+  padding: 1px;
+}
+
+@keyframes border-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ═══════════════════════════════════════════════
+   TERMINAL CONTAINER & GLOW
+   ═══════════════════════════════════════════════ */
 .terminal-container {
   position: relative;
-  border-radius: 1rem;
   overflow: hidden;
 }
 
@@ -324,7 +466,13 @@ img, video, pre, code {
   animation-duration: 22s;
 }
 
-/* ── Feature Card ── */
+@keyframes orbit-spin {
+  to { transform: rotate(1turn); }
+}
+
+/* ═══════════════════════════════════════════════
+   FEATURE CARD
+   ═══════════════════════════════════════════════ */
 .feature-card {
   position: relative;
   overflow: hidden;
@@ -371,7 +519,9 @@ img, video, pre, code {
   box-shadow: 0 16px 40px hsl(213 94% 58% / 0.2);
 }
 
-/* ── Section Header Underline ── */
+/* ═══════════════════════════════════════════════
+   SECTION HEADER
+   ═══════════════════════════════════════════════ */
 .section-accent {
   position: relative;
 }
@@ -394,7 +544,19 @@ img, video, pre, code {
   );
 }
 
-/* ── Animations ── */
+/* ═══════════════════════════════════════════════
+   SCROLLBAR STYLING
+   ═══════════════════════════════════════════════ */
+.custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+  border-radius: 2px;
+}
+
+/* ═══════════════════════════════════════════════
+   ANIMATIONS
+   ═══════════════════════════════════════════════ */
 .float-slow { animation: float 7s ease-in-out infinite; }
 .float-medium { animation: float 5s ease-in-out infinite; }
 .float-delay { animation-delay: -2.5s; }
@@ -422,34 +584,36 @@ img, video, pre, code {
 /* ── Keyframes ── */
 @keyframes caret { 0%, 45% { opacity: 1; } 46%, 100% { opacity: 0; } }
 @keyframes gradient-shift { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
-@keyframes cta-pulse { 0%, 100% { opacity: 0.35; transform: scale(0.98); } 50% { opacity: 0.7; transform: scale(1.03); } }
-@keyframes orbit-spin { to { transform: rotate(1turn); } }
 @keyframes float { 0%, 100% { transform: translate3d(0, 0, 0); } 50% { transform: translate3d(0, -12px, 0); } }
 @keyframes fade-up { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes scale-in { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
 @keyframes scanline { from { transform: translateY(-100%); } to { transform: translateY(100%); } }
-@keyframes shine { from { transform: translateX(-120%); } to { transform: translateX(120%); } }
 @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
 @keyframes pulse-subtle { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
 @keyframes border-dance {
   0%, 100% { border-color: hsl(var(--border) / 0.4); }
   50% { border-color: hsl(213 94% 58% / 0.3); }
 }
-@keyframes orb-pulse {
-  0%, 100% { opacity: 0.4; transform: translate(-50%, -50%) scale(1); }
-  50% { opacity: 0.7; transform: translate(-50%, -50%) scale(1.1); }
-}
+@keyframes ping-slow { 0%, 100% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.5); opacity: 0; } }
 
 .animate-caret { animation: caret 1s steps(1) infinite; }
 .animate-shimmer { background-size: 200% 100%; animation: shimmer 3s ease-in-out infinite; }
 .animate-pulse-subtle { animation: pulse-subtle 3s ease-in-out infinite; }
 .animate-border-dance { animation: border-dance 4s ease-in-out infinite; }
+.animate-ping-slow { animation: ping-slow 2s ease-in-out infinite; }
 
-/* ── Video ── */
+/* ── bg-size for shimmer ── */
+.bg-size-200 { background-size: 200% 100%; }
+
+/* ═══════════════════════════════════════════════
+   VIDEO
+   ═══════════════════════════════════════════════ */
 .video-container video::-webkit-media-controls { display: none !important; }
 .video-container video { cursor: pointer; }
 
-/* ── Terminal hover ── */
+/* ═══════════════════════════════════════════════
+   TERMINAL HOVER
+   ═══════════════════════════════════════════════ */
 @media (hover: hover) {
   .terminal-glow {
     transition: box-shadow 400ms ease, border-color 400ms ease;
@@ -462,7 +626,9 @@ img, video, pre, code {
   }
 }
 
-/* ── Toast notification for copy ── */
+/* ═══════════════════════════════════════════════
+   TOAST NOTIFICATION
+   ═══════════════════════════════════════════════ */
 .copy-toast {
   position: fixed;
   bottom: 1.5rem;
@@ -486,7 +652,17 @@ img, video, pre, code {
   to { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
 
-/* ── Reduced Motion ── */
+/* ═══════════════════════════════════════════════
+   PARALLAX & DEPTH
+   ═══════════════════════════════════════════════ */
+.parallax-deep {
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+/* ═══════════════════════════════════════════════
+   REDUCED MOTION
+   ═══════════════════════════════════════════════ */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -498,26 +674,24 @@ img, video, pre, code {
   }
   .fade-up { opacity: 1; transform: none; }
   .scale-in { opacity: 1; transform: none; }
+  .aurora::before { animation: none; }
+  .gradient-text { animation: none; }
+  .pulse-cta::before { animation: none; }
+  .orb-blue, .orb-cyan, .orb-blue-slow, .orb-pulse { animation: none; }
+  .terminal-orbit::before, .terminal-orbit::after { animation: none; }
 }
 
-/* ── Typography ── */
+/* ═══════════════════════════════════════════════
+   TYPOGRAPHY
+   ═══════════════════════════════════════════════ */
 .text-balance { text-wrap: balance; }
 
-/* Responsive container for terminal preview */
+/* ═══════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════ */
 @media (max-width: 640px) {
-  .hero-gradient {
-    mask-image: none;
-    -webkit-mask-image: none;
-  }
-  .bg-grid,
-  .bg-grid-subtle,
-  .bg-grid-dense {
-    background-size: 32px 32px;
-  }
-  .terminal-orbit::before,
-  .terminal-orbit::after {
-    inset: -8px;
-  }
+  .bg-grid, .bg-grid-subtle, .bg-grid-dense { background-size: 32px 32px; }
+  .terminal-orbit::before, .terminal-orbit::after { inset: -8px; }
 }
 
 @media (max-width: 380px) {
@@ -526,29 +700,14 @@ img, video, pre, code {
   .feature-icon svg { height: 1rem; width: 1rem; }
 }
 
-/* Improved code readability */
-code, pre {
-  text-rendering: optimizeSpeed;
-}
+code, pre { text-rendering: optimizeSpeed; }
 
-/* Better focus styles */
-a:focus-visible,
-button:focus-visible {
+a:focus-visible, button:focus-visible {
   outline: 2px solid hsl(var(--ring));
   outline-offset: 2px;
   border-radius: 6px;
 }
 
-/* Ensure dark mode scrollbar is visible */
-@media (prefers-color-scheme: dark) {
-  ::-webkit-scrollbar-thumb {
-    background: hsl(var(--muted-foreground) / 0.3);
-  }
-}
-
-/* Safe area for mobile devices */
 @supports (padding: env(safe-area-inset-bottom)) {
-  footer {
-    padding-bottom: calc(12px + env(safe-area-inset-bottom));
-  }
+  footer { padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
 }

@@ -53,6 +53,10 @@ collect.sh
 .airis/missions/
 .airis/automation-guide.md
 
+# Next.js build artifacts
+.next/
+out/
+
 # Backend runtime
 backend/db/
 
