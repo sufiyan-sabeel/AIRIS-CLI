@@ -11,7 +11,7 @@ import {
 	renderMiniDashboard,
 	type DashboardOptions,
 } from "../src/modes/interactive/components/advanced-dashboard.ts";
-import { computeCacheWaste, generateCacheReport } from "../src/core/cache-stats.ts";
+import { generateCacheReport } from "../src/core/cache-stats.ts";
 
 function createMockSession(overrides: Partial<{
 	entries: any[];
@@ -74,7 +74,7 @@ function createMockFooterData(): ReadonlyFooterDataProvider {
 		getGitBranch: () => "main",
 		getExtensionStatuses: () => new Map(),
 		getAvailableProviderCount: () => 1,
-		onBranchChange: (cb: () => void) => () => {},
+		onBranchChange: (_cb: () => void) => () => {},
 	};
 }
 

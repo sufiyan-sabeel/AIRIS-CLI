@@ -257,7 +257,6 @@ function getUnlockedAchievements(stats: SessionStats, cache: CacheStats): Achiev
 
 export class DashboardComponent implements Component {
 	private session: AgentSession;
-	private _footerData: ReadonlyFooterDataProvider;
 	private options: Required<DashboardOptions>;
 	private lastRender = 0;
 	private cachedOutput = "";
@@ -269,7 +268,6 @@ export class DashboardComponent implements Component {
 		options: DashboardOptions = {},
 	) {
 		this.session = session;
-		this._footerData = footerData;
 		this.options = {
 			showSessionStats: options.showSessionStats ?? true,
 			showCacheStats: options.showCacheStats ?? true,

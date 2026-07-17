@@ -33,7 +33,7 @@
 
 import { existsSync, readFileSync } from "node:fs";
 import { homedir } from "node:os";
-import { join, normalize, resolve } from "node:path";
+import { join, normalize } from "node:path";
 import type {
 	AutocompleteItem,
 	ExtensionAPI,
