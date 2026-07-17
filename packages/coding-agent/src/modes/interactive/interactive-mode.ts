@@ -7297,6 +7297,7 @@ Type any command or just describe what you want to do.
 	private async handleProvidersCommand(): Promise<void> {
 		const { ProviderHealthTracker } = await import("../../core/provider-health.ts");
 		const { loadProviderProfiles, formatProviderProfile } = await import("../../core/provider-probe.ts");
+		const { ResiliencePolicy } = await import("../../core/provider-resilience.ts");
 		const tracker = new ProviderHealthTracker();
 		let text = tracker.formatHealthReport();
 		const profiles = loadProviderProfiles();
@@ -7307,7 +7308,22 @@ Type any command or just describe what you want to do.
 				text += `\n${formatProviderProfile(p)}\n`;
 			}
 		}
-			this.chatContainer.addChild(new Spacer(1));
+		// Surface resilience state (circuit breakers / degraded mode).
+		const policy = new ResiliencePolicy();
+		const health = tracker.getAllProviderHealth();
+		const providerNames = new Set<string>();
+		for (const key of Object.keys(health)) providerNames.add(key.split("/")[0]);
+		if (providerNames.size > 0) {
+			text += "\n\nResilience\n=========\n";
+			for (const name of providerNames) {
+				policy.getCircuit(name);
+				const state = policy.getCircuit(name).getState();
+				const healthScore = health[`${name}/unknown`]?.healthScore ?? health[Object.keys(health).find((k) => k.startsWith(`${name}/`)) ?? ""]?.healthScore ?? 1;
+				text += `- ${name}: circuit=${state}, health=${(healthScore * 100).toFixed(0)}%\n`;
+			}
+			text += "\nAutomatic per-call failover uses these circuits during model requests.";
+		}
+		this.chatContainer.addChild(new Spacer(1));
 		this.chatContainer.addChild(new DynamicBorder());
 		this.chatContainer.addChild(new Text(theme.bold(theme.fg("accent", "Providers")), 1, 0));
 		this.chatContainer.addChild(new Spacer(1));
@@ -7433,6 +7449,7 @@ Type any command or just describe what you want to do.
 	}
 
 	private parseJobEnqueue(args: string): {
+		name: string;
 		command: string;
 		schedule?: { kind: "once" | "interval" | "cron"; at?: number; intervalMs?: number; cron?: string };
 		recurring?: boolean;
@@ -7440,17 +7457,18 @@ Type any command or just describe what you want to do.
 	} {
 		const tokens = args.match(/"[^"]*"|'[^']*'|\S+/g) ?? [];
 		let command = "";
-		const result: { command: string; schedule?: { kind: "once" | "interval" | "cron"; at?: number; intervalMs?: number; cron?: string }; recurring?: boolean; maxRetries?: number } = { command: "" };
+		const result: { name: string; command: string; schedule?: { kind: "once" | "interval" | "cron"; at?: number; intervalMs?: number; cron?: string }; recurring?: boolean; maxRetries?: number } = { name: "", command: "" };
 		for (let i = 0; i < tokens.length; i++) {
 			const t = tokens[i];
 			if (t === "--at" && tokens[i + 1]) result.schedule = { kind: "once", at: Number(tokens[++i]) };
 			else if (t === "--every" && tokens[i + 1]) result.schedule = { kind: "interval", intervalMs: Number(tokens[++i]) };
-			else if (t === "--cron" && tokens[i + 1]) result.schedule = { kind: "cron", cron: tokens[++i].replace(/^"|$"/g, "") };
+			else if (t === "--cron" && tokens[i + 1]) result.schedule = { kind: "cron", cron: tokens[++i].replace(/^"|"$/g, "") };
 			else if (t === "--recurring") result.recurring = true;
 			else if (t === "--retries" && tokens[i + 1]) result.maxRetries = Number(tokens[++i]);
 			else command += (command ? " " : "") + t;
 		}
 		result.command = command;
+		if (!result.name) result.name = command.split(/\s+/)[0] || "job";
 		return result;
 	}
 
@@ -7551,6 +7569,7 @@ Type any command or just describe what you want to do.
 		this.ui.requestRender();
 	}
 
+	private async handleDepsAuditCommand(): Promise<void> {
 		const { runDependencyAudit, formatDependencyAudit } = await import("../../core/security-auditor.ts");
 		const cwd = this.sessionManager.getCwd();
 		const report = runDependencyAudit(cwd);
