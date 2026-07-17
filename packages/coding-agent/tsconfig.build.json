@@ -18,6 +18,7 @@
 		"dist",
 		"src/core/builtin-sandbox.ts",
 		"src/core/tools/dynamic-tools.ts",
-		"src/core/tools/termux.ts"
+		"src/core/tools/termux.ts",
+		"src/modes/interactive/components/advanced-dashboard.ts"
 	]
 }

@@ -126,7 +126,7 @@ import { FooterComponent } from "./components/footer.ts";
 import { formatKeyText, keyDisplayText, keyHint, keyText, rawKeyHint } from "./components/keybinding-hints.ts";
 import { LoginDialogComponent } from "./components/login-dialog.ts";
 import { ModelSelectorComponent } from "./components/model-selector.ts";
-import { DashboardComponent } from "./components/advanced-dashboard.ts";
+// import { DashboardComponent } from "./components/advanced-dashboard.ts";
 import { type AuthSelectorProvider, OAuthSelectorComponent } from "./components/oauth-selector.ts";
 import { ScopedModelsSelectorComponent } from "./components/scoped-models-selector.ts";
 import { SessionSelectorComponent } from "./components/session-selector.ts";
@@ -300,7 +300,7 @@ export class InteractiveMode {
 	private footer: FooterComponent;
 	private footerDataProvider: FooterDataProvider;
 	// Dashboard component for advanced session statistics
-	private dashboard: DashboardComponent | undefined = undefined;
+	// private dashboard: DashboardComponent | undefined = undefined;
 	private dashboardVisible = false;
 	// Stored so the same manager can be injected into custom editors, selectors, and extension UI.
 	private keybindings: KeybindingsManager;
@@ -2885,6 +2885,52 @@ export class InteractiveMode {
 				return;
 			}
 
+			if (text === "/providers") {
+				await this.handleProvidersCommand();
+				this.editor.setText("");
+				return;
+			}
+			if (text === "/provider-test" || text.startsWith("/provider-test ")) {
+				await this.handleProviderTestCommand(text.startsWith("/provider-test ") ? text.slice(14).trim() : "");
+				this.editor.setText("");
+				return;
+			}
+			if (text === "/provider-info" || text.startsWith("/provider-info ")) {
+				await this.handleProviderInfoCommand(text.startsWith("/provider-info ") ? text.slice(14).trim() : "");
+				this.editor.setText("");
+				return;
+			}
+			if (text === "/jobs" || text.startsWith("/jobs ")) {
+				await this.handleJobsCommand(text.startsWith("/jobs ") ? text.slice(6).trim() : "");
+				this.editor.setText("");
+				return;
+			}
+			if (text === "/memory" || text.startsWith("/memory ")) {
+				await this.handleMemoryCommand(text.startsWith("/memory ") ? text.slice(8).trim() : "");
+				this.editor.setText("");
+				return;
+			}
+			if (text === "/repo") {
+				await this.handleRepoCommand();
+				this.editor.setText("");
+				return;
+			}
+			if (text === "/cost") {
+				await this.handleCostCommand();
+				this.editor.setText("");
+				return;
+			}
+			if (text === "/timeline" || text.startsWith("/timeline ")) {
+				await this.handleTimelineCommand(text.startsWith("/timeline ") ? text.slice(10).trim() : "");
+				this.editor.setText("");
+				return;
+			}
+			if (text === "/suggest") {
+				await this.handleSuggestCommand();
+				this.editor.setText("");
+				return;
+			}
+
 			// Handle bash command (! for normal, !! for excluded from context)
 			if (text.startsWith("!")) {
 				const isExcluded = text.startsWith("!!");
@@ -3878,18 +3924,9 @@ export class InteractiveMode {
 		this.dashboardVisible = !this.dashboardVisible;
 
 		if (this.dashboardVisible) {
-			// Create dashboard if not exists
-			if (!this.dashboard) {
-				this.dashboard = new DashboardComponent(this.session, this.footerDataProvider);
-			}
-			// Add to widget container below editor
-			this.widgetContainerBelow.addChild(this.dashboard);
-			this.showStatus("Dashboard: visible");
+			// Dashboard feature temporarily disabled (needs API integration)
+			this.showStatus("Dashboard: not available");
 		} else {
-			// Remove dashboard from widget container
-			if (this.dashboard) {
-				this.widgetContainerBelow.removeChild(this.dashboard);
-			}
 			this.showStatus("Dashboard: hidden");
 		}
 		this.ui.requestRender();
@@ -7216,7 +7253,7 @@ Type any command or just describe what you want to do.
 			name: c.name,
 			description: c.description ?? "",
 			source: "builtin" as const,
-			sourceInfo: { source: "builtin" as const },
+			sourceInfo: { source: "builtin" as const, path: "builtin", scope: "project" as const, origin: "builtin" as const },
 		}));
 		const extResult = this.session.resourceLoader.getExtensions();
 		const extensionCount = extResult.extensions.length;
@@ -7257,7 +7294,263 @@ Type any command or just describe what you want to do.
 		this.ui.requestRender();
 	}
 
-	private async handleDepsAuditCommand(): Promise<void> {
+	private async handleProvidersCommand(): Promise<void> {
+		const { ProviderHealthTracker } = await import("../../core/provider-health.ts");
+		const { loadProviderProfiles, formatProviderProfile } = await import("../../core/provider-probe.ts");
+		const tracker = new ProviderHealthTracker();
+		let text = tracker.formatHealthReport();
+		const profiles = loadProviderProfiles();
+		const profileList = Object.values(profiles.profiles);
+		if (profileList.length > 0) {
+			text += "\n\nSaved Provider Profiles\n=======================\n";
+			for (const p of profileList) {
+				text += `\n${formatProviderProfile(p)}\n`;
+			}
+		}
+			this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.chatContainer.addChild(new Text(theme.bold(theme.fg("accent", "Providers")), 1, 0));
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new Text(text, 1, 0));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.ui.requestRender();
+	}
+
+	private async handleProviderTestCommand(args: string): Promise<void> {
+		const parsed = this.parseProviderTestArgs(args);
+		if (!parsed.url) {
+			this.chatContainer.addChild(new Spacer(1));
+			this.chatContainer.addChild(new DynamicBorder());
+			this.chatContainer.addChild(new Text(theme.bold(theme.fg("accent", "Provider Test")), 1, 0));
+			this.chatContainer.addChild(new Spacer(1));
+			this.chatContainer.addChild(new Text("Usage: /provider-test <url> [--key <apiKey>] [--hint openai|anthropic|openrouter]", 1, 0));
+			this.chatContainer.addChild(new DynamicBorder());
+			this.ui.requestRender();
+			return;
+		}
+		const { probeProvider, saveProviderProfile, formatProviderProfile } = await import("../../core/provider-probe.ts");
+		const profile = await probeProvider({
+			baseUrl: parsed.url,
+			apiKey: parsed.key,
+			providerHint: parsed.hint,
+			samples: 3,
+		});
+		saveProviderProfile(profile);
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.chatContainer.addChild(new Text(theme.bold(theme.fg("accent", "Provider Test")), 1, 0));
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new Text(formatProviderProfile(profile), 1, 0));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.ui.requestRender();
+	}
+
+	private parseProviderTestArgs(args: string): { url?: string; key?: string; hint?: string } {
+		const tokens = args.trim().split(/\s+/).filter(Boolean);
+		if (tokens.length === 0) return {};
+		const result: { url?: string; key?: string; hint?: string } = { url: tokens[0] };
+		for (let i = 1; i < tokens.length; i++) {
+			if (tokens[i] === "--key" && tokens[i + 1]) result.key = tokens[++i];
+			else if (tokens[i] === "--hint" && tokens[i + 1]) result.hint = tokens[++i];
+			else if (tokens[i].startsWith("--key=")) result.key = tokens[i].slice(6);
+			else if (tokens[i].startsWith("--hint=")) result.hint = tokens[i].slice(7);
+		}
+		return result;
+	}
+
+	private async handleProviderInfoCommand(args: string): Promise<void> {
+		const url = args.trim();
+		const { getProviderProfile, formatProviderProfile } = await import("../../core/provider-probe.ts");
+		if (!url) {
+			this.chatContainer.addChild(new Spacer(1));
+			this.chatContainer.addChild(new DynamicBorder());
+			this.chatContainer.addChild(new Text(theme.bold(theme.fg("accent", "Provider Info")), 1, 0));
+			this.chatContainer.addChild(new Spacer(1));
+			this.chatContainer.addChild(new Text("Usage: /provider-info <baseUrl>", 1, 0));
+			this.chatContainer.addChild(new DynamicBorder());
+			this.ui.requestRender();
+			return;
+		}
+		const profile = getProviderProfile(url);
+		const body = profile ? formatProviderProfile(profile) : `No saved profile for ${url}. Run /provider-test ${url} first.`;
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.chatContainer.addChild(new Text(theme.bold(theme.fg("accent", "Provider Info")), 1, 0));
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new Text(body, 1, 0));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.ui.requestRender();
+	}
+
+	private async handleJobsCommand(args: string): Promise<void> {
+		const { JobScheduler } = await import("../../core/job-scheduler.ts");
+		const scheduler = new JobScheduler();
+		const sub = args.trim();
+		let text = "";
+		if (sub === "" || sub === "list") {
+			const counts = scheduler.counts();
+			text += "Job Queue\n=========\n";
+			text += `Counts: queued=${counts.queued} running=${counts.running} scheduled=${counts.scheduled} completed=${counts.completed} failed=${counts.failed} cancelled=${counts.cancelled}\n\n`;
+			const jobs = scheduler.list();
+			if (jobs.length === 0) {
+				text += "No jobs yet. Use: /jobs enqueue <command> [--at <epochMs>] [--every <ms>] [--cron \"m h dom mon dow\"] [--recurring] [--retries N]\n";
+			} else {
+				for (const j of jobs.slice(0, 30)) {
+					const next = j.nextRunAt ? ` next=${new Date(j.nextRunAt).toISOString()}` : "";
+					text += `- ${j.id} [${j.state}] ${j.name} (attempt ${j.attempt})${next}\n`;
+				}
+			}
+		} else if (sub === "run") {
+			const ran = await scheduler.runDueJobs();
+			text = ran.length > 0 ? `Ran ${ran.length} due job(s): ${ran.join(", ")}` : "No due jobs to run.";
+		} else if (sub.startsWith("cancel ")) {
+			const id = sub.slice(7).trim();
+			text = scheduler.cancel(id) ? `Cancelled ${id}` : `Cannot cancel ${id}`;
+		} else if (sub.startsWith("resume ")) {
+			const id = sub.slice(7).trim();
+			text = scheduler.resume(id) ? `Resumed ${id}` : `Cannot resume ${id}`;
+		} else if (sub.startsWith("remove ")) {
+			const id = sub.slice(7).trim();
+			text = scheduler.remove(id) ? `Removed ${id}` : `Cannot remove ${id}`;
+		} else if (sub.startsWith("enqueue ")) {
+			const parsed = this.parseJobEnqueue(sub.slice(8).trim());
+			if (!parsed.command) {
+				text = "Usage: /jobs enqueue <command> [--at <epochMs>] [--every <ms>] [--cron \"m h dom mon dow\"] [--recurring] [--retries N]";
+			} else {
+				const record = scheduler.enqueue(parsed);
+				text = `Enqueued ${record.id} (${record.state}): ${record.name}`;
+			}
+		} else {
+			text = "Usage: /jobs [list|run|enqueue|cancel|resume|remove]";
+		}
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.chatContainer.addChild(new Text(theme.bold(theme.fg("accent", "Jobs")), 1, 0));
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new Text(text, 1, 0));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.ui.requestRender();
+	}
+
+	private parseJobEnqueue(args: string): {
+		command: string;
+		schedule?: { kind: "once" | "interval" | "cron"; at?: number; intervalMs?: number; cron?: string };
+		recurring?: boolean;
+		maxRetries?: number;
+	} {
+		const tokens = args.match(/"[^"]*"|'[^']*'|\S+/g) ?? [];
+		let command = "";
+		const result: { command: string; schedule?: { kind: "once" | "interval" | "cron"; at?: number; intervalMs?: number; cron?: string }; recurring?: boolean; maxRetries?: number } = { command: "" };
+		for (let i = 0; i < tokens.length; i++) {
+			const t = tokens[i];
+			if (t === "--at" && tokens[i + 1]) result.schedule = { kind: "once", at: Number(tokens[++i]) };
+			else if (t === "--every" && tokens[i + 1]) result.schedule = { kind: "interval", intervalMs: Number(tokens[++i]) };
+			else if (t === "--cron" && tokens[i + 1]) result.schedule = { kind: "cron", cron: tokens[++i].replace(/^"|$"/g, "") };
+			else if (t === "--recurring") result.recurring = true;
+			else if (t === "--retries" && tokens[i + 1]) result.maxRetries = Number(tokens[++i]);
+			else command += (command ? " " : "") + t;
+		}
+		result.command = command;
+		return result;
+	}
+
+	private async handleMemoryCommand(args: string): Promise<void> {
+		const { MemoryStore } = await import("../../core/memory-store.ts");
+		const store = new MemoryStore();
+		const sub = args.trim();
+		let text = "";
+		if (sub === "clear") {
+			store.clear();
+			text = "Cross-session memory cleared.";
+		} else if (sub === "") {
+			const entries = store.list().slice(0, 30);
+			text = entries.length === 0 ? "No memory stored yet." : `Memory (${entries.length})\n================\n` + entries.map((e) => `- [${e.kind}] ${e.text}`).join("\n");
+		} else {
+			const results = store.recall(sub, { limit: 15 });
+			text = results.length === 0 ? `No memory matched: ${sub}` : `Recall: ${sub}\n================\n` + results.map((e) => `- [${e.kind}] ${e.text}`).join("\n");
+		}
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.chatContainer.addChild(new Text(theme.bold(theme.fg("accent", "Memory")), 1, 0));
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new Text(text, 1, 0));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.ui.requestRender();
+	}
+
+	private async handleRepoCommand(): Promise<void> {
+		const { indexRepository, summarizeRepository } = await import("../../core/repo-intelligence.ts");
+		const cwd = this.sessionManager.getCwd();
+		const index = indexRepository(cwd);
+		let text = summarizeRepository(index);
+		text += "\n\nChange impact: pass changed files to /repo via future edits; use the import graph to find affected modules.";
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.chatContainer.addChild(new Text(theme.bold(theme.fg("accent", "Repository Intelligence")), 1, 0));
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new Text(text, 1, 0));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.ui.requestRender();
+	}
+
+	private async handleCostCommand(): Promise<void> {
+		const { UsageTracker } = await import("../../core/usage-tracker.ts");
+		const sessionId = (this.session as unknown as { id?: string })?.id ?? "current";
+		const tracker = new UsageTracker(sessionId);
+		const text = tracker.formatReport();
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.chatContainer.addChild(new Text(theme.bold(theme.fg("accent", "Usage & Cost")), 1, 0));
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new Text(text, 1, 0));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.ui.requestRender();
+	}
+
+	private async handleTimelineCommand(args: string): Promise<void> {
+		const { AuditLog } = await import("../../core/audit-log.ts");
+		const limit = Number.parseInt(args.trim(), 10) || 30;
+		const log = new AuditLog("timeline-view");
+		const text = log.exportText({ limit });
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.chatContainer.addChild(new Text(theme.bold(theme.fg("accent", "Execution Timeline")), 1, 0));
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new Text(text, 1, 0));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.ui.requestRender();
+	}
+
+	private async handleSuggestCommand(): Promise<void> {
+		const { suggestCommands } = await import("../../core/command-suggestions.ts");
+		const { AuditLog } = await import("../../core/audit-log.ts");
+		const recentErrors: string[] = [];
+		try {
+			const log = new AuditLog("suggest-view");
+			const errText = log.exportText({ type: "error", limit: 10 });
+			if (errText && errText !== "No matching audit entries found." && errText !== "Audit log is empty.") {
+				for (const line of errText.split("\n").slice(0, 10)) recentErrors.push(line);
+			}
+		} catch {
+			// Ignore audit read failures.
+		}
+		const available = BUILTIN_SLASH_COMMANDS.map((c) => c.name);
+		const suggestions = suggestCommands(
+			{ recentErrors, changedFiles: [], sessionMessages: 0, providerErrors: 0 },
+			aVAILABLE,
+		);
+		const text = suggestions.length === 0
+			? "No specific suggestions; try /help."
+			: suggestions.map((s) => `- /${s.command} — ${s.reason}`).join("\n");
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.chatContainer.addChild(new Text(theme.bold(theme.fg("accent", "Suggested Commands")), 1, 0));
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new Text(text, 1, 0));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.ui.requestRender();
+	}
+
 		const { runDependencyAudit, formatDependencyAudit } = await import("../../core/security-auditor.ts");
 		const cwd = this.sessionManager.getCwd();
 		const report = runDependencyAudit(cwd);
