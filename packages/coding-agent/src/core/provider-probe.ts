@@ -289,7 +289,7 @@ export function formatProviderProfile(profile: ProviderProfile): string {
 		const flags = [
 			model.supportsImages ? "img" : null,
 			model.supportsTools ? "tools" : null,
-			model.contextWindow ? `${model.contextWindow ctx` : null,
+			model.contextWindow ? `${model.contextWindow} ctx` : null,
 		]
 			.filter(Boolean)
 			.join(", ");
