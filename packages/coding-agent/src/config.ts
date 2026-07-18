@@ -319,7 +319,7 @@ export function getSelfUpdateUnavailableInstruction(
 ): string {
 	const method = detectInstallMethod();
 	if (method === "bun-binary") {
-		return `Download from: https://github.com/earendil-works/airis-mono/releases/latest`;
+		return `This is a compiled binary and cannot self-update.\n\nOptions:\n  1. Run: airis-update\n  2. Download: https://github.com/earendil-works/airis-mono/releases/latest`;
 	}
 	const command = getSelfUpdateCommandForMethod(method, packageName, updatePackageName, npmCommand);
 	if (command) {
