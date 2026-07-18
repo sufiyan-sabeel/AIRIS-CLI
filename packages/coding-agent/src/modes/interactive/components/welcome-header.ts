@@ -16,23 +16,23 @@ export interface WelcomeHeaderInfo {
 const NO_COLOR = !!process.env.NO_COLOR;
 
 const LOGO_LINES: readonly string[] = [
-	"╔══════════════════════════════════╗",
-	"║ ◆══════════════════════════════◆ ║",
-	"║ ║ █████╗ ██╗██████╗ ██╗███████╗ ║ ║",
-	"║ ║██╔══██╗██║██╔══██╗██║██╔════╝ ║ ║",
-	"║ ║███████║██║██████╔╝██║███████╗ ║ ║",
-	"║ ║██╔══██║██║██╔══██║██║╚════██║ ║ ║",
-	"║ ║██║  ██║██║██║  ██║██║███████║ ║ ║",
-	"║ ║╚═╝  ╚═╝╚═╝╚═╝  ╚═╝╚═╝╚══════╝ ║ ║",
-	"║ ◆══════════════════════════════◆ ║",
-	"║ ║                                ║ ║",
-	"║ ║    Artificial Intelligence     ║ ║",
-	"║ ║  Responsive Integrated System  ║ ║",
-	"║ ║                                ║ ║",
-	"║ ║   AI Coding · Automation · CLI ║ ║",
-	"║ ║      KageOS · Umaiz Sufiyan    ║ ║",
-	"║ ◆══════════════════════════════◆ ║",
-	"╚══════════════════════════════════╝",
+	"╭──────────────────────────────────╮",
+	"│ ◆──────────────────────────────◆ │",
+	"│ │ █████╗ ██╗██████╗ ██╗███████╗ │ │",
+	"│ │██╔══██╗██║██╔══██╗██║██╔════╝ │ │",
+	"│ │███████║██║██████╔╝██║███████╗ │ │",
+	"│ │██╔══██║██║██╔══██║██║╚════██║ │ │",
+	"│ │██║  ██║██║██║  ██║██║███████║ │ │",
+	"│ │╚═╝  ╚═╝╚═╝╚═╝  ╚═╝╚═╝╚══════╝ │ │",
+	"│ ◆──────────────────────────────◆ │",
+	"│ │                                │ │",
+	"│ │    Artificial Intelligence     │ │",
+	"│ │  Responsive Integrated System  │ │",
+	"│ │                                │ │",
+	"│ │   AI Coding · Automation · CLI │ │",
+	"│ │      KageOS · Umaiz Sufiyan    │ │",
+	"│ ◆──────────────────────────────◆ │",
+	"╰──────────────────────────────────╯",
 ];
 
 const LOGO_BLOCK_WIDTH = Math.max(...LOGO_LINES.map((line) => visibleWidth(line)));
@@ -182,10 +182,8 @@ function renderEmblem(lines: readonly string[], width: number): string[] {
 function renderLogoLine(index: number, line: string): string {
 	const paddedLine = padToWidth(line, LOGO_BLOCK_WIDTH);
 	if (!line.trim()) return paddedLine;
-	// Index 0: top border - use border color
-	if (index === 0) return fg("border", paddedLine);
-	// Index 16: bottom border - use border color
-	if (index === 16) return fg("border", paddedLine);
+	// Index 0: top border, Index 16: bottom border - use border color
+	if (index === 0 || index === 16) return fg("border", paddedLine);
 	// Index 1, 8, 15: diamond lines - airisOrange
 	if (index === 1 || index === 8 || index === 15) return fg("airisOrange", bold(paddedLine));
 	// Index 2-7: big AIRIS letters - highlight color
