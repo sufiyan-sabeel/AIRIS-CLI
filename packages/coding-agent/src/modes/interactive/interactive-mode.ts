@@ -197,6 +197,11 @@ const AIRIS_WORKING_INDICATOR: LoaderIndicatorOptions = {
 	intervalMs: 180,
 };
 
+const AIRIS_THINKING_INDICATOR: LoaderIndicatorOptions = {
+	frames: ["AIRIS Thinking .", "AIRIS Thinking ..", "AIRIS Thinking ...", "AIRIS Thinking .."],
+	intervalMs: 220,
+};
+
 const DEAD_TERMINAL_ERROR_CODES = new Set(["EIO", "EPIPE", "ENOTCONN"]);
 
 function isDeadTerminalError(error: unknown): boolean {
@@ -1850,6 +1855,48 @@ export class InteractiveMode {
 	}
 
 	/**
+	 * Update the streaming status message based on agent progress.
+	 * Shows live feedback during model execution.
+	 */
+	private updateStreamingStatus(content: readonly { type: string }[]): void {
+		if (!this.session.isStreaming) {
+			return;
+		}
+
+		let statusMessage: string | undefined;
+		let indicator: LoaderIndicatorOptions | undefined;
+
+		// Determine status based on content type
+		const hasThinking = content.some((c) => c.type === "thinking");
+		const hasToolCalls = content.some((c) => c.type === "toolCall");
+		const hasText = content.some((c) => c.type === "text" && (c as { text?: string }).text?.trim());
+
+		if (hasThinking) {
+			statusMessage = "AIRIS Thinking...";
+			indicator = AIRIS_THINKING_INDICATOR;
+		} else if (hasToolCalls) {
+			statusMessage = "AIRIS Executing...";
+			indicator = AIRIS_WORKING_INDICATOR;
+		} else if (hasText) {
+			statusMessage = "AIRIS Responding...";
+			indicator = AIRIS_WORKING_INDICATOR;
+		} else {
+			statusMessage = "AIRIS Analyzing...";
+			indicator = AIRIS_WORKING_INDICATOR;
+		}
+
+		// Update the working message and indicator
+		this.workingMessage = statusMessage;
+		if (this.loadingAnimation) {
+			this.loadingAnimation.setMessage(statusMessage);
+			if (indicator) {
+				this.loadingAnimation.setIndicator(indicator);
+			}
+		}
+		this.ui.requestRender();
+	}
+
+	/**
 	 * Set an extension widget (string array or custom component).
 	 */
 	private setExtensionWidget(
@@ -3073,6 +3120,7 @@ export class InteractiveMode {
 					this.streamingMessage = event.message;
 					this.chatContainer.addChild(this.streamingComponent);
 					this.streamingComponent.updateContent(this.streamingMessage);
+					this.updateStreamingStatus(this.streamingMessage.content);
 					this.ui.requestRender();
 				}
 				break;
@@ -3081,6 +3129,7 @@ export class InteractiveMode {
 				if (this.streamingComponent && event.message.role === "assistant") {
 					this.streamingMessage = event.message;
 					this.streamingComponent.updateContent(this.streamingMessage);
+					this.updateStreamingStatus(this.streamingMessage.content);
 
 					for (const content of this.streamingMessage.content) {
 						if (content.type === "toolCall") {
@@ -3146,6 +3195,7 @@ export class InteractiveMode {
 					}
 					this.streamingComponent = undefined;
 					this.streamingMessage = undefined;
+					this.workingMessage = undefined;
 					this.footer.invalidate();
 				}
 				this.ui.requestRender();
