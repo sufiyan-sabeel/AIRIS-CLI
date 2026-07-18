@@ -11,7 +11,7 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  // Revert to default webpack config - turbopack handles bundling
+  // webpack config intentionally empty - build uses package.json script
 };
 
 export default nextConfig;
