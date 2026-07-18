@@ -16,6 +16,54 @@ export interface WelcomeHeaderInfo {
 const NO_COLOR = !!process.env.NO_COLOR;
 
 // ═══════════════════════════════════════════════════════════════
+// Dynamic Greeting System
+// ═══════════════════════════════════════════════════════════════
+
+function getTimeGreeting(): string {
+	const hour = new Date().getHours();
+	if (hour >= 5 && hour < 12) return "Good Morning";
+	if (hour >= 12 && hour < 17) return "Good Afternoon";
+	if (hour >= 17 && hour < 21) return "Good Evening";
+	return "Good Night";
+}
+
+function getTimeIcon(): string {
+	const hour = new Date().getHours();
+	if (hour >= 5 && hour < 12) return "☀";
+	if (hour >= 12 && hour < 17) return "☀";
+	if (hour >= 17 && hour < 21) return "☀";
+	return "☾";
+}
+
+function getCurrentTime(): string {
+	const now = new Date();
+	const hours = now.getHours();
+	const minutes = now.getMinutes().toString().padStart(2, "0");
+	const ampm = hours >= 12 ? "PM" : "AM";
+	const displayHours = hours % 12 || 12;
+	return `${displayHours}:${minutes} ${ampm}`;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Status Indicators
+// ═══════════════════════════════════════════════════════════════
+
+interface StatusIndicator {
+	icon: string;
+	label: string;
+	active: boolean;
+}
+
+function getStatusIndicators(): StatusIndicator[] {
+	return [
+		{ icon: "●", label: "AI Ready", active: true },
+		{ icon: "●", label: "Memory", active: true },
+		{ icon: "●", label: "Tools", active: true },
+		{ icon: "●", label: "Voice", active: false },
+	];
+}
+
+// ═══════════════════════════════════════════════════════════════
 // Logo Design - Smooth, Adaptive, Professional
 // ═══════════════════════════════════════════════════════════════
 
@@ -140,6 +188,11 @@ function bold(text: string): string {
 function italic(text: string): string {
 	if (NO_COLOR) return text;
 	return theme.italic(text);
+}
+
+function dim(text: string): string {
+	if (NO_COLOR) return text;
+	return theme.dim(text);
 }
 
 function padToWidth(text: string, width: number): string {
@@ -287,6 +340,69 @@ function renderLogo(width: number, lines: readonly string[], blockWidth: number)
 }
 
 // ═══════════════════════════════════════════════════════════════
+// Dynamic Greeting Rendering
+// ═══════════════════════════════════════════════════════════════
+
+function renderGreeting(width: number): string[] {
+	const inner = width - 4;
+	if (inner < 25) return [];
+
+	const lines: string[] = [];
+	const timeIcon = getTimeIcon();
+	const greeting = getTimeGreeting();
+	const time = getCurrentTime();
+
+	// Greeting line with time icon
+	const greetingText = `${fg("success", timeIcon)} ${fg("accent", bold(greeting))}`;
+	lines.push(renderBoxInsetLine(greetingText, width));
+
+	// Welcome back line
+	const welcomeText = `${fg("dim", "Welcome back,")} ${fg("airisOrangeHighlight", bold("Sufiyan"))}`;
+	lines.push(renderBoxInsetLine(welcomeText, width));
+
+	// Time display
+	const timeText = `${fg("dim", "Local time:")} ${fg("text", time)}`;
+	lines.push(renderBoxInsetLine(timeText, width));
+
+	return lines;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Status Indicators Rendering
+// ═══════════════════════════════════════════════════════════════
+
+function renderStatusIndicators(width: number): string[] {
+	const inner = width - 4;
+	if (inner < 25) return [];
+
+	const lines: string[] = [];
+	const indicators = getStatusIndicators();
+
+	// Group indicators into rows of 4
+	for (let i = 0; i < indicators.length; i += 4) {
+		const group = indicators.slice(i, i + 4);
+		const parts = group.map((ind) => {
+			const color = ind.active ? "success" : "dim";
+			const icon = fg(color, ind.icon);
+			const label = fg(ind.active ? "text" : "dim", ind.label);
+			return `${icon} ${label}`;
+		});
+		const line = parts.join(fg("borderMuted", "  "));
+		const w = visibleWidth(line);
+		if (w <= inner) {
+			lines.push(renderBoxInsetLine(line, width));
+		} else {
+			lines.push(...group.map((ind) => {
+				const color = ind.active ? "success" : "dim";
+				return renderBoxInsetLine(`${fg(color, ind.icon)} ${fg(ind.active ? "text" : "dim", ind.label)}`, width);
+			}));
+		}
+	}
+
+	return lines;
+}
+
+// ═══════════════════════════════════════════════════════════════
 // Meta Line Rendering
 // ═══════════════════════════════════════════════════════════════
 
@@ -410,6 +526,12 @@ export class WelcomeHeader implements Component {
 		// Box container
 		lines.push(renderBoxTop(width));
 
+		// Dynamic greeting section
+		lines.push(...renderGreeting(width));
+
+		// Separator after greeting
+		lines.push(renderSeparator(width));
+
 		// Logo section
 		if (variant.kind === "logo") {
 			lines.push(...renderLogo(width, LOGO_LINES, LOGO_BLOCK_WIDTH));
@@ -422,6 +544,10 @@ export class WelcomeHeader implements Component {
 			lines.push(renderBoxLine(renderTitle("AIRIS CLI"), width));
 			lines.push(renderBoxLine(fg("dim", "AI Coding · Automation"), width));
 		}
+
+		// Status indicators section
+		lines.push(renderSectionDivider("Status", width));
+		lines.push(...renderStatusIndicators(width));
 
 		// Session info section
 		lines.push(renderSectionDivider("Session", width));
