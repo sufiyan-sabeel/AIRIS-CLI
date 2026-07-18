@@ -92,7 +92,7 @@ function nextTip(): string {
 function currentTip(): string {
 	return WELCOME_TIPS[tipIndex];
 }
-const WIDTH_LOGO = Math.max(LOGO_BLOCK_WIDTH + 4, 45);
+const WIDTH_LOGO = Math.max(LOGO_BLOCK_WIDTH + 4, 36);
 const WIDTH_MINIMAL = 36;
 const WIDTH_MINIMAL_TAGLINE = 40;
 
