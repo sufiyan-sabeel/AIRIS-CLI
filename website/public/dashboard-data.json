@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-07-17T08:16:12.068Z",
-  "date": "2026-07-17",
+  "generatedAt": "2026-07-18T07:58:03.795Z",
+  "date": "2026-07-18",
   "dailyFact": {
-    "fact": "AIRIS stands for Artificial Intelligence Responsive Integrated System.",
-    "index": 1,
+    "fact": "The project has a built-in `airis ship` workflow with 10 phases from Request to Commit.",
+    "index": 2,
     "total": 21
   },
   "analysis": {
@@ -16,23 +16,23 @@
       "coding-agent",
       "tui"
     ],
-    "tsSourceFiles": 730,
-    "tsxComponents": 45,
+    "tsSourceFiles": 763,
+    "tsxComponents": 59,
     "goModules": 5,
     "scriptFiles": 16,
-    "totalSourceLines": 228448,
+    "totalSourceLines": 242872,
     "githubWorkflows": 11,
-    "markdownDocs": 95
+    "markdownDocs": 97
   },
   "codeBreakdown": [
     {
       "label": "TypeScript (.ts)",
-      "count": 730,
+      "count": 763,
       "color": "#3178c6"
     },
     {
       "label": "React/TSX (.tsx)",
-      "count": 45,
+      "count": 59,
       "color": "#06b6d4"
     },
     {
@@ -47,7 +47,7 @@
     },
     {
       "label": "Markdown docs",
-      "count": 95,
+      "count": 97,
       "color": "#8b5cf6"
     }
   ]
