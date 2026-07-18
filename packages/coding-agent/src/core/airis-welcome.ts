@@ -11,16 +11,17 @@ export interface AirisWelcomeInfo {
 	attribution: string;
 }
 
+// Full logo for wide terminals (38+ cols)
 const AIRIS_LOGO_LINES = [
 	"╭──────────────────────────────────╮",
-	"│ ◆──────────────────────────────◆ │",
+	"│ ◆══════════════════════════════◆ │",
 	"│ │ █████╗ ██╗██████╗ ██╗███████╗ │ │",
 	"│ │██╔══██╗██║██╔══██╗██║██╔════╝ │ │",
 	"│ │███████║██║██████╔╝██║███████╗ │ │",
 	"│ │██╔══██║██║██╔══██║██║╚════██║ │ │",
 	"│ │██║  ██║██║██║  ██║██║███████║ │ │",
 	"│ │╚═╝  ╚═╝╚═╝╚═╝  ╚═╝╚═╝╚══════╝ │ │",
-	"│ ◆──────────────────────────────◆ │",
+	"│ ◆══════════════════════════════◆ │",
 	"│ │                                │ │",
 	"│ │    Artificial Intelligence     │ │",
 	"│ │  Responsive Integrated System  │ │",
@@ -31,13 +32,22 @@ const AIRIS_LOGO_LINES = [
 	"╰──────────────────────────────────╯",
 ] as const;
 
+// Compact logo for medium terminals (28-37 cols)
 const AIRIS_COMPACT_LOGO_LINES = [
-	"╭────────────────────╮",
-	"│   A I R I S CLI   │",
-	"│                    │",
-	"│ AI Coding · Auto  │",
-	"│ Umaiz Sufiyan     │",
-	"╰────────────────────╯",
+	"╭─────────────────────────╮",
+	"│   ◆═════════════════◆   │",
+	"│   ║   A I R I S     ║   │",
+	"│   ║   CLI           ║   │",
+	"│   ◆═════════════════◆   │",
+	"╰─────────────────────────╯",
+] as const;
+
+// Minimal logo for narrow terminals (20-27 cols)
+const AIRIS_MINIMAL_LOGO_LINES = [
+	"╭───────────────────╮",
+	"│  ✦ A I R I S ✦   │",
+	"│  CLI · AI · Auto  │",
+	"╰───────────────────╯",
 ] as const;
 
 export const AIRIS_TAGLINE = "Multi-platform AI CLI for coding and automation";
@@ -56,6 +66,10 @@ export function getAirisLogoLines(): string[] {
 
 export function getAirisCompactLogoLines(): string[] {
 	return [...AIRIS_COMPACT_LOGO_LINES];
+}
+
+export function getAirisMinimalLogoLines(): string[] {
+	return [...AIRIS_MINIMAL_LOGO_LINES];
 }
 
 export function getAirisModes(): AirisWelcomeMode[] {

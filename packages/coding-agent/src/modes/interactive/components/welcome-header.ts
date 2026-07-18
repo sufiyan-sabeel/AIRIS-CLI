@@ -15,6 +15,10 @@ export interface WelcomeHeaderInfo {
 
 const NO_COLOR = !!process.env.NO_COLOR;
 
+// ═══════════════════════════════════════════════════════════════
+// Logo Design - Smooth, Adaptive, Professional
+// ═══════════════════════════════════════════════════════════════
+
 const LOGO_LINES: readonly string[] = [
 	"╭──────────────────────────────────╮",
 	"│ ◆══════════════════════════════◆ │",
@@ -35,7 +39,93 @@ const LOGO_LINES: readonly string[] = [
 	"╰──────────────────────────────────╯",
 ];
 
+// Compact logo for narrow terminals
+const LOGO_COMPACT: readonly string[] = [
+	"╭─────────────────────────╮",
+	"│   ◆═════════════════◆   │",
+	"│   ║   A I R I S     ║   │",
+	"│   ║   CLI           ║   │",
+	"│   ◆═════════════════◆   │",
+	"╰─────────────────────────╯",
+];
+
+// Minimal logo for very narrow terminals
+const LOGO_MINIMAL: readonly string[] = [
+	"╭───────────────────╮",
+	"│  ✦ A I R I S ✦   │",
+	"│  CLI · AI · Auto  │",
+	"╰───────────────────╯",
+];
+
 const LOGO_BLOCK_WIDTH = Math.max(...LOGO_LINES.map((line) => visibleWidth(line)));
+
+// ═══════════════════════════════════════════════════════════════
+// Routing Modes
+// ═══════════════════════════════════════════════════════════════
+
+const ROUTING_MODES: Array<{ prefix: string; icon: string; label: string; description: string }> = [
+	{ prefix: "@coding", icon: "⌨", label: "Coding", description: "Repository coding & editing" },
+	{ prefix: "@automation", icon: "⚡", label: "Auto", description: "Android automation" },
+	{ prefix: "@multiauto", icon: "🔄", label: "Multi", description: "Multi-step automation" },
+];
+
+// ═══════════════════════════════════════════════════════════════
+// Keybinding Hints
+// ═══════════════════════════════════════════════════════════════
+
+const KEYBINDING_HINTS: Array<{ keys: string; label: string }> = [
+	{ keys: "Ctrl+P", label: "Plan mode" },
+	{ keys: "Ctrl+Alt+P", label: "Toggle plan" },
+	{ keys: "Ctrl+L", label: "Clear" },
+	{ keys: "Ctrl+Up/Down", label: "Scroll" },
+	{ keys: "Tab", label: "Complete" },
+	{ keys: "Ctrl+/", label: "Commands" },
+];
+
+// ═══════════════════════════════════════════════════════════════
+// Tips - Rotating helpful messages
+// ═══════════════════════════════════════════════════════════════
+
+const WELCOME_TIPS: readonly string[] = [
+	"Type your question or describe a task to get started.",
+	"Use /plan to create a structured plan before executing.",
+	"Use /ship for full workflow: request → plan → implement → verify.",
+	"Use @coding to switch to repository coding mode.",
+	"Use Ctrl+P in interactive mode to switch models.",
+	"Use /mission for verified autonomy with contracts and evidence.",
+	"Use @automation for Android device control tasks.",
+	"Use @multiauto for multi-step automation workflows.",
+	"Use /doctor to check system health and configuration.",
+	"Use /settings to customize your AIRIS experience.",
+];
+
+let tipIndex = 0;
+function nextTip(): string {
+	tipIndex = (tipIndex + 1) % WELCOME_TIPS.length;
+	return WELCOME_TIPS[tipIndex];
+}
+function currentTip(): string {
+	return WELCOME_TIPS[tipIndex];
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Width Constants & Adaptation
+// ═══════════════════════════════════════════════════════════════
+
+const WIDTH_LOGO = Math.max(LOGO_BLOCK_WIDTH + 4, 38);
+const WIDTH_COMPACT = 28;
+const WIDTH_MINIMAL = 20;
+
+function selectVariant(width: number): { kind: "logo" | "compact" | "minimal" | "tiny" } {
+	if (width >= WIDTH_LOGO) return { kind: "logo" };
+	if (width >= WIDTH_COMPACT) return { kind: "compact" };
+	if (width >= WIDTH_MINIMAL) return { kind: "minimal" };
+	return { kind: "tiny" };
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Helper Functions
+// ═══════════════════════════════════════════════════════════════
 
 function fg(color: Parameters<Theme["fg"]>[0], text: string): string {
 	if (NO_COLOR) return text;
@@ -45,6 +135,11 @@ function fg(color: Parameters<Theme["fg"]>[0], text: string): string {
 function bold(text: string): string {
 	if (NO_COLOR) return text;
 	return theme.bold(text);
+}
+
+function italic(text: string): string {
+	if (NO_COLOR) return text;
+	return theme.italic(text);
 }
 
 function padToWidth(text: string, width: number): string {
@@ -60,80 +155,28 @@ function truncateMiddle(path: string, maxLen: number): string {
 	return `${parts.slice(0, 2).join("/")}/.../${parts.slice(-1).join("/")}`;
 }
 
-const EMBLEM_MINIMAL: readonly string[] = ["       ╲   ╿   ╱", "    ━━━━╲  ◇  ╱━━━━", "       ╱   ╽   ╲"];
-
-const EMBLEM_ASCII: readonly string[] = ["         \\   |   /", "       ===\\  <>  /===", "         /   |   \\"];
-
-const NAME_MINIMAL = "AIRIS CLI";
-const NAME_ASCII = "AIRIS CLI";
-const TAGLINE_MINIMAL = "Multi-platform AI CLI";
-
-// Keybinding hints shown at the bottom of the welcome banner
-const KEYBINDING_HINTS: Array<{ keys: string; label: string }> = [
-	{ keys: "Ctrl+P", label: "Plan mode" },
-	{ keys: "Ctrl+Alt+P", label: "Toggle plan" },
-	{ keys: "Ctrl+L", label: "Clear" },
-	{ keys: "Ctrl+Up/Down", label: "Scroll" },
-	{ keys: "Tab", label: "Complete" },
-];
-
-// Routing modes for the welcome banner
-const ROUTING_MODES: Array<{ prefix: string; label: string; description: string }> = [
-	{ prefix: "@coding", label: "Coding", description: "Repository coding & editing" },
-	{ prefix: "@automation", label: "Auto", description: "Android automation (single-step)" },
-	{ prefix: "@multiauto", label: "Multi", description: "Multi-step automation" },
-];
-
-// Cycling tip messages
-const WELCOME_TIPS: readonly string[] = [
-	"Type your question or describe a task to get started.",
-	"Use /plan to create a structured plan before executing.",
-	"Use /ship for full workflow: request → plan → implement → verify.",
-	"Use @coding to switch to repository coding mode.",
-	"Use Ctrl+P in interactive mode to switch models.",
-	"Use /mission for verified autonomy with contracts and evidence.",
-];
-
-let tipIndex = 0;
-function nextTip(): string {
-	tipIndex = (tipIndex + 1) % WELCOME_TIPS.length;
-	return WELCOME_TIPS[tipIndex];
-}
-function currentTip(): string {
-	return WELCOME_TIPS[tipIndex];
-}
-const WIDTH_LOGO = Math.max(LOGO_BLOCK_WIDTH + 4, 42);
-const WIDTH_MINIMAL = 36;
-const WIDTH_MINIMAL_TAGLINE = 40;
-
-function selectVariant(width: number): { kind: "logo" | "minimal" | "ascii" } {
-	if (width >= WIDTH_LOGO) {
-		return { kind: "logo" };
-	}
-	if (width >= WIDTH_MINIMAL) {
-		return { kind: "minimal" };
-	}
-	return { kind: "ascii" };
-}
-
 function fitContent(content: string, width: number): string {
 	if (visibleWidth(content) <= width) return content;
 	const truncated = truncateToWidth(content, width, "");
 	return content.includes("\x1b") ? truncated : truncated.replace(/\x1b\[0m/g, "");
 }
 
-function renderPlainLine(content: string, width: number): string {
-	return padToWidth(fitContent(content, width), width);
+// ═══════════════════════════════════════════════════════════════
+// Box Drawing Functions
+// ═══════════════════════════════════════════════════════════════
+
+function renderBoxTop(width: number, style: "rounded" | "double" = "rounded"): string {
+	const inner = width - 4;
+	const corner = style === "double" ? "╔" : "╭";
+	const line = style === "double" ? "═" : "─";
+	return padToWidth(fg("borderAccent", corner) + fg("border", line.repeat(inner)) + fg("borderAccent", style === "double" ? "╗" : "╮"), width);
 }
 
-function renderBoxTop(width: number): string {
+function renderBoxBottom(width: number, style: "rounded" | "double" = "rounded"): string {
 	const inner = width - 4;
-	return padToWidth(fg("borderAccent", "╭") + fg("border", "─".repeat(inner)) + fg("borderAccent", "╮"), width);
-}
-
-function renderBoxBottom(width: number): string {
-	const inner = width - 4;
-	return padToWidth(fg("borderAccent", "╰") + fg("border", "─".repeat(inner)) + fg("borderAccent", "╯"), width);
+	const corner = style === "double" ? "╚" : "╰";
+	const line = style === "double" ? "═" : "─";
+	return padToWidth(fg("borderAccent", corner) + fg("border", line.repeat(inner)) + fg("borderAccent", style === "double" ? "╝" : "╯"), width);
 }
 
 function renderBoxLine(content: string, width: number): string {
@@ -174,44 +217,6 @@ function renderBoxEmpty(width: number): string {
 	return renderBoxLine("", width);
 }
 
-function renderEmblemLine(line: string): string {
-	const diamondIndex = line.indexOf("◇");
-	if (diamondIndex === -1) return fg("airisOrange", line);
-	const before = line.slice(0, diamondIndex);
-	const after = line.slice(diamondIndex + 1);
-	return `${fg("airisOrange", before)}${fg("airisOrangeHighlight", "◆")}${fg("airisOrange", after)}`;
-}
-
-function renderEmblem(lines: readonly string[], width: number): string[] {
-	return lines.map((line) => renderBoxLine(renderEmblemLine(line), width));
-}
-
-function renderLogoLine(index: number, line: string): string {
-	const paddedLine = padToWidth(line, LOGO_BLOCK_WIDTH);
-	if (!line.trim()) return paddedLine;
-	// Index 0: top border, Index 16: bottom border - use border color
-	if (index === 0 || index === 16) return fg("border", paddedLine);
-	// Index 1, 8, 15: diamond lines - airisOrange
-	if (index === 1 || index === 8 || index === 15) return fg("airisOrange", bold(paddedLine));
-	// Index 2-7: big AIRIS letters - highlight color
-	if (index >= 2 && index <= 7) return fg("airisOrangeHighlight", bold(paddedLine));
-	// Index 9, 12: empty lines - dim
-	if (index === 9 || index === 12) return fg("dim", paddedLine);
-	// Index 10: "Artificial Intelligence" - accent
-	if (index === 10) return fg("accent", paddedLine);
-	// Index 11: "Responsive Integrated System" - accent
-	if (index === 11) return fg("accent", paddedLine);
-	// Index 13: "AI Coding · Automation · CLI" - airisOrangeMuted
-	if (index === 13) return fg("airisOrangeMuted", paddedLine);
-	// Index 14: "KageOS · Umaiz Sufiyan" - dim
-	if (index === 14) return fg("dim", paddedLine);
-	return fg("dim", paddedLine);
-}
-
-function renderLogo(width: number): string[] {
-	return LOGO_LINES.map((line, index) => renderBoxBlockLine(renderLogoLine(index, line), width, LOGO_BLOCK_WIDTH));
-}
-
 function renderSeparator(width: number): string {
 	if (width < 8) return padToWidth("", width);
 	const inner = width - 4;
@@ -237,6 +242,54 @@ function renderSectionDivider(title: string, width: number): string {
 	);
 }
 
+// ═══════════════════════════════════════════════════════════════
+// Logo Rendering with Color
+// ═══════════════════════════════════════════════════════════════
+
+function renderLogoLine(index: number, line: string, blockWidth: number): string {
+	const paddedLine = padToWidth(line, blockWidth);
+	if (!line.trim()) return paddedLine;
+
+	// Border lines (top/bottom)
+	if (line.includes("╭") || line.includes("╮") || line.includes("╰") || line.includes("╯")) {
+		return fg("border", paddedLine);
+	}
+	if (line.includes("╔") || line.includes("╗") || line.includes("╚") || line.includes("╝")) {
+		return fg("border", paddedLine);
+	}
+
+	// Diamond decoration lines
+	if (line.includes("◆══") || line.includes("══◆")) {
+		return fg("airisOrange", bold(paddedLine));
+	}
+
+	// AIRIS block letters (rows with block characters)
+	if (line.includes("█") || line.includes("╔") || line.includes("╗") || line.includes("╚") || line.includes("╝")) {
+		return fg("airisOrangeHighlight", bold(paddedLine));
+	}
+
+	// Text content lines
+	if (line.includes("Artificial Intelligence") || line.includes("Responsive Integrated System")) {
+		return fg("accent", paddedLine);
+	}
+	if (line.includes("AI Coding") || line.includes("Automation")) {
+		return fg("airisOrangeMuted", paddedLine);
+	}
+	if (line.includes("KageOS") || line.includes("Umaiz")) {
+		return fg("dim", paddedLine);
+	}
+
+	return fg("dim", paddedLine);
+}
+
+function renderLogo(width: number, lines: readonly string[], blockWidth: number): string[] {
+	return lines.map((line, index) => renderBoxBlockLine(renderLogoLine(index, line, blockWidth), width, blockWidth));
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Meta Line Rendering
+// ═══════════════════════════════════════════════════════════════
+
 function renderMetaLine(label: string, value: string, width: number): string {
 	const text = `${fg("accent", label.toUpperCase().padEnd(8))} ${fg("airisOrangeMuted", "◆")} ${fg("text", value)}`;
 	return renderBoxInsetLine(text, width);
@@ -246,12 +299,52 @@ function renderTitle(name: string): string {
 	return fg("airisOrangeHighlight", bold(name));
 }
 
+// ═══════════════════════════════════════════════════════════════
+// Routing Modes Rendering
+// ═══════════════════════════════════════════════════════════════
+
+function renderRoutingModes(width: number): string[] {
+	const inner = width - 4;
+	if (inner < 25) return [];
+
+	const lines: string[] = [];
+
+	// Header line
+	lines.push(renderBoxInsetLine(fg("dim", "Prefix a message with:"), width));
+
+	// Group routing modes
+	for (let i = 0; i < ROUTING_MODES.length; i += 2) {
+		const group = ROUTING_MODES.slice(i, i + 2);
+		const parts = group.map((r) => {
+			const prefix = fg("airisOrangeHighlight", bold(r.prefix));
+			const desc = fg("dim", r.description);
+			return `${prefix} ${desc}`;
+		});
+		const line = parts.join(fg("borderMuted", "  "));
+		const w = visibleWidth(line);
+		if (w <= inner) {
+			lines.push(renderBoxInsetLine(line, width));
+		} else {
+			for (const r of group) {
+				lines.push(renderBoxInsetLine(`${fg("airisOrangeHighlight", bold(r.prefix))} ${fg("dim", r.description)}`, width));
+			}
+		}
+	}
+
+	return lines;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Keybinding Hints Rendering
+// ═══════════════════════════════════════════════════════════════
+
 function renderKeybindingHints(width: number): string[] {
 	const inner = width - 4;
-	if (inner < 30) return [];
+	if (inner < 25) return [];
+
+	const lines: string[] = [];
 
 	// Group hints into rows of 3
-	const lines: string[] = [];
 	for (let i = 0; i < KEYBINDING_HINTS.length; i += 3) {
 		const group = KEYBINDING_HINTS.slice(i, i + 3);
 		const parts = group.map((h) => `${fg("accent", h.keys)} ${fg("dim", h.label)}`);
@@ -260,41 +353,29 @@ function renderKeybindingHints(width: number): string[] {
 		if (w <= inner) {
 			lines.push(renderBoxInsetLine(line, width));
 		} else {
-			// Fall back to individual lines
 			lines.push(...group.map((h) => renderBoxInsetLine(`${fg("accent", h.keys)} ${fg("dim", h.label)}`, width)));
 		}
 	}
+
 	return lines;
 }
 
-function renderRoutingModes(width: number): string[] {
-	const inner = width - 4;
-	if (inner < 30) return [];
-
-	const lines: string[] = [];
-	// Group routing modes into rows of 3
-	for (let i = 0; i < ROUTING_MODES.length; i += 3) {
-		const group = ROUTING_MODES.slice(i, i + 3);
-		const parts = group.map((r) => `${fg("airisOrangeHighlight", r.prefix)} ${fg("dim", r.description)}`);
-		const line = parts.join(fg("borderMuted", " · "));
-		const w = visibleWidth(line);
-		if (w <= inner) {
-			lines.push(renderBoxInsetLine(line, width));
-		} else {
-			lines.push(...group.map((r) => renderBoxInsetLine(`${fg("airisOrangeHighlight", r.prefix)} ${fg("dim", r.description)}`, width)));
-		}
-	}
-	return lines;
-}
+// ═══════════════════════════════════════════════════════════════
+// Tip Rendering
+// ═══════════════════════════════════════════════════════════════
 
 function renderTip(width: number): string[] {
-	const tip = `${fg("success", "✨")} ${fg("muted", currentTip())}`;
+	const tip = `${fg("success", "✨")} ${fg("muted", italic(currentTip()))}`;
 	return [renderBoxInsetLine(tip, width)];
 }
 
 export function rotateTip(): void {
 	nextTip();
 }
+
+// ═══════════════════════════════════════════════════════════════
+// Welcome Header Component
+// ═══════════════════════════════════════════════════════════════
 
 export class WelcomeHeader implements Component {
 	private info: WelcomeHeaderInfo;
@@ -323,61 +404,62 @@ export class WelcomeHeader implements Component {
 		const variant = selectVariant(width);
 		const lines: string[] = [];
 
+		// Top spacing
 		lines.push(padToWidth("", width));
 
-		if (width >= WIDTH_MINIMAL) {
-			lines.push(renderBoxTop(width));
+		// Box container
+		lines.push(renderBoxTop(width));
 
-			if (variant.kind === "logo") {
-				lines.push(...renderLogo(width));
-			} else {
-				lines.push(renderBoxEmpty(width));
-				lines.push(...renderEmblem(EMBLEM_MINIMAL, width));
-				lines.push(renderBoxEmpty(width));
-				lines.push(renderBoxLine(renderTitle(NAME_MINIMAL), width));
-				if (width >= WIDTH_MINIMAL_TAGLINE) {
-					lines.push(renderBoxLine(fg("airisOrangeMuted", TAGLINE_MINIMAL), width));
-				}
-			}
-
-			lines.push(renderSectionDivider("Session", width));
-
-			if (this.info.model) {
-				lines.push(renderMetaLine("Model", this.info.model, width));
-			}
-			if (this.info.provider) {
-				lines.push(renderMetaLine("Provider", this.info.provider, width));
-			}
-			if (this.info.mode) {
-				lines.push(renderMetaLine("Mode", this.info.mode, width));
-			}
-			if (this.info.version) {
-				lines.push(renderMetaLine("Version", `v${this.info.version}`, width));
-			}
-			if (this.info.cwd) {
-				const maxPathLen = Math.max(10, width - 20);
-				const shortCwd = truncateMiddle(this.info.cwd, maxPathLen);
-				lines.push(renderMetaLine("Project", shortCwd, width));
-			}
-
-			lines.push(renderSectionDivider("Routes", width));
-			lines.push(...renderRoutingModes(width));
-
-			lines.push(renderSectionDivider("Hints", width));
-			lines.push(...renderKeybindingHints(width));
-			lines.push(...renderTip(width));
-
-			lines.push(renderBoxBottom(width));
+		// Logo section
+		if (variant.kind === "logo") {
+			lines.push(...renderLogo(width, LOGO_LINES, LOGO_BLOCK_WIDTH));
+		} else if (variant.kind === "compact") {
+			lines.push(...renderLogo(width, LOGO_COMPACT, visibleWidth(LOGO_COMPACT[0])));
+		} else if (variant.kind === "minimal") {
+			lines.push(...renderLogo(width, LOGO_MINIMAL, visibleWidth(LOGO_MINIMAL[0])));
 		} else {
-			lines.push(renderPlainLine(fg("airisOrange", EMBLEM_ASCII[0]), width));
-			lines.push(renderPlainLine(fg("airisOrange", EMBLEM_ASCII[1]), width));
-			lines.push(renderPlainLine(fg("airisOrange", EMBLEM_ASCII[2]), width));
-			lines.push(renderPlainLine(renderTitle(NAME_ASCII), width));
-			if (this.info.model) {
-				lines.push(renderPlainLine(fg("dim", `Model: ${this.info.model}`), width));
-			}
+			// Tiny - just text
+			lines.push(renderBoxLine(renderTitle("AIRIS CLI"), width));
+			lines.push(renderBoxLine(fg("dim", "AI Coding · Automation"), width));
 		}
 
+		// Session info section
+		lines.push(renderSectionDivider("Session", width));
+
+		if (this.info.model) {
+			lines.push(renderMetaLine("Model", this.info.model, width));
+		}
+		if (this.info.provider) {
+			lines.push(renderMetaLine("Provider", this.info.provider, width));
+		}
+		if (this.info.mode) {
+			lines.push(renderMetaLine("Mode", this.info.mode, width));
+		}
+		if (this.info.version) {
+			lines.push(renderMetaLine("Version", `v${this.info.version}`, width));
+		}
+		if (this.info.cwd) {
+			const maxPathLen = Math.max(10, width - 20);
+			const shortCwd = truncateMiddle(this.info.cwd, maxPathLen);
+			lines.push(renderMetaLine("Project", shortCwd, width));
+		}
+
+		// Routing modes section
+		lines.push(renderSectionDivider("Routes", width));
+		lines.push(...renderRoutingModes(width));
+
+		// Keybinding hints section
+		lines.push(renderSectionDivider("Quick Actions", width));
+		lines.push(...renderKeybindingHints(width));
+
+		// Tip section
+		lines.push(renderSectionDivider("Tip", width));
+		lines.push(...renderTip(width));
+
+		// Bottom border
+		lines.push(renderBoxBottom(width));
+
+		// Bottom spacing
 		lines.push(padToWidth("", width));
 
 		this.cachedWidth = width;
