@@ -1,3 +1,4 @@
+import { execSync } from "node:child_process";
 import { accessSync, constants, existsSync, mkdirSync, readFileSync, rmSync } from "node:fs";
 import { homedir } from "node:os";
 import { delimiter, dirname, join, resolve } from "node:path";
@@ -212,6 +213,11 @@ function printCommandHelp(command?: string): void {
 		case "game":
 			printGameHeader();
 			return;
+		case "dashboard":
+			console.log(
+				`Usage: ${APP_NAME} dashboard\n\nShow a professional terminal dashboard with health, metrics, and source info.`,
+			);
+			return;
 		default:
 			printHelp();
 	}
@@ -246,6 +252,7 @@ export async function handleAirisCommand(args: string[]): Promise<boolean> {
 				"ship",
 				"image",
 				"game",
+				"dashboard",
 			].includes(command)
 		) {
 			printCommandHelp(command);
@@ -289,6 +296,9 @@ export async function handleAirisCommand(args: string[]): Promise<boolean> {
 		case "theme":
 			await handleThemeCommand(args.slice(1));
 			return true;
+		case "dashboard":
+			runDashboard();
+			return true;
 		case "changelog":
 			printChangelog();
 			return true;
@@ -300,6 +310,19 @@ export async function handleAirisCommand(args: string[]): Promise<boolean> {
 			return true;
 		default:
 			return false;
+	}
+}
+
+function runDashboard(): void {
+	const dashboardPath = join(dirname(new URL(import.meta.url).pathname), "..", "src", "cli", "dashboard.ts");
+	try {
+		const output = execSync(`node --experimental-strip-types "${dashboardPath}"`, {
+			encoding: "utf-8",
+			timeout: 15000,
+		}).trim();
+		console.log(output);
+	} catch {
+		console.error("[Dashboard unavailable]");
 	}
 }
 

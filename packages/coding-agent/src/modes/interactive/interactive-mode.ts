@@ -2930,11 +2930,6 @@ export class InteractiveMode {
 				this.editor.setText("");
 				return;
 			}
-			if (text === "/dashboard") {
-				await this.handleDashboardCommand();
-				this.editor.setText("");
-				return;
-			}
 
 			// Handle bash command (! for normal, !! for excluded from context)
 			if (text.startsWith("!")) {
@@ -7566,31 +7561,6 @@ Type any command or just describe what you want to do.
 		this.chatContainer.addChild(new Text(theme.bold(theme.fg("accent", "Suggested Commands")), 1, 0));
 		this.chatContainer.addChild(new Spacer(1));
 		this.chatContainer.addChild(new Text("Command suggestions not yet available.", 1, 0));
-		this.chatContainer.addChild(new DynamicBorder());
-		this.ui.requestRender();
-	}
-
-	private async handleDashboardCommand(): Promise<void> {
-		const dashboardPath = (await import("node:path")).join(
-			(await import("../../config.ts")).getAgentDir(),
-			"..", "..", "..", "src", "cli", "dashboard.ts",
-		);
-		const { execSync } = await import("node:child_process");
-		let output = "";
-		try {
-			output = execSync(`node --experimental-strip-types "${dashboardPath}"`, {
-				encoding: "utf-8",
-				timeout: 15000,
-				stdio: ["pipe", "pipe", "pipe"],
-			}).trim();
-		} catch {
-			output = "[Dashboard unavailable]";
-		}
-		this.chatContainer.addChild(new Spacer(1));
-		this.chatContainer.addChild(new DynamicBorder());
-		this.chatContainer.addChild(new Text(theme.bold(theme.fg("accent", "AIRIS-CLI Dashboard")), 1, 0));
-		this.chatContainer.addChild(new Spacer(1));
-		this.chatContainer.addChild(new Text(output, 1, 0));
 		this.chatContainer.addChild(new DynamicBorder());
 		this.ui.requestRender();
 	}

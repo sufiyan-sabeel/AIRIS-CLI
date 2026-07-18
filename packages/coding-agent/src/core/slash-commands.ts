@@ -81,5 +81,4 @@ export const BUILTIN_SLASH_COMMANDS: ReadonlyArray<BuiltinSlashCommand> = [
 	{ name: "cost", description: "Show token usage and estimated cost" },
 	{ name: "timeline", description: "Show a session execution timeline from the audit log" },
 	{ name: "suggest", description: "Suggest slash commands based on current context" },
-	{ name: "dashboard", description: "Show a professional terminal dashboard with health, metrics, and source info" },
 ];
