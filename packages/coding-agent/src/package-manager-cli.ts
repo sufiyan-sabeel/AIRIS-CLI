@@ -493,6 +493,34 @@ async function runGitSelfUpdate(): Promise<boolean> {
 	}
 }
 
+async function tryNpmFallbackUpdate(packageName: string): Promise<boolean> {
+	// Try npm update as fallback for bun-binary installs
+	console.log(chalk.dim(`Attempting npm update for ${packageName}...`));
+	try {
+		await new Promise<void>((resolve, reject) => {
+			const child = spawnProcess("npm", ["install", "-g", `${packageName}@latest`], {
+				stdio: "inherit",
+			});
+			child.on("error", (error) => reject(error));
+			child.on("close", (code, signal) => {
+				if (code === 0) {
+					resolve();
+				} else if (signal) {
+					reject(new Error(`npm install terminated by signal ${signal}`));
+				} else {
+					reject(new Error(`npm install exited with code ${code ?? "unknown"}`));
+				}
+			});
+		});
+		console.log(chalk.green(`Updated ${packageName} via npm`));
+		return true;
+	} catch (error: unknown) {
+		const message = error instanceof Error ? error.message : String(error);
+		console.error(chalk.dim(`npm update failed: ${message}`));
+		return false;
+	}
+}
+
 function parseProjectTrustOverride(args: readonly string[]): boolean | undefined {
 	let trustOverride: boolean | undefined;
 	for (const arg of args) {
@@ -766,6 +794,11 @@ export async function handlePackageCommand(
 					);
 					if (!selfUpdateCommand) {
 						if (await runGitSelfUpdate()) {
+							return true;
+						}
+						// Fallback: try npm update for bun-binary installs
+						const npmResult = await tryNpmFallbackUpdate(selfUpdatePlan.packageName);
+						if (npmResult) {
 							return true;
 						}
 						printSelfUpdateUnavailable(selfUpdateNpmCommand, selfUpdatePlan.packageName);
