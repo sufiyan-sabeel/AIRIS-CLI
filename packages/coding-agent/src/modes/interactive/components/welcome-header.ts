@@ -16,20 +16,23 @@ export interface WelcomeHeaderInfo {
 const NO_COLOR = !!process.env.NO_COLOR;
 
 const LOGO_LINES: readonly string[] = [
-	"╭──────────────────────────────╮",
-	"│ █████╗ ██╗██████╗ ██╗███████╗",
-	"│██╔══██╗██║██╔══██╗██║██╔════╝",
-	"│███████║██║██████╔╝██║███████╗",
-	"│██╔══██║██║██╔══██╗██║╚════██║",
-	"│██║  ██║██║██║  ██║██║███████║",
-	"│╚═╝  ╚═╝╚═╝  ╚═╝╚═╝╚══════╝",
-	"│",
-	"│ Artificial Intelligence",
-	"│ Responsive Integrated System",
-	"│",
-	"│ AI Coding · Automation · CLI",
-	"│ KageOS · Umaiz Sufiyan",
-	"╰──────────────────────────────╯",
+	"╔══════════════════════════════════╗",
+	"║ ◆══════════════════════════════◆ ║",
+	"║ ║ █████╗ ██╗██████╗ ██╗███████╗ ║ ║",
+	"║ ║██╔══██╗██║██╔══██╗██║██╔════╝ ║ ║",
+	"║ ║███████║██║██████╔╝██║███████╗ ║ ║",
+	"║ ║██╔══██║██║██╔══██║██║╚════██║ ║ ║",
+	"║ ║██║  ██║██║██║  ██║██║███████║ ║ ║",
+	"║ ║╚═╝  ╚═╝╚═╝╚═╝  ╚═╝╚═╝╚══════╝ ║ ║",
+	"║ ◆══════════════════════════════◆ ║",
+	"║ ║                                ║ ║",
+	"║ ║    Artificial Intelligence     ║ ║",
+	"║ ║  Responsive Integrated System  ║ ║",
+	"║ ║                                ║ ║",
+	"║ ║   AI Coding · Automation · CLI ║ ║",
+	"║ ║      KageOS · Umaiz Sufiyan    ║ ║",
+	"║ ◆══════════════════════════════◆ ║",
+	"╚══════════════════════════════════╝",
 ];
 
 const LOGO_BLOCK_WIDTH = Math.max(...LOGO_LINES.map((line) => visibleWidth(line)));
@@ -92,7 +95,7 @@ function nextTip(): string {
 function currentTip(): string {
 	return WELCOME_TIPS[tipIndex];
 }
-const WIDTH_LOGO = Math.max(LOGO_BLOCK_WIDTH + 4, 36);
+const WIDTH_LOGO = Math.max(LOGO_BLOCK_WIDTH + 4, 42);
 const WIDTH_MINIMAL = 36;
 const WIDTH_MINIMAL_TAGLINE = 40;
 
@@ -179,20 +182,24 @@ function renderEmblem(lines: readonly string[], width: number): string[] {
 function renderLogoLine(index: number, line: string): string {
 	const paddedLine = padToWidth(line, LOGO_BLOCK_WIDTH);
 	if (!line.trim()) return paddedLine;
-	// Index 0: top border, Index 13: bottom border - use border color
-	if (index === 0 || index === 13) return fg("border", paddedLine);
-	// Index 1-6: big AIRIS letters - highlight color
-	if (index >= 1 && index <= 6) return fg("airisOrangeHighlight", bold(paddedLine));
-	// Index 7, 10: empty lines - dim
-	if (index === 7 || index === 10) return fg("dim", paddedLine);
-	// Index 8: "Artificial Intelligence" - accent
-	if (index === 8) return fg("accent", paddedLine);
-	// Index 9: "Responsive Integrated System" - accent
-	if (index === 9) return fg("accent", paddedLine);
-	// Index 11: "AI Coding · Automation · CLI" - airisOrangeMuted
-	if (index === 11) return fg("airisOrangeMuted", paddedLine);
-	// Index 12: "KageOS · Umaiz Sufiyan" - dim
-	if (index === 12) return fg("dim", paddedLine);
+	// Index 0: top border - use border color
+	if (index === 0) return fg("border", paddedLine);
+	// Index 16: bottom border - use border color
+	if (index === 16) return fg("border", paddedLine);
+	// Index 1, 8, 15: diamond lines - airisOrange
+	if (index === 1 || index === 8 || index === 15) return fg("airisOrange", bold(paddedLine));
+	// Index 2-7: big AIRIS letters - highlight color
+	if (index >= 2 && index <= 7) return fg("airisOrangeHighlight", bold(paddedLine));
+	// Index 9, 12: empty lines - dim
+	if (index === 9 || index === 12) return fg("dim", paddedLine);
+	// Index 10: "Artificial Intelligence" - accent
+	if (index === 10) return fg("accent", paddedLine);
+	// Index 11: "Responsive Integrated System" - accent
+	if (index === 11) return fg("accent", paddedLine);
+	// Index 13: "AI Coding · Automation · CLI" - airisOrangeMuted
+	if (index === 13) return fg("airisOrangeMuted", paddedLine);
+	// Index 14: "KageOS · Umaiz Sufiyan" - dim
+	if (index === 14) return fg("dim", paddedLine);
 	return fg("dim", paddedLine);
 }
 
