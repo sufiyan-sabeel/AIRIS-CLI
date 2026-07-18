@@ -17,21 +17,21 @@ const NO_COLOR = !!process.env.NO_COLOR;
 
 const LOGO_LINES: readonly string[] = [
 	"╭──────────────────────────────────╮",
-	"│ ◆──────────────────────────────◆ │",
+	"│ ◆══════════════════════════════◆ │",
 	"│ │ █████╗ ██╗██████╗ ██╗███████╗ │ │",
 	"│ │██╔══██╗██║██╔══██╗██║██╔════╝ │ │",
 	"│ │███████║██║██████╔╝██║███████╗ │ │",
 	"│ │██╔══██║██║██╔══██║██║╚════██║ │ │",
 	"│ │██║  ██║██║██║  ██║██║███████║ │ │",
 	"│ │╚═╝  ╚═╝╚═╝╚═╝  ╚═╝╚═╝╚══════╝ │ │",
-	"│ ◆──────────────────────────────◆ │",
+	"│ ◆══════════════════════════════◆ │",
 	"│ │                                │ │",
 	"│ │    Artificial Intelligence     │ │",
 	"│ │  Responsive Integrated System  │ │",
 	"│ │                                │ │",
 	"│ │   AI Coding · Automation · CLI │ │",
 	"│ │      KageOS · Umaiz Sufiyan    │ │",
-	"│ ◆──────────────────────────────◆ │",
+	"│ ◆══════════════════════════════◆ │",
 	"╰──────────────────────────────────╯",
 ];
 
@@ -75,6 +75,13 @@ const KEYBINDING_HINTS: Array<{ keys: string; label: string }> = [
 	{ keys: "Ctrl+L", label: "Clear" },
 	{ keys: "Ctrl+Up/Down", label: "Scroll" },
 	{ keys: "Tab", label: "Complete" },
+];
+
+// Routing modes for the welcome banner
+const ROUTING_MODES: Array<{ prefix: string; label: string; description: string }> = [
+	{ prefix: "@coding", label: "Coding", description: "Repository coding & editing" },
+	{ prefix: "@automation", label: "Auto", description: "Android automation (single-step)" },
+	{ prefix: "@multiauto", label: "Multi", description: "Multi-step automation" },
 ];
 
 // Cycling tip messages
@@ -260,6 +267,26 @@ function renderKeybindingHints(width: number): string[] {
 	return lines;
 }
 
+function renderRoutingModes(width: number): string[] {
+	const inner = width - 4;
+	if (inner < 30) return [];
+
+	const lines: string[] = [];
+	// Group routing modes into rows of 3
+	for (let i = 0; i < ROUTING_MODES.length; i += 3) {
+		const group = ROUTING_MODES.slice(i, i + 3);
+		const parts = group.map((r) => `${fg("airisOrangeHighlight", r.prefix)} ${fg("dim", r.description)}`);
+		const line = parts.join(fg("borderMuted", " · "));
+		const w = visibleWidth(line);
+		if (w <= inner) {
+			lines.push(renderBoxInsetLine(line, width));
+		} else {
+			lines.push(...group.map((r) => renderBoxInsetLine(`${fg("airisOrangeHighlight", r.prefix)} ${fg("dim", r.description)}`, width)));
+		}
+	}
+	return lines;
+}
+
 function renderTip(width: number): string[] {
 	const tip = `${fg("success", "✨")} ${fg("muted", currentTip())}`;
 	return [renderBoxInsetLine(tip, width)];
@@ -332,6 +359,9 @@ export class WelcomeHeader implements Component {
 				const shortCwd = truncateMiddle(this.info.cwd, maxPathLen);
 				lines.push(renderMetaLine("Project", shortCwd, width));
 			}
+
+			lines.push(renderSectionDivider("Routes", width));
+			lines.push(...renderRoutingModes(width));
 
 			lines.push(renderSectionDivider("Hints", width));
 			lines.push(...renderKeybindingHints(width));
