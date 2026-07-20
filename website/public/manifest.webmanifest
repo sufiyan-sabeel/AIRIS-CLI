@@ -1,0 +1,36 @@
+{
+  "name": "AIRIS CLI — AI coding agent for your terminal",
+  "short_name": "AIRIS",
+  "description": "A terminal-native AI coding agent and extensible CLI harness for coding, automation, and developer workflows.",
+  "start_url": "/AIRIS-CLI/",
+  "scope": "/AIRIS-CLI/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#070a12",
+  "theme_color": "#070a12",
+  "categories": ["developer", "productivity", "utilities"],
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-maskable.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Install AIRIS",
+      "url": "/install"
+    },
+    {
+      "name": "Documentation",
+      "url": "/docs"
+    }
+  ]
+}

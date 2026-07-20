@@ -1,0 +1,164 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --radius: 0.75rem;
+
+    /* Light theme — soft slate, uses blue/cyan accents */
+    --background: 210 40% 98%;
+    --foreground: 222 47% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 217 91% 55%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222 47% 11%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 187 92% 43%;
+    --accent-foreground: 222 47% 11%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 214 32% 88%;
+    --input: 214 32% 88%;
+    --ring: 217 91% 55%;
+  }
+
+  .dark {
+    /* AMOLED black base */
+    --background: 225 30% 4%;
+    --foreground: 210 40% 96%;
+    --card: 222 30% 7%;
+    --card-foreground: 210 40% 96%;
+    --popover: 222 30% 6%;
+    --popover-foreground: 210 40% 96%;
+    /* Blue primary */
+    --primary: 217 91% 60%;
+    --primary-foreground: 225 40% 5%;
+    --secondary: 222 25% 12%;
+    --secondary-foreground: 210 40% 96%;
+    --muted: 222 22% 12%;
+    --muted-foreground: 215 20% 65%;
+    /* Cyan accent */
+    --accent: 187 92% 50%;
+    --accent-foreground: 225 40% 5%;
+    --destructive: 0 72% 56%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 222 25% 16%;
+    --input: 222 25% 16%;
+    --ring: 199 89% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    text-rendering: optimizeLegibility;
+  }
+  ::selection {
+    background-color: hsl(var(--accent) / 0.3);
+    color: hsl(var(--foreground));
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Custom scrollbar for premium feel */
+@layer utilities {
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--border)) transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--border));
+    border-radius: 9999px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  /* Glass surfaces */
+  .glass {
+    background: hsl(var(--card) / 0.6);
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+  }
+  .glass-strong {
+    background: hsl(var(--card) / 0.8);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+  }
+
+  /* Gradient text */
+  .text-gradient {
+    background-image: linear-gradient(
+      120deg,
+      hsl(var(--primary)),
+      hsl(var(--accent))
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Glow utilities */
+  .glow-blue {
+    box-shadow: 0 0 40px -8px hsl(var(--primary) / 0.4);
+  }
+  .glow-cyan {
+    box-shadow: 0 0 40px -8px hsl(var(--accent) / 0.4);
+  }
+
+  /* Animated grid background */
+  .bg-grid {
+    background-image: linear-gradient(
+        to right,
+        hsl(var(--primary) / 0.06) 1px,
+        transparent 1px
+      ),
+      linear-gradient(to bottom, hsl(var(--primary) / 0.06) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+
+  .mask-fade-b {
+    -webkit-mask-image: linear-gradient(to bottom, black 55%, transparent);
+    mask-image: linear-gradient(to bottom, black 55%, transparent);
+  }
+  .mask-fade-r {
+    -webkit-mask-image: linear-gradient(to right, black 60%, transparent);
+    mask-image: linear-gradient(to right, black 60%, transparent);
+  }
+
+  .caret {
+    display: inline-block;
+    width: 0.5em;
+    height: 1.1em;
+    vertical-align: text-bottom;
+    background: hsl(var(--accent));
+    animation: caret-blink 1.2s ease-out infinite;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
