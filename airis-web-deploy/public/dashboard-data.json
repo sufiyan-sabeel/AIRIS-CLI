@@ -1,0 +1,54 @@
+{
+  "generatedAt": "2026-07-10T12:15:33.318Z",
+  "date": "2026-07-10",
+  "dailyFact": {
+    "fact": "The repository includes a full CI/CD pipeline with GitHub Actions.",
+    "index": 15,
+    "total": 21
+  },
+  "analysis": {
+    "packages": 6,
+    "packageNames": [
+      "agent",
+      "ai",
+      "aifetch",
+      "aisearch",
+      "coding-agent",
+      "tui"
+    ],
+    "tsSourceFiles": 722,
+    "tsxComponents": 20,
+    "goModules": 5,
+    "scriptFiles": 16,
+    "totalSourceLines": 219911,
+    "githubWorkflows": 11,
+    "markdownDocs": 93
+  },
+  "codeBreakdown": [
+    {
+      "label": "TypeScript (.ts)",
+      "count": 722,
+      "color": "#3178c6"
+    },
+    {
+      "label": "React/TSX (.tsx)",
+      "count": 20,
+      "color": "#06b6d4"
+    },
+    {
+      "label": "Go modules (.go)",
+      "count": 5,
+      "color": "#00ADD8"
+    },
+    {
+      "label": "Scripts (.mjs)",
+      "count": 16,
+      "color": "#f0db4f"
+    },
+    {
+      "label": "Markdown docs",
+      "count": 93,
+      "color": "#8b5cf6"
+    }
+  ]
+}
