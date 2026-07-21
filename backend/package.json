@@ -17,7 +17,7 @@
     "openai": "4.77.0",
     "@google/generative-ai": "0.24.0",
     "uuid": "11.0.0",
-    "ws": "8.18.0"
+    "ws": "8.21.0"
   },
   "devDependencies": {
     "@types/express": "5.0.0",
