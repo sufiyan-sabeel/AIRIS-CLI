@@ -1,0 +1,54 @@
+{
+  "generatedAt": "2026-07-21T08:34:55.911Z",
+  "date": "2026-07-21",
+  "dailyFact": {
+    "fact": "The project runs on Node.js >=22.19.0 and is written in TypeScript.",
+    "index": 5,
+    "total": 21
+  },
+  "analysis": {
+    "packages": 6,
+    "packageNames": [
+      "agent",
+      "ai",
+      "aifetch",
+      "aisearch",
+      "coding-agent",
+      "tui"
+    ],
+    "tsSourceFiles": 763,
+    "tsxComponents": 53,
+    "goModules": 5,
+    "scriptFiles": 16,
+    "totalSourceLines": 236749,
+    "githubWorkflows": 11,
+    "markdownDocs": 102
+  },
+  "codeBreakdown": [
+    {
+      "label": "TypeScript (.ts)",
+      "count": 763,
+      "color": "#3178c6"
+    },
+    {
+      "label": "React/TSX (.tsx)",
+      "count": 53,
+      "color": "#06b6d4"
+    },
+    {
+      "label": "Go modules (.go)",
+      "count": 5,
+      "color": "#00ADD8"
+    },
+    {
+      "label": "Scripts (.mjs)",
+      "count": 16,
+      "color": "#f0db4f"
+    },
+    {
+      "label": "Markdown docs",
+      "count": 102,
+      "color": "#8b5cf6"
+    }
+  ]
+}
