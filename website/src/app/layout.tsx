@@ -7,6 +7,7 @@ import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { FlickeringGrid } from "@/components/magicui/flickering-grid";
 import { ServiceWorkerRegister } from "@/components/service-worker-register";
+import LoadingScreen from "@/components/loading-screen";
 import { siteConfig } from "@/lib/site";
 import { BASE_PATH } from "@/lib/env";
 import { cn } from "@/lib/utils";
@@ -99,7 +100,7 @@ export default function RootLayout({
       >
         <ThemeProvider
           attribute="class"
-          defaultTheme="dark"
+          defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
@@ -119,6 +120,7 @@ export default function RootLayout({
               />
             </div>
             <div className="pointer-events-none fixed inset-0 -z-10 bg-grid mask-fade-b opacity-40" />
+            <LoadingScreen />
             <Navbar />
             <main className="relative z-10">{children}</main>
             <Footer />

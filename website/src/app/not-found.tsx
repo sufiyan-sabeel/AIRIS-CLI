@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Logo } from "@/components/logo";
+import AIRISLogo from "@/components/logo/AIRISLogo";
 
 export default function NotFound() {
   return (
     <section className="container flex min-h-[70vh] flex-col items-center justify-center text-center">
-      <Logo className="h-12 w-12 opacity-80" />
+      <AIRISLogo size={72} glow />
       <p className="mt-6 font-mono text-sm text-accent">404</p>
       <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
         This page wandered off
