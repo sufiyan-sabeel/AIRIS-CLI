@@ -21,6 +21,7 @@ export const BUILT_IN_PROVIDER_DISPLAY_NAMES: Record<string, string> = {
 	nvidia: "NVIDIA NIM",
 	opencode: "OpenCode Zen",
 	"opencode-go": "OpenCode Go",
+	zenmux: "Zenmux",
 	openai: "OpenAI",
 	openrouter: "OpenRouter",
 	together: "Together AI",

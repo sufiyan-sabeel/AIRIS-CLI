@@ -6,7 +6,7 @@
  * Also integrates Termux:API when available for notification/toast/clipboard.
  */
 
-import { Type } from "@earendil-works/airis-ai";
+import { Type } from "@sufiyan-sabeel/airis-ai";
 import type { ExtensionAPI } from "@sufiyan-sabeel/airis-cli";
 import { execSync } from "node:child_process";
 

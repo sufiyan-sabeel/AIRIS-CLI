@@ -2,7 +2,11 @@
 
 ## [Unreleased]
 
-## [0.79.8] - 2026-07-05
+## [0.79.9] - 2026-07-21
+
+### Changed
+
+- Updated internal dependency on `@sufiyan-sabeel/airis-ai` to v0.79.9.
 
 ## [0.79.7] - 2026-07-05
 

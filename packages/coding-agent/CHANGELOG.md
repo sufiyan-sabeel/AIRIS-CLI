@@ -2,76 +2,17 @@
 
 ## [Unreleased]
 
-### Added
-
-- **Reliability**: Provider resilience layer (`core/provider-resilience.ts`) — per-provider circuit breakers, adaptive exponential-backoff retries, degraded-mode policy, and aggregated recovery suggestions. Reuses `provider-health.ts`.
-- **Provider enhancement**: `core/provider-probe.ts` — connectivity validation, model auto-fetch + cache, capability detection, latency/availability sampling, and persisted provider profiles. New commands `/providers`, `/provider-test`, `/provider-info`.
-- **Agent runtime**: `core/job-scheduler.ts` — persistent job queue with one-shot/interval/cron scheduling, detached execution, resumption, and cancellation. New command `/jobs`.
-- **Memory**: `core/memory-store.ts` — cross-session structured memory (facts, preferences, decisions, notes) with keyword/recency recall. New command `/memory`.
-- **Repository intelligence**: `core/repo-intelligence.ts` — file/language index, intra-repo import graph, entry-point detection, and transitive change-impact. New command `/repo`.
-- **Observability**: `core/usage-tracker.ts` — per-session token and estimated-cost tracking by provider/model. New command `/cost`.
-- **Developer experience**: `/timeline` (execution timeline from the audit log) and `/suggest` (context-aware command recommendations via `core/command-suggestions.ts`).
-- Unit tests for all new modules: `provider-resilience`, `job-scheduler`, `memory-store`, `provider-probe`, `usage-tracker`, `command-suggestions`, `repo-intelligence`.
-
-### Changed
-
-- Slash command registry extended with the new commands above.
-- Added secret detection to sandbox (12 patterns: AWS keys, GitHub tokens, OpenAI/Anthropic API keys, SSH keys, JWTs, etc.).
-- Added `computeConfidence()` scoring to project learning with frequency and session-awareness.
-- Added per-session dedup to project learning (prevents duplicate pattern counting).
-- Added `rejectConvention()` and `rejectedPatterns` persistence to project learning.
-- Added secret detection tests (9 test cases).
-
-### Changed
-
-- Project learning: enhanced `getSummary()` with confidence bars and session counts.
-- Builtin sandbox: exported `globMatch`, `isPathAllowed`, `normalizeAndResolve`, `deepMergeConfig`, `DEFAULT_CONFIG`, `SandboxConfig`, `detectSecrets` for testing.
-- Project profile: `rejectedPatterns` field added (backward-compatible).
-
-### Fixed
-
-- Sandbox: bash commands with hardcoded secrets are now blocked with a descriptive message.
-- Sandbox: glob matching now checks basename for filename-only patterns (e.g., `*.pem` matches `/path/to/cert.pem`).
-
-### Removed
-
-- Removed stale `dynamic-tools.test.ts` (test for deleted DynamicToolRegistry).
-
-## [0.79.9] - 2026-07-15
+## [0.79.9] - 2026-07-21
 
 ### Added
 
-- Added keybinding hints and rotating tips to the interactive welcome header.
-- Added new UI helpers (`title`, `subtitle`, `optionLine`, `separator`) in `cli/ui.ts` for consistent terminal output.
-- Enhanced existing UI helpers: `status()` now uses color-coded icons (✓ ⚠ ✗ ℹ ⟳), `section()` uses decorative side borders, `box()` uses Unicode box drawing (┌ ┐│ └ ┘).
-- First-time setup dialog now shows version number and creator attribution.
-- **Security**: Added `/health` command — runs system health checks (agent directory, memory, core tools, session directory).
-- **Security**: Added `/diagnostics` command — shows system version, extension/skill counts, active tools, config paths, and memory usage.
-- **Security**: Added `/security` command — runs security audit (sandbox status, project trust, env files, dependency pinning, audit logging).
-- **Security**: Added `/deps-audit` command — audits project dependencies for version pinning and lifecycle scripts.
-- **Security**: Added `/provider-health` command — shows per-provider health scores (success rate, latency, error breakdown) with recovery recommendations.
-- **Security**: Added `/models` command — lists available providers, default models, and model counts.
-- **Security**: Added `search` slash command to the built-in command list.
-- **Security**: Added `provider-health.ts` — persistent provider health tracking with scoring (0.0–1.0), error classification, and recovery recommendations.
-- **Security**: Added `health-service.ts` — system health checks and diagnostic info collection.
-- **Security**: Added `security-auditor.ts` — security audit framework with dependency pinning checks, environment file scanning, and configuration review.
-- **Security**: Added dangerous command detection to the bash tool via `deniedCommands` and `warnOnCommands` options in `BashToolOptions`.
-- **Security**: Added server-side timeout cap (`maxTimeout`) to the bash tool to enforce maximum execution time limits.
-- **Security**: Added extension security warnings for extensions with lifecycle hooks.
+- Added Zenmux provider support with default model (kimi-k2.6) via OpenAI-compatible API at `https://zenmux.ai/api/v1`.
+- Added `zenmux` to built-in provider display names and model resolver.
 
 ### Changed
 
-- Applied enhanced UI helpers across all CLI commands (`airis-commands.ts`, `args.ts`, `file-processor.ts`) — doctor, tools, config, sessions, theme, and trust output now use consistent icon-based status markers, formatted column headers, and visual separators.
-- Help output (`printHelp`) uses `optionLine()` for consistent indented option formatting.
-- Replaced raw `chalk.red`/`chalk.green`/`chalk.yellow` error and success messages with `status()` calls throughout `airis-commands.ts`.
-- Bash tool execute function now enforces `maxTimeout` server-side cap when configured.
-- Bash tool now checks `deniedCommands` and `warnOnCommands` patterns before execution.
-
-### Fixed
-
-- Fixed shell installer bugs in `website/public/install.sh` and `docs/install.sh`: archive cleanup before copy, error propagation from `resolve_latest_tag`, unique temp files via `mktemp`, fractional-sleep fallback, and no-TTY failure reporting.
-
-## [0.79.8] - 2026-07-05
+- Extension load failures are now treated as non-fatal warnings instead of fatal errors. AIRIS logs the error with the extension name and reason, skips only the failed extension, and continues loading all remaining extensions. A startup summary warning shows how many extensions failed to load.
+- Updated all internal dependency versions to v0.79.9.
 
 ## [0.79.7] - 2026-07-05
 
