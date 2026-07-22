@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-07-21T08:34:55.911Z",
-  "date": "2026-07-21",
+  "generatedAt": "2026-07-22T08:34:32.362Z",
+  "date": "2026-07-22",
   "dailyFact": {
-    "fact": "The project runs on Node.js >=22.19.0 and is written in TypeScript.",
-    "index": 5,
+    "fact": "AIRIS has a self-debugging system that learns from error patterns.",
+    "index": 6,
     "total": 21
   },
   "analysis": {
@@ -22,7 +22,7 @@
     "scriptFiles": 16,
     "totalSourceLines": 236749,
     "githubWorkflows": 11,
-    "markdownDocs": 102
+    "markdownDocs": 103
   },
   "codeBreakdown": [
     {
@@ -47,7 +47,7 @@
     },
     {
       "label": "Markdown docs",
-      "count": 102,
+      "count": 103,
       "color": "#8b5cf6"
     }
   ]
