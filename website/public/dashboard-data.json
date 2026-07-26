@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-07-25T08:11:19.950Z",
-  "date": "2026-07-25",
+  "generatedAt": "2026-07-26T08:31:48.071Z",
+  "date": "2026-07-26",
   "dailyFact": {
-    "fact": "The project includes native Go binaries for file search (aisearch) and web fetching (aifetch).",
-    "index": 9,
+    "fact": "AIRIS has an extension system that supports custom tools, themes, skills, and providers.",
+    "index": 10,
     "total": 21
   },
   "analysis": {
