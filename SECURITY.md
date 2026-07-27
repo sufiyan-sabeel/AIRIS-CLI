@@ -1,165 +1,55 @@
 # Security Policy
 
-This document should guide you about understanding the security concept behind
-AIRIS and also where the boundaries are.
+## Supported Versions
 
-In general AIRIS is a coding agent that runs locally within the security boundary
-of the user that is running it.  It's the responsibiltiy of the user to monitor
-its operations or to contain it within a container, virtual machine or other
-Sandbox solution.
-
-AIRIS treats the local user account and files writable by that account as inside
-the same trust boundary as the AIRIS process itself.  If an attacker can modify files
-under the user's home directory, workspace, shell startup files, environment, or
-AIRIS configuration, they can generally influence AIRIS or other local developer tools.
-Reports that depend on such prior local write access are not security
-vulnerabilities unless they demonstrate how AIRIS grants that write access or crosses
-an operating-system privilege boundary.
-
-AIRIS relies on users installing trustworthy extensions and loading trustworthy
-skills and only to use AIRIS within trusted repositories.  This is because files
-like `AGENTS.md` or instructions in comments can be used to prompt inject the
-coding agent trivially and this cannot be protected against.
-
-## Repository Security Configuration
-
-The following security controls are enforced for this repository to prevent unauthorized changes:
-
-### Branch Protection (`main`)
-
-The `main` branch has the following protection rules that must be configured in GitHub Settings > Branches:
-
-- **Require pull request reviews before merging** — at least 1 approving review from a code owner
-- **Dismiss stale pull request approvals when new commits are pushed**
-- **Require review from CODEOWNERS** — the CODEOWNERS file in this repository lists `@sufiyan-sabeel` as owner for all paths
-- **Require status checks to pass before merging** — CI, lint, type-check must pass
-- **Require branches to be up to date before merging**
-- **Do not allow bypassing the above protections** (enforce for administrators as well)
-- **Restrict push access** — only admins can push directly to `main`
-- **Lock branch** — prevent accidental deletion
-
-### CODEOWNERS
-
-The `.github/CODEOWNERS` file requires admin approval for all changes:
-
-| Pattern | Owner |
-|---------|-------|
-| `*` (all files) | `@sufiyan-sabeel` |
-| `.github/workflows/` | `@sufiyan-sabeel` |
-| `scripts/publish.mjs` | `@sufiyan-sabeel` |
-| `package.json` | `@sufiyan-sabeel` |
-| `packages/*/package.json` | `@sufiyan-sabeel` |
-| `SECURITY.md`, `README.md` | `@sufiyan-sabeel` |
-
-### Required Configuration Steps (via GitHub UI)
-
-1. Go to repository **Settings > Branches > Add branch protection rule**
-2. Branch pattern: `main`
-3. Enable: "Require a pull request before merging" → "Require approvals" → `1`
-4. Enable: "Dismiss stale pull request approvals when new commits are pushed"
-5. Enable: "Require review from Code Owners"
-6. Enable: "Require status checks to pass before merging" → select CI workflows
-7. Enable: "Require branches to be up to date before merging"
-8. Enable: "Do not allow bypassing the above protections"
-9. Enable: "Restrict who can push to matching branches" → add only admins
-10. **Save** the rule
-
-### Dependabot Secrets Scanning
-
-Dependabot configuration has been removed from this repository. If re-enabled, configure weekly security updates in `.github/dependabot.yml` and enable secret scanning and push protection in GitHub Settings > Code security & analysis:
-- **Dependency graph** — ON
-- **Dependabot alerts** — ON
-- **Dependabot security updates** — ON
-- **Secret scanning** — ON (with push protection)
-- **Code scanning** — ON (CodeQL)
-
-### Access Permissions
-
-Configure repository access in GitHub Settings > Collaborators:
-- **Admin** — only trusted owners (`@sufiyan-sabeel`)
-- **Write** — contributors who need to create branches (not push to main)
-- **Read** — everyone else
-- Do not give anyone outside the owner team "Admin" or "Maintain" permission
-
-### Vulnerability Reporting
-
-Report security issues privately via the GitHub Security Advisories tab
-or email `riyazo65ckm@gmail.com`. Do not open public issues for security
-vulnerabilities.
-
-## Public GitHub Safety
-
-Do not copy or paste sensitive files into public GitHub issues, pull requests,
-discussions, screenshots, logs, or AI prompts. This includes `.env` files,
-private keys, API tokens, npm tokens, passwords, recovery codes, SSH keys,
-cloud credentials, database dumps, personal data, proprietary source files, and
-unredacted configuration.
-
-Share the smallest reproducible example instead. Redact secrets before posting,
-replace private values with placeholders such as `<redacted>`, and rotate any
-credential that was accidentally shared publicly.
+| Version | Supported |
+|---|---|
+| latest | ✅ |
+| < latest | ❌ |
 
 ## Reporting a Vulnerability
 
-If you believe you found a security vulnerability in AIRIS or another package in
-this repository, please report it privately by either:
+AIRIS-CLI takes security seriously. If you discover a security vulnerability, please **do not** open a public issue.
 
-- Emailing `riyazo65ckm@gmail.com`, or
-- Opening a private report through GitHub Security Advisories for this repository
+### How to Report
 
-Please include:
+1. **Privately report via GitHub**: Go to [Security Advisories](https://github.com/sufiyan-sabeel/AIRIS-CLI/security/advisories) and click "Report a vulnerability"
+2. **Email**: Contact the maintainers directly through GitHub
 
-- A description of the issue and its impact
-- Steps to reproduce, proof of concept, or relevant logs
-- Affected package, version, commit, or configuration
-- Any known mitigations
+### What to Include
 
-Do not open a public issue for security-sensitive reports.  We will review
-reports and coordinate disclosure as appropriate.
+- Type of issue (e.g., command injection, XSS, prototype pollution)
+- Full paths of source files related to the issue
+- Step-by-step reproduction instructions
+- Proof of concept or exploit code (if applicable)
+- Impact assessment
 
-## Scope
+### Response Timeline
 
-Security issues in the distributed packages, command-line tools, APIs, and
-repository code are in scope as well as earendil operated infrastricture
-on `airis.dev`.
+- **Acknowledgment**: Within 48 hours
+- **Initial assessment**: Within 5 business days
+- **Fix timeline**: Depends on severity, typically 7-14 days for critical/high
 
-## Out Of Scope
+## Security Practices
 
-- Local code execution or sandboxing behavior (the AIRIS coding agent intentionally does not have a sandbox)
-- Behavior of AIRIS extensions or skills installed by the user
-- Risks from working in untrusted repositories
-- Risks from installing untrusted extensions, skills, packages, or tools
-- Isuses caused by non trustworthy MITM proxies
-- Public internet exposure of a AIRIS installation
-- Prompt injection attacks
-- Exposed secrets that are third-party/user-controlled credentials
-- Reports requiring the ability to create, modify, delete, or replace files,
-  directories, symlinks, environment variables, shell configuration, or other
-  user-controlled local state on the target machine. This includes `~/.airis`,
-  `~/.airis/agent/models.json`, workspace files, `AGENTS.md`, skills, extensions,
-  extension configuration, dotfiles, and files synchronized through NFS, roaming
-  profiles, or dotfile managers, unless the report shows how AIRIS itself grants
-  that access.
-- Issues caused by intentionally weakened user configuration.
-- Resource/DOS claims that require trusted local input/config against the airis coding agent.
-- Reports about malicious model output.
-- User-approved or user-initiated local actions presented as vulnerabilities.
+- All dependencies are pinned to exact versions
+- npm lifecycle scripts are audited and allowlisted
+- CI runs with `--ignore-scripts` for installs
+- TypeScript strict mode enabled
+- No inline dynamic imports for production code
+- Regular npm audit runs on schedule
 
-## Notes for Reporters
+## Dependencies
 
-The most useful reports show a current, reproducible security boundary bypass
-with demonstrated impact.  Reports that only show expected local-agent behavior,
-prompt injection, or a malicious trusted extension/skill are not security
-vulnerabilities under this model.
+This project uses automated dependency updates via Dependabot. Security patches are prioritized.
 
-For example, a report showing that malicious contents written to a trusted AIRIS
-configuration file cause AIRIS to execute commands, load attacker-controlled tools,
-send credentials to an attacker-controlled endpoint, or otherwise change behavior
-is out of scope.
+## Disclosure Policy
 
-When possible, include the exact affected path, package version or commit SHA,
-configuration, and a proof of concept against the latest release or latest
-`main`.  For dependency reports, include evidence that the shipped dependency is
-affected and that the issue is reachable through AIRIS.  For exposed-secret reports,
-include evidence that the credential is owned by Earendil or grants access to
-Earendil-operated infrastructure or services.
+When a vulnerability is reported:
+1. We acknowledge receipt within 48 hours
+2. We validate and assess the issue
+3. We develop and test a fix
+4. We release a patched version
+5. We publicly disclose after the fix is available
+
+We follow coordinated disclosure to protect users.
