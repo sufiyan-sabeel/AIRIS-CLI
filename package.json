@@ -41,7 +41,7 @@
 		"@anthropic-ai/sandbox-runtime": "0.0.26",
 		"@biomejs/biome": "2.3.5",
 		"@types/node": "22.19.19",
-		"esbuild": "0.28.0",
+		"esbuild": "0.28.1",
 		"husky": "9.1.7",
 		"jiti": "2.7.0",
 		"shx": "0.4.0",
@@ -57,7 +57,11 @@
 		"gaxios": {
 			"rimraf": "6.1.2"
 		},
-		"protobufjs": ">=7.6.3",
+		"brace-expansion": ">=5.0.8",
+		"protobufjs": ">=7.7.0",
+		"postcss": ">=8.5.18",
+		"shell-quote": ">=1.8.5",
+		"vite": ">=7.3.4",
 		"ws": ">=8.21.0",
 		"undici": ">=8.5.0"
 	}
