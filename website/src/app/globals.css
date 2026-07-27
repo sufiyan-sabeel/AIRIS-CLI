@@ -152,6 +152,73 @@
   }
 }
 
+/* Phase 2 animations */
+@keyframes cursor-glow {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+@keyframes glass-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes spring-up {
+  0% { opacity: 0; transform: translateY(20px) scale(0.95); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes glass-reflect {
+  0% { transform: translateX(-100%) rotate(45deg); }
+  100% { transform: translateX(200%) rotate(45deg); }
+}
+
+@layer utilities {
+  .cursor-glow {
+    animation: cursor-glow 2s ease-in-out infinite;
+  }
+  .glass-shimmer {
+    background: linear-gradient(90deg, transparent, hsl(var(--primary) / 0.08), transparent);
+    background-size: 200% 100%;
+    animation: glass-shimmer 3s ease-in-out infinite;
+  }
+  .spring-up {
+    animation: spring-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+  .glass-reflect {
+    position: relative;
+    overflow: hidden;
+  }
+  .glass-reflect::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      hsl(var(--primary) / 0.06),
+      transparent
+    );
+    transform: translateX(-100%) rotate(45deg);
+    animation: glass-reflect 4s ease-in-out infinite;
+    pointer-events: none;
+  }
+  .magnetic-btn {
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .magnetic-btn:hover {
+    transform: translate(var(--mx, 0), var(--my, 0)) scale(1.03);
+  }
+  .comp-table th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .newsletter-input:focus-within {
+    box-shadow: 0 0 0 2px hsl(var(--accent) / 0.3), 0 0 20px hsl(var(--accent) / 0.15);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

@@ -14,9 +14,9 @@ import { siteConfig } from "@/lib/site";
 
 const stats = [
   { label: "AI providers", value: "20+" },
-  { label: "Node version", value: "22.19+" },
+  { label: "Stars", value: "5K+" },
   { label: "License", value: "MIT" },
-  { label: "Platforms", value: "5" },
+  { label: "Platforms", value: "6" },
 ];
 
 export function HeroSection() {
@@ -108,8 +108,8 @@ export function HeroSection() {
           transition={{ duration: 0.6, delay: 0.4 }}
           className="mt-6 max-w-4xl text-balance text-4xl font-semibold leading-[1.05] tracking-tight sm:text-6xl hero-heading"
         >
-          The AI coding agent that lives in your{" "}
-          <span className="text-gradient">terminal</span>
+          Build. Automate. Ship.{" "}
+          <span className="text-gradient">Faster with AIRIS-CLI.</span>
         </motion.h1>
 
         {/* Typing terminal */}
@@ -136,25 +136,25 @@ export function HeroSection() {
           transition={{ duration: 0.6, delay: 0.55 }}
           className="mt-5 max-w-2xl text-pretty text-muted-foreground sm:text-lg hero-heading"
         >
-          {siteConfig.fullName}. Code, automate, and reason over your projects
-          from a shell — on your laptop, over SSH, inside containers, or on
-          Android with Termux.
+          A terminal-native AI coding agent and extensible CLI harness. Code,
+          automate, and reason over your projects from a shell — on your
+          laptop, over SSH, inside containers, or on Android with Termux.
         </motion.p>
 
-        {/* Buttons */}
+        {/* Buttons with magnetic effect */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.6 }}
           className="mt-8 flex flex-wrap items-center justify-center gap-3 hero-heading"
         >
-          <Button asChild variant="gradient" size="lg">
+          <Button asChild variant="gradient" size="lg" className="magnetic-btn">
             <Link href="/install">
               <Terminal className="h-4 w-4" />
               Get started
             </Link>
           </Button>
-          <Button asChild variant="outline" size="lg">
+          <Button asChild variant="outline" size="lg" className="magnetic-btn">
             <a href={siteConfig.repo} target="_blank" rel="noopener noreferrer">
               {/* GitHub icon */}
               <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4">
@@ -163,6 +163,11 @@ export function HeroSection() {
               Star on GitHub
               <ArrowRight className="h-4 w-4" />
             </a>
+          </Button>
+          <Button asChild variant="ghost" size="lg" className="magnetic-btn">
+            <Link href="/features">
+              Learn more
+            </Link>
           </Button>
         </motion.div>
 

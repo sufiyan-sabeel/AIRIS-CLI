@@ -5,6 +5,8 @@ import { ArchitectureSection } from "@/components/sections/architecture-section"
 import { ScreenshotsSection } from "@/components/sections/screenshots-section";
 import { DocsPreviewSection } from "@/components/sections/docs-preview-section";
 import { CtaSection } from "@/components/cta-section";
+import { CliPlaygroundSection } from "@/components/sections/cli-playground-section";
+import { WhyAirisSection } from "@/components/sections/why-airis-section";
 import BlurFade from "@/components/magicui/blur-fade";
 import { providers } from "@/lib/site";
 
@@ -35,7 +37,9 @@ export default function HomePage() {
         </div>
       </section>
 
+      <CliPlaygroundSection />
       <LiveDemoSection />
+      <WhyAirisSection />
       <FeaturesSection />
       <ArchitectureSection />
       <ScreenshotsSection />

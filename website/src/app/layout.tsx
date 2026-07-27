@@ -7,6 +7,7 @@ import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { FlickeringGrid } from "@/components/magicui/flickering-grid";
 import { ServiceWorkerRegister } from "@/components/service-worker-register";
+import { CommandPalette } from "@/components/command-palette";
 import LoadingScreen from "@/components/loading-screen";
 import { siteConfig } from "@/lib/site";
 import { BASE_PATH } from "@/lib/env";
@@ -125,6 +126,7 @@ export default function RootLayout({
             <main className="relative z-10">{children}</main>
             <Footer />
             <ServiceWorkerRegister />
+            <CommandPalette />
           </TooltipProvider>
         </ThemeProvider>
       </body>

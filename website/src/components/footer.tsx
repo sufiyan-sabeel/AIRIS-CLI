@@ -46,7 +46,7 @@ export function Footer() {
     <footer className="relative mt-24 border-t border-border/60">
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
       <div className="container py-14">
-        <div className="grid gap-10 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
+        <div className="grid gap-10 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1fr]">
           <div className="space-y-4">
             <Link href="/" className="flex items-center gap-2.5">
               <AIRISLogo size={32} animate={false} />

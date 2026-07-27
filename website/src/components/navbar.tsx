@@ -75,6 +75,28 @@ export function Navbar() {
         </div>
 
         <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              const event = new KeyboardEvent("keydown", {
+                metaKey: true,
+                ctrlKey: true,
+                key: "k",
+                bubbles: true,
+              });
+              document.dispatchEvent(event);
+            }}
+            className="hidden items-center gap-1.5 rounded-lg border border-border/60 bg-muted/30 px-2.5 py-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground hover:bg-muted/50 md:inline-flex"
+            aria-label="Open command palette"
+          >
+            <kbd className="rounded bg-muted/50 px-1 font-mono text-[10px]">
+              {typeof navigator !== "undefined" &&
+              /Mac|iPod|iPhone|iPad/.test(navigator.platform)
+                ? "⌘"
+                : "Ctrl"}
+            </kbd>
+            <kbd className="rounded bg-muted/50 px-1 font-mono text-[10px]">K</kbd>
+          </button>
           <ThemeToggle />
           <a
             href={siteConfig.repo}
