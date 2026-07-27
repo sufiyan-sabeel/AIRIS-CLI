@@ -192,7 +192,7 @@ function italic(text: string): string {
 
 function dim(text: string): string {
 	if (NO_COLOR) return text;
-	return theme.dim(text);
+	return theme.fg("dim", text);
 }
 
 function padToWidth(text: string, width: number): string {
