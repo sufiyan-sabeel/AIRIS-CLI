@@ -20,12 +20,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '22.19.0'
-          cache: npm
 
       - name: Install system dependencies
         run: |
@@ -34,7 +35,7 @@ jobs:
           sudo ln -s $(which fdfind) /usr/local/bin/fd 2>/dev/null || true
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install --ignore-scripts --no-audit --no-fund
 
       - name: Build
         run: npm run build
