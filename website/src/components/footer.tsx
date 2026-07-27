@@ -10,6 +10,8 @@ const footerColumns = [
       { label: "Features", href: "/features", external: false },
       { label: "Install", href: "/install", external: false },
       { label: "Documentation", href: "/docs", external: false },
+      { label: "CLI Playground", href: "/#cli-playground", external: false },
+      { label: "Why AIRIS?", href: "/#why-airis", external: false },
       { label: "Roadmap", href: "/roadmap", external: false },
     ],
   },
@@ -18,7 +20,8 @@ const footerColumns = [
     links: [
       { label: "Providers", href: "/providers", external: false },
       { label: "Extensions", href: "/extensions", external: false },
-      { label: "Blog", href: "/blog", external: false },
+      { label: "API Reference", href: "/docs#api", external: false },
+      { label: "Release Notes", href: "/blog", external: false },
       { label: "Changelog", href: "/docs#changelog", external: false },
     ],
   },
@@ -27,8 +30,18 @@ const footerColumns = [
     links: [
       { label: "GitHub", href: siteConfig.repo, external: true },
       { label: "Discord", href: siteConfig.discord, external: true },
+      { label: "Discussions", href: `${siteConfig.repo}/discussions`, external: true },
       { label: "Report issue", href: `${siteConfig.repo}/issues`, external: true },
       { label: "Contributing", href: `${siteConfig.repo}/blob/main/CONTRIBUTING.md`, external: true },
+    ],
+  },
+  {
+    title: "Legal",
+    links: [
+      { label: "Privacy Policy", href: `${siteConfig.repo}/wiki/Privacy-Policy`, external: true },
+      { label: "Terms of Service", href: `${siteConfig.repo}/wiki/Terms-of-Service`, external: true },
+      { label: "Security", href: `${siteConfig.repo}/security/policy`, external: true },
+      { label: "License", href: `${siteConfig.repo}/blob/main/LICENSE`, external: true },
     ],
   },
 ];
