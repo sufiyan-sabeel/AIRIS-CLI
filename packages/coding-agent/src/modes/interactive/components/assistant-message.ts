@@ -105,9 +105,7 @@ export class AssistantMessageComponent extends Container {
 					.some((c) => (c.type === "text" && c.text.trim()) || (c.type === "thinking" && c.thinking.trim()));
 
 				if (this.hideThinkingBlock) {
-					this.contentContainer.addChild(
-						new Text(theme.italic(theme.fg("thinkingText", `reasoning: ${this.hiddenThinkingLabel}`)), 1, 0),
-					);
+					// Thinking content hidden - skip entirely
 					if (hasVisibleContentAfter) {
 						this.contentContainer.addChild(new Spacer(1));
 					}
