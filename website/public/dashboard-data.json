@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-07-27T09:58:13.645Z",
-  "date": "2026-07-27",
+  "generatedAt": "2026-07-28T08:40:23.825Z",
+  "date": "2026-07-28",
   "dailyFact": {
-    "fact": "The Termux installation path allows running AIRIS on Android devices.",
-    "index": 11,
+    "fact": "AIRIS has a session system that supports listing, resuming, forking, naming, and exporting sessions.",
+    "index": 12,
     "total": 21
   },
   "analysis": {
@@ -17,10 +17,10 @@
       "tui"
     ],
     "tsSourceFiles": 763,
-    "tsxComponents": 53,
+    "tsxComponents": 56,
     "goModules": 5,
     "scriptFiles": 16,
-    "totalSourceLines": 236774,
+    "totalSourceLines": 237487,
     "githubWorkflows": 11,
     "markdownDocs": 103
   },
@@ -32,7 +32,7 @@
     },
     {
       "label": "React/TSX (.tsx)",
-      "count": 53,
+      "count": 56,
       "color": "#06b6d4"
     },
     {
