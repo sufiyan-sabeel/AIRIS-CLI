@@ -76,11 +76,11 @@ import type {
 	WriteToolInput,
 } from "../tools/index.ts";
 
+export type { AutocompleteItem } from "@sufiyan-sabeel/airis-tui";
 export type { ExecOptions, ExecResult } from "../exec.ts";
+export type { AppKeybinding, KeybindingsManager } from "../keybindings.ts";
 export type { BuildSystemPromptOptions } from "../system-prompt.ts";
 export type { AgentToolResult, AgentToolUpdateCallback, ToolExecutionMode };
-export type { AutocompleteItem } from "@sufiyan-sabeel/airis-tui";
-export type { AppKeybinding, KeybindingsManager } from "../keybindings.ts";
 
 // ============================================================================
 // UI Context

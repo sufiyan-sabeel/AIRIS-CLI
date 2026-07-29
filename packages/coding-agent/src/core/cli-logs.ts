@@ -5,6 +5,14 @@ import { getAgentDir } from "../config.ts";
 const SECRET_VALUE_RE = /(\b(?:api[_-]?key|token|secret|password|authorization)\b[\s"':=]+)([^\s"',}]+)/gi;
 const BEARER_RE = /\bBearer\s+[A-Za-z0-9._~+/=-]+/g;
 
+const EXPLICIT_SECRET_PATTERNS = [
+	/sk-ant-[a-zA-Z0-9-_]{40,}/gi,
+	/sk-proj-[a-zA-Z0-9-_]{40,}/gi,
+	/sk-[a-zA-Z0-9]{20,}/gi,
+	/AIzaSy[a-zA-Z0-9_-]{35}/gi,
+	/xai-[a-zA-Z0-9]{40,}/gi,
+];
+
 export function getCliLogDir(): string {
 	return join(getAgentDir(), "logs");
 }
@@ -22,7 +30,11 @@ export function getSessionsLogPath(): string {
 }
 
 export function sanitizeLogText(value: string): string {
-	return value.replace(SECRET_VALUE_RE, "$1[redacted]").replace(BEARER_RE, "Bearer [redacted]");
+	let sanitized = value.replace(SECRET_VALUE_RE, "$1[redacted]").replace(BEARER_RE, "Bearer [redacted]");
+	for (const pattern of EXPLICIT_SECRET_PATTERNS) {
+		sanitized = sanitized.replace(pattern, "[redacted]");
+	}
+	return sanitized;
 }
 
 function sanitizeLogValue(value: unknown): unknown {

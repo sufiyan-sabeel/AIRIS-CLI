@@ -23,10 +23,28 @@ router.post('/verify', (req: Request, res: Response) => {
     return;
   }
 
-  // Dev mode: accept any token, derive UID from it
-  const uid = token.substring(0, 20);
-  const email = `dev@airis.local`;
-  const displayName = 'Developer';
+  const isProd = process.env.NODE_ENV === 'production';
+  const bypassToken = process.env.DEV_BYPASS_TOKEN;
+
+  let uid = '';
+  let email = '';
+  let displayName = '';
+
+  if (isProd) {
+    if (bypassToken && token === bypassToken) {
+      uid = 'dev-bypass-user';
+      email = 'dev-bypass@airis.local';
+      displayName = 'Developer (Bypass)';
+    } else {
+      res.status(401).json({ error: 'Authentication bypass is disabled in production mode.' });
+      return;
+    }
+  } else {
+    // Dev mode: accept any token, derive UID from it
+    uid = token.substring(0, 20);
+    email = `dev@airis.local`;
+    displayName = 'Developer';
+  }
 
   run(
     `INSERT INTO users (uid, email, display_name, last_login)

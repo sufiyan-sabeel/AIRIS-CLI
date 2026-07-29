@@ -15,8 +15,8 @@ function generateId(): string {
   return Math.random().toString(36).substring(2, 10);
 }
 
-export function setupWebSocket(server: Server): WebSocketServer {
-  const wss = new WebSocketServer({ server, path: '/ws' });
+export function setupWebSocket(server: Server): any {
+  const wss = new WebSocketServer({ server, path: '/ws' }) as any;
 
   wss.on('connection', (ws: WebSocket, req: IncomingMessage) => {
     const id = generateId();

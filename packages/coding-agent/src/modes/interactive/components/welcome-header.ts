@@ -222,14 +222,24 @@ function renderBoxTop(width: number, style: "rounded" | "double" = "rounded"): s
 	const inner = width - 4;
 	const corner = style === "double" ? "╔" : "╭";
 	const line = style === "double" ? "═" : "─";
-	return padToWidth(fg("borderAccent", corner) + fg("border", line.repeat(inner)) + fg("borderAccent", style === "double" ? "╗" : "╮"), width);
+	return padToWidth(
+		fg("borderAccent", corner) +
+			fg("border", line.repeat(inner)) +
+			fg("borderAccent", style === "double" ? "╗" : "╮"),
+		width,
+	);
 }
 
 function renderBoxBottom(width: number, style: "rounded" | "double" = "rounded"): string {
 	const inner = width - 4;
 	const corner = style === "double" ? "╚" : "╰";
 	const line = style === "double" ? "═" : "─";
-	return padToWidth(fg("borderAccent", corner) + fg("border", line.repeat(inner)) + fg("borderAccent", style === "double" ? "╝" : "╯"), width);
+	return padToWidth(
+		fg("borderAccent", corner) +
+			fg("border", line.repeat(inner)) +
+			fg("borderAccent", style === "double" ? "╝" : "╯"),
+		width,
+	);
 }
 
 function renderBoxLine(content: string, width: number): string {
@@ -392,10 +402,12 @@ function renderStatusIndicators(width: number): string[] {
 		if (w <= inner) {
 			lines.push(renderBoxInsetLine(line, width));
 		} else {
-			lines.push(...group.map((ind) => {
-				const color = ind.active ? "success" : "dim";
-				return renderBoxInsetLine(`${fg(color, ind.icon)} ${fg(ind.active ? "text" : "dim", ind.label)}`, width);
-			}));
+			lines.push(
+				...group.map((ind) => {
+					const color = ind.active ? "success" : "dim";
+					return renderBoxInsetLine(`${fg(color, ind.icon)} ${fg(ind.active ? "text" : "dim", ind.label)}`, width);
+				}),
+			);
 		}
 	}
 
@@ -442,7 +454,9 @@ function renderRoutingModes(width: number): string[] {
 			lines.push(renderBoxInsetLine(line, width));
 		} else {
 			for (const r of group) {
-				lines.push(renderBoxInsetLine(`${fg("airisOrangeHighlight", bold(r.prefix))} ${fg("dim", r.description)}`, width));
+				lines.push(
+					renderBoxInsetLine(`${fg("airisOrangeHighlight", bold(r.prefix))} ${fg("dim", r.description)}`, width),
+				);
 			}
 		}
 	}
