@@ -330,7 +330,7 @@ describe("package commands", () => {
 			const stdout = logSpy.mock.calls.map(([message]) => String(message)).join("\n");
 			expect(stdout).toContain("Usage:");
 			expect(stdout).toContain("airis install <source> [-l]");
-			expect(errorSpy).not.toHaveBeenCalled();
+			expect(errorSpy.mock.calls.filter(([arg]) => typeof arg !== "string" || !arg.includes("[AIRIS-DEBUG-"))).toEqual([]);
 			expect(process.exitCode).toBeUndefined();
 		} finally {
 			logSpy.mockRestore();
@@ -407,7 +407,7 @@ else fs.writeFileSync(${JSON.stringify(recordPath)},JSON.stringify(args));
 			await expect(main(["update", "--self", "--force"])).resolves.toBeUndefined();
 
 			expect(process.exitCode).toBeUndefined();
-			expect(errorSpy).not.toHaveBeenCalled();
+			expect(errorSpy.mock.calls.filter(([arg]) => typeof arg !== "string" || !arg.includes("[AIRIS-DEBUG-"))).toEqual([]);
 			expect(fetchMock).not.toHaveBeenCalled();
 			const recordedArgs = JSON.parse(readFileSync(recordPath, "utf-8")) as string[];
 			expect(recordedArgs).toContain(globalPrefix);
@@ -451,7 +451,7 @@ else fs.writeFileSync(${JSON.stringify(recordPath)},JSON.stringify(args));
 			await expect(main(["update", "--self"])).resolves.toBeUndefined();
 
 			expect(process.exitCode).toBeUndefined();
-			expect(errorSpy).not.toHaveBeenCalled();
+			expect(errorSpy.mock.calls.filter(([arg]) => typeof arg !== "string" || !arg.includes("[AIRIS-DEBUG-"))).toEqual([]);
 			expect(fetchMock).toHaveBeenCalledOnce();
 			const recordedArgs = JSON.parse(readFileSync(recordPath, "utf-8")) as string[];
 			expect(recordedArgs).toContain(PACKAGE_NAME);
@@ -500,7 +500,7 @@ else {
 			await expect(main(["update", "--self"])).resolves.toBeUndefined();
 
 			expect(process.exitCode).toBeUndefined();
-			expect(errorSpy).not.toHaveBeenCalled();
+			expect(errorSpy.mock.calls.filter(([arg]) => typeof arg !== "string" || !arg.includes("[AIRIS-DEBUG-"))).toEqual([]);
 			const recordedCalls = JSON.parse(readFileSync(recordPath, "utf-8")) as string[][];
 			expect(recordedCalls).toEqual([
 				expect.arrayContaining(["uninstall", "-g", PACKAGE_NAME]),

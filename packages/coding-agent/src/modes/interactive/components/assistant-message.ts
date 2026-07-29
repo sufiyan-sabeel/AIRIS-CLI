@@ -25,7 +25,6 @@ export class AssistantMessageComponent extends Container {
 	private contentContainer: Container;
 	private hideThinkingBlock: boolean;
 	private markdownTheme: MarkdownTheme;
-	private hiddenThinkingLabel: string;
 	private lastMessage?: AssistantMessage;
 	private hasToolCalls = false;
 
@@ -33,13 +32,12 @@ export class AssistantMessageComponent extends Container {
 		message?: AssistantMessage,
 		hideThinkingBlock = false,
 		markdownTheme: MarkdownTheme = getMarkdownTheme(),
-		hiddenThinkingLabel = "Thinking...",
+		_hiddenThinkingLabel = "Thinking...",
 	) {
 		super();
 
 		this.hideThinkingBlock = hideThinkingBlock;
 		this.markdownTheme = markdownTheme;
-		this.hiddenThinkingLabel = hiddenThinkingLabel;
 
 		this.contentContainer = new Container();
 		this.addChild(this.contentContainer);
@@ -63,8 +61,7 @@ export class AssistantMessageComponent extends Container {
 		}
 	}
 
-	setHiddenThinkingLabel(label: string): void {
-		this.hiddenThinkingLabel = label;
+	setHiddenThinkingLabel(_label: string): void {
 		if (this.lastMessage) {
 			this.updateContent(this.lastMessage);
 		}
