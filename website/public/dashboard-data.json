@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-07-28T08:40:23.825Z",
-  "date": "2026-07-28",
+  "generatedAt": "2026-07-29T08:46:22.187Z",
+  "date": "2026-07-29",
   "dailyFact": {
-    "fact": "AIRIS has a session system that supports listing, resuming, forking, naming, and exporting sessions.",
-    "index": 12,
+    "fact": "The `airis --list-models` command supports search and glob patterns across providers.",
+    "index": 13,
     "total": 21
   },
   "analysis": {
