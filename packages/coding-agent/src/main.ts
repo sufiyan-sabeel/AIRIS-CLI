@@ -779,7 +779,9 @@ export async function main(args: string[], options?: MainOptions) {
 		sessionManager,
 	});
 	time("createAgentSessionRuntime");
-	console.error(`${DEBUG_TAG} Runtime created. session.model=${runtime.session.model?.id ?? "none"}, provider=${runtime.session.model?.provider ?? "none"}`);
+	console.error(
+		`${DEBUG_TAG} Runtime created. session.model=${runtime.session.model?.id ?? "none"}, provider=${runtime.session.model?.provider ?? "none"}`,
+	);
 	const { services, session, modelFallbackMessage } = runtime;
 	const { settingsManager, modelRegistry, resourceLoader } = services;
 	configureHttpDispatcher(settingsManager.getHttpIdleTimeoutMs());
