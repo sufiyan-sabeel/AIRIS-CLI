@@ -14,6 +14,7 @@ import { setupWebSocket } from './websocket';
 import { initDatabase, closeDatabase, saveToDisk } from './config/database';
 import { isFirebaseInitialized } from './config/firebase';
 import { MemoryService } from './services/memoryService';
+import { authMiddleware, AuthenticatedRequest } from './middleware/auth';
 
 async function main(): Promise<void> {
   await initDatabase();
@@ -54,9 +55,10 @@ async function main(): Promise<void> {
   // Setup WebSocket for IDE support
   const wss = setupWebSocket(server);
 
-  app.get('/api/history', (req, res) => {
+  app.get('/api/history', authMiddleware, (req, res) => {
+    const authReq = req as AuthenticatedRequest;
     try {
-      const uid = (req.query.uid as string) || 'anonymous';
+      const uid = authReq.user!.uid;
       const limit = parseInt(req.query.limit as string) || 50;
       const history = MemoryService.getRecentHistory(uid, limit);
       res.json({ history });
@@ -66,9 +68,10 @@ async function main(): Promise<void> {
     }
   });
 
-  app.get('/api/memory', (req, res) => {
+  app.get('/api/memory', authMiddleware, (req, res) => {
+    const authReq = req as AuthenticatedRequest;
     try {
-      const uid = (req.query.uid as string) || 'anonymous';
+      const uid = authReq.user!.uid;
       const memories = MemoryService.getAllMemories(uid);
       res.json({ memories });
     } catch (err) {

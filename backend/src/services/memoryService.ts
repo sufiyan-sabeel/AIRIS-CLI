@@ -117,9 +117,10 @@ export class MemoryService {
     ) as AutomationTask[];
   }
 
-  static getPendingTasks(): AutomationTask[] {
+  static getPendingTasks(userUid: string): AutomationTask[] {
     return queryAll(
-      `SELECT id, user_uid, name, command FROM automation_tasks WHERE status = 'pending' ORDER BY created_at ASC`
+      `SELECT id, user_uid, name, command FROM automation_tasks WHERE status = 'pending' AND user_uid = ? ORDER BY created_at ASC`,
+      [userUid]
     ) as AutomationTask[];
   }
 

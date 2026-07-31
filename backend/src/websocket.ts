@@ -15,8 +15,12 @@ function generateId(): string {
   return Math.random().toString(36).substring(2, 10);
 }
 
-export function setupWebSocket(server: Server): WebSocketServer {
-  const wss = new WebSocketServer({ server, path: '/ws' });
+export interface ExtendedWebSocketServer extends WebSocketServer {
+  broadcast?: (data: string) => void;
+}
+
+export function setupWebSocket(server: Server): ExtendedWebSocketServer {
+  const wss = new WebSocketServer({ server, path: '/ws' }) as ExtendedWebSocketServer;
 
   wss.on('connection', (ws: WebSocket, req: IncomingMessage) => {
     const id = generateId();
@@ -144,9 +148,3 @@ export function setupWebSocket(server: Server): WebSocketServer {
   return wss;
 }
 
-// Type augmentation for broadcast
-declare module 'ws' {
-  interface WebSocketServer {
-    broadcast: (data: string) => void;
-  }
-}

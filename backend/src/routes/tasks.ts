@@ -38,9 +38,10 @@ router.post('/', authMiddleware, (req: Request, res: Response) => {
   }
 });
 
-router.get('/pending', authMiddleware, (_req: Request, res: Response) => {
+router.get('/pending', authMiddleware, (req: Request, res: Response) => {
+  const authReq = req as AuthenticatedRequest;
   try {
-    const tasks = MemoryService.getPendingTasks();
+    const tasks = MemoryService.getPendingTasks(authReq.user!.uid);
     res.json({ tasks });
   } catch (err) {
     const error = err instanceof Error ? err.message : String(err);
