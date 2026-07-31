@@ -190,11 +190,6 @@ function italic(text: string): string {
 	return theme.italic(text);
 }
 
-function dim(text: string): string {
-	if (NO_COLOR) return text;
-	return theme.fg("dim", text);
-}
-
 function padToWidth(text: string, width: number): string {
 	const w = visibleWidth(text);
 	if (w >= width) return text;
@@ -222,14 +217,24 @@ function renderBoxTop(width: number, style: "rounded" | "double" = "rounded"): s
 	const inner = width - 4;
 	const corner = style === "double" ? "╔" : "╭";
 	const line = style === "double" ? "═" : "─";
-	return padToWidth(fg("borderAccent", corner) + fg("border", line.repeat(inner)) + fg("borderAccent", style === "double" ? "╗" : "╮"), width);
+	return padToWidth(
+		fg("borderAccent", corner) +
+			fg("border", line.repeat(inner)) +
+			fg("borderAccent", style === "double" ? "╗" : "╮"),
+		width,
+	);
 }
 
 function renderBoxBottom(width: number, style: "rounded" | "double" = "rounded"): string {
 	const inner = width - 4;
 	const corner = style === "double" ? "╚" : "╰";
 	const line = style === "double" ? "═" : "─";
-	return padToWidth(fg("borderAccent", corner) + fg("border", line.repeat(inner)) + fg("borderAccent", style === "double" ? "╝" : "╯"), width);
+	return padToWidth(
+		fg("borderAccent", corner) +
+			fg("border", line.repeat(inner)) +
+			fg("borderAccent", style === "double" ? "╝" : "╯"),
+		width,
+	);
 }
 
 function renderBoxLine(content: string, width: number): string {
@@ -266,10 +271,6 @@ function renderBoxInsetLine(content: string, width: number, inset: number = 2): 
 	);
 }
 
-function renderBoxEmpty(width: number): string {
-	return renderBoxLine("", width);
-}
-
 function renderSeparator(width: number): string {
 	if (width < 8) return padToWidth("", width);
 	const inner = width - 4;
@@ -299,7 +300,7 @@ function renderSectionDivider(title: string, width: number): string {
 // Logo Rendering with Color
 // ═══════════════════════════════════════════════════════════════
 
-function renderLogoLine(index: number, line: string, blockWidth: number): string {
+function renderLogoLine(_index: number, line: string, blockWidth: number): string {
 	const paddedLine = padToWidth(line, blockWidth);
 	if (!line.trim()) return paddedLine;
 
@@ -392,10 +393,12 @@ function renderStatusIndicators(width: number): string[] {
 		if (w <= inner) {
 			lines.push(renderBoxInsetLine(line, width));
 		} else {
-			lines.push(...group.map((ind) => {
-				const color = ind.active ? "success" : "dim";
-				return renderBoxInsetLine(`${fg(color, ind.icon)} ${fg(ind.active ? "text" : "dim", ind.label)}`, width);
-			}));
+			lines.push(
+				...group.map((ind) => {
+					const color = ind.active ? "success" : "dim";
+					return renderBoxInsetLine(`${fg(color, ind.icon)} ${fg(ind.active ? "text" : "dim", ind.label)}`, width);
+				}),
+			);
 		}
 	}
 
@@ -442,7 +445,9 @@ function renderRoutingModes(width: number): string[] {
 			lines.push(renderBoxInsetLine(line, width));
 		} else {
 			for (const r of group) {
-				lines.push(renderBoxInsetLine(`${fg("airisOrangeHighlight", bold(r.prefix))} ${fg("dim", r.description)}`, width));
+				lines.push(
+					renderBoxInsetLine(`${fg("airisOrangeHighlight", bold(r.prefix))} ${fg("dim", r.description)}`, width),
+				);
 			}
 		}
 	}
