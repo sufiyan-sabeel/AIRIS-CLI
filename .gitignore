@@ -1,92 +1,33 @@
-node_modules/
-node_modules_broken_*/
-dist/
-*.log
+# Rust
+target/
+Cargo.lock
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
 .DS_Store
-*.tsbuildinfo
-# packages/*/node_modules/
-packages/*/dist/
-packages/*/dist-chrome/
-packages/*/dist-firefox/
-*.cpuprofile
+Thumbs.db
 
 # Environment
 .env
 .env.local
 .env.*.local
 
-# Editor files
-.vscode/
-.zed/
-.idea/
-.claude/
-*.swp
-*.swo
-*~
+# AIRIS-CLI specific
+.airis/
+*.airis.db
+*.airis.cache
+memory-store/
+index-store/
 
-# Package specific
-.npm/
-coverage/
-.nyc_output/
-.airis_config/
-tui-debug.log
-compaction-results/
-.opencode/
-syntax.jsonl
-out.jsonl
-airis-*.html
-out.html
-packages/coding-agent/binaries/
-todo.md
-plans/
-.airis/hf-sessions/
-.airis/hf-sessions-backup/
-collect.sh
+# Logs
+*.log
+/trace-*.json
 
-# Local Netlify folder
-.netlify
-
-# AIRIS runtime state (missions, evidence, leases, failures)
-.airis/evidence/
-.airis/failures/
-.airis/leases.json
-.airis/missions/
-.airis/automation-guide.md
-
-# Next.js build artifacts
-.next/
-out/
-
-# Backend runtime
-backend/db/
-
-# Tool-specific settings
-.grok/
-
-# Accidental shell output file
-h -u origin main
-
-# AIRIS local/runtime files
-.airis/vision/
-website_backup_*/
-design-reference/
-AIRIS-automate/
-
-# Android trash files
-.trashed-*
-**/.trashed-*
-
-# InsForge & AI agent skills
-.insforge
-.agent
-.agents
-.augment
-.claude
-.cline
-.github/copilot*
-.kilocode
-.qoder
-.qwen
-.roo
-.trae
-.windsurf
+# Temp
+/tmp/

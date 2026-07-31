@@ -1,0 +1,25 @@
+[package]
+name = "airis-core"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Core types, traits, and errors for AIRIS-CLI"
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+chrono.workspace = true
+uuid.workspace = true
+dashmap.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+regex.workspace = true
+indexmap.workspace = true
+imbl.workspace = true
+async-trait.workspace = true
+arc-swap.workspace = true
+parking_lot.workspace = true
+strsim.workspace = true
+flume.workspace = true
+educe.workspace = true

@@ -1,0 +1,37 @@
+[package]
+name = "airis-cli"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "AIRIS-CLI binary entry point and command routing"
+
+[dependencies]
+airis-core.workspace = true
+airis-config.workspace = true
+airis-cache.workspace = true
+airis-models.workspace = true
+airis-providers.workspace = true
+airis-agent.workspace = true
+airis-planner.workspace = true
+airis-tools.workspace = true
+airis-memory.workspace = true
+airis-workspace.workspace = true
+airis-indexer.workspace = true
+airis-editor.workspace = true
+airis-terminal.workspace = true
+airis-git.workspace = true
+airis-lsp.workspace = true
+airis-plugins.workspace = true
+airis-mcp.workspace = true
+airis-telemetry.workspace = true
+airis-ui.workspace = true
+clap.workspace = true
+clap_complete.workspace = true
+tokio.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+color-eyre.workspace = true
+anyhow.workspace = true
+indicatif.workspace = true

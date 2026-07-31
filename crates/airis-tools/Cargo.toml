@@ -1,0 +1,18 @@
+[package]
+name = "airis-tools"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "airis-tools module for AIRIS-CLI"
+
+[dependencies]
+airis-core.workspace = true
+serde_json.workspace = true
+tokio.workspace = true
+async-trait.workspace = true
+uuid.workspace = true
+regex.workspace = true
+reqwest.workspace = true
+ignore.workspace = true
+globset.workspace = true
+parking_lot.workspace = true

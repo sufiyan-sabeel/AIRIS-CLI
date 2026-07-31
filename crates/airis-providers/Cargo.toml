@@ -1,0 +1,19 @@
+[package]
+name = "airis-providers"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Provider implementations for AIRIS-CLI (OpenAI, Anthropic, Ollama, etc.)"
+
+[dependencies]
+airis-core.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+async-trait.workspace = true
+reqwest.workspace = true
+reqwest-eventsource.workspace = true
+tracing.workspace = true
+chrono.workspace = true
+tokio.workspace = true
+futures.workspace = true

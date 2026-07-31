@@ -1,0 +1,23 @@
+[package]
+name = "airis-indexer"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Code search and project indexing for AIRIS-CLI"
+
+[dependencies]
+airis-core.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+ignore.workspace = true
+regex.workspace = true
+sha2.workspace = true
+chrono.workspace = true
+parking_lot.workspace = true
+dashmap.workspace = true
+globset.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true

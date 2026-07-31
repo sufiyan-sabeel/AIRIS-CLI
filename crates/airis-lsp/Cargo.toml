@@ -1,0 +1,15 @@
+[package]
+name = "airis-lsp"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "airis-lsp module for AIRIS-CLI"
+
+[dependencies]
+airis-core.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+anyhow.workspace = true
+lsp-types = "0.95"

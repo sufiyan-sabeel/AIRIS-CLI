@@ -1,0 +1,19 @@
+[package]
+name = "airis-ui"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Terminal UI for AIRIS-CLI"
+
+[dependencies]
+airis-core.workspace = true
+ratatui.workspace = true
+crossterm.workspace = true
+tui-textarea.workspace = true
+syntect.workspace = true
+tokio.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+tracing.workspace = true
+anyhow.workspace = true
+unicode-width.workspace = true
