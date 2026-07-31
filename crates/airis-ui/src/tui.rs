@@ -1,10 +1,12 @@
 //! Main TUI application for AIRIS-CLI.
 //!
 //! Provides the `TuiApp` struct and event loop that integrates all UI
-//! components: chat, input, panels, streaming, command palette, progress.
+//! components: chat, input, panels, streaming, command palette, progress,
+//! and the animated AIRIS logo welcome screen.
 
 use crate::chat::ChatArea;
 use crate::command::CommandPalette;
+use crate::components::welcome::WelcomeComponent;
 use crate::input::{InputAction, InputArea, map_input_event};
 use crate::panel::{self, FileEntry, PanelId, PanelRects, SplitLayout};
 use crate::progress::{MultiProgress, ProgressState, StatusBar, StatusMode};
@@ -34,12 +36,13 @@ pub enum AppMode {
     Streaming,
     Processing,
     Command,
+    Welcome,
 }
 
 /// The main TUI application.
 pub struct TuiApp {
     /// Session manager for conversation persistence.
-    pub session_manager: Arc<SessionManager>,
+    pub session_manager: Option<Arc<SessionManager>>,
     /// Global configuration.
     pub config: Arc<AirisConfig>,
     /// Whether the app should quit.
@@ -60,6 +63,10 @@ pub struct TuiApp {
     pub status_bar: StatusBar,
     /// Current theme.
     pub theme: Theme,
+    /// Welcome component with animated AIRIS logo.
+    pub welcome: WelcomeComponent,
+    /// Whether to show the welcome screen.
+    pub show_welcome: bool,
     /// Files in the files panel.
     pub files: Vec<FileEntry>,
     /// Available tool definitions.
@@ -73,16 +80,15 @@ pub struct TuiApp {
 }
 
 impl TuiApp {
-    /// Create a new TUI application.
-    pub fn new(session_manager: Arc<SessionManager>, config: Arc<AirisConfig>) -> Self {
+    /// Create a new TUI application from config (no session manager yet).
+    pub fn new(config: &AirisConfig) -> Self {
         let theme = Theme::named(&config.ui.syntax_theme);
-
         let mut cmd_palette = CommandPalette::new(theme.clone());
         cmd_palette.hide();
 
-        let mut app = Self {
-            session_manager,
-            config,
+        Self {
+            session_manager: None,
+            config: Arc::new(config.clone()),
             should_quit: false,
             panels: SplitLayout::new(),
             chat: ChatArea::new(theme.clone()),
@@ -91,26 +97,15 @@ impl TuiApp {
             command_palette: cmd_palette,
             progress: MultiProgress::new(),
             status_bar: StatusBar::new(),
+            welcome: WelcomeComponent::new(theme.clone()),
+            show_welcome: true,
             theme,
             files: Vec::new(),
             tool_definitions: Vec::new(),
             active_tool: None,
-            mode: AppMode::Normal,
+            mode: AppMode::Welcome,
             last_size: (0, 0),
-        };
-
-        // Load active session
-        if let Some(session) = app.session_manager.active() {
-            app.chat.update_conversation(&session.conversation);
-            app.status_bar.left_text = session
-                .workspace_root
-                .as_ref()
-                .map(|p| format!(" {} ", p.display()))
-                .unwrap_or_default();
         }
-
-        app.update_status_bar();
-        app
     }
 
     /// Set up terminal for raw mode.
@@ -153,7 +148,13 @@ impl TuiApp {
     ) -> AirisResult<()> {
         let mut last_tick = Instant::now();
 
-        terminal.draw(|f| self.render(f.area(), f.buffer_mut()))?;
+        // Show welcome screen with AIRIS logo animation
+        terminal.draw(|f| {
+            if self.show_welcome {
+                let area = f.area();
+                self.welcome.render(f, area);
+            }
+        })?;
 
         loop {
             let timeout = TICK_RATE
@@ -174,7 +175,13 @@ impl TuiApp {
                 last_tick = now;
             }
 
-            terminal.draw(|f| self.render(f.area(), f.buffer_mut()))?;
+            terminal.draw(|f| {
+                if self.show_welcome {
+                    self.welcome.render(f, f.area());
+                } else {
+                    self.render(f.area(), f.buffer_mut());
+                }
+            })?;
         }
 
         Ok(())
@@ -211,6 +218,16 @@ impl TuiApp {
     }
 
     fn handle_key(&mut self, key: KeyEvent) -> AirisResult<()> {
+        // Welcome screen: any key dismisses it after animation completes
+        if self.show_welcome {
+            if !self.welcome.is_animating() {
+                self.show_welcome = false;
+                self.mode = AppMode::Normal;
+                self.update_status_bar();
+            }
+            return Ok(());
+        }
+
         // Command palette gets priority
         if self.command_palette.is_visible() {
             self.command_palette.handle_key(&key);
@@ -303,6 +320,9 @@ impl TuiApp {
     }
 
     fn handle_mouse(&mut self, mouse: MouseEvent) -> AirisResult<()> {
+        if self.show_welcome {
+            return Ok(());
+        }
         match mouse.kind {
             MouseEventKind::ScrollUp => {
                 self.chat.scroll_up(3);
@@ -328,18 +348,25 @@ impl TuiApp {
     }
 
     fn tick(&mut self) {
+        if self.show_welcome {
+            // Welcome component ticks itself during render
+        }
         if let Some(ref mut sw) = self.streaming {
             sw.tick();
         }
     }
 
+    /// Dismiss the welcome screen manually.
+    pub fn dismiss_welcome(&mut self) {
+        self.show_welcome = false;
+        self.mode = AppMode::Normal;
+        self.update_status_bar();
+    }
+
     /// Send a user message, add it to the session, and start streaming.
     pub fn send_message(&mut self, content: String) {
-        if let Some(session) = self.session_manager.active() {
-            let mut session = session;
-            session.conversation.push(Message::user(&content));
-            self.session_manager.update(&session);
-            self.chat.update_conversation(&session.conversation);
+        if self.show_welcome {
+            self.dismiss_welcome();
         }
 
         self.mode = AppMode::Streaming;
@@ -366,10 +393,6 @@ impl TuiApp {
         if let Some(ref mut sw) = self.streaming {
             sw.finish(finish_reason, usage);
         }
-        // Persist to session
-        if let Some(session) = self.session_manager.active() {
-            self.session_manager.update(&session);
-        }
         self.mode = AppMode::Normal;
         self.streaming = None;
         self.update_status_bar();
@@ -385,8 +408,11 @@ impl TuiApp {
 
     /// Set processing state.
     pub fn set_processing(&mut self, message: &str) {
+        if self.show_welcome {
+            self.dismiss_welcome();
+        }
         self.mode = AppMode::Processing;
-        self.status_bar.center_text = format!(" ⚙ {} ", message);
+        self.status_bar.center_text = format!(" \u{2699} {} ", message);
         self.status_bar.mode = StatusMode::Processing;
     }
 
@@ -412,25 +438,15 @@ impl TuiApp {
 
     fn update_status_bar(&mut self) {
         self.status_bar.mode = match self.mode {
+            AppMode::Welcome => StatusMode::Normal,
             AppMode::Normal => StatusMode::Normal,
             AppMode::Streaming => StatusMode::Streaming,
             AppMode::Processing => StatusMode::Processing,
             AppMode::Command => StatusMode::Command,
         };
-
-        if let Some(session) = self.session_manager.active() {
-            let conv = &session.conversation;
-            let msg_count = conv.messages.len();
-            let tok = conv.token_count();
-            if self.config.ui.show_token_count {
-                self.status_bar.right_text = format!(" {} msgs / {} tok ", msg_count, tok);
-            } else {
-                self.status_bar.right_text = format!(" {} msgs ", msg_count);
-            }
-        }
     }
 
-    /// Render the entire UI.
+    /// Render the entire UI (non-welcome mode).
     fn render(&mut self, area: Rect, buf: &mut Buffer) {
         let colors = &self.theme.colors;
 
@@ -447,7 +463,10 @@ impl TuiApp {
         // ── Conversation panel ──
         {
             let conv = rects.conversation;
-            let inner = Rect::new(conv.x + 1, conv.y + 1, conv.width.saturating_sub(2), conv.height.saturating_sub(2));
+            let inner = Rect::new(
+                conv.x + 1, conv.y + 1,
+                conv.width.saturating_sub(2), conv.height.saturating_sub(2),
+            );
 
             // Draw border
             let border = if self.panels.focus == PanelId::Conversation {
@@ -515,12 +534,14 @@ impl TuiApp {
                 let block = Block::default()
                     .borders(Borders::ALL)
                     .border_style(Style::default().fg(colors.info))
-                    .title(format!("  {} ", sw.token_display()));
+                    .title(format!(" \u{f104} {} ", sw.token_display()));
                 let inner = block.inner(overlay);
                 block.render(overlay, buf);
 
                 if inner.height > 0 {
-                    let text = syntax::truncate_to_width(sw.total_content(), inner.width as usize);
+                    let text = crate::syntax::truncate_to_width(
+                        sw.total_content(), inner.width as usize,
+                    );
                     Paragraph::new(Line::from(Span::styled(
                         text,
                         Style::default().fg(colors.text_primary),
@@ -568,30 +589,39 @@ mod tests {
 
     #[test]
     fn test_app_new() {
-        let sm = Arc::new(SessionManager::new());
-        sm.create(None);
-        let config = test_config();
-        let app = TuiApp::new(sm, config);
+        let config = AirisConfig {
+            ui: airis_core::types::UiConfig::default(),
+            ..Default::default()
+        };
+        let app = TuiApp::new(&config);
         assert!(!app.should_quit);
+        assert_eq!(app.mode, AppMode::Welcome);
+        assert!(app.show_welcome);
+    }
+
+    #[test]
+    fn test_dismiss_welcome() {
+        let config = AirisConfig::default();
+        let mut app = TuiApp::new(&config);
+        assert!(app.show_welcome);
+        app.dismiss_welcome();
+        assert!(!app.show_welcome);
         assert_eq!(app.mode, AppMode::Normal);
     }
 
     #[test]
-    fn test_send_message() {
-        let sm = Arc::new(SessionManager::new());
-        sm.create(None);
-        let config = test_config();
-        let mut app = TuiApp::new(sm, config);
+    fn test_send_message_dismisses_welcome() {
+        let config = AirisConfig::default();
+        let mut app = TuiApp::new(&config);
         app.send_message("Hello".into());
+        assert!(!app.show_welcome);
         assert_eq!(app.mode, AppMode::Streaming);
     }
 
     #[test]
     fn test_cancel_streaming() {
-        let sm = Arc::new(SessionManager::new());
-        sm.create(None);
-        let config = test_config();
-        let mut app = TuiApp::new(sm, config);
+        let config = AirisConfig::default();
+        let mut app = TuiApp::new(&config);
         app.send_message("hi".into());
         app.cancel_streaming();
         assert_eq!(app.mode, AppMode::Normal);
@@ -599,10 +629,8 @@ mod tests {
 
     #[test]
     fn test_finish_streaming() {
-        let sm = Arc::new(SessionManager::new());
-        sm.create(None);
-        let config = test_config();
-        let mut app = TuiApp::new(sm, config);
+        let config = AirisConfig::default();
+        let mut app = TuiApp::new(&config);
         app.send_message("hello".into());
         app.append_stream_chunk("Hi");
         app.finish_streaming("stop", None);
@@ -611,9 +639,8 @@ mod tests {
 
     #[test]
     fn test_progress_lifecycle() {
-        let sm = Arc::new(SessionManager::new());
-        let config = test_config();
-        let mut app = TuiApp::new(sm, config);
+        let config = AirisConfig::default();
+        let mut app = TuiApp::new(&config);
         let id = app.add_progress("Working");
         assert!(!app.progress.is_empty());
         app.update_progress(id, "Processing", 0.5);
@@ -623,9 +650,9 @@ mod tests {
 
     #[test]
     fn test_focus() {
-        let sm = Arc::new(SessionManager::new());
-        let config = test_config();
-        let mut app = TuiApp::new(sm, config);
+        let config = AirisConfig::default();
+        let mut app = TuiApp::new(&config);
+        app.dismiss_welcome();
         assert_eq!(app.panels.focus, PanelId::Conversation);
         app.panels.focus_next();
         assert_eq!(app.panels.focus, PanelId::Tools);

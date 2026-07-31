@@ -1,17 +1,17 @@
 //! `airis index` — Index workspace for search.
 
+use crate::CommandContext;
 use airis_core::prelude::*;
 use std::path::PathBuf;
 
 pub async fn execute(
     path: &Option<PathBuf>,
     refresh: bool,
-    show_stats: bool,
-    indexer: &airis_indexer::IndexerImpl,
-    workspace: &airis_workspace::WorkspaceManagerImpl,
+    stats: bool,
+    ctx: &CommandContext,
 ) -> AirisResult<()> {
-    if show_stats {
-        let stats = indexer.stats().await?;
+    if stats {
+        let stats = ctx.indexer.stats().await?;
         println!("Index Statistics:");
         println!("  Files indexed:    {}", stats.total_files);
         println!("  Total chunks:     {}", stats.total_chunks);
@@ -32,7 +32,7 @@ pub async fn execute(
         println!("Indexing {}...", root.display());
     }
 
-    let stats = indexer.index(&root).await?;
+    let stats = ctx.indexer.index(&root).await?;
     println!(
         "Indexed {} files ({} symbols, {} chunks, {} bytes)",
         stats.total_files, stats.total_symbols, stats.total_chunks, stats.indexed_bytes

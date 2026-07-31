@@ -1,0 +1,197 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+    branches: [main]
+
+env:
+  CARGO_TERM_COLOR: always
+  RUSTFLAGS: "-Dwarnings"
+  RUST_BACKTRACE: 1
+
+jobs:
+  # ─── Quality ──────────────────────────────────────────────────────────
+  quality:
+    name: Quality Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+
+      - name: Cache dependencies
+        uses: Swatinem/rust-cache@v2
+
+      - name: Format check
+        run: cargo fmt --all --check
+
+      - name: Clippy
+        run: cargo clippy --workspace --all-targets -- -D warnings
+
+      - name: Documentation
+        run: cargo doc --no-deps --document-private-items
+        env:
+          RUSTDOCFLAGS: "-D warnings"
+
+  # ─── Security Scan ────────────────────────────────────────────────────
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install cargo-audit
+        run: cargo install cargo-audit --locked
+
+      - name: Audit dependencies
+        run: cargo audit
+
+      - name: Secret scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: "fs"
+          scan-ref: "."
+          format: "sarif"
+          output: "trivy-results.sarif"
+          hide-progress: true
+
+      - name: Upload Trivy results
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: "trivy-results.sarif"
+
+  # ─── Build & Test ─────────────────────────────────────────────────────
+  build:
+    name: Build & Test
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache dependencies
+        uses: Swatinem/rust-cache@v2
+
+      - name: Build
+        run: cargo build --release --all-features
+
+      - name: Test
+        run: cargo test --release --all-features --workspace
+
+      - name: Upload binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: airis-${{ matrix.os }}
+          path: target/release/airis
+          retention-days: 7
+
+  # ─── Benchmark ────────────────────────────────────────────────────────
+  benchmark:
+    name: Benchmark
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache dependencies
+        uses: Swatinem/rust-cache@v2
+
+      - name: Build benchmarks
+        run: cargo bench --no-run --all-features
+
+      - name: Run benchmarks
+        run: cargo bench --all-features
+
+  # ─── Dependency Review ────────────────────────────────────────────────
+  dependency-review:
+    name: Dependency Review
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Dependency Review
+        uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: high
+
+  # ─── Release (tagged only) ────────────────────────────────────────────
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [quality, security, build]
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache dependencies
+        uses: Swatinem/rust-cache@v2
+
+      - name: Build release
+        run: cargo build --release --all-features
+
+      - name: Generate SBOM
+        run: cargo install cargo-cyclonedx && cargo cyclonedx
+
+      - name: Create release archive
+        run: |
+          mkdir -p dist
+          cp target/release/airis dist/
+          cp docs/brand/logo.svg dist/airis-logo.svg
+          cp docs/brand/banner.svg dist/airis-banner.svg
+          tar czf airis-${{ github.ref_name }}-linux-x86_64.tar.gz -C dist .
+          sha256sum airis-${{ github.ref_name }}-linux-x86_64.tar.gz > checksums.txt
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: AIRIS-CLI ${{ github.ref_name }}
+          body_path: CHANGELOG.md
+          files: |
+            airis-${{ github.ref_name }}-linux-x86_64.tar.gz
+            checksums.txt
+            dist/*.json
+
+      - name: Publish to crates.io
+        run: |
+          cargo publish -p airis-core --token ${{ secrets.CARGO_REGISTRY_TOKEN }}
+          cargo publish -p airis-config --token ${{ secrets.CARGO_REGISTRY_TOKEN }}
+          cargo publish -p airis-agent --token ${{ secrets.CARGO_REGISTRY_TOKEN }}
+          cargo publish -p airis-cli --token ${{ secrets.CARGO_REGISTRY_TOKEN }}
+
+  # ─── Website Deployment ───────────────────────────────────────────────
+  deploy-website:
+    name: Deploy Website
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs
+          destination_dir: ./

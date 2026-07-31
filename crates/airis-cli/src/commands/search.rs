@@ -1,18 +1,18 @@
 //! `airis search` — Search codebase or web.
 
 use airis_core::prelude::*;
+use crate::CommandContext;
 
 pub async fn execute(
     query: &str,
-    code_search: bool,
+    code: bool,
     limit: usize,
-    config: &airis_config::ConfigManager,
-    indexer: &airis_indexer::IndexerImpl,
+    ctx: &CommandContext,
 ) -> AirisResult<()> {
-    if code_search {
+    if code {
         println!("Searching codebase for: {}", query);
 
-        let results = indexer.search(query, limit).await?;
+        let results = ctx.indexer.search(query, limit).await?;
 
         if results.is_empty() {
             println!("No results found.");

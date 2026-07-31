@@ -1,531 +1,659 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AIRIS CLI – Advanced AI Responsive CLI</title>
-  <meta name="description" content="AIRIS CLI – Artificial Intelligence Responsive Integrated System. A powerful AI coding agent CLI with read, bash, edit, write tools and session management." />
-  <link rel="stylesheet" href="style.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIRIS-CLI — Artificial Intelligence Responsive Integrated System</title>
+<meta name="description" content="AIRIS-CLI by KageOS: A next-generation AI-powered command-line interface. Intelligent, responsive, and seamlessly integrated terminal experience.">
+<meta name="keywords" content="AIRIS, CLI, KageOS, AI, terminal, command-line, artificial intelligence, developer tools">
+<meta name="author" content="KageOS">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#000000">
+
+<!-- Open Graph -->
+<meta property="og:type" content="product">
+<meta property="og:title" content="AIRIS-CLI — AI-Powered Terminal">
+<meta property="og:description" content="Artificial Intelligence Responsive Integrated System. Next-gen CLI by KageOS.">
+<meta property="og:image" content="brand/banner.svg">
+<meta property="og:url" content="https://github.com/kageos/airis-cli">
+<meta property="og:site_name" content="AIRIS-CLI">
+<meta property="og:locale" content="en_US">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="AIRIS-CLI — AI-Powered Terminal">
+<meta name="twitter:description" content="Artificial Intelligence Responsive Integrated System by KageOS.">
+<meta name="twitter:image" content="brand/banner.svg">
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<!-- Favicons -->
+<link rel="icon" type="image/x-icon" href="favicon/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
+<link rel="apple-touch-icon" href="favicon/apple-touch-icon.png">
+
+<style>
+/* === RESET & BASE === */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#000;color:#c8d6e5;overflow-x:hidden;line-height:1.6;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+a{color:#00e5ff;text-decoration:none;transition:color .3s}
+a:hover{color:#0088ff}
+img{max-width:100%;height:auto;display:block}
+::selection{background:#0066ff;color:#fff}
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-track{background:#000}
+::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#00e5ff,#0066ff);border-radius:4px}
+
+/* === VARIABLES === */
+:root{
+  --cyan:#00e5ff;
+  --blue:#0066ff;
+  --mid:#0088ff;
+  --glass:rgba(255,255,255,0.04);
+  --glass-border:rgba(255,255,255,0.08);
+  --text:#c8d6e5;
+  --text-dim:#5a7a9a;
+  --radius:16px;
+  --max-w:1200px;
+}
+
+/* === UTILITY === */
+.container{width:100%;max-width:var(--max-w);margin:0 auto;padding:0 24px}
+.section{padding:100px 0;position:relative}
+.section-label{font-size:14px;font-weight:600;text-transform:uppercase;letter-spacing:4px;color:var(--cyan);margin-bottom:12px;display:block}
+.section-title{font-size:clamp(28px,4vw,48px);font-weight:800;color:#fff;margin-bottom:20px}
+.section-sub{font-size:clamp(15px,1.3vw,18px);color:var(--text-dim);max-width:640px;margin-bottom:48px}
+.text-center{text-align:center}.mx-auto{margin-left:auto;margin-right:auto}
+
+/* === PARTICLES (CSS-only) === */
+.particles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.particle{position:absolute;width:3px;height:3px;background:var(--cyan);border-radius:50%;opacity:0;animation:particleFloat 12s infinite}
+.particle:nth-child(1){left:10%;top:20%;animation-delay:0s;width:2px;height:2px}
+.particle:nth-child(2){left:20%;top:60%;animation-delay:2s;width:4px;height:4px;background:var(--mid)}
+.particle:nth-child(3){left:35%;top:10%;animation-delay:4s;width:2px;height:2px}
+.particle:nth-child(4){left:50%;top:70%;animation-delay:1s;width:3px;height:3px}
+.particle:nth-child(5){left:65%;top:30%;animation-delay:3s;width:2px;height:2px}
+.particle:nth-child(6){left:75%;top:80%;animation-delay:5s;width:4px;height:4px;background:var(--mid)}
+.particle:nth-child(7){left:85%;top:15%;animation-delay:2.5s;width:2px;height:2px}
+.particle:nth-child(8){left:90%;top:50%;animation-delay:4.5s;width:3px;height:3px}
+.particle:nth-child(9){left:5%;top:85%;animation-delay:3.5s;width:3px;height:3px}
+.particle:nth-child(10){left:45%;top:40%;animation-delay:1.5s;width:2px;height:2px}
+
+@keyframes particleFloat{
+  0%{opacity:0;transform:translateY(0) translateX(0)}
+  10%{opacity:0.8}
+  90%{opacity:0.6}
+  100%{opacity:0;transform:translateY(-300px) translateX(100px)}
+}
+
+/* === NAV === */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:16px 0;transition:background .4s,backdrop-filter .4s}
+nav.scrolled{background:rgba(0,0,0,0.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--glass-border)}
+nav .container{display:flex;align-items:center;justify-content:space-between}
+.nav-logo{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:700;color:#fff}
+.nav-logo img{width:32px;height:32px}
+.nav-logo span{background:linear-gradient(135deg,var(--cyan),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.nav-links{display:flex;gap:32px;align-items:center;list-style:none}
+.nav-links a{font-size:14px;font-weight:500;color:var(--text-dim);transition:color .3s}
+.nav-links a:hover{color:var(--cyan)}
+.nav-cta{padding:8px 20px;background:linear-gradient(135deg,var(--cyan),var(--blue));border-radius:8px;color:#fff !important;font-weight:600;font-size:13px;transition:transform .3s,box-shadow .3s}
+.nav-cta:hover{transform:translateY(-1px);box-shadow:0 4px 24px rgba(0,229,255,0.3)}
+.menu-toggle{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px}
+.menu-toggle span{width:24px;height:2px;background:var(--text);border-radius:2px;transition:.3s}
+
+/* === HERO === */
+.hero{min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden;background:#000}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%, rgba(0,102,255,0.15) 0%, transparent 60%),radial-gradient(ellipse at 80% 50%, rgba(0,229,255,0.08) 0%, transparent 50%),radial-gradient(ellipse at 20% 80%, rgba(0,102,255,0.06) 0%, transparent 50%);z-index:1}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,68,136,0.06) 1px,transparent 1px),linear-gradient(90deg,rgba(0,68,136,0.06) 1px,transparent 1px);background-size:60px 60px;z-index:1;mask-image:radial-gradient(ellipse at center,black 30%,transparent 70%);-webkit-mask-image:radial-gradient(ellipse at center,black 30%,transparent 70%)}
+.hero .container{position:relative;z-index:2;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+.hero-left{padding-top:40px}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border:1px solid rgba(0,229,255,0.2);border-radius:100px;font-size:12px;font-weight:500;color:var(--cyan);background:rgba(0,229,255,0.05);margin-bottom:24px;text-transform:uppercase;letter-spacing:2px}
+.hero-badge-dot{width:6px;height:6px;background:var(--cyan);border-radius:50%;animation:pulse-dot 2s infinite}
+@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:0.3}}
+.hero h1{font-size:clamp(36px,5vw,64px);font-weight:800;line-height:1.08;color:#fff;margin-bottom:20px}
+.hero h1 .gradient{background:linear-gradient(135deg,var(--cyan),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{font-size:clamp(16px,1.3vw,18px);color:var(--text-dim);line-height:1.7;margin-bottom:32px;max-width:520px}
+.hero-buttons{display:flex;gap:16px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:14px 32px;border-radius:12px;font-size:15px;font-weight:600;transition:all .3s;cursor:pointer;border:none}
+.btn-primary{background:linear-gradient(135deg,var(--cyan),var(--blue));color:#fff;box-shadow:0 4px 24px rgba(0,229,255,0.25)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 40px rgba(0,229,255,0.35)}
+.btn-secondary{background:var(--glass);border:1px solid var(--glass-border);color:var(--text)}
+.btn-secondary:hover{background:rgba(255,255,255,0.08);border-color:rgba(0,229,255,0.3);color:#fff}
+.btn-icon{font-size:18px}
+
+/* Terminal window in hero */
+.terminal-window{background:rgba(0,0,0,0.7);border:1px solid var(--glass-border);border-radius:12px;overflow:hidden;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:0 20px 80px rgba(0,0,0,0.6),0 0 40px rgba(0,102,255,0.05);transform:perspective(1000px) rotateY(-3deg);transition:transform .5s}
+.terminal-window:hover{transform:perspective(1000px) rotateY(0deg)}
+.terminal-header{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--glass-border)}
+.terminal-dot{width:10px;height:10px;border-radius:50%}
+.terminal-dot.r{background:#ff5f56}
+.terminal-dot.y{background:#ffbd2e}
+.terminal-dot.g{background:#27c93f}
+.terminal-title{font-size:12px;color:var(--text-dim);margin-left:12px;font-family:'JetBrains Mono',monospace}
+.terminal-body{padding:20px 24px;font-family:'JetBrains Mono',monospace;font-size:14px;line-height:1.8;min-height:200px}
+.terminal-line{color:var(--text-dim);margin-bottom:4px;opacity:0;animation:termFadeIn .5s forwards}
+.terminal-line:nth-child(1){animation-delay:.3s}
+.terminal-line:nth-child(2){animation-delay:.8s}
+.terminal-line:nth-child(3){animation-delay:1.3s}
+.terminal-line .prompt{color:var(--cyan)}
+.terminal-line .cmd{color:#e8e8e8}
+.terminal-line .output{color:#5a7a9a}
+.terminal-cursor{display:inline-block;width:8px;height:16px;background:var(--cyan);margin-left:2px;animation:blink 1s step-end infinite;vertical-align:text-bottom}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+@keyframes termFadeIn{to{opacity:1}}
+.typing-text{font-family:'JetBrains Mono',monospace;font-size:clamp(14px,1.2vw,16px);color:var(--cyan);margin-top:16px;min-height:28px}
+
+/* === FEATURES === */
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.feature-card{padding:32px;border-radius:var(--radius);background:var(--glass);border:1px solid var(--glass-border);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);transition:all .4s;position:relative;overflow:hidden}
+.feature-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--cyan),var(--blue),transparent);opacity:0;transition:opacity .4s}
+.feature-card:hover{transform:translateY(-4px);border-color:rgba(0,229,255,0.2);background:rgba(255,255,255,0.06)}
+.feature-card:hover::before{opacity:1}
+.feature-icon{width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,rgba(0,229,255,0.1),rgba(0,102,255,0.1));display:flex;align-items:center;justify-content:center;margin-bottom:20px;font-size:22px}
+.feature-card h3{font-size:18px;font-weight:700;color:#fff;margin-bottom:10px}
+.feature-card p{font-size:14px;color:var(--text-dim);line-height:1.7}
+
+/* === ARCHITECTURE === */
+.arch-diagram{display:flex;flex-direction:column;gap:0;align-items:center;padding:40px 0}
+.arch-layer{display:flex;align-items:center;justify-content:center;gap:20px;padding:20px 40px;border-radius:12px;background:var(--glass);border:1px solid var(--glass-border);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);min-width:200px}
+.arch-layer.l1{background:linear-gradient(135deg,rgba(0,229,255,0.08),rgba(0,102,255,0.04));border-color:rgba(0,229,255,0.2)}
+.arch-layer.l2{background:linear-gradient(135deg,rgba(0,102,255,0.08),rgba(0,229,255,0.04));border-color:rgba(0,102,255,0.2)}
+.arch-layer.l3{background:linear-gradient(135deg,rgba(0,229,255,0.06),rgba(0,102,255,0.08));border-color:rgba(0,229,255,0.15)}
+.arch-layer.l4{background:linear-gradient(135deg,rgba(0,102,255,0.06),rgba(0,229,255,0.06));border-color:rgba(0,102,255,0.15)}
+.arch-arrow{color:var(--cyan);font-size:20px;padding:8px 0;opacity:0.6}
+.arch-layer span{font-size:14px;font-weight:500;color:var(--text)}
+.arch-layer .arch-tag{font-size:11px;font-weight:600;padding:2px 10px;border-radius:100px;background:rgba(0,229,255,0.1);color:var(--cyan);letter-spacing:1px}
+
+/* === COMMANDS === */
+.commands-list{max-width:720px;margin:0 auto}
+.command-item{display:flex;align-items:center;gap:16px;padding:16px 24px;border-radius:12px;background:var(--glass);border:1px solid var(--glass-border);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);margin-bottom:12px;transition:all .3s;cursor:default}
+.command-item:hover{border-color:rgba(0,229,255,0.15);transform:translateX(4px)}
+.command-item .cmd-name{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600;color:var(--cyan);min-width:160px}
+.command-item .cmd-desc{font-size:14px;color:var(--text-dim);flex:1}
+.command-item .cmd-badge{font-size:11px;font-weight:500;padding:2px 10px;border-radius:100px;background:rgba(0,102,255,0.1);color:var(--mid);white-space:nowrap}
+
+/* === INSTALLATION === */
+.install-box{max-width:640px;margin:0 auto}
+.code-block{position:relative;background:rgba(0,0,0,0.6);border:1px solid var(--glass-border);border-radius:12px;overflow:hidden;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.code-header{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-bottom:1px solid var(--glass-border);font-size:12px;color:var(--text-dim)}
+.copy-btn{display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:6px;border:none;background:rgba(255,255,255,0.06);color:var(--text-dim);font-size:12px;cursor:pointer;transition:all .3s;font-family:'Inter',sans-serif}
+.copy-btn:hover{background:rgba(0,229,255,0.1);color:var(--cyan)}
+.copy-btn.copied{background:rgba(0,229,255,0.15);color:var(--cyan)}
+code{display:block;padding:20px 24px;font-family:'JetBrains Mono',monospace;font-size:15px;color:#e8e8e8;line-height:1.6;overflow-x:auto}
+code .cm{color:#5a7a9a}
+code .cy{color:var(--cyan)}
+code .bl{color:var(--blue)}
+code .gr{color:#7ecf8a}
+.install-note{font-size:13px;color:var(--text-dim);margin-top:16px;text-align:center}
+
+/* === FOOTER === */
+footer{background:rgba(0,0,0,0.5);border-top:1px solid var(--glass-border);padding:48px 0 24px}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;margin-bottom:40px}
+.footer-brand .nav-logo{margin-bottom:12px}
+.footer-brand p{font-size:13px;color:var(--text-dim);line-height:1.7;max-width:300px}
+.footer-col h4{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:2px;color:var(--text);margin-bottom:16px}
+.footer-col ul{list-style:none}
+.footer-col ul li{margin-bottom:8px}
+.footer-col ul a{font-size:14px;color:var(--text-dim);transition:color .3s}
+.footer-col ul a:hover{color:var(--cyan)}
+.footer-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:24px;border-top:1px solid var(--glass-border);font-size:13px;color:var(--text-dim)}
+.footer-bottom span .highlight{color:var(--cyan);font-weight:600}
+
+/* === SCROLL ANIMATIONS (Intersection Observer) === */
+.reveal{opacity:0;transform:translateY(40px);transition:opacity .7s ease,transform .7s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-left{opacity:0;transform:translateX(-40px);transition:opacity .7s ease,transform .7s ease}
+.reveal-left.visible{opacity:1;transform:translateX(0)}
+.reveal-right{opacity:0;transform:translateX(40px);transition:opacity .7s ease,transform .7s ease}
+.reveal-right.visible{opacity:1;transform:translateX(0)}
+.reveal-scale{opacity:0;transform:scale(0.92);transition:opacity .7s ease,transform .7s ease}
+.reveal-scale.visible{opacity:1;transform:scale(1)}
+.stagger-children > *{opacity:0;transform:translateY(20px);transition:opacity .5s ease,transform .5s ease}
+.stagger-children.visible > *:nth-child(1){transition-delay:0s;opacity:1;transform:translateY(0)}
+.stagger-children.visible > *:nth-child(2){transition-delay:.1s;opacity:1;transform:translateY(0)}
+.stagger-children.visible > *:nth-child(3){transition-delay:.2s;opacity:1;transform:translateY(0)}
+.stagger-children.visible > *:nth-child(4){transition-delay:.3s;opacity:1;transform:translateY(0)}
+.stagger-children.visible > *:nth-child(5){transition-delay:.4s;opacity:1;transform:translateY(0)}
+.stagger-children.visible > *:nth-child(6){transition-delay:.5s;opacity:1;transform:translateY(0)}
+
+/* === RESPONSIVE === */
+@media(max-width:1024px){
+  .hero .container{grid-template-columns:1fr;gap:40px;text-align:center}
+  .hero p{margin-left:auto;margin-right:auto}
+  .hero-buttons{justify-content:center}
+  .terminal-window{transform:none;max-width:520px;margin:0 auto}
+  .features-grid{grid-template-columns:repeat(2,1fr)}
+  .footer-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:768px){
+  .nav-links{display:none;position:fixed;top:72px;left:0;right:0;background:rgba(0,0,0,0.95);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);flex-direction:column;padding:24px;gap:20px;border-bottom:1px solid var(--glass-border)}
+  .nav-links.open{display:flex}
+  .menu-toggle{display:flex}
+  .features-grid{grid-template-columns:1fr}
+  .footer-grid{grid-template-columns:1fr;gap:32px}
+  .footer-bottom{flex-direction:column;gap:12px;text-align:center}
+  .command-item{flex-direction:column;align-items:flex-start;gap:8px}
+  .command-item .cmd-name{min-width:auto}
+  .section{padding:60px 0}
+  .hero h1{font-size:clamp(28px,8vw,42px)}
+}
+@media(max-width:480px){
+  .container{padding:0 16px}
+  .hero-buttons{flex-direction:column;align-items:stretch}
+  .btn{justify-content:center}
+}
+</style>
 </head>
 <body>
-  <nav class="navbar" id="navbar">
-    <div class="container nav-inner">
-      <a href="#" class="logo">
-        <span class="logo-icon">◆</span>
-        <span class="logo-text">AIRIS</span>
-      </a>
-      <div class="nav-links" id="navLinks">
-        <a href="#install">Install</a>
-        <a href="#features">Features</a>
-        <a href="#commands">Commands</a>
-        <a href="#sessions">Sessions</a>
-        <a href="#roadmap">Roadmap</a>
-        <a href="#faq">FAQ</a>
-      </div>
-      <button class="nav-toggle" id="navToggle" aria-label="Menu">
-        <span></span><span></span><span></span>
-      </button>
-    </div>
-  </nav>
 
-  <main>
-    <!-- HERO -->
-    <section class="hero" id="hero">
-      <div class="hero-bg"></div>
-      <div class="container hero-inner">
-        <div class="hero-badge">v0.79.3 &middot; MIT License</div>
-        <h1 class="hero-title">
-          <span class="title-line">Artificial Intelligence</span>
-          <span class="title-line accent">Responsive Integrated System</span>
-        </h1>
-        <p class="hero-subtitle">
-          A powerful AI coding agent CLI with read, bash, edit, write tools,
-          session management, multi-model support, and a rich terminal UI.
-        </p>
-        <div class="hero-actions">
-          <a href="#install" class="btn btn-primary">
-            <span class="btn-icon">↓</span> Install Now
-          </a>
-          <button class="btn btn-ghost" id="heroCopyBtn">
-            <span class="btn-icon">⎘</span> Copy Install Command
+<!-- CSS Particles -->
+<div class="particles" aria-hidden="true">
+  <div class="particle"></div><div class="particle"></div><div class="particle"></div>
+  <div class="particle"></div><div class="particle"></div><div class="particle"></div>
+  <div class="particle"></div><div class="particle"></div><div class="particle"></div>
+  <div class="particle"></div>
+</div>
+
+<!-- Navigation -->
+<nav id="navbar">
+  <div class="container">
+    <a href="#" class="nav-logo">
+      <svg viewBox="0 0 32 32" width="32" height="32" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="nlg" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#00e5ff"/>
+            <stop offset="100%" stop-color="#0066ff"/>
+          </linearGradient>
+        </defs>
+        <rect width="32" height="32" fill="#000" rx="4"/>
+        <line x1="8" y1="26" x2="15.5" y2="6" stroke="url(#nlg)" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="24" y1="26" x2="16.5" y2="6" stroke="url(#nlg)" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="10" y1="18" x2="15" y2="18" stroke="url(#nlg)" stroke-width="2" stroke-linecap="round"/>
+        <line x1="17" y1="18" x2="22" y2="18" stroke="url(#nlg)" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="16" cy="18" r="1.5" fill="#00e5ff"/>
+      </svg>
+      <span>AIRIS-CLI</span>
+    </a>
+    <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#architecture">Architecture</a></li>
+      <li><a href="#commands">Commands</a></li>
+      <li><a href="#installation">Install</a></li>
+      <li><a href="https://github.com/kageos/airis-cli" target="_blank" rel="noopener">GitHub</a></li>
+      <li><a href="#installation" class="nav-cta">Get Started</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero" id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="container">
+    <div class="hero-left reveal-left">
+      <div class="hero-badge"><span class="hero-badge-dot"></span> v1.0.0 — Now Available</div>
+      <h1>
+        <span class="gradient">Intelligent</span><br>
+        Terminal. <span class="gradient">Unlimited</span><br>
+        Possibilities.
+      </h1>
+      <p>AIRIS-CLI is a next-generation command-line interface powered by artificial intelligence. Responsive, integrated, and built for the modern developer workflow.</p>
+      <div class="hero-buttons">
+        <a href="#installation" class="btn btn-primary"><span class="btn-icon">&#8595;</span> Install Now</a>
+        <a href="#features" class="btn btn-secondary"><span class="btn-icon">&#9881;</span> Explore Features</a>
+      </div>
+      <div class="typing-text" id="typingText"><span class="prompt" style="color:var(--cyan)">$</span> <span id="typedLine"></span><span class="terminal-cursor"></span></div>
+    </div>
+    <div class="hero-right reveal-right">
+      <div class="terminal-window">
+        <div class="terminal-header">
+          <div class="terminal-dot r"></div>
+          <div class="terminal-dot y"></div>
+          <div class="terminal-dot g"></div>
+          <span class="terminal-title">airis — interactive</span>
+        </div>
+        <div class="terminal-body">
+          <div class="terminal-line"><span class="prompt">$</span> <span class="cmd">airis init</span></div>
+          <div class="terminal-line"><span class="output">  ✓ Initializing AIRIS environment...</span></div>
+          <div class="terminal-line"><span class="output">  ✓ Loading AI models [##########] 100%</span></div>
+          <div class="terminal-line"><span class="output">  ✓ System ready. Type 'airis --help' to begin.</span></div>
+          <div class="terminal-line"><span class="prompt">$</span> <span class="cmd">airis ask "explain quantum computing"</span></div>
+          <div class="terminal-line"><span class="output">  ──────────────────────────────────────</span></div>
+          <div class="terminal-line"><span class="output">  Quantum computing leverages superposition</span></div>
+          <div class="terminal-line"><span class="output">  and entanglement to process information...</span></div>
+          <div class="terminal-line"><span class="prompt">$</span> <span class="cmd"><span class="terminal-cursor"></span></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Features -->
+<section class="section" id="features">
+  <div class="container text-center">
+    <span class="section-label reveal">Capabilities</span>
+    <h2 class="section-title reveal">Why AIRIS-CLI?</h2>
+    <p class="section-sub mx-auto reveal">Built from the ground up for developers who need an intelligent, responsive terminal that adapts to their workflow.</p>
+  </div>
+  <div class="container">
+    <div class="features-grid stagger-children" id="featureGrid">
+      <div class="feature-card">
+        <div class="feature-icon">&#9889;</div>
+        <h3>AI-Powered</h3>
+        <p>Natural language understanding lets you ask questions, generate code, and automate tasks without leaving the terminal.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">&#9851;</div>
+        <h3>Context-Aware</h3>
+        <p>Remembers your project structure, preferences, and history to provide relevant, targeted assistance every time.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">&#9883;</div>
+        <h3>Plugin System</h3>
+        <p>Extend functionality with a rich plugin ecosystem. Write your own plugins in Python, JavaScript, or any language.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">&#128274;</div>
+        <h3>Secure by Design</h3>
+        <p>Sandboxed execution, permission controls, and audit logging ensure you stay in control of what runs in your shell.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">&#9881;</div>
+        <h3>Fully Configurable</h3>
+        <p>Theme engine, custom keybindings, aliases, and profiles. Make AIRIS-CLI behave exactly the way you want.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">&#9889;</div>
+        <h3>Blazing Fast</h3>
+        <p>Written in Rust with a focus on performance. Sub-millisecond startup and minimal memory footprint.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Architecture -->
+<section class="section" id="architecture">
+  <div class="container text-center">
+    <span class="section-label reveal">System Design</span>
+    <h2 class="section-title reveal">Architecture Overview</h2>
+    <p class="section-sub mx-auto reveal">A layered architecture designed for modularity, security, and extensibility at every level.</p>
+  </div>
+  <div class="container">
+    <div class="arch-diagram reveal-scale">
+      <div class="arch-layer l1">
+        <span class="arch-tag">UI</span>
+        <span>Terminal Interface / TUI</span>
+      </div>
+      <div class="arch-arrow">&#8595;</div>
+      <div class="arch-layer l2">
+        <span class="arch-tag">CORE</span>
+        <span>Command Engine / Plugin Loader</span>
+      </div>
+      <div class="arch-arrow">&#8595;</div>
+      <div class="arch-layer l3">
+        <span class="arch-tag">AI</span>
+        <span>Inference Engine / Context Manager</span>
+      </div>
+      <div class="arch-arrow">&#8595;</div>
+      <div class="arch-layer l4">
+        <span class="arch-tag">SECURITY</span>
+        <span>Sandbox / Permission Manager / Audit</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Commands -->
+<section class="section" id="commands">
+  <div class="container text-center">
+    <span class="section-label reveal">Commands</span>
+    <h2 class="section-title reveal">Terminal-First Experience</h2>
+    <p class="section-sub mx-auto reveal">Designed for keyboard natives. Every command is intuitive, discoverable, and documented.</p>
+  </div>
+  <div class="container">
+    <div class="commands-list stagger-children" id="commandsList">
+      <div class="command-item">
+        <span class="cmd-name">airis init</span>
+        <span class="cmd-desc">Initialize AIRIS environment in current directory</span>
+        <span class="cmd-badge">setup</span>
+      </div>
+      <div class="command-item">
+        <span class="cmd-name">airis ask</span>
+        <span class="cmd-desc">Ask a question or request a task in natural language</span>
+        <span class="cmd-badge">ai</span>
+      </div>
+      <div class="command-item">
+        <span class="cmd-name">airis code</span>
+        <span class="cmd-desc">Generate, review, or refactor code with AI assistance</span>
+        <span class="cmd-badge">ai</span>
+      </div>
+      <div class="command-item">
+        <span class="cmd-name">airis plugin</span>
+        <span class="cmd-desc">Manage plugins: install, list, remove, and configure</span>
+        <span class="cmd-badge">system</span>
+      </div>
+      <div class="command-item">
+        <span class="cmd-name">airis config</span>
+        <span class="cmd-desc">View and modify configuration settings</span>
+        <span class="cmd-badge">system</span>
+      </div>
+      <div class="command-item">
+        <span class="cmd-name">airis doctor</span>
+        <span class="cmd-desc">Diagnose and repair AIRIS-CLI installation</span>
+        <span class="cmd-badge">utility</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Installation -->
+<section class="section" id="installation">
+  <div class="container text-center">
+    <span class="section-label reveal">Get Started</span>
+    <h2 class="section-title reveal">Install in Seconds</h2>
+    <p class="section-sub mx-auto reveal">One command. Zero dependencies. Works on Linux, macOS, and Windows.</p>
+  </div>
+  <div class="container">
+    <div class="install-box">
+      <div class="code-block reveal">
+        <div class="code-header">
+          <span>bash</span>
+          <button class="copy-btn" id="copyBtn">
+            <span id="copyIcon">&#128203;</span>
+            <span id="copyLabel">Copy</span>
           </button>
         </div>
-        <div class="hero-brand">
-          <span class="brand-pill">Brand: KageOS</span>
-          <span class="brand-pill">Creator: Umaiz Sufiyan</span>
-        </div>
+        <code><span class="cm"># Install AIRIS-CLI globally</span>
+<span class="cy">$</span> npm install <span class="bl">-g</span> airis-cli
+
+<span class="cm"># Or install via cargo (Rust)</span>
+<span class="cy">$</span> cargo install airis-cli
+
+<span class="cm"># Verify installation</span>
+<span class="cy">$</span> airis <span class="gr">--version</span></code>
       </div>
-    </section>
+      <p class="install-note reveal">Requires Node.js 18+ or Rust 1.70+. See the <a href="installation.md">installation guide</a> for details.</p>
+    </div>
+  </div>
+</section>
 
-    <!-- INSTALL -->
-    <section class="section install-section" id="install">
-      <div class="container">
-        <div class="section-header">
-          <span class="section-label">Install</span>
-          <h2 class="section-title">Get Started in Seconds</h2>
-          <p class="section-desc">Choose your preferred package manager. One command, zero configuration.</p>
-        </div>
-
-        <div class="install-tabs">
-          <div class="tabs-bar" id="tabsBar">
-            <button class="tab-btn active" data-tab="curl">curl</button>
-            <button class="tab-btn" data-tab="npm">npm</button>
-            <button class="tab-btn" data-tab="pnpm">pnpm</button>
-            <button class="tab-btn" data-tab="bun">bun</button>
-          </div>
-          <div class="tab-content" id="tabContent">
-            <div class="tab-pane active" id="tab-curl">
-              <div class="code-block">
-                <button class="copy-btn" data-copy="curl -fsSL https://sufiyan-sabeel.github.io/AIRIS-CLI/install.sh | sh" aria-label="Copy command">⎘</button>
-                <pre><code>curl -fsSL https://sufiyan-sabeel.github.io/AIRIS-CLI/install.sh | sh</code></pre>
-              </div>
-            </div>
-            <div class="tab-pane" id="tab-npm">
-              <div class="code-block">
-                <button class="copy-btn" data-copy="npm install -g @sufiyan-sabeel/airis-cli" aria-label="Copy command">⎘</button>
-                <pre><code>npm install -g @sufiyan-sabeel/airis-cli</code></pre>
-              </div>
-            </div>
-            <div class="tab-pane" id="tab-pnpm">
-              <div class="code-block">
-                <button class="copy-btn" data-copy="pnpm add -g @sufiyan-sabeel/airis-cli" aria-label="Copy command">⎘</button>
-                <pre><code>pnpm add -g @sufiyan-sabeel/airis-cli</code></pre>
-              </div>
-            </div>
-            <div class="tab-pane" id="tab-bun">
-              <div class="code-block">
-                <button class="copy-btn" data-copy="bun add -g @sufiyan-sabeel/airis-cli" aria-label="Copy command">⎘</button>
-                <pre><code>bun add -g @sufiyan-sabeel/airis-cli</code></pre>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="install-note">
-          <span class="note-icon">ℹ</span>
-          <span>Requires Node.js 22.19+ and an API key from a supported provider (Google Gemini, Anthropic Claude, OpenAI, and more).</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- CLI PREVIEW / TERMINAL DEMO -->
-    <section class="section terminal-section">
-      <div class="container">
-        <div class="section-header">
-          <span class="section-label">Demo</span>
-          <h2 class="section-title">Terminal Preview</h2>
-          <p class="section-desc">Interactive AI coding assistant running directly in your terminal.</p>
-        </div>
-        <div class="terminal">
-          <div class="terminal-header">
-            <div class="terminal-dots">
-              <span class="dot dot-red"></span>
-              <span class="dot dot-yellow"></span>
-              <span class="dot dot-green"></span>
-            </div>
-            <span class="terminal-title">airis — interactive session</span>
-          </div>
-          <div class="terminal-body" id="terminalBody">
-            <div class="line"><span class="prompt">$</span> <span class="cmd">airis --model gemini/gemini-2.0-flash "Refactor this function"</span></div>
-            <div class="line"><span class="prompt">◆</span> <span class="output">Analyzing function at src/utils/parser.ts:42...</span></div>
-            <div class="line"><span class="prompt">◆</span> <span class="output">I see several improvements: the function mixes concerns (parsing + validation), uses</span></div>
-            <div class="line"><span class="prompt">◆</span> <span class="output">mutability where immutable patterns would be cleaner, and lacks error boundaries.</span></div>
-            <div class="line"><span class="prompt">◆</span> <span class="output">Here's the refactored version:</span></div>
-            <div class="line code-line"><span class="output">  function parseConfig(input: string): Config {</span></div>
-            <div class="line code-line"><span class="output">    const raw = JSON.parse(input);</span></div>
-            <div class="line code-line"><span class="output">    return validateConfig(raw);</span></div>
-            <div class="line code-line"><span class="output">  }</span></div>
-            <div class="line"><span class="prompt">◆</span> <span class="output accent">✓ Refactored function. Reduced complexity from 8 to 3. Tests pass.</span></div>
-            <div class="line cursor-line"><span class="prompt">$</span> <span class="cursor">▊</span></div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- FEATURES -->
-    <section class="section features-section" id="features">
-      <div class="container">
-        <div class="section-header">
-          <span class="section-label">Features</span>
-          <h2 class="section-title">Everything You Need</h2>
-          <p class="section-desc">Built for developers who want AI assistance directly in their terminal.</p>
-        </div>
-        <div class="features-grid">
-          <div class="feature-card">
-            <div class="feature-icon">🤖</div>
-            <h3>Interactive AI</h3>
-            <p>Chat with AI models directly in your terminal. Multi-turn conversations with context awareness.</p>
-          </div>
-          <div class="feature-card">
-            <div class="feature-icon">📁</div>
-            <h3>File Operations</h3>
-            <p>Read, edit, write, and search files with AI assistance. Powered by built-in tooling.</p>
-          </div>
-          <div class="feature-card">
-            <div class="feature-icon">💻</div>
-            <h3>Shell Commands</h3>
-            <p>Execute bash commands with AI guidance. Safe, sandboxed execution environment.</p>
-          </div>
-          <div class="feature-card">
-            <div class="feature-icon">🔄</div>
-            <h3>Session Management</h3>
-            <p>Save, resume, and fork sessions. Never lose context between work sessions.</p>
-          </div>
-          <div class="feature-card">
-            <div class="feature-icon">🧠</div>
-            <h3>Multi-Model</h3>
-            <p>Works with 25+ providers including OpenAI, Anthropic, Google Gemini, Groq, Mistral, and more.</p>
-          </div>
-          <div class="feature-card">
-            <div class="feature-icon">🎨</div>
-            <h3>Beautiful TUI</h3>
-            <p>Rich terminal user interface with themes (dark, light, graphite, amoled). Syntax highlighting.</p>
-          </div>
-          <div class="feature-card">
-            <div class="feature-icon">🔌</div>
-            <h3>Extensible</h3>
-            <p>Custom extensions, skills, prompt templates, and tools. Full TypeScript SDK.</p>
-          </div>
-          <div class="feature-card">
-            <div class="feature-icon">📱</div>
-            <h3>Android Ready</h3>
-            <p>Runs on Termux on Android. Full CLI functionality on mobile devices.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- COMMANDS -->
-    <section class="section commands-section" id="commands">
-      <div class="container">
-        <div class="section-header">
-          <span class="section-label">Reference</span>
-          <h2 class="section-title">Commands</h2>
-          <p class="section-desc">Complete command reference for AIRIS CLI.</p>
-        </div>
-        <div class="commands-list">
-          <div class="command-item">
-            <code class="command-name">airis</code>
-            <span class="command-desc">Launch interactive mode</span>
-          </div>
-          <div class="command-item">
-            <code class="command-name">airis -p "prompt"</code>
-            <span class="command-desc">Non-interactive prompt mode</span>
-          </div>
-          <div class="command-item">
-            <code class="command-name">airis --continue</code>
-            <span class="command-desc">Continue last session</span>
-          </div>
-          <div class="command-item">
-            <code class="command-name">airis --resume</code>
-            <span class="command-desc">Pick and resume a session</span>
-          </div>
-          <div class="command-item">
-            <code class="command-name">airis sessions</code>
-            <span class="command-desc">List recent sessions</span>
-          </div>
-          <div class="command-item">
-            <code class="command-name">airis --model &lt;pattern&gt;</code>
-            <span class="command-desc">Use specific model (supports glob/fuzzy)</span>
-          </div>
-          <div class="command-item">
-            <code class="command-name">airis --provider &lt;name&gt;</code>
-            <span class="command-desc">Set provider (google, anthropic, openai...)</span>
-          </div>
-          <div class="command-item">
-            <code class="command-name">airis --thinking &lt;level&gt;</code>
-            <span class="command-desc">Thinking level: off/minimal/low/medium/high/xhigh</span>
-          </div>
-          <div class="command-item">
-            <code class="command-name">airis --tools &lt;list&gt;</code>
-            <span class="command-desc">Enable specific tools (read, bash, edit, write...)</span>
-          </div>
-          <div class="command-item">
-            <code class="command-name">airis --no-tools</code>
-            <span class="command-desc">Disable all tools (read-only mode)</span>
-          </div>
-          <div class="command-item">
-            <code class="command-name">airis --export &lt;file&gt;</code>
-            <span class="command-desc">Export session to HTML</span>
-          </div>
-          <div class="command-item">
-            <code class="command-name">airis trust</code>
-            <span class="command-desc">Trust current folder</span>
-          </div>
-          <div class="command-item">
-            <code class="command-name">airis theme set &lt;name&gt;</code>
-            <span class="command-desc">Set theme (dark, light, graphite, amoled)</span>
-          </div>
-          <div class="command-item">
-            <code class="command-name">airis install &lt;source&gt;</code>
-            <span class="command-desc">Install extension</span>
-          </div>
-          <div class="command-item">
-            <code class="command-name">airis update</code>
-            <span class="command-desc">Update AIRIS and extensions</span>
-          </div>
-          <div class="command-item">
-            <code class="command-name">airis --list-models</code>
-            <span class="command-desc">List available models with search</span>
-          </div>
-          <div class="command-item">
-            <code class="command-name">airis --version</code>
-            <span class="command-desc">Show version</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- SESSIONS -->
-    <section class="section sessions-section" id="sessions">
-      <div class="container">
-        <div class="section-header">
-          <span class="section-label">Workflow</span>
-          <h2 class="section-title">Smart Session Management</h2>
-          <p class="section-desc">Pick up exactly where you left off. Fork experiments. Export conversations.</p>
-        </div>
-        <div class="sessions-grid">
-          <div class="session-card">
-            <div class="session-card-header">
-              <span class="session-card-icon">↻</span>
-              <h3>Resume</h3>
-            </div>
-            <p>Resume any previous session by ID or browse a picker. Full context restored.</p>
-            <div class="session-code">
-              <code>airis --resume</code>
-              <code>airis resume &lt;session_id&gt;</code>
-            </div>
-          </div>
-          <div class="session-card">
-            <div class="session-card-header">
-              <span class="session-card-icon">⑂</span>
-              <h3>Fork</h3>
-            </div>
-            <p>Fork an existing session into a new one. Perfect for exploring alternative approaches.</p>
-            <div class="session-code">
-              <code>airis --fork &lt;session_id&gt;</code>
-            </div>
-          </div>
-          <div class="session-card">
-            <div class="session-card-header">
-              <span class="session-card-icon">⬇</span>
-              <h3>Export</h3>
-            </div>
-            <p>Export any session to a standalone HTML file for sharing or documentation.</p>
-            <div class="session-code">
-              <code>airis --export session.jsonl output.html</code>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ANDROID / TERMUX -->
-    <section class="section android-section" id="android">
-      <div class="container">
-        <div class="section-header">
-          <span class="section-label">Mobile</span>
-          <h2 class="section-title">Android &amp; Termux Workflows</h2>
-          <p class="section-desc">Full AIRIS CLI experience on your Android device via Termux.</p>
-        </div>
-        <div class="android-content">
-          <div class="android-card">
-            <div class="android-icon">📱</div>
-            <h3>Install on Termux</h3>
-            <div class="code-block">
-              <button class="copy-btn" data-copy="pkg update && pkg install nodejs git && npm install -g @sufiyan-sabeel/airis-cli" aria-label="Copy command">⎘</button>
-              <pre><code>pkg update && pkg install nodejs git
-npm install -g @sufiyan-sabeel/airis-cli</code></pre>
-            </div>
-            <p class="android-note">Set your API key and run <code>airis</code> — same experience as desktop.</p>
-          </div>
-          <div class="android-features">
-            <div class="android-feat">
-              <span class="feat-icon">✓</span>
-              <span>Works with all providers</span>
-            </div>
-            <div class="android-feat">
-              <span class="feat-icon">✓</span>
-              <span>Full file system access</span>
-            </div>
-            <div class="android-feat">
-              <span class="feat-icon">✓</span>
-              <span>Session persistence</span>
-            </div>
-            <div class="android-feat">
-              <span class="feat-icon">✓</span>
-              <span>Theme support</span>
-            </div>
-            <div class="android-feat">
-              <span class="feat-icon">✓</span>
-              <span>Extension system</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- CREATOR -->
-    <section class="section creator-section" id="creator">
-      <div class="container">
-        <div class="section-header">
-          <span class="section-label">About</span>
-          <h2 class="section-title">Creator &amp; Brand</h2>
-        </div>
-        <div class="creator-card">
-          <div class="creator-info">
-            <div class="creator-avatar">US</div>
-            <h3>Umaiz Sufiyan</h3>
-            <p class="creator-role">Creator &amp; Lead Developer</p>
-            <p class="creator-desc">
-              AIRIS CLI is built by <strong>Umaiz Sufiyan</strong>
-              and extended with advanced features for coding, automation, agents,
-              and Android workflows under the <strong>KageOS</strong> brand.
-            </p>
-            <div class="creator-links">
-              <a href="https://github.com/sufiyan-sabeel" target="_blank" rel="noopener" class="creator-link">GitHub</a>
-              <a href="https://github.com/sufiyan-sabeel/AIRIS-CLI" target="_blank" rel="noopener" class="creator-link">Repository</a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ROADMAP -->
-    <section class="section roadmap-section" id="roadmap">
-      <div class="container">
-        <div class="section-header">
-          <span class="section-label">Roadmap</span>
-          <h2 class="section-title">What's Coming</h2>
-          <p class="section-desc">Planned features and improvements for AIRIS CLI.</p>
-        </div>
-        <div class="roadmap-timeline">
-          <div class="roadmap-item done">
-            <div class="roadmap-marker"></div>
-            <div class="roadmap-content">
-              <span class="roadmap-status">Done</span>
-              <h3>v0.79 — Core CLI &amp; TUI</h3>
-              <p>Interactive mode, session management, multi-model support, terminal themes, extension system.</p>
-            </div>
-          </div>
-          <div class="roadmap-item progress">
-            <div class="roadmap-marker"></div>
-            <div class="roadmap-content">
-              <span class="roadmap-status">In Progress</span>
-              <h3>v0.80 — npm Publishing &amp; CI/CD</h3>
-              <p>Publish @sufiyan-sabeel/airis-cli to npm. Automated binary builds for Linux, macOS, Windows, Android/Termux.</p>
-            </div>
-          </div>
-          <div class="roadmap-item">
-            <div class="roadmap-marker"></div>
-            <div class="roadmap-content">
-              <span class="roadmap-status">Planned</span>
-              <h3>v0.85 — Agent Mode &amp; Planning</h3>
-              <p>Autonomous agent mode with planning, multi-step task execution, and file monitoring.</p>
-            </div>
-          </div>
-          <div class="roadmap-item">
-            <div class="roadmap-marker"></div>
-            <div class="roadmap-content">
-              <span class="roadmap-status">Planned</span>
-              <h3>v0.90 — MCP Server &amp; IDE Integration</h3>
-              <p>Model Context Protocol server for IDE integration. VS Code and Neovim plugins.</p>
-            </div>
-          </div>
-          <div class="roadmap-item">
-            <div class="roadmap-marker"></div>
-            <div class="roadmap-content">
-              <span class="roadmap-status">Planned</span>
-              <h3>v1.0 — Stable Release</h3>
-              <p>Production-ready stable release with full documentation, binary distributions, and official package registries.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- FAQ -->
-    <section class="section faq-section" id="faq">
-      <div class="container">
-        <div class="section-header">
-          <span class="section-label">Support</span>
-          <h2 class="section-title">Frequently Asked Questions</h2>
-        </div>
-        <div class="faq-list">
-          <details class="faq-item" open>
-            <summary class="faq-question">What is AIRIS CLI?</summary>
-            <div class="faq-answer">
-              <p><strong>Artificial Intelligence Responsive Integrated System</strong> (AIRIS) is a powerful AI coding agent CLI that runs in your terminal. It provides read, bash, edit, write tools, session management, and supports 25+ LLM providers.</p>
-            </div>
-          </details>
-          <details class="faq-item">
-            <summary class="faq-question">How do I get an API key?</summary>
-            <div class="faq-answer">
-              <p>You need an API key from a supported provider. The easiest is Google Gemini (free tier available): sign up at <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com</a> and set <code>GEMINI_AAIRIS_KEY</code>. For Anthropic Claude, set <code>ANTHROPIC_AAIRIS_KEY</code>. For OpenAI, set <code>OPENAI_AAIRIS_KEY</code>.</p>
-            </div>
-          </details>
-          <details class="faq-item">
-            <summary class="faq-question">Which providers are supported?</summary>
-            <div class="faq-answer">
-              <p>25+ providers: Google Gemini, Anthropic Claude, OpenAI, Azure OpenAI, Groq, Mistral, DeepSeek, OpenRouter, Together AI, Fireworks, Cerebras, xAI Grok, NVIDIA NIM, Cloudflare Workers AI, Vercel AI Gateway, Amazon Bedrock, and more.</p>
-            </div>
-          </details>
-          <details class="faq-item">
-            <summary class="faq-question">Can I use it on Android?</summary>
-            <div class="faq-answer">
-              <p>Yes! AIRIS runs on Termux on Android. Install Node.js, then install the npm package. All features work including file operations, session management, and themes.</p>
-            </div>
-          </details>
-          <details class="faq-item">
-            <summary class="faq-question">How do I create extensions?</summary>
-            <div class="faq-answer">
-              <p>Extensions are TypeScript files placed in <code>~/.airis/agent/extensions/</code>. See the <a href="https://github.com/sufiyan-sabeel/AIRIS-CLI/tree/main/packages/coding-agent/examples" target="_blank" rel="noopener">examples directory</a> for full SDK documentation and sample extensions.</p>
-            </div>
-          </details>
-          <details class="faq-item">
-            <summary class="faq-question">Is there a read-only mode?</summary>
-            <div class="faq-answer">
-              <p>Yes. Use <code>airis --no-tools -p "question"</code> to disable all tools, or <code>airis --tools read,grep,find,ls -p "question"</code> to allow only read-only tools.</p>
-            </div>
-          </details>
-          <details class="faq-item">
-            <summary class="faq-question">How do I update AIRIS?</summary>
-            <div class="faq-answer">
-              <p>Run <code>airis update</code> to update AIRIS and all extensions. You can also use <code>npm update -g @sufiyan-sabeel/airis-cli</code>.</p>
-            </div>
-          </details>
-          <details class="faq-item">
-            <summary class="faq-question">Is the npm package published?</summary>
-            <div class="faq-answer">
-              <p>The npm package <code>@sufiyan-sabeel/airis-cli</code> is pending publication. Until published, use the curl installer or clone from <a href="https://github.com/sufiyan-sabeel/AIRIS-CLI" target="_blank" rel="noopener">GitHub</a> and run <code>./install.sh</code> or build from source.</p>
-            </div>
-          </details>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <footer class="footer">
-    <div class="container footer-inner">
+<!-- Footer -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
       <div class="footer-brand">
-        <span class="footer-logo">◆ AIRIS</span>
-        <span class="footer-tagline">Artificial Intelligence Responsive Integrated System</span>
+        <a href="#" class="nav-logo">
+          <svg viewBox="0 0 32 32" width="28" height="28" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="flg" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#00e5ff"/>
+                <stop offset="100%" stop-color="#0066ff"/>
+              </linearGradient>
+            </defs>
+            <rect width="32" height="32" fill="#000" rx="4"/>
+            <line x1="8" y1="26" x2="15.5" y2="6" stroke="url(#flg)" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="24" y1="26" x2="16.5" y2="6" stroke="url(#flg)" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="10" y1="18" x2="15" y2="18" stroke="url(#flg)" stroke-width="2" stroke-linecap="round"/>
+            <line x1="17" y1="18" x2="22" y2="18" stroke="url(#flg)" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="16" cy="18" r="1.5" fill="#00e5ff"/>
+          </svg>
+          <span>AIRIS-CLI</span>
+        </a>
+        <p>Artificial Intelligence Responsive Integrated System. A KageOS project — redefining what a terminal can do.</p>
       </div>
-      <div class="footer-links">
-        <a href="https://github.com/sufiyan-sabeel/AIRIS-CLI" target="_blank" rel="noopener">GitHub</a>
-        <a href="https://github.com/sufiyan-sabeel/AIRIS-CLI/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a>
-        <a href="https://github.com/sufiyan-sabeel" target="_blank" rel="noopener">KageOS</a>
+      <div class="footer-col">
+        <h4>Product</h4>
+        <ul>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#architecture">Architecture</a></li>
+          <li><a href="#commands">Commands</a></li>
+          <li><a href="#installation">Installation</a></li>
+        </ul>
       </div>
-      <div class="footer-copy">
-        &copy; 2026 Umaiz Sufiyan &middot; Built by Umaiz Sufiyan
+      <div class="footer-col">
+        <h4>Resources</h4>
+        <ul>
+          <li><a href="https://github.com/kageos/airis-cli" target="_blank" rel="noopener">GitHub</a></li>
+          <li><a href="installation.md">Documentation</a></li>
+          <li><a href="release-checklist.md">Releases</a></li>
+          <li><a href="CAPABILITY_AUDIT.md">Audit</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>KageOS</h4>
+        <ul>
+          <li><a href="https://github.com/kageos" target="_blank" rel="noopener">GitHub Org</a></li>
+          <li><a href="discussions-categories.md">Community</a></li>
+          <li><a href="#">License MIT</a></li>
+          <li><a href="#">Privacy</a></li>
+        </ul>
       </div>
     </div>
-  </footer>
+    <div class="footer-bottom">
+      <span>&copy; 2026 <span class="highlight">KageOS</span>. All rights reserved.</span>
+      <span>Crafted with precision &middot; Built with <span class="highlight">&#9829;</span></span>
+    </div>
+  </div>
+</footer>
 
-  <div class="toast" id="toast">✓ Copied to clipboard</div>
+<script>
+(function(){
+'use strict';
 
-  <script src="script.js"></script>
+// === Nav scroll effect ===
+const nav = document.getElementById('navbar');
+let ticking = false;
+window.addEventListener('scroll', function(){
+  if(!ticking){
+    window.requestAnimationFrame(function(){
+      nav.classList.toggle('scrolled', window.scrollY > 60);
+      ticking = false;
+    });
+    ticking = true;
+  }
+});
+
+// === Mobile menu ===
+const menuToggle = document.getElementById('menuToggle');
+const navLinks = document.getElementById('navLinks');
+if(menuToggle){
+  menuToggle.addEventListener('click', function(){
+    navLinks.classList.toggle('open');
+    menuToggle.classList.toggle('active');
+  });
+  document.querySelectorAll('.nav-links a').forEach(function(link){
+    link.addEventListener('click', function(){ navLinks.classList.remove('open'); });
+  });
+}
+
+// === Intersection Observer scroll animations ===
+const revealEls = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale, .stagger-children');
+const observer = new IntersectionObserver(function(entries){
+  entries.forEach(function(entry){
+    if(entry.isIntersecting){
+      entry.target.classList.add('visible');
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+revealEls.forEach(function(el){ observer.observe(el); });
+
+// === Hero typing animation ===
+(function(){
+  const cmd = 'airis ask "what can you do?"';
+  const el = document.getElementById('typedLine');
+  if(!el) return;
+  let i = 0;
+  function typeNext(){
+    if(i < cmd.length){
+      el.textContent += cmd.charAt(i);
+      i++;
+      setTimeout(typeNext, 45 + Math.random() * 30);
+    } else {
+      setTimeout(function(){
+        el.textContent = '';
+        i = 0;
+        setTimeout(typeNext, 1500);
+      }, 3000);
+    }
+  }
+  setTimeout(typeNext, 800);
+})();
+
+// === Copy button ===
+(function(){
+  const copyBtn = document.getElementById('copyBtn');
+  if(!copyBtn) return;
+  const label = document.getElementById('copyLabel');
+  const icon = document.getElementById('copyIcon');
+  const codeContent = 'npm install -g airis-cli';
+  
+  copyBtn.addEventListener('click', function(){
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(codeContent).then(function(){
+        label.textContent = 'Copied!';
+        icon.textContent = '&#10003;';
+        copyBtn.classList.add('copied');
+        setTimeout(function(){
+          label.textContent = 'Copy';
+          icon.textContent = '\uD83D\uDCC3';
+          copyBtn.classList.remove('copied');
+        }, 2000);
+      }).catch(function(){ fallbackCopy(); });
+    } else {
+      fallbackCopy();
+    }
+  });
+  
+  function fallbackCopy(){
+    var ta = document.createElement('textarea');
+    ta.value = codeContent;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+      document.execCommand('copy');
+      label.textContent = 'Copied!';
+      copyBtn.classList.add('copied');
+      setTimeout(function(){
+        label.textContent = 'Copy';
+        copyBtn.classList.remove('copied');
+      }, 2000);
+    } catch(e){}
+    document.body.removeChild(ta);
+  }
+})();
+
+})();
+</script>
 </body>
 </html>

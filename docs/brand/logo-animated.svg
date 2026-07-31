@@ -1,0 +1,129 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <defs>
+    <linearGradient id="ag" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00e5ff"/>
+      <stop offset="50%" stop-color="#0088ff"/>
+      <stop offset="100%" stop-color="#0066ff"/>
+    </linearGradient>
+    <linearGradient id="ag2" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#00e5ff"/>
+      <stop offset="100%" stop-color="#0066ff"/>
+    </linearGradient>
+    <radialGradient id="gg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#00e5ff" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#0066ff" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="gl" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="5" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="gs" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <pattern id="grid" width="16" height="16" patternUnits="userSpaceOnUse">
+      <path d="M 16 0 L 0 0 0 16" fill="none" stroke="#004488" stroke-width="0.5" opacity="0.12"/>
+    </pattern>
+  </defs>
+
+  <!-- Background -->
+  <rect width="400" height="400" fill="#000000"/>
+  <rect width="400" height="400" fill="url(#grid)"/>
+
+  <!-- Pulsing ambient glow -->
+  <circle cx="200" cy="200" r="180" fill="url(#gg)">
+    <animate attributeName="opacity" values="0.5;1;0.5" dur="3s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- === ANIMATED ORBITAL RINGS === -->
+
+  <!-- Ring 1 — counterclockwise -->
+  <g opacity="0.55">
+    <ellipse cx="200" cy="200" rx="175" ry="48" fill="none" stroke="url(#ag)" stroke-width="1.5" stroke-dasharray="150 10" opacity="0.9">
+      <animateTransform attributeName="transform" type="rotate" from="0 200 200" to="-360 200 200" dur="12s" repeatCount="indefinite"/>
+    </ellipse>
+    <ellipse cx="200" cy="200" rx="175" ry="48" fill="none" stroke="url(#ag)" stroke-width="4" opacity="0.1">
+      <animateTransform attributeName="transform" type="rotate" from="0 200 200" to="-360 200 200" dur="12s" repeatCount="indefinite"/>
+    </ellipse>
+  </g>
+
+  <!-- Ring 2 — clockwise -->
+  <g opacity="0.55">
+    <ellipse cx="200" cy="200" rx="175" ry="48" fill="none" stroke="url(#ag2)" stroke-width="1.5" stroke-dasharray="110 12" opacity="0.9">
+      <animateTransform attributeName="transform" type="rotate" from="0 200 200" to="360 200 200" dur="15s" repeatCount="indefinite"/>
+    </ellipse>
+    <ellipse cx="200" cy="200" rx="175" ry="48" fill="none" stroke="url(#ag2)" stroke-width="4" opacity="0.1">
+      <animateTransform attributeName="transform" type="rotate" from="0 200 200" to="360 200 200" dur="15s" repeatCount="indefinite"/>
+    </ellipse>
+  </g>
+
+  <!-- Ring 3 — vertical, slow rotation -->
+  <g opacity="0.55">
+    <ellipse cx="200" cy="200" rx="55" ry="175" fill="none" stroke="url(#ag)" stroke-width="1.5" stroke-dasharray="180 8" opacity="0.9">
+      <animateTransform attributeName="transform" type="rotate" from="0 200 200" to="-360 200 200" dur="20s" repeatCount="indefinite"/>
+    </ellipse>
+    <ellipse cx="200" cy="200" rx="55" ry="175" fill="none" stroke="url(#ag)" stroke-width="4" opacity="0.1">
+      <animateTransform attributeName="transform" type="rotate" from="0 200 200" to="-360 200 200" dur="20s" repeatCount="indefinite"/>
+    </ellipse>
+  </g>
+
+  <!-- Orbiting electron particles -->
+  <g>
+    <circle cx="330" cy="138" r="3" fill="#00e5ff" filter="url(#gs)" opacity="0.9">
+      <animateTransform attributeName="transform" type="rotate" from="0 200 200" to="-360 200 200" dur="12s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="75" cy="290" r="3" fill="#00e5ff" filter="url(#gs)" opacity="0.9">
+      <animateTransform attributeName="transform" type="rotate" from="0 200 200" to="360 200 200" dur="15s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="200" cy="28" r="3" fill="#00e5ff" filter="url(#gs)" opacity="0.9">
+      <animateTransform attributeName="transform" type="rotate" from="0 200 200" to="-360 200 200" dur="20s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+
+  <!-- === GEOMETRIC 'A' (static, central anchor) === -->
+
+  <line x1="142" y1="355" x2="196" y2="72" stroke="url(#ag)" stroke-width="13" stroke-linecap="round"/>
+  <line x1="258" y1="355" x2="204" y2="72" stroke="url(#ag)" stroke-width="13" stroke-linecap="round"/>
+
+  <line x1="146" y1="350" x2="196" y2="78" stroke="#ffffff" stroke-width="2" stroke-linecap="round" opacity="0.12"/>
+  <line x1="254" y1="350" x2="204" y2="78" stroke="#ffffff" stroke-width="2" stroke-linecap="round" opacity="0.12"/>
+
+  <!-- Crossbar -->
+  <line x1="155" y1="245" x2="196" y2="245" stroke="url(#ag)" stroke-width="10" stroke-linecap="round"/>
+  <line x1="204" y1="245" x2="245" y2="245" stroke="url(#ag)" stroke-width="10" stroke-linecap="round"/>
+
+  <line x1="157" y1="242" x2="196" y2="242" stroke="#ffffff" stroke-width="1.5" opacity="0.15"/>
+  <line x1="204" y1="242" x2="243" y2="242" stroke="#ffffff" stroke-width="1.5" opacity="0.15"/>
+
+  <!-- Pulsing center node -->
+  <circle cx="200" cy="245" r="5" fill="#00e5ff" filter="url(#gl)">
+    <animate attributeName="opacity" values="0.5;1;0.5" dur="2s" repeatCount="indefinite"/>
+    <animate attributeName="r" values="4;6;4" dur="2s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="200" cy="245" r="2" fill="#ffffff" opacity="0.8">
+    <animate attributeName="opacity" values="0.5;1;0.5" dur="2s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- Apex gem with pulse -->
+  <g filter="url(#gl)">
+    <polygon points="200,46 214,70 200,94 186,70" fill="url(#ag)">
+      <animate attributeName="opacity" values="0.7;1;0.7" dur="3s" repeatCount="indefinite"/>
+    </polygon>
+    <polygon points="200,52 208,70 200,88 192,70" fill="#ffffff" opacity="0.2"/>
+  </g>
+
+  <!-- Foot accents -->
+  <g stroke="url(#ag)" stroke-width="3" stroke-linecap="round" fill="none">
+    <line x1="125" y1="365" x2="148" y2="350"/>
+    <line x1="120" y1="365" x2="125" y2="365"/>
+  </g>
+  <g stroke="url(#ag)" stroke-width="3" stroke-linecap="round" fill="none">
+    <line x1="275" y1="365" x2="252" y2="350"/>
+    <line x1="280" y1="365" x2="275" y2="365"/>
+  </g>
+
+  <!-- Tech nodes -->
+  <circle cx="168" cy="285" r="2" fill="#00e5ff" opacity="0.4"/>
+  <circle cx="232" cy="285" r="2" fill="#0066ff" opacity="0.4"/>
+  <circle cx="200" cy="155" r="2" fill="#00e5ff" opacity="0.35"/>
+</svg>

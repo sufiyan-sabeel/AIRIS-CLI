@@ -1,28 +1,20 @@
 //! `airis code` — Autonomous coding agent mode.
 
+use crate::CommandContext;
 use airis_core::prelude::*;
 
 /// Execute the code command — autonomous coding agent.
 pub async fn execute(
     task: &str,
     max_steps: usize,
-    config: &airis_config::ConfigManager,
-    agent: &airis_agent::AgentImpl,
-    tools: &airis_tools::ToolRegistryImpl,
-    workspace: &airis_workspace::WorkspaceManagerImpl,
+    ctx: &CommandContext,
 ) -> AirisResult<()> {
-    let cfg = config.config();
     println!("AIRIS Coding Agent — KageOS");
     println!("Task: {}", task);
     println!("Max steps: {}", max_steps);
     println!();
 
-    let context = AgentContext {
-        max_steps,
-        ..AgentContext::default()
-    };
-
-    let result = agent.run(task, context).await?;
+    let result = ctx.runner.code(task, max_steps).await?;
 
     println!("\n=== Result ===");
     if result.success {

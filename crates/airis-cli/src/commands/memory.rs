@@ -1,5 +1,6 @@
 //! `airis memory` — View or search memory.
 
+use crate::CommandContext;
 use airis_core::prelude::*;
 
 pub async fn execute(
@@ -8,7 +9,7 @@ pub async fn execute(
     clear: bool,
     stats: bool,
     memory_type: &Option<String>,
-    memory: &airis_memory::MemoryStoreImpl,
+    ctx: &CommandContext,
 ) -> AirisResult<()> {
     if clear {
         println!("Clearing memory...");
@@ -18,7 +19,7 @@ pub async fn execute(
     }
 
     if stats {
-        let mem_stats = memory.stats().await?;
+        let mem_stats = ctx.memory.stats().await?;
         println!("Memory Statistics:");
         println!("  Total entries:  {}", mem_stats.total_entries);
         println!("  Episodic:       {}", mem_stats.episodic);
@@ -38,8 +39,8 @@ pub async fn execute(
         });
 
         let entries = match mtype {
-            Some(t) => memory.recall_by_type(t, 20).await?,
-            None => memory.recall("", 20).await?,
+            Some(t) => ctx.memory.recall_by_type(t, 20).await?,
+            None => ctx.memory.recall("", 20).await?,
         };
 
         if entries.is_empty() {
@@ -58,7 +59,7 @@ pub async fn execute(
     }
 
     if let Some(q) = query {
-        let entries = memory.recall(q, 10).await?;
+        let entries = ctx.memory.recall(q, 10).await?;
         if entries.is_empty() {
             println!("No memories found for: {}", q);
             return Ok(());
@@ -66,7 +67,10 @@ pub async fn execute(
 
         println!("Memories matching '{}':", q);
         for entry in &entries {
-            println!("--- [{:.8}] {:?} (importance: {:.2})", entry.id, entry.entry_type, entry.importance);
+            println!(
+                "--- [{:.8}] {:?} (importance: {:.2})",
+                entry.id, entry.entry_type, entry.importance
+            );
             println!("{}", entry.content);
             println!();
         }

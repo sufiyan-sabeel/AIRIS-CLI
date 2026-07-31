@@ -1,12 +1,13 @@
 //! `airis init` — Initialize AIRIS-CLI in current directory.
 
+use crate::CommandContext;
 use airis_core::prelude::*;
 use std::path::PathBuf;
 
 pub async fn execute(
     force: bool,
     template: &str,
-    config: &airis_config::ConfigManager,
+    ctx: &CommandContext,
 ) -> AirisResult<()> {
     let cwd = std::env::current_dir().map_err(AirisError::Io)?;
     let airis_dir = cwd.join(".airis");

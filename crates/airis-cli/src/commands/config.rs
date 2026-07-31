@@ -1,18 +1,17 @@
 //! `airis config` — View or modify configuration.
 
+use crate::CommandContext;
 use airis_core::prelude::*;
 
 pub async fn execute(
     get: &Option<String>,
     set: &Option<String>,
-    list_all: bool,
+    list: bool,
     edit: bool,
-    config_manager: &airis_config::ConfigManager,
+    ctx: &CommandContext,
 ) -> AirisResult<()> {
-    let config = config_manager.config();
-
     if edit {
-        let config_path = config_manager.config_dir().join("config.toml");
+        let config_path = ctx.config.config_dir().join("config.toml");
         let editor = std::env::var("EDITOR").unwrap_or_else(|_| "nano".into());
         let status = std::process::Command::new(&editor)
             .arg(&config_path)
@@ -25,7 +24,7 @@ pub async fn execute(
     }
 
     if let Some(key) = get {
-        match config_manager.get_value(key) {
+        match ctx.config.get_value(key) {
             Some(val) => {
                 println!("{} = {}", key, serde_json::to_string_pretty(&val)?);
             }
@@ -42,7 +41,7 @@ pub async fn execute(
                 .map(|t: toml::Value| t["val"].clone())
                 .unwrap_or(serde_json::Value::String(value.trim().to_string()));
 
-            config_manager.set_value(key.trim(), parsed).await?;
+            ctx.config.set_value(key.trim(), parsed).await?;
             println!("Set {} = {}", key.trim(), value.trim());
         } else {
             return Err(AirisError::Config(
@@ -52,14 +51,16 @@ pub async fn execute(
         return Ok(());
     }
 
-    if list_all {
+    if list {
+        let config = ctx.config.config();
         println!("{}", toml::to_string_pretty(&config)?);
         return Ok(());
     }
 
     // Show summary by default
+    let config = ctx.config.config();
     println!("AIRIS-CLI Configuration");
-    println!("Config dir: {:?}", config_manager.config_dir());
+    println!("Config dir: {:?}", ctx.config.config_dir());
     println!();
     println!("[Core]");
     println!("  Default model:  {:?}", config.core.default_model);

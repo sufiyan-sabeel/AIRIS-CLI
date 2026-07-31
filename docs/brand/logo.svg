@@ -1,0 +1,128 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <defs>
+    <!-- Main gradient cyan to blue -->
+    <linearGradient id="aig" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00e5ff"/>
+      <stop offset="50%" stop-color="#0088ff"/>
+      <stop offset="100%" stop-color="#0066ff"/>
+    </linearGradient>
+    <!-- Reverse gradient for depth -->
+    <linearGradient id="aig2" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#00e5ff"/>
+      <stop offset="100%" stop-color="#0066ff"/>
+    </linearGradient>
+    <!-- Radial gradient for center glow -->
+    <radialGradient id="glowGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#00e5ff" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#0066ff" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Glow filter -->
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="5" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="glowSoft" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2.5" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <!-- Subtle grid pattern -->
+    <pattern id="grid" width="16" height="16" patternUnits="userSpaceOnUse">
+      <path d="M 16 0 L 0 0 0 16" fill="none" stroke="#004488" stroke-width="0.5" opacity="0.15"/>
+    </pattern>
+  </defs>
+
+  <!-- AMOLED Black Background -->
+  <rect width="400" height="400" fill="#000000"/>
+  <rect width="400" height="400" fill="url(#grid)"/>
+
+  <!-- Center ambient glow -->
+  <circle cx="200" cy="200" r="180" fill="url(#glowGrad)"/>
+
+  <!-- === ORBITAL RINGS === -->
+  
+  <!-- Ring 1 — tilted left -->
+  <g opacity="0.6">
+    <ellipse cx="200" cy="200" rx="175" ry="48" transform="rotate(-30 200 200)" fill="none" stroke="url(#aig)" stroke-width="1.5" stroke-dasharray="150 10" opacity="0.9"/>
+    <ellipse cx="200" cy="200" rx="175" ry="48" transform="rotate(-30 200 200)" fill="none" stroke="url(#aig)" stroke-width="4" opacity="0.1"/>
+  </g>
+
+  <!-- Ring 2 — tilted right -->
+  <g opacity="0.6">
+    <ellipse cx="200" cy="200" rx="175" ry="48" transform="rotate(30 200 200)" fill="none" stroke="url(#aig2)" stroke-width="1.5" stroke-dasharray="110 12" opacity="0.9"/>
+    <ellipse cx="200" cy="200" rx="175" ry="48" transform="rotate(30 200 200)" fill="none" stroke="url(#aig2)" stroke-width="4" opacity="0.1"/>
+  </g>
+
+  <!-- Ring 3 — vertical/steep -->
+  <g opacity="0.6">
+    <ellipse cx="200" cy="200" rx="55" ry="175" transform="rotate(90 200 200)" fill="none" stroke="url(#aig)" stroke-width="1.5" stroke-dasharray="180 8" opacity="0.9"/>
+    <ellipse cx="200" cy="200" rx="55" ry="175" transform="rotate(90 200 200)" fill="none" stroke="url(#aig)" stroke-width="4" opacity="0.1"/>
+  </g>
+
+  <!-- Orbital electron particles -->
+  <circle cx="330" cy="138" r="3" fill="#00e5ff" filter="url(#glowSoft)" opacity="0.9"/>
+  <circle cx="75" cy="290" r="3" fill="#00e5ff" filter="url(#glowSoft)" opacity="0.9"/>
+  <circle cx="200" cy="28" r="3" fill="#00e5ff" filter="url(#glowSoft)" opacity="0.9"/>
+  <circle cx="295" cy="358" r="2.5" fill="#0088ff" filter="url(#glowSoft)" opacity="0.7"/>
+
+  <!-- === GEOMETRIC 'A' === -->
+
+  <!-- Left leg -->
+  <line x1="142" y1="355" x2="196" y2="72" stroke="url(#aig)" stroke-width="13" stroke-linecap="round"/>
+  <!-- Right leg -->
+  <line x1="258" y1="355" x2="204" y2="72" stroke="url(#aig)" stroke-width="13" stroke-linecap="round"/>
+
+  <!-- Left leg inner highlight -->
+  <line x1="146" y1="350" x2="196" y2="78" stroke="#ffffff" stroke-width="2" stroke-linecap="round" opacity="0.15"/>
+  <!-- Right leg inner highlight -->
+  <line x1="254" y1="350" x2="204" y2="78" stroke="#ffffff" stroke-width="2" stroke-linecap="round" opacity="0.15"/>
+
+  <!-- Crossbar — left segment -->
+  <line x1="155" y1="245" x2="196" y2="245" stroke="url(#aig)" stroke-width="10" stroke-linecap="round"/>
+  <!-- Crossbar — right segment -->
+  <line x1="204" y1="245" x2="245" y2="245" stroke="url(#aig)" stroke-width="10" stroke-linecap="round"/>
+
+  <!-- Crossbar left highlight -->
+  <line x1="157" y1="242" x2="196" y2="242" stroke="#ffffff" stroke-width="1.5" opacity="0.2"/>
+  <!-- Crossbar right highlight -->
+  <line x1="204" y1="242" x2="243" y2="242" stroke="#ffffff" stroke-width="1.5" opacity="0.2"/>
+
+  <!-- Center node in crossbar gap -->
+  <circle cx="200" cy="245" r="5" fill="#00e5ff" filter="url(#glow)"/>
+  <circle cx="200" cy="245" r="2" fill="#ffffff" opacity="0.8"/>
+
+  <!-- === APEX: Diamond gem === -->
+  <g filter="url(#glow)">
+    <polygon points="200,46 214,70 200,94 186,70" fill="url(#aig)"/>
+    <polygon points="200,52 208,70 200,88 192,70" fill="#ffffff" opacity="0.25"/>
+  </g>
+
+  <!-- === FOOT ACCENTS (circuit-like extensions) === -->
+
+  <!-- Left foot -->
+  <g stroke="url(#aig)" stroke-width="3" stroke-linecap="round" fill="none">
+    <line x1="125" y1="365" x2="148" y2="350"/>
+    <line x1="120" y1="365" x2="125" y2="365"/>
+  </g>
+  <!-- Right foot -->
+  <g stroke="url(#aig)" stroke-width="3" stroke-linecap="round" fill="none">
+    <line x1="275" y1="365" x2="252" y2="350"/>
+    <line x1="280" y1="365" x2="275" y2="365"/>
+  </g>
+
+  <!-- === TECH NODES === -->
+
+  <!-- Leg nodes -->
+  <circle cx="168" cy="285" r="2" fill="#00e5ff" opacity="0.5"/>
+  <circle cx="232" cy="285" r="2" fill="#0066ff" opacity="0.5"/>
+  <circle cx="200" cy="155" r="2" fill="#00e5ff" opacity="0.4"/>
+
+  <!-- Orbital intersection accents -->
+  <circle cx="200" cy="168" r="1.5" fill="#00e5ff" opacity="0.6"/>
+  <circle cx="200" cy="232" r="1.5" fill="#00e5ff" opacity="0.6"/>
+</svg>

@@ -1,19 +1,19 @@
 //! `airis run` — Run shell commands with AI assistance.
 
 use airis_core::prelude::*;
+use crate::CommandContext;
 
 pub async fn execute(
     command: &Option<String>,
     describe: &Option<String>,
-    config: &airis_config::ConfigManager,
-    agent: &airis_agent::AgentImpl,
-    terminal: &airis_terminal::TerminalImpl,
+    ctx: &CommandContext,
 ) -> AirisResult<()> {
     let cmd = match command {
         Some(cmd) => cmd.clone(),
         None => {
             if let Some(desc) = describe {
-                let result = agent
+                let result = ctx
+                    .runner
                     .run(
                         &format!(
                             "Generate a shell command for: {}\nRespond with ONLY the command, no explanation.",
@@ -33,7 +33,7 @@ pub async fn execute(
 
     println!("$ {}", cmd);
 
-    let result = terminal.execute(&cmd, None, Some(120)).await?;
+    let result = ctx.terminal.execute(&cmd, None, Some(120)).await?;
 
     if !result.stdout.is_empty() {
         println!("{}", result.stdout);

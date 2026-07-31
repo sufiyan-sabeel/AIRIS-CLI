@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 640" width="1280" height="640">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#000000"/>
+      <stop offset="50%" stop-color="#000a1a"/>
+      <stop offset="100%" stop-color="#000000"/>
+    </linearGradient>
+    <linearGradient id="pg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00e5ff"/>
+      <stop offset="50%" stop-color="#0088ff"/>
+      <stop offset="100%" stop-color="#0066ff"/>
+    </linearGradient>
+    <linearGradient id="pg2" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#00e5ff"/>
+      <stop offset="100%" stop-color="#0066ff"/>
+    </linearGradient>
+    <linearGradient id="bar" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00e5ff" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#0088ff" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#0066ff" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="gg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#00e5ff" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#0066ff" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="gl" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="4" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="gs" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+      <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#004488" stroke-width="0.5" opacity="0.08"/>
+    </pattern>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1280" height="640" fill="url(#bg)"/>
+  <rect width="1280" height="640" fill="url(#grid)"/>
+
+  <!-- Accent bar top -->
+  <rect x="0" y="0" width="1280" height="3" fill="url(#bar)"/>
+  <rect x="0" y="637" width="1280" height="3" fill="url(#bar)"/>
+
+  <!-- Center glow -->
+  <circle cx="640" cy="320" r="300" fill="url(#gg)"/>
+
+  <!-- === LOGO === -->
+  <g transform="translate(165, 70) scale(1.25)">
+    <!-- Rings -->
+    <g opacity="0.5">
+      <ellipse cx="100" cy="200" rx="140" ry="38" transform="rotate(-30 100 200)" fill="none" stroke="url(#pg)" stroke-width="1.2" stroke-dasharray="120 8"/>
+      <ellipse cx="100" cy="200" rx="140" ry="38" transform="rotate(30 100 200)" fill="none" stroke="url(#pg2)" stroke-width="1.2" stroke-dasharray="90 7"/>
+      <ellipse cx="100" cy="200" rx="44" ry="140" transform="rotate(90 100 200)" fill="none" stroke="url(#pg)" stroke-width="1.2" stroke-dasharray="140 6"/>
+    </g>
+
+    <!-- A -->
+    <line x1="45" y1="350" x2="95" y2="58" stroke="url(#pg)" stroke-width="11" stroke-linecap="round"/>
+    <line x1="155" y1="350" x2="105" y2="58" stroke="url(#pg)" stroke-width="11" stroke-linecap="round"/>
+
+    <line x1="52" y1="260" x2="95" y2="260" stroke="url(#pg)" stroke-width="8" stroke-linecap="round"/>
+    <line x1="105" y1="260" x2="148" y2="260" stroke="url(#pg)" stroke-width="8" stroke-linecap="round"/>
+
+    <circle cx="100" cy="260" r="4" fill="#00e5ff" filter="url(#gl)"/>
+    <circle cx="100" cy="260" r="1.5" fill="#fff" opacity="0.8"/>
+
+    <g filter="url(#gl)">
+      <polygon points="100,30 112,52 100,74 88,52" fill="url(#pg)"/>
+      <polygon points="100,35 107,52 100,69 93,52" fill="#fff" opacity="0.2"/>
+    </g>
+
+    <!-- Electrons -->
+    <circle cx="218" cy="138" r="2.5" fill="#00e5ff" filter="url(#gs)"/>
+    <circle cx="20" cy="278" r="2.5" fill="#00e5ff" filter="url(#gs)"/>
+    <circle cx="100" cy="52" r="2.5" fill="#00e5ff" filter="url(#gs)"/>
+  </g>
+
+  <!-- === TEXT === -->
+
+  <!-- AIRIS-CLI -->
+  <text x="480" y="240" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="82" font-weight="700" fill="url(#pg)" letter-spacing="8">
+    AIRIS-CLI
+  </text>
+
+  <!-- Tagline -->
+  <text x="484" y="300" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="24" font-weight="300" fill="#6699cc" letter-spacing="4" opacity="0.9">
+    Artificial Intelligence Responsive Integrated System
+  </text>
+
+  <!-- Divider line -->
+  <line x1="480" y1="330" x2="960" y2="330" stroke="url(#bar)" stroke-width="1" opacity="0.5"/>
+
+  <!-- KageOS -->
+  <text x="484" y="380" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="20" font-weight="600" fill="#00e5ff" letter-spacing="6" opacity="0.8">
+    BY KAGEOS
+  </text>
+
+  <!-- Bottom-right version tag -->
+  <text x="1230" y="620" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="12" fill="#336699" text-anchor="end" opacity="0.5">
+    v1.0.0
+  </text>
+</svg>

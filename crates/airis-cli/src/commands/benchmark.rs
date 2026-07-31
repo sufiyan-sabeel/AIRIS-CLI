@@ -1,5 +1,6 @@
 //! `airis benchmark` — Run performance benchmarks.
 
+use crate::CommandContext;
 use airis_core::prelude::*;
 use std::time::Instant;
 
@@ -7,6 +8,7 @@ pub async fn execute(
     suite: &str,
     warmup: usize,
     iterations: usize,
+    _ctx: &CommandContext,
 ) -> AirisResult<()> {
     println!("AIRIS-CLI Benchmark Suite");
     println!("Suite: {}", suite);

@@ -1,12 +1,12 @@
 //! `airis build` — Build and compile code with AI assistance.
 
+use crate::CommandContext;
 use airis_core::prelude::*;
 
 pub async fn execute(
     command: &Option<String>,
     watch: bool,
-    config: &airis_config::ConfigManager,
-    terminal: &airis_terminal::TerminalImpl,
+    ctx: &CommandContext,
 ) -> AirisResult<()> {
     let cmd = command.as_deref().unwrap_or("cargo build");
 
@@ -17,7 +17,7 @@ pub async fn execute(
 
     println!("Building: {}", cmd);
 
-    let result = terminal.execute(cmd, None, Some(300)).await?;
+    let result = ctx.terminal.execute(cmd, None, Some(300)).await?;
 
     if !result.stdout.is_empty() {
         println!("{}", result.stdout);

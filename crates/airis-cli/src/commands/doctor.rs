@@ -1,12 +1,11 @@
 //! `airis doctor` — Diagnose and fix system issues.
 
 use airis_core::prelude::*;
+use crate::CommandContext;
 
 pub async fn execute(
-    auto_fix: bool,
-    config: &airis_config::ConfigManager,
-    tools: &airis_tools::ToolRegistryImpl,
-    terminal: &airis_terminal::TerminalImpl,
+    fix: bool,
+    ctx: &CommandContext,
 ) -> AirisResult<()> {
     println!("AIRIS Doctor — Running diagnostics...");
     println!();
@@ -14,8 +13,8 @@ pub async fn execute(
     let mut issues = Vec::new();
 
     // Check config
-    let cfg = config.config();
-    println!("[✓] Config loaded from {:?}", config.config_dir());
+    let cfg = ctx.config.config();
+    println!("[✓] Config loaded from {:?}", ctx.config.config_dir());
     println!("    Default model: {:?}", cfg.core.default_model);
     println!("    Theme: {}", cfg.core.theme);
 
@@ -30,16 +29,16 @@ pub async fn execute(
     }
 
     // Check tools
-    let tool_names = tools.names();
+    let tool_names = ctx.tools.names();
     println!("[✓] {} tools registered", tool_names.len());
 
     // Check terminal
-    let has_bash = terminal.which("bash").await.unwrap_or(false);
+    let has_bash = ctx.terminal.which("bash").await.unwrap_or(false);
     if has_bash {
         println!("[✓] Shell available (bash)");
     }
 
-    let has_cargo = terminal.which("cargo").await.unwrap_or(false);
+    let has_cargo = ctx.terminal.which("cargo").await.unwrap_or(false);
     if has_cargo {
         println!("[✓] Cargo available");
     }
@@ -52,8 +51,14 @@ pub async fn execute(
         for issue in &issues {
             println!("  - {}", issue);
         }
-        if auto_fix {
-            println!("\nAuto-fix would resolve these issues.");
+        if fix {
+            println!("\nRunning AI diagnostics...");
+            let prompt = format!(
+                "Analyze these AIRIS-CLI issues and suggest fixes:\n\n{}",
+                issues.join("\n")
+            );
+            let result = ctx.runner.chat(&prompt).await?;
+            println!("{}", result);
         }
     }
 

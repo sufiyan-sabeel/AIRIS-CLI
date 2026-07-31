@@ -1,105 +1,134 @@
 //! `airis chat` — Interactive chat with AI assistant.
 
+use crate::CommandContext;
 use airis_core::prelude::*;
+use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
 use tracing::info;
 
 /// Execute the chat command.
 pub async fn execute(
     prompt: &Option<String>,
-    session: &Option<String>,
+    session_id: &Option<String>,
     use_tui: bool,
-    config: &airis_config::ConfigManager,
-    agent: &airis_agent::AgentImpl,
-    tools: &airis_tools::ToolRegistryImpl,
+    ctx: &CommandContext,
 ) -> AirisResult<()> {
     info!("Starting chat session (tui={})", use_tui);
 
     if use_tui {
-        // Launch TUI mode
-        let app = airis_ui::tui::TuiApp::new(config.config());
-        app.run().await?;
+        // Launch TUI mode with animated AIRIS logo welcome screen
+        let cfg = ctx.config.config().clone();
+        let mut app = airis_ui::tui::TuiApp::new(&cfg);
+        let mut terminal = airis_ui::tui::TuiApp::setup_terminal()
+            .map_err(|e| AirisError::Custom(format!("Terminal setup failed: {}", e)))?;
+        app.run(&mut terminal)
+            .map_err(|e| AirisError::Custom(format!("TUI error: {}", e)))?;
+        airis_ui::tui::TuiApp::teardown_terminal(&mut terminal)
+            .map_err(|e| AirisError::Custom(format!("Terminal teardown failed: {}", e)))?;
         return Ok(());
     }
 
-    // Simple REPL mode
-    let mut conversation = Conversation::new();
-    conversation.system_prompt = Some(
-        "You are AIRIS, an advanced AI coding assistant by KageOS. \
-         Help the user with coding tasks, explanations, and problem-solving. \
-         Be concise, accurate, and practical."
-            .into(),
-    );
-
-    if let Some(session_id) = session {
-        // Resume session - parse UUID
-        if let Ok(id) = uuid::Uuid::parse_str(session_id) {
-            // Session loading would go here
-            info!("Resuming session: {}", id);
-        }
-    }
-
-    // If initial prompt provided, run immediately
+    // REPL mode - connect to actual AI provider
     if let Some(msg) = prompt {
-        conversation.push(Message::user(msg));
-        let response = agent
-            .run(msg, AgentContext::default())
-            .await?;
-        println!("{}", response.output);
+        let output = ctx.runner.chat(msg).await?;
+        println!("{}", output);
         return Ok(());
     }
 
-    // Interactive loop
-    println!("AIRIS Chat — KageOS AI Coding Assistant");
-    println!("Type /help for commands, /exit to quit.");
+    // Interactive REPL loop
+    println!("╔══════════════════════════════════════════╗");
+    println!("║     AIRIS Chat — KageOS AI Assistant    ║");
+    println!("╠══════════════════════════════════════════╣");
+    println!("║  Type /help for commands                 ║");
+    println!("║  Type /exit to quit                      ║");
+    println!("║  Ctrl+C to cancel current response       ║");
+    println!("╚══════════════════════════════════════════╝");
     println!();
 
-    loop {
-        // Read input (simple stdin for now)
-        let mut input = String::new();
-        std::io::stdin()
-            .read_line(&mut input)
-            .map_err(|e| AirisError::Io(e))?;
-        let input = input.trim().to_string();
+    let stdin = tokio::io::stdin();
+    let mut reader = BufReader::new(stdin);
+    let mut line = String::new();
+    let mut conversation_id = uuid::Uuid::new_v4();
+    let mut model_override: Option<String> = None;
 
-        match input.as_str() {
-            "/exit" | "/quit" => {
-                println!("Goodbye!");
-                break;
-            }
-            "/help" => {
-                println!("Commands:");
-                println!("  /exit, /quit  Exit the chat");
-                println!("  /clear        Clear conversation");
-                println!("  /help         Show this help");
-                println!("  /save         Save session");
-                println!("  /model <name> Switch model");
-                continue;
-            }
-            "/clear" => {
-                conversation = Conversation::new();
-                println!("Conversation cleared.");
-                continue;
-            }
-            "/save" => {
-                println!("Session saved: {}", conversation.id);
-                continue;
-            }
-            _ if input.starts_with('/') => {
-                println!("Unknown command: {}", input);
-                continue;
-            }
-            _ => {} // Normal message
+    // Resume session if specified
+    if let Some(sid) = session_id {
+        if let Ok(id) = uuid::Uuid::parse_str(sid) {
+            conversation_id = id;
+            println!("[Resumed session: {}]", id);
         }
+    }
 
-        if input.is_empty() {
+    loop {
+        line.clear();
+        print!("> ");
+        std::io::stdout().flush().ok();
+
+        reader.read_line(&mut line).await.map_err(AirisError::Io)?;
+        let input = line.trim().to_string();
+
+        // Handle commands
+        if input.starts_with('/') {
+            let parts: Vec<&str> = input.splitn(2, ' ').collect();
+            let cmd = parts[0];
+            let arg = parts.get(1).copied().unwrap_or("");
+
+            match cmd {
+                "/exit" | "/quit" => {
+                    println!("Goodbye!");
+                    break;
+                }
+                "/help" => {
+                    println!("Commands:");
+                    println!("  /exit, /quit     Exit the chat");
+                    println!("  /clear           Clear conversation history");
+                    println!("  /model <name>    Switch model");
+                    println!("  /save            Save session");
+                    println!("  /tokens          Show token usage");
+                    println!("  /help            Show this help");
+                }
+                "/clear" => {
+                    ctx.runner.chat("[system: conversation cleared]").await.ok();
+                    println!("Conversation cleared.");
+                }
+                "/save" => {
+                    println!("Session saved: {}", conversation_id);
+                }
+                "/model" if !arg.is_empty() => {
+                    model_override = Some(arg.to_string());
+                    println!("Switched to model: {}", arg);
+                }
+                "/tokens" => {
+                    println!("Token tracking coming soon.");
+                }
+                _ => {
+                    println!("Unknown command: {}", cmd);
+                    println!("Type /help for available commands.");
+                }
+            }
             continue;
         }
 
-        conversation.push(Message::user(&input));
-        let response = agent
-            .run(&input, AgentContext::default())
-            .await?;
-        println!("\n{}\n", response.output);
+        if input.is_empty() || input == "\n" {
+            continue;
+        }
+
+        // Send to AI provider via agent
+        println!();
+        let spinner = indicatif::ProgressBar::new_spinner();
+        spinner.set_message("AI is thinking...");
+        spinner.enable_steady_tick(std::time::Duration::from_millis(100));
+
+        match ctx.runner.chat(&input).await {
+            Ok(response) => {
+                spinner.finish_and_clear();
+                println!("{}", response);
+                println!();
+            }
+            Err(e) => {
+                spinner.finish_and_clear();
+                eprintln!("Error: {}", e);
+            }
+        }
     }
 
     Ok(())

@@ -1,16 +1,17 @@
 //! `airis plugin` — Manage plugins.
 
-use airis_core::prelude::*;
-use crate::AirisCommands;
+use crate::CommandContext;
 use crate::PluginActions;
+use airis_core::prelude::*;
 
 pub async fn execute(
     action: &Option<PluginActions>,
-    loader: &airis_plugins::PluginLoaderImpl,
+    name: &Option<String>,
+    ctx: &CommandContext,
 ) -> AirisResult<()> {
     match action {
         Some(PluginActions::List) | None => {
-            let plugins = loader.list();
+            let plugins = ctx.plugin_loader.list();
             if plugins.is_empty() {
                 println!("No plugins installed.");
                 return Ok(());
@@ -29,7 +30,7 @@ pub async fn execute(
         }
         Some(PluginActions::Remove { name }) => {
             println!("Removing plugin: {}", name);
-            loader.unload(name).await?;
+            ctx.plugin_loader.unload(name).await?;
             println!("Plugin {} removed.", name);
         }
         Some(PluginActions::Enable { name }) => {

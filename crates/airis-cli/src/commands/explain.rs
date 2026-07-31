@@ -1,13 +1,13 @@
 //! `airis explain` — Explain code or concepts.
 
+use crate::CommandContext;
 use airis_core::prelude::*;
 
 /// Execute the explain command.
 pub async fn execute(
     target: &str,
     detail: &str,
-    config: &airis_config::ConfigManager,
-    agent: &airis_agent::AgentImpl,
+    ctx: &CommandContext,
 ) -> AirisResult<()> {
     let detail_instruction = match detail {
         "brief" => "Provide a brief, high-level explanation (2-3 sentences).",
@@ -15,7 +15,8 @@ pub async fn execute(
         _ => "Provide a clear, balanced explanation with moderate detail.",
     };
 
-    let result = agent
+    let result = ctx
+        .runner
         .run(
             &format!(
                 "Explain the following code/concept:\n\n{}\n\n{}",

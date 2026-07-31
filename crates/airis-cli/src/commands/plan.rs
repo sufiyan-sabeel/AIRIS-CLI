@@ -1,26 +1,26 @@
 //! `airis plan` — Plan a task.
 
 use airis_core::prelude::*;
+use crate::CommandContext;
 use std::path::PathBuf;
 
 pub async fn execute(
     task: &str,
     output: &Option<PathBuf>,
-    execute_plan: bool,
-    config: &airis_config::ConfigManager,
-    agent: &airis_agent::AgentImpl,
-    workspace: &airis_workspace::WorkspaceManagerImpl,
+    execute: bool,
+    ctx: &CommandContext,
 ) -> AirisResult<()> {
     println!("Planning task: {}", task);
     println!();
 
-    // Generate plan using the agent
+    // Generate plan using the agent runner
     let context = AgentContext {
         max_steps: 5,
         ..AgentContext::default()
     };
 
-    let result = agent
+    let result = ctx
+        .runner
         .run(
             &format!(
                 "Create a detailed step-by-step plan to accomplish the following task:\n\n{}\n\n\
@@ -42,13 +42,13 @@ pub async fn execute(
     }
 
     // Execute if requested
-    if execute_plan {
+    if execute {
         println!("\nExecuting plan...");
         let exec_context = AgentContext {
             max_steps: 25,
             ..AgentContext::default()
         };
-        let exec_result = agent.run(task, exec_context).await?;
+        let exec_result = ctx.runner.run(task, exec_context).await?;
         println!("\n=== Result ===\n{}", exec_result.output);
     }
 

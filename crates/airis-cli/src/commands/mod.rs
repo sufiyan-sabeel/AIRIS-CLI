@@ -20,3 +20,4 @@ pub mod index;
 pub mod plan;
 pub mod task;
 pub mod build;
+pub mod install;

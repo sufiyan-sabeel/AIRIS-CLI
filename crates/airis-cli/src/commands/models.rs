@@ -1,11 +1,12 @@
 //! `airis models` — List available models.
 
+use crate::CommandContext;
 use airis_core::prelude::*;
 
 pub async fn execute(
     provider: &Option<String>,
     refresh: bool,
-    registry: &airis_models::ModelRegistryImpl,
+    ctx: &CommandContext,
 ) -> AirisResult<()> {
     if refresh {
         println!("Refreshing model cache...");
@@ -13,7 +14,7 @@ pub async fn execute(
         return Ok(());
     }
 
-    let models = registry.list_models();
+    let models = ctx.registry.list_models();
 
     if models.is_empty() {
         println!("No models configured.");
