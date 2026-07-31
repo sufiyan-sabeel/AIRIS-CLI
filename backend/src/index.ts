@@ -81,6 +81,16 @@ async function main(): Promise<void> {
     res.status(404).json({ error: 'Not found' });
   });
 
+  // Global error handler to prevent leaking stack traces to clients in production
+  app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+    console.error('[Server Error] Unhandled error:', err);
+    const isProd = process.env.NODE_ENV === 'production';
+    res.status(err.status || 500).json({
+      error: isProd ? 'Internal Server Error' : (err.message || String(err)),
+      ...(!isProd && err.stack ? { stack: err.stack } : {})
+    });
+  });
+
   server.listen(PORT, '0.0.0.0', () => {
     console.log(`[Server] AIRIS Backend running on port ${PORT}`);
     console.log(`[Server] Health: http://localhost:${PORT}/health`);

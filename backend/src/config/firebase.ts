@@ -41,6 +41,22 @@ export async function verifyFirebaseToken(idToken: string): Promise<{ uid: strin
   await ensureFirebase();
 
   if (!firebaseAvailable || !adminModule) {
+    // If in production environment, do not allow arbitrary dev-mode token bypass
+    // unless a specific developer bypass token is configured.
+    const isProd = process.env.NODE_ENV === 'production';
+    const bypassToken = process.env.DEV_BYPASS_TOKEN;
+
+    if (isProd) {
+      if (bypassToken && idToken === bypassToken) {
+        return {
+          uid: 'dev-bypass-user',
+          email: 'dev-bypass@airis.local',
+          name: 'Developer (Bypass)'
+        };
+      }
+      throw new Error('Authentication bypass is disabled in production mode. Configure Firebase or set DEV_BYPASS_TOKEN.');
+    }
+
     return {
       uid: idToken.substring(0, 20),
       email: 'dev@airis.local',

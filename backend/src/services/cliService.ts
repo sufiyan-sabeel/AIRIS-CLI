@@ -18,9 +18,40 @@ const DANGEROUS_PATTERNS: RegExp[] = [
   /\bchmod\s+777\b/i
 ];
 
+const SECRET_VALUE_RE = /(\b(?:api[_-]?key|token|secret|password|authorization)\b[\s"':=]+)([^\s"',}]+)/gi;
+const BEARER_RE = /\bBearer\s+[A-Za-z0-9._~+/=-]+/g;
+const EXPLICIT_SECRET_PATTERNS = [
+  /sk-ant-[a-zA-Z0-9-_]{40,}/gi,
+  /sk-proj-[a-zA-Z0-9-_]{40,}/gi,
+  /sk-[a-zA-Z0-9]{20,}/gi,
+  /AIzaSy[a-zA-Z0-9_-]{35}/gi,
+  /xai-[a-zA-Z0-9]{40,}/gi,
+];
+
+function sanitizeSecrets(text: string): string {
+  let sanitized = text.replace(SECRET_VALUE_RE, "$1[redacted]").replace(BEARER_RE, "Bearer [redacted]");
+  for (const pattern of EXPLICIT_SECRET_PATTERNS) {
+    sanitized = sanitized.replace(pattern, "[redacted]");
+  }
+  return sanitized;
+}
+
 interface CommandValidation {
   valid: boolean;
   reason?: string;
+}
+
+function resolveAndValidateWorkDir(workDir: string | undefined): string {
+  if (!workDir) {
+    return CLI_ROOT;
+  }
+  const resolved = path.resolve(CLI_ROOT, workDir);
+  const relative = path.relative(CLI_ROOT, resolved);
+  const isSafe = !relative.startsWith('..') && !path.isAbsolute(relative);
+  if (!isSafe) {
+    throw new Error('Path traversal detected: workDir must resolve inside CLI_ROOT');
+  }
+  return resolved;
 }
 
 function validateCommand(command: string): CommandValidation {
@@ -45,6 +76,21 @@ export function executeCliCommand(
   userUid: string,
   res: Response
 ): void {
+  let cwd = CLI_ROOT;
+  try {
+    cwd = resolveAndValidateWorkDir(workDir);
+  } catch (err: any) {
+    res.writeHead(400, {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      'Connection': 'keep-alive'
+    });
+    res.write(`data: ${JSON.stringify({ error: err.message })}\n\n`);
+    res.write('data: [DONE]\n\n');
+    res.end();
+    return;
+  }
+
   const validation = validateCommand(command);
 
   if (!validation.valid) {
@@ -70,7 +116,6 @@ export function executeCliCommand(
 
   res.write(`data: ${JSON.stringify({ taskId: task.id, status: 'running' })}\n\n`);
 
-  const cwd = workDir || CLI_ROOT;
   let stdout = '';
   let stderr = '';
 
@@ -92,13 +137,13 @@ export function executeCliCommand(
   }
 
   proc.stdout?.on('data', (data: Buffer) => {
-    const text = data.toString();
+    const text = sanitizeSecrets(data.toString());
     stdout += text;
     res.write(`data: ${JSON.stringify({ stream: 'stdout', output: text })}\n\n`);
   });
 
   proc.stderr?.on('data', (data: Buffer) => {
-    const text = data.toString();
+    const text = sanitizeSecrets(data.toString());
     stderr += text;
     res.write(`data: ${JSON.stringify({ stream: 'stderr', output: text })}\n\n`);
   });
@@ -135,13 +180,19 @@ export function executeCliNonStream(
   userUid: string
 ): Promise<CliResult> {
   return new Promise((resolve, reject) => {
+    let cwd = CLI_ROOT;
+    try {
+      cwd = resolveAndValidateWorkDir(workDir);
+    } catch (err: any) {
+      return reject(err);
+    }
+
     const validation = validateCommand(command);
     if (!validation.valid) {
       return reject(new Error(validation.reason));
     }
 
     const task = MemoryService.createTask(userUid, `cli:${command.substring(0, 50)}`, command);
-    const cwd = workDir || CLI_ROOT;
 
     const parts = command.split(/\s+/);
     const cmd = parts[0];
@@ -163,8 +214,8 @@ export function executeCliNonStream(
     let stdout = '';
     let stderr = '';
 
-    proc.stdout?.on('data', (data: Buffer) => { stdout += data.toString(); });
-    proc.stderr?.on('data', (data: Buffer) => { stderr += data.toString(); });
+    proc.stdout?.on('data', (data: Buffer) => { stdout += sanitizeSecrets(data.toString()); });
+    proc.stderr?.on('data', (data: Buffer) => { stderr += sanitizeSecrets(data.toString()); });
 
     proc.on('error', (err: Error) => {
       MemoryService.completeTask(task.id, 'failed', err.message);
