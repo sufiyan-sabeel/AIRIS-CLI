@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-08-11T07:13:34.521Z",
-  "date": "2026-08-11",
+  "generatedAt": "2026-08-12T07:37:52.134Z",
+  "date": "2026-08-12",
   "dailyFact": {
-    "fact": "The Termux installation path allows running AIRIS on Android devices.",
-    "index": 11,
+    "fact": "AIRIS has a session system that supports listing, resuming, forking, naming, and exporting sessions.",
+    "index": 12,
     "total": 21
   },
   "analysis": {
