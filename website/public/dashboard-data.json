@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-08-17T07:02:10.714Z",
-  "date": "2026-08-17",
+  "generatedAt": "2026-08-18T06:49:40.936Z",
+  "date": "2026-08-18",
   "dailyFact": {
-    "fact": "AIRIS supports OAuth-based authentication for Anthropic and other providers.",
-    "index": 17,
+    "fact": "The ship workflow state persists in `.airis/ship/` for interrupted workflow resumption.",
+    "index": 18,
     "total": 21
   },
   "analysis": {
