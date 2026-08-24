@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-08-23T06:46:45.483Z",
-  "date": "2026-08-23",
+  "generatedAt": "2026-08-24T07:04:41.565Z",
+  "date": "2026-08-24",
   "dailyFact": {
-    "fact": "The project has a built-in `airis ship` workflow with 10 phases from Request to Commit.",
-    "index": 2,
+    "fact": "AIRIS supports 17 different AI providers including Anthropic, OpenAI, Google Gemini, and Groq.",
+    "index": 3,
     "total": 21
   },
   "analysis": {
