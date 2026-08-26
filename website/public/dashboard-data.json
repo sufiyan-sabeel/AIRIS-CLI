@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-08-25T06:54:03.852Z",
-  "date": "2026-08-25",
+  "generatedAt": "2026-08-26T06:54:49.129Z",
+  "date": "2026-08-26",
   "dailyFact": {
-    "fact": "AIRIS has a verified autonomy system with mission contracts, capability leases, and evidence reports.",
-    "index": 4,
+    "fact": "The project runs on Node.js >=22.19.0 and is written in TypeScript.",
+    "index": 5,
     "total": 21
   },
   "analysis": {
