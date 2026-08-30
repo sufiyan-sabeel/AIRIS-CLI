@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-08-29T12:30:22.550Z",
-  "date": "2026-08-29",
+  "generatedAt": "2026-08-30T11:33:49.929Z",
+  "date": "2026-08-30",
   "dailyFact": {
-    "fact": "AIRIS has a theme system with dark, graphite, and tokyo-night built-in themes.",
-    "index": 8,
+    "fact": "The project includes native Go binaries for file search (aisearch) and web fetching (aifetch).",
+    "index": 9,
     "total": 21
   },
   "analysis": {
