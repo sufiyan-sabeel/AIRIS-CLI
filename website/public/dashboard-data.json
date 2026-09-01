@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-08-31T13:08:09.783Z",
-  "date": "2026-08-31",
+  "generatedAt": "2026-09-01T11:21:44.151Z",
+  "date": "2026-09-01",
   "dailyFact": {
-    "fact": "AIRIS has an extension system that supports custom tools, themes, skills, and providers.",
-    "index": 10,
+    "fact": "AIRIS supports OAuth-based authentication for Anthropic and other providers.",
+    "index": 17,
     "total": 21
   },
   "analysis": {
