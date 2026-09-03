@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-09-02T10:55:33.556Z",
-  "date": "2026-09-02",
+  "generatedAt": "2026-09-03T10:55:10.027Z",
+  "date": "2026-09-03",
   "dailyFact": {
-    "fact": "The ship workflow state persists in `.airis/ship/` for interrupted workflow resumption.",
-    "index": 18,
+    "fact": "AIRIS has a trust system that controls access to project-local resources and mutation tools.",
+    "index": 19,
     "total": 21
   },
   "analysis": {
