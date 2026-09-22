@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-09-21T12:23:01.439Z",
-  "date": "2026-09-21",
+  "generatedAt": "2026-09-22T11:13:40.004Z",
+  "date": "2026-09-22",
   "dailyFact": {
-    "fact": "The project has a website built with Next.js and Tailwind CSS.",
-    "index": 16,
+    "fact": "AIRIS supports OAuth-based authentication for Anthropic and other providers.",
+    "index": 17,
     "total": 21
   },
   "analysis": {
