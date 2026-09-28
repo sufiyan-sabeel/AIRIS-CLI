@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-09-27T11:42:40.452Z",
-  "date": "2026-09-27",
+  "generatedAt": "2026-09-28T13:20:03.521Z",
+  "date": "2026-09-28",
   "dailyFact": {
-    "fact": "AIRIS stands for Artificial Intelligence Responsive Integrated System.",
-    "index": 1,
+    "fact": "The project has a built-in `airis ship` workflow with 10 phases from Request to Commit.",
+    "index": 2,
     "total": 21
   },
   "analysis": {
