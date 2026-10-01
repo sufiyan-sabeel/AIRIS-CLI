@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-09-30T12:11:05.041Z",
-  "date": "2026-09-30",
+  "generatedAt": "2026-10-01T12:45:14.430Z",
+  "date": "2026-10-01",
   "dailyFact": {
-    "fact": "AIRIS has a verified autonomy system with mission contracts, capability leases, and evidence reports.",
-    "index": 4,
+    "fact": "AIRIS has a session system that supports listing, resuming, forking, naming, and exporting sessions.",
+    "index": 12,
     "total": 21
   },
   "analysis": {
