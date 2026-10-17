@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-10-16T11:00:19.701Z",
-  "date": "2026-10-16",
+  "generatedAt": "2026-10-17T10:22:04.982Z",
+  "date": "2026-10-17",
   "dailyFact": {
-    "fact": "AIRIS has a self-debugging system that learns from error patterns.",
-    "index": 6,
+    "fact": "The CLI supports interactive mode, one-shot prompts, and machine-readable JSON/RPC modes.",
+    "index": 7,
     "total": 21
   },
   "analysis": {
