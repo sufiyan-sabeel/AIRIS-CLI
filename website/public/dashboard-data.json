@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-10-23T11:15:46.251Z",
-  "date": "2026-10-23",
+  "generatedAt": "2026-10-24T10:34:46.261Z",
+  "date": "2026-10-24",
   "dailyFact": {
-    "fact": "The `airis --list-models` command supports search and glob patterns across providers.",
-    "index": 13,
+    "fact": "AIRIS uses biome for linting/formatting and vitest for testing.",
+    "index": 14,
     "total": 21
   },
   "analysis": {
