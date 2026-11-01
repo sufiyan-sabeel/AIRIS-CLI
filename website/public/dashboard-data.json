@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-10-31T11:54:59.906Z",
-  "date": "2026-10-31",
+  "generatedAt": "2026-11-01T12:54:13.767Z",
+  "date": "2026-11-01",
   "dailyFact": {
-    "fact": "AIRIS CLI was started by Umaiz Sufiyan at age 15.",
-    "index": 0,
+    "fact": "The CLI supports interactive mode, one-shot prompts, and machine-readable JSON/RPC modes.",
+    "index": 7,
     "total": 21
   },
   "analysis": {
