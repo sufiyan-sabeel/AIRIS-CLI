@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-11-13T14:15:23.556Z",
-  "date": "2026-11-13",
+  "generatedAt": "2026-11-14T13:12:51.636Z",
+  "date": "2026-11-14",
   "dailyFact": {
-    "fact": "AIRIS has a trust system that controls access to project-local resources and mutation tools.",
-    "index": 19,
+    "fact": "The coding agent can read, write, edit, grep, find, and ls files in the project.",
+    "index": 20,
     "total": 21
   },
   "analysis": {
