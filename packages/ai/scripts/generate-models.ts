@@ -2307,6 +2307,16 @@ export const MODELS = {
 	output += `} as const;
 `;
 
+	// Guard: every fetch helper above swallows its error and returns an empty
+	// list, so a network failure used to rewrite this file with a truncated
+	// registry (18k lines lost in one observed run). That silently shipped a
+	// crippled model catalog and broke type checking. Refuse instead.
+	if (allModels.length === 0) {
+		throw new Error(
+			"Refusing to write models.generated.ts: no models resolved (upstream fetch failed)",
+		);
+	}
+
 	// Write file
 	writeFileSync(join(packageRoot, "src/models.generated.ts"), output);
 	console.log("Generated src/models.generated.ts");
@@ -2325,4 +2335,7 @@ export const MODELS = {
 }
 
 // Run the generator
-generateModels().catch(console.error);
+generateModels().catch((error) => {
+	console.error(error);
+	process.exit(1);
+});
