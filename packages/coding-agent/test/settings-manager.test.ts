@@ -369,6 +369,26 @@ describe("SettingsManager", () => {
 		});
 	});
 
+	describe("userName", () => {
+		it("should load a configured userName", () => {
+			writeFileSync(join(agentDir, "settings.json"), JSON.stringify({ userName: "Riyaz" }));
+			const manager = SettingsManager.create(projectDir, agentDir);
+			expect(manager.getUserName()).toBe("Riyaz");
+		});
+
+		it("should return undefined when userName is not set", () => {
+			writeFileSync(join(agentDir, "settings.json"), JSON.stringify({ theme: "dark" }));
+			const manager = SettingsManager.create(projectDir, agentDir);
+			expect(manager.getUserName()).toBeUndefined();
+		});
+
+		it("should treat a blank userName as unset", () => {
+			writeFileSync(join(agentDir, "settings.json"), JSON.stringify({ userName: "   " }));
+			const manager = SettingsManager.create(projectDir, agentDir);
+			expect(manager.getUserName()).toBeUndefined();
+		});
+	});
+
 	describe("getSessionDir", () => {
 		it("should return undefined when not set", () => {
 			writeFileSync(join(agentDir, "settings.json"), JSON.stringify({ theme: "dark" }));

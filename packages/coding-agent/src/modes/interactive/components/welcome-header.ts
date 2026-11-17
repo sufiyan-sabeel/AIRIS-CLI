@@ -11,6 +11,8 @@ export interface WelcomeHeaderInfo {
 	mode?: string;
 	cwd?: string;
 	version?: string;
+	/** Optional user-provided display name. When absent the greeting is generic. */
+	userName?: string;
 }
 
 const NO_COLOR = !!process.env.NO_COLOR;
@@ -343,7 +345,7 @@ function renderLogo(width: number, lines: readonly string[], blockWidth: number)
 // Dynamic Greeting Rendering
 // ═══════════════════════════════════════════════════════════════
 
-function renderGreeting(width: number): string[] {
+function renderGreeting(width: number, userName?: string): string[] {
 	const inner = width - 4;
 	if (inner < 25) return [];
 
@@ -356,8 +358,13 @@ function renderGreeting(width: number): string[] {
 	const greetingText = `${fg("success", timeIcon)} ${fg("accent", bold(greeting))}`;
 	lines.push(renderBoxInsetLine(greetingText, width));
 
-	// Welcome back line
-	const welcomeText = `${fg("dim", "Welcome back,")} ${fg("airisOrangeHighlight", bold("Sufiyan"))}`;
+	// Welcome back line. Personalised only when the user has set a name in
+	// settings; otherwise a generic greeting is shown. The name is never
+	// hardcoded — the banner is displayed to every AIRIS user.
+	const displayName = userName?.trim();
+	const welcomeText = displayName
+		? `${fg("dim", "Welcome back,")} ${fg("airisOrangeHighlight", bold(displayName))}`
+		: fg("dim", "Welcome back");
 	lines.push(renderBoxInsetLine(welcomeText, width));
 
 	// Time display
@@ -527,7 +534,7 @@ export class WelcomeHeader implements Component {
 		lines.push(renderBoxTop(width));
 
 		// Dynamic greeting section
-		lines.push(...renderGreeting(width));
+		lines.push(...renderGreeting(width, this.info.userName));
 
 		// Separator after greeting
 		lines.push(renderSeparator(width));

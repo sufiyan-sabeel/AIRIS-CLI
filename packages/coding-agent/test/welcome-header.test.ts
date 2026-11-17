@@ -126,6 +126,31 @@ describe("WelcomeHeader", () => {
 		});
 	});
 
+	describe("greeting", () => {
+		it("shows a generic greeting when no name is configured", () => {
+			const header = new WelcomeHeader(baseInfo);
+			// Inspect the greeting line only: the logo block legitimately carries
+			// the creator attribution "KageOS · Umaiz Sufiyan".
+			const welcomeLines = header.render(80).filter((line) => line.includes("Welcome back"));
+			expect(welcomeLines).toHaveLength(1);
+			expect(welcomeLines[0]).not.toContain(",");
+			expect(welcomeLines[0]).not.toContain("Sufiyan");
+		});
+
+		it("personalises the greeting when a name is configured", () => {
+			const header = new WelcomeHeader({ ...baseInfo, userName: "Riyaz" });
+			const rendered = header.render(80).join("\n");
+			expect(rendered).toContain("Welcome back, Riyaz");
+		});
+
+		it("ignores a blank configured name and falls back to the generic greeting", () => {
+			const header = new WelcomeHeader({ ...baseInfo, userName: "   " });
+			const welcomeLines = header.render(80).filter((line) => line.includes("Welcome back"));
+			expect(welcomeLines).toHaveLength(1);
+			expect(welcomeLines[0]).not.toContain(",");
+		});
+	});
+
 	describe("metadata rendering", () => {
 		it("shows model information", () => {
 			const header = new WelcomeHeader(baseInfo);
