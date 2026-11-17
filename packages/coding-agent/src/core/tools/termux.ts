@@ -515,17 +515,22 @@ const defaultTermuxStorageGetOps: TermuxStorageGetOperations = {
 // Tool Definitions
 // ---------------------------------------------------------------------------
 
-function buildTermuxDefinition<T extends Type.Static<Type.AnyType>>(
+// The schema must stay generic through the factory. Typing it as the wide
+// `Type.TSchema` erased the concrete object type, so every caller that declared
+// the precise `ToolDefinition<typeof xSchema, …>` was rejected. `Type.AnyType`
+// also does not exist in typebox 1.x, which is why this file could never be
+// type-checked.
+function buildTermuxDefinition<S extends Type.TObject>(
 	name: string,
 	label: string,
 	description: string,
-	schema: Type.TSchema,
+	schema: S,
 	operations: {
 		isAvailable: () => boolean;
-		execute: (params: T) => { exitCode: number | null; stdout: string; stderr: string };
+		execute: (params: Type.Static<S>) => { exitCode: number | null; stdout: string; stderr: string };
 	},
 	promptGuidelines?: string[],
-): ToolDefinition<typeof schema, TermuxToolDetails> {
+): ToolDefinition<S, TermuxToolDetails> {
 	const available = operations.isAvailable();
 
 	return {
@@ -537,7 +542,7 @@ function buildTermuxDefinition<T extends Type.Static<Type.AnyType>>(
 		promptGuidelines: available ? promptGuidelines : undefined,
 		execute: async (
 			_toolCallId: string,
-			params: T,
+			params: Type.Static<S>,
 			signal: AbortSignal | undefined,
 			_onUpdate: ((partialResult: AgentToolResult<TermuxToolDetails>) => void) | undefined,
 			_ctx: ExtensionContext | undefined,
@@ -577,17 +582,17 @@ function buildTermuxDefinition<T extends Type.Static<Type.AnyType>>(
 	};
 }
 
-function buildTermuxSimpleDefinition(
+function buildTermuxSimpleDefinition<S extends Type.TObject>(
 	name: string,
 	label: string,
 	description: string,
-	schema: Type.TSchema,
+	schema: S,
 	operations: {
 		isAvailable: () => boolean;
 		execute: () => { exitCode: number | null; stdout: string; stderr: string };
 	},
 	promptGuidelines?: string[],
-): ToolDefinition<typeof schema, TermuxToolDetails> {
+): ToolDefinition<S, TermuxToolDetails> {
 	const available = operations.isAvailable();
 
 	return {
