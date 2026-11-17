@@ -1,6 +1,11 @@
 #!/usr/bin/env node
 
-import { writeFileSync } from "fs";
+import { existsSync, readFileSync, renameSync, writeFileSync } from "fs";
+import {
+	countModelsInRegistry,
+	describeValidationFailure,
+	validateRegistry,
+} from "./registry-validation.ts";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 import {
@@ -2307,18 +2312,30 @@ export const MODELS = {
 	output += `} as const;
 `;
 
-	// Guard: every fetch helper above swallows its error and returns an empty
-	// list, so a network failure used to rewrite this file with a truncated
-	// registry (18k lines lost in one observed run). That silently shipped a
-	// crippled model catalog and broke type checking. Refuse instead.
-	if (allModels.length === 0) {
-		throw new Error(
-			"Refusing to write models.generated.ts: no models resolved (upstream fetch failed)",
-		);
+	// Validate before replacing the committed registry.
+	//
+	// Every fetch helper above catches its own error and returns an empty list,
+	// so a network failure used to rewrite this file with a truncated registry
+	// (18,176 lines lost in one observed run). The last known-good file is kept
+	// on any validation failure.
+	const registryPath = join(packageRoot, "src/models.generated.ts");
+	const previousModelCount = existsSync(registryPath)
+		? countModelsInRegistry(readFileSync(registryPath, "utf8"))
+		: null;
+	const validation = validateRegistry({
+		modelCount: allModels.length,
+		providers: allModels.map((model) => model.provider),
+		previousModelCount,
+	});
+	if (!validation.ok) {
+		console.error(describeValidationFailure(validation.errors));
+		throw new Error(`Model registry validation failed (${validation.errors.length} problem(s))`);
 	}
 
-	// Write file
-	writeFileSync(join(packageRoot, "src/models.generated.ts"), output);
+	// Write atomically so a crash or full disk cannot leave a partial file.
+	const tempPath = `${registryPath}.tmp-${process.pid}`;
+	writeFileSync(tempPath, output);
+	renameSync(tempPath, registryPath);
 	console.log("Generated src/models.generated.ts");
 
 	// Print statistics
