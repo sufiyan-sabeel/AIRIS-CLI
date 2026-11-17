@@ -1,5 +1,5 @@
 import { visibleWidth } from "@sufiyan-sabeel/airis-tui";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { WelcomeHeader, type WelcomeHeaderInfo } from "../src/modes/interactive/components/welcome-header.ts";
 
 // The mock must expose every theme method WelcomeHeader actually calls,
@@ -237,6 +237,18 @@ describe("WelcomeHeader", () => {
 	});
 
 	describe("snapshot tests", () => {
+		// The banner renders the current local time and a time-of-day greeting,
+		// so snapshots taken against the real clock differ on every run (one CI
+		// run recorded "2:34 PM" and the next "2:54 PM"). Pin the clock.
+		beforeEach(() => {
+			vi.useFakeTimers();
+			vi.setSystemTime(new Date("2026-01-15T10:30:00"));
+		});
+
+		afterEach(() => {
+			vi.useRealTimers();
+		});
+
 		it("matches snapshot at 120 columns", () => {
 			const header = new WelcomeHeader(baseInfo);
 			const lines = header.render(120);
