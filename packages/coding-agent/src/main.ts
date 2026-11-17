@@ -58,7 +58,6 @@ import { handleConfigCommand, handlePackageCommand } from "./package-manager-cli
 import { isLocalPath, normalizePath, resolvePath } from "./utils/paths.ts";
 import { cleanupWindowsSelfUpdateQuarantine } from "./utils/windows-self-update.ts";
 
-const DEBUG_TAG = "[AIRIS-DEBUG-MAIN]";
 
 /**
  * Read all content from piped stdin.
@@ -477,7 +476,6 @@ export interface MainOptions {
 
 export async function main(args: string[], options?: MainOptions) {
 	resetTimings();
-	console.error(`${DEBUG_TAG} main() entered. args:`, JSON.stringify(args));
 	args = normalizeAirisCommandAliases(args);
 	const trustRequiredForMutation = commandNeedsProjectTrustForMutation(args);
 	const offlineMode =
@@ -499,18 +497,15 @@ export async function main(args: string[], options?: MainOptions) {
 	// No separate CLI command needed - user can say "open settings" directly in chat
 
 	if (await handlePackageCommand(args, { extensionFactories: options?.extensionFactories })) {
-		console.error(`${DEBUG_TAG} Package command handled. process.exit(${process.exitCode ?? 0})`);
 		process.exit(process.exitCode ?? 0);
 		return;
 	}
 
 	if (await handleAirisCommand(args)) {
-		console.error(`${DEBUG_TAG} Airis command handled. Returning.`);
 		return;
 	}
 
 	if (await handleConfigCommand(args, { extensionFactories: options?.extensionFactories })) {
-		console.error(`${DEBUG_TAG} Config command handled. Returning.`);
 		return;
 	}
 
@@ -521,7 +516,6 @@ export async function main(args: string[], options?: MainOptions) {
 			console.error(color(`${d.type === "error" ? "Error" : "Warning"}: ${d.message}`));
 		}
 		if (parsed.diagnostics.some((d) => d.type === "error")) {
-			console.error(`${DEBUG_TAG} Parse diagnostics contain errors. process.exit(1)`);
 			process.exit(1);
 		}
 	}
@@ -529,7 +523,6 @@ export async function main(args: string[], options?: MainOptions) {
 
 	if (parsed.version) {
 		console.log(VERSION);
-		console.error(`${DEBUG_TAG} --version flag. process.exit(0)`);
 		process.exit(0);
 	}
 
@@ -548,8 +541,6 @@ export async function main(args: string[], options?: MainOptions) {
 	}
 
 	let appMode = resolveAppMode(parsed, process.stdin.isTTY, process.stdout.isTTY);
-	console.error(`${DEBUG_TAG} resolveAppMode result: ${appMode}`);
-	console.error(`${DEBUG_TAG} stdin.isTTY=${process.stdin.isTTY} stdout.isTTY=${process.stdout.isTTY}`);
 	const shouldTakeOverStdout = appMode !== "interactive" && !isPlainRuntimeMetadataCommand(parsed);
 	if (shouldTakeOverStdout) {
 		takeOverStdout();
@@ -595,7 +586,6 @@ export async function main(args: string[], options?: MainOptions) {
 		if (appMode === "interactive") {
 			const selectedCwd = await promptForMissingSessionCwd(missingSessionCwdIssue, startupSettingsManager);
 			if (!selectedCwd) {
-				console.error(`${DEBUG_TAG} Missing session CWD - user cancelled. process.exit(0)`);
 				process.exit(0);
 			}
 			sessionManager = SessionManager.open(missingSessionCwdIssue.sessionFile!, sessionDir, selectedCwd);
@@ -772,14 +762,12 @@ export async function main(args: string[], options?: MainOptions) {
 		};
 	};
 	time("createRuntime");
-	console.error(`${DEBUG_TAG} Creating agent session runtime...`);
 	const runtime = await createAgentSessionRuntime(createRuntime, {
 		cwd: sessionManager.getCwd(),
 		agentDir,
 		sessionManager,
 	});
 	time("createAgentSessionRuntime");
-	console.error(`${DEBUG_TAG} Runtime created. session.model=${runtime.session.model?.id ?? "none"}, provider=${runtime.session.model?.provider ?? "none"}`);
 	const { services, session, modelFallbackMessage } = runtime;
 	const { settingsManager, modelRegistry, resourceLoader } = services;
 	configureHttpDispatcher(settingsManager.getHttpIdleTimeoutMs());
@@ -789,14 +777,12 @@ export async function main(args: string[], options?: MainOptions) {
 			.getExtensions()
 			.extensions.flatMap((extension) => Array.from(extension.flags.values()));
 		printHelp(extensionFlags);
-		console.error(`${DEBUG_TAG} --help flag. process.exit(0)`);
 		process.exit(0);
 	}
 
 	if (parsed.listModels !== undefined) {
 		const searchPattern = typeof parsed.listModels === "string" ? parsed.listModels : undefined;
 		await listModels(modelRegistry, searchPattern);
-		console.error(`${DEBUG_TAG} --list-models flag. process.exit(0)`);
 		process.exit(0);
 	}
 
@@ -805,7 +791,6 @@ export async function main(args: string[], options?: MainOptions) {
 	if (appMode !== "rpc") {
 		stdinContent = await readPipedStdin();
 		if (stdinContent !== undefined && appMode === "interactive") {
-			console.error(`${DEBUG_TAG} stdinContent detected, switching appMode from interactive to print`);
 			appMode = "print";
 		}
 	}
@@ -828,15 +813,12 @@ export async function main(args: string[], options?: MainOptions) {
 	time("resolveModelScope");
 	reportDiagnostics(runtime.diagnostics);
 	if (runtime.diagnostics.some((diagnostic) => diagnostic.type === "error")) {
-		console.error(`${DEBUG_TAG} Runtime diagnostics contain errors. process.exit(1)`);
-		console.error(`${DEBUG_TAG} Diagnostics:`, JSON.stringify(runtime.diagnostics));
 		process.exit(1);
 	}
 	time("createAgentSession");
 
 	if (appMode !== "interactive" && !session.model) {
 		console.error(chalk.red(formatNoModelsAvailableMessage()));
-		console.error(`${DEBUG_TAG} Non-interactive mode with no model. process.exit(1)`);
 		process.exit(1);
 	}
 
@@ -844,7 +826,6 @@ export async function main(args: string[], options?: MainOptions) {
 		isTruthyEnvFlag(process.env.AIRIS_STARTUP_BENCHMARK) || isTruthyEnvFlag(process.env.AIRIS_STARTUP_BENCHMARK);
 	if (startupBenchmark && appMode !== "interactive") {
 		console.error(chalk.red("Error: AIRIS_STARTUP_BENCHMARK only supports interactive mode"));
-		console.error(`${DEBUG_TAG} Startup benchmark but non-interactive. process.exit(1)`);
 		process.exit(1);
 	}
 
@@ -852,8 +833,6 @@ export async function main(args: string[], options?: MainOptions) {
 		printTimings();
 		await runRpcMode(runtime);
 	} else if (appMode === "interactive") {
-		console.error(`${DEBUG_TAG} === ENTERING INTERACTIVE MODE ===`);
-		console.error(`${DEBUG_TAG} Before InteractiveMode constructor.`);
 		const interactiveMode = new InteractiveMode(runtime, {
 			migratedProviders,
 			modelFallbackMessage,
@@ -864,10 +843,8 @@ export async function main(args: string[], options?: MainOptions) {
 			initialMessages: parsed.messages,
 			verbose: parsed.verbose,
 		});
-		console.error(`${DEBUG_TAG} After InteractiveMode constructor.`);
 
 		if (startupBenchmark) {
-			console.error(`${DEBUG_TAG} Startup benchmark mode.`);
 			await interactiveMode.init();
 			time("interactiveMode.init");
 			printTimings();
@@ -879,16 +856,12 @@ export async function main(args: string[], options?: MainOptions) {
 			if (process.stderr.writableLength > 0) {
 				await new Promise<void>((resolve) => process.stderr.once("drain", resolve));
 			}
-			console.error(`${DEBUG_TAG} Startup benchmark complete. Returning.`);
 			return;
 		}
 
 		printTimings();
-		console.error(`${DEBUG_TAG} Calling interactiveMode.run()...`);
 		await interactiveMode.run();
-		console.error(`${DEBUG_TAG} interactiveMode.run() returned! This should not happen.`);
 	} else {
-		console.error(`${DEBUG_TAG} === NON-INTERACTIVE MODE (${appMode}) ===`);
 		printTimings();
 		const exitCode = await runPrintMode(runtime, {
 			mode: toPrintOutputMode(appMode),
@@ -901,7 +874,6 @@ export async function main(args: string[], options?: MainOptions) {
 		if (exitCode !== 0) {
 			process.exitCode = exitCode;
 		}
-		console.error(`${DEBUG_TAG} Print mode completed with exitCode=${exitCode}. Returning.`);
 		return;
 	}
 }
