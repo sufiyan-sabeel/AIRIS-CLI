@@ -73,8 +73,8 @@ telemetry → schema → chord → tui → codemode → mcp → ai → durable �
 
 | # | Milestone | State |
 |---|---|---|
-| 1 | **Runtime foundation** — vendor Pi, establish boundaries, verify the runtime builds | **in progress**: vendored and installed; 5 of 11 buildable packages built in-sandbox; rest need CI (memory/network) |
-| 2 | AIRIS feature restoration — adapt existing AIRIS features onto the runtime through clean interfaces | not started |
+| 1 | **Runtime foundation** — vendor Pi, establish boundaries, verify the runtime builds | **complete**: all 11 buildable packages build in CI; AIRIS unaffected |
+| 2 | AIRIS feature restoration — adapt existing AIRIS features onto the runtime through clean interfaces | **in progress**: consumption architecture decided (built-artifact linking) and the adapter is verified in CI; the end-to-end LLM session is the remaining gate |
 | 3 | New runtime capabilities — durable sessions, MCP, codemode, telemetry, chord orchestration | not started |
 | 4 | Developer experience — CLI, TUI, configuration, model selection, extensions | not started |
 | 5 | Platform and security — Android/Termux, permission boundaries, dependency security | not started |
