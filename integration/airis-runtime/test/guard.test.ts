@@ -59,7 +59,7 @@ describe("allowed operations", () => {
 
 describe("fail-closed behaviour", () => {
 	it("blocks a malformed call", () => {
-		// @ts-expect-error deliberately malformed
+		// Empty tool name: type-valid but semantically malformed.
 		const d = evaluateToolCall({ tool: "", input: {} }, policy);
 		expect(d.block).toBe(true);
 		expect(d.reason).toContain("malformed");
@@ -77,7 +77,7 @@ describe("fail-closed behaviour", () => {
 	});
 
 	it("honours failClosed: false only when explicitly configured", () => {
-		// @ts-expect-error deliberately malformed
+		// Empty tool name: type-valid but semantically malformed.
 		const d = evaluateToolCall({ tool: "", input: {} }, { failClosed: false });
 		expect(d.block).toBe(false);
 	});
