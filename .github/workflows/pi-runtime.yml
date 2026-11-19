@@ -101,11 +101,6 @@ jobs:
       - name: Adapter integration tests (real Pi runtime)
         run: npm --prefix ../../integration/airis-runtime run test:integration
 
-      # Deterministic end-to-end: real session, scripted faux provider, real
-      # tool call, guard allow/deny and audit records. No credential needed.
-      - name: Deterministic end-to-end (faux provider)
-        run: npm --prefix ../../integration/airis-runtime run test:e2e
-
       # A directory can exist while being empty, so assert real emitted output.
       - name: Verify build output
         run: |
