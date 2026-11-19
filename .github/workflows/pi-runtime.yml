@@ -12,13 +12,14 @@ name: Pi Runtime
 #   -> durable -> env -> agent -> coding-agent
 
 on:
+  # Runs on any branch that touches the vendored tree, so the integration branch
+  # is verified before it is proposed for merge.
   push:
-    branches: [main]
     paths:
       - 'vendor/pi/**'
       - '.github/workflows/pi-runtime.yml'
   pull_request:
-    branches: [main]
+    branches: [main, remediation/baseline, ci/step-0-reliability]
     paths:
       - 'vendor/pi/**'
       - '.github/workflows/pi-runtime.yml'
