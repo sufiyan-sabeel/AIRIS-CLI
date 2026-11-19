@@ -3,7 +3,9 @@ import { join } from "node:path";
 
 const dependencySections = ["dependencies", "devDependencies", "optionalDependencies"];
 const exactVersionPattern = /^(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$/;
-const ignoredDirectories = new Set([".git", "dist", "node_modules"]);
+// "vendor" holds the pinned upstream Pi runtime, which follows upstream
+// conventions and is governed by its own lockfile, not by AIRIS pinning policy.
+const ignoredDirectories = new Set([".git", "dist", "node_modules", "vendor"]);
 const packageJsonFiles = [];
 
 function collectPackageJsonFiles(directory) {

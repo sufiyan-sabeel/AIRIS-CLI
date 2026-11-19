@@ -31,3 +31,8 @@ index-store/
 
 # Temp
 /tmp/
+
+# Vendored upstream runtime: dependencies and build output are never committed.
+vendor/pi/**/node_modules/
+vendor/pi/**/dist/
+vendor/pi/.artifacts/

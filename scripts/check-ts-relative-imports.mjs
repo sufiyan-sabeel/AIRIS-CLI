@@ -2,7 +2,9 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import ts from "typescript";
 
-const ignoredDirectories = new Set([".git", "coverage", "dist", "node_modules"]);
+// "vendor" holds the pinned upstream Pi runtime, which uses its own import
+// conventions and is verified by its own build, not by AIRIS import policy.
+const ignoredDirectories = new Set([".git", "coverage", "dist", "node_modules", "vendor"]);
 const files = [];
 
 function collectTypescriptFiles(directory) {
