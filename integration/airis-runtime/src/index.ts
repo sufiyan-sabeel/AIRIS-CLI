@@ -23,6 +23,8 @@ export interface AirisRuntimeOptions {
 	persistence?: "memory" | "persistent";
 	/** Model id to select, when the runtime supports explicit selection. */
 	model?: string;
+	/** Absolute path of a persisted Pi session to restore instead of starting fresh. */
+	restoreFrom?: string;
 }
 
 /** One completed agent turn. */
@@ -33,6 +35,30 @@ export interface AirisTurnResult {
 	toolExecutions: number;
 	/** Whether the turn ended because it was aborted. */
 	aborted: boolean;
+}
+
+/** Runtime diagnostics, safe to log: no credentials, no prompt content. */
+export interface AirisRuntimeDiagnostics {
+	/** Whether a session is currently open. */
+	available: boolean;
+	/** Model id reported by the runtime, when a session is open. */
+	model?: string;
+	/** Provider id reported by the runtime, when a session is open. */
+	provider?: string;
+	/** Names of the tools the runtime will offer the model. */
+	tools: string[];
+	/** Persistence mode this runtime was created with. */
+	persistence: "memory" | "persistent";
+	/** Working directory the session operates on. */
+	cwd: string;
+	/** Path this runtime was restored from, if any. */
+	restoredFrom?: string;
+}
+
+/** Summary of a persisted session on disk. */
+export interface AirisSessionSummary {
+	/** Absolute path of the session file. */
+	path: string;
 }
 
 /** Streaming callback invoked for each assistant text delta. */
@@ -53,6 +79,8 @@ export interface AirisRuntime {
 	abort(): Promise<void>;
 	/** Release the session and its resources. */
 	dispose(): Promise<void>;
+	/** Report runtime state for `airis runtime` diagnostics. */
+	diagnostics(): Promise<AirisRuntimeDiagnostics>;
 }
 
 /** Raised when the runtime cannot be loaded or initialized. */

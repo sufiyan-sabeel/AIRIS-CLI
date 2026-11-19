@@ -22,7 +22,9 @@ import {
 import {
 	type AirisDeltaHandler,
 	type AirisRuntime,
+	type AirisRuntimeDiagnostics,
 	type AirisRuntimeOptions,
+	type AirisSessionSummary,
 	type AirisTurnResult,
 	AirisRuntimeUnavailableError,
 	normalizeRuntimeError,
@@ -65,15 +67,18 @@ export class PiAirisRuntime implements AirisRuntime {
 
 		const cwd = this.options.cwd ?? process.cwd();
 		try {
-			const { session } = await createAgentSession({
-				cwd,
-				// "memory" leaves no state on disk, which is the default so tests and
-				// short runs are side-effect free. "persistent" uses Pi's on-disk
-				// session store (Pi persists by default when no manager is supplied).
-				...(this.options.persistence === "persistent"
-					? {}
-					: { sessionManager: SessionManager.inMemory() }),
-			});
+			// SessionManager decides where the transcript lives:
+			//   restoreFrom  -> SessionManager.open(path)      (resume an existing session)
+			//   persistent   -> SessionManager.create(cwd)     (new session on disk)
+			//   memory       -> SessionManager.inMemory()      (no files written)
+			// All three are upstream APIs: session-manager.ts:1773/1784/1822.
+			const sessionManager = this.options.restoreFrom
+				? SessionManager.open(this.options.restoreFrom)
+				: this.options.persistence === "persistent"
+					? SessionManager.create(cwd)
+					: SessionManager.inMemory(cwd);
+
+			const { session } = await createAgentSession({ cwd, sessionManager });
 			this.session = session;
 		} catch (error) {
 			throw new AirisRuntimeUnavailableError(
@@ -130,6 +135,19 @@ export class PiAirisRuntime implements AirisRuntime {
 		this.session = undefined;
 	}
 
+	async diagnostics(): Promise<AirisRuntimeDiagnostics> {
+		const session = this.session;
+		return {
+			available: session !== undefined,
+			model: session?.model?.id,
+			provider: session?.model?.provider,
+			tools: session?.getActiveToolNames() ?? [],
+			persistence: this.options.persistence ?? "memory",
+			cwd: this.options.cwd ?? process.cwd(),
+			restoredFrom: this.options.restoreFrom,
+		};
+	}
+
 	private requireSession(): AgentSession {
 		if (!this.session) {
 			throw new AirisRuntimeUnavailableError(
@@ -138,6 +156,15 @@ export class PiAirisRuntime implements AirisRuntime {
 		}
 		return this.session;
 	}
+}
+
+/**
+ * Lists persisted Pi sessions for a working directory.
+ * Uses SessionManager.list (session-manager.ts:1923).
+ */
+export async function listAirisSessions(cwd: string): Promise<AirisSessionSummary[]> {
+	const sessions = await SessionManager.list(cwd);
+	return sessions.map((session) => ({ path: session.path }));
 }
 
 /** Creates an AIRIS runtime backed by Pi. */
