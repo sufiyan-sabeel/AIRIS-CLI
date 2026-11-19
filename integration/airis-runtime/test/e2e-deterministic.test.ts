@@ -48,9 +48,8 @@ describe("deterministic Pi execution", () => {
 		if (!available) return expect(available).toBe(false);
 
 		const faux = ai.fauxProvider();
-		faux.setResponses([
-			{ message: ai.fauxAssistantMessage([ai.fauxText("Hello from the vendored runtime.")]) },
-		]);
+		// FauxResponseStep = AssistantMessage | FauxResponseFactory (faux.ts:117)
+		faux.setResponses([ai.fauxAssistantMessage([ai.fauxText("Hello from the vendored runtime.")])]);
 
 		const { session } = await pi.createAgentSession({
 			cwd: workspace,
@@ -82,8 +81,8 @@ describe("deterministic Pi execution", () => {
 
 		const faux = ai.fauxProvider();
 		faux.setResponses([
-			{ message: ai.fauxAssistantMessage([ai.fauxToolCall("bash", { command: "echo fixture" })]) },
-			{ message: ai.fauxAssistantMessage([ai.fauxText("done")]) },
+			ai.fauxAssistantMessage([ai.fauxToolCall("bash", { command: "echo fixture" })]),
+			ai.fauxAssistantMessage([ai.fauxText("done")]),
 		]);
 
 		const { session } = await pi.createAgentSession({
