@@ -1,7 +1,7 @@
 # AIRIS × Pi — Integration Report: Milestone 1
 
 **Milestone:** 1 — Runtime foundation
-**Status:** **partially complete.** The runtime is vendored, isolated and installed reproducibly; 5 of 11 buildable packages compile in the integration sandbox; the remainder need a CI runner (memory and network). **No Pi package is wired into AIRIS yet, and no feature is claimed.**
+**Status:** **runtime foundation complete; adapter not started.** The runtime is vendored, isolated, installed reproducibly, and **all 11 buildable packages compile in CI** (5 of them also compile in the integration sandbox). **No Pi package is wired into AIRIS yet, and no feature is claimed.**
 **Date:** 19 November 2026
 **Branch:** `integration/pi-runtime` (based on the verified remediation tree `b4da595f3`)
 **PR:** #64 → `remediation/baseline` (stacked, unmerged)
@@ -77,7 +77,25 @@ telemetry → schema → chord → tui → codemode → mcp → ai → durable �
 → assert every dist/ exists
 ```
 
-Run: [44450960540](https://github.com/sufiyan-sabeel/AIRIS-CLI/actions/runs/44450960540) (branch push).
+**Result: green.** Run [44451350542](https://github.com/sufiyan-sabeel/AIRIS-CLI/actions/runs/44451350542) — install, hydration and all 11 builds succeeded, and the verification step counted emitted output per package:
+
+```
+schema        js=43    d.ts=43
+telemetry     js=8     d.ts=8
+chord         js=315   d.ts=315
+tui           js=46    d.ts=46
+codemode      js=16    d.ts=16
+mcp           js=28    d.ts=28
+ai            js=210   d.ts=210
+durable       js=102   d.ts=102
+env           js=9     d.ts=9
+agent         js=6     d.ts=6
+coding-agent  (built; step passed)
+```
+
+The first version of that check only asserted that `dist/` existed, which an empty directory satisfies. It was tightened to count `.js` and `.d.ts` files precisely because a 1.4 s `chord` build looked implausible — the counts prove real emission (315 files, matching the 315 sources in `packages/chord/src`).
+
+**Milestone 1's runtime-build goal is therefore met**: all 11 buildable packages compile from the pinned commit, reproducibly, in CI.
 
 ---
 
@@ -104,6 +122,8 @@ Run: [44450960540](https://github.com/sufiyan-sabeel/AIRIS-CLI/actions/runs/4445
 |---|---|
 | `ab1695580` | feat(integration): vendor the pinned Pi runtime as an isolated layer |
 | `fc71c148a` | ci(integration): run the vendored-runtime build on the integration branch |
+| `43471db84` | docs(integration): Milestone 1 report |
+| `0375b590a` | ci(integration): assert emitted output, not just directory existence |
 
 Base: `b4da595f3`. Pushed to `origin/integration/pi-runtime`. PR #64 targets `remediation/baseline` so the diff stays reviewable (it does not include #62/#63).
 
@@ -147,12 +167,19 @@ Rules now enforced by the repo itself: AIRIS's pinning and import-policy checks 
 
 ## 9. Next step
 
-Milestone 1 completes when the `pi-runtime` workflow is green across all 11 buildable packages. That result is required before writing the `airis-runtime` adapter, because the adapter's entire value is binding to a runtime that actually compiles.
+The runtime build is green (§3.4). The remaining Milestone 1 item is the **`airis-runtime` adapter**, and it is deliberately not written yet because a prerequisite is missing: **a consumption strategy**.
 
-Proposed immediate next actions, in order:
+AIRIS cannot import `@earendil-works/*` today. The vendored packages are not AIRIS workspaces (adding them crashes npm's resolver), and their transitive dependencies live in `vendor/pi/node_modules`, which AIRIS's `npm ci` does not install. So an adapter written now would either fail to resolve at type-check time or need a fake local stub — exactly the "fake compatibility adapter" the directive forbids.
 
-1. Confirm the CI run in §3.4 (and fix anything it surfaces — this is the first time these six packages are built in this project).
-2. Create `packages/airis-runtime` with **type-only** imports of `pi-agent-core` + `pi-coding-agent`, plus a runtime-availability check, and tests that pass whether or not the runtime is built.
-3. Only then begin Milestone 2 feature adaptation, starting with the features that already have tests (memory, audit log, AIRIS Ship, providers).
+Three viable consumption strategies, to choose from before writing the adapter:
+
+1. **Built-artifact linking** — AIRIS depends on `file:../../vendor/pi/packages/<pkg>` after the runtime is built; CI builds `vendor/pi` before AIRIS type-checks. Simple, but couples AIRIS's build to the runtime build order.
+2. **Bundled runtime** — the adapter imports from a single pre-built bundle of the runtime, produced by the `pi-runtime` workflow and consumed as one artifact. Cleanest boundary; needs an artifact-passing step.
+3. **Published upstream packages** — depend on `@earendil-works/*` from npm at the pinned versions instead of vendoring. Contradicts the vendoring decision, but is the least coupling.
+
+Recommended order once a strategy is chosen:
+
+1. Create `packages/airis-runtime` with a real, resolvable import of the chosen surface, plus a runtime-availability check and tests that fail loudly if the runtime is absent.
+2. Begin Milestone 2 feature adaptation, starting with the features that already have tests (memory, audit log, AIRIS Ship, providers).
 
 **Nothing has been merged. PR #62, #63 and #64 are all open and separate.**
