@@ -6,7 +6,7 @@
 	"description": "AIRIS <-> Pi runtime adapter. The only package in AIRIS that imports Pi.",
 	"scripts": {
 		"typecheck": "tsc -p tsconfig.json",
-		"test": "vitest --run test/unit.test.ts",
+		"test": "vitest --run test/unit.test.ts test/guard.test.ts",
 		"test:integration": "vitest --run test/integration.test.ts"
 	},
 	"dependencies": {
