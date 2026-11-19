@@ -1,185 +1,149 @@
-# AIRIS × Pi — Integration Report: Milestone 1
+# AIRIS × Pi — Integration Report: Milestone 2
 
-**Milestone:** 1 — Runtime foundation
-**Status:** **runtime foundation complete; adapter not started.** The runtime is vendored, isolated, installed reproducibly, and **all 11 buildable packages compile in CI** (5 of them also compile in the integration sandbox). **No Pi package is wired into AIRIS yet, and no feature is claimed.**
+**Status:** **architecture settled and adapter verified; end-to-end LLM session not demonstrated.**
 **Date:** 19 November 2026
-**Branch:** `integration/pi-runtime` (based on the verified remediation tree `b4da595f3`)
-**PR:** #64 → `remediation/baseline` (stacked, unmerged)
+**Branch:** `integration/pi-runtime` · **PR:** #64 (stacked on `remediation/baseline`, unmerged)
+
+> **What is real:** the runtime builds, the adapter type-checks against genuine Pi declarations, and integration tests start a real Pi `AgentSession` in CI.
+> **What is not:** a full prompt → stream → tool → result turn against a live model. That needs a provider credential this environment does not have. It is not claimed.
 
 ---
 
-## 1. What was verified before starting
+## 1. Starting state verified
 
 | Check | Result |
 |---|---|
-| Remediation commit containing Zod 4 | `b4da595f3` (`fa99c8a8` applied the override) |
-| Working tree before starting | clean |
-| Open PRs | #62 (`ci/step-0-reliability` → main), #63 (`remediation/baseline` → `ci/step-0-reliability`) — both untouched |
-| Last green CI before this work | run [44448176405](https://github.com/sufiyan-sabeel/AIRIS-CLI/actions/runs/44448176405), 2,836 tests passed, 0 failed |
-| Pi upstream base | `1f6f319bb28992a40b99c147fffb23b65a23129d` — v1.5.2, 17 Nov 2026 (recorded in `vendor/pi/UPSTREAM.md`) |
-| Package manifests / lockfile | inspected; AIRIS lockfile unchanged by this milestone |
+| Branch / HEAD | `integration/pi-runtime` @ `ab7737bfb` (now `a78536fb7`), tree clean |
+| PRs | #62, #63 untouched; #64 is this branch |
+| Pi upstream | `1f6f319b` — `v1.5.2-303-g1f6f319bb` (**303 commits after the 1.5.2 tag**) |
+| Previous runtime CI | green (all 11 packages built) |
 
 ---
 
-## 2. What works — with evidence
+## 2. Consumption architecture — decided, with evidence
 
-| Item | Evidence |
+### C. Published upstream packages — **rejected**
+
+All packages except `pi-evals` are published at `1.5.2`, which looked attractive until the tag was checked:
+
+```
+$ git describe --tags 1f6f319b
+v1.5.2-303-g1f6f319bb
+```
+
+The vendored commit is **303 commits ahead** of the `1.5.2` release. Depending on `@earendil-works/*@1.5.2` would have installed different code from the source this project vendored and reviewed — a silent provenance swap. Rejected on correctness, not convenience.
+
+### B. Bundled runtime artifact — **deferred**
+
+Cleanest distribution boundary, but it adds a bundling step and artifact passing to every consumer, and buys nothing over A while the runtime lives in this repository. Revisit if AIRIS ships without `vendor/pi`.
+
+### A. Built-artifact linking — **selected**
+
+```json
+"dependencies": { "@earendil-works/pi-coding-agent": "file:../../vendor/pi/packages/coding-agent" }
+```
+
+Verified by prototype in a clean directory, not assumed:
+
+- `npm install` creates **only a symlink** (`added 1 package`) — no registry copy of any `@earendil-works/*` package, so no duplicate module instances.
+- Import resolves to the vendored build: `file:///…/vendor/pi/packages/schema/dist/index.js`.
+- The linked package's own dependencies resolve from `vendor/pi/node_modules` (Node resolves from the real path), so the runtime keeps its own dependency tree and **AIRIS's lockfile is untouched**.
+- Inside this repo the same install succeeds: 52 packages, `pi-coding-agent -> ../../../../vendor/pi/packages/coding-agent`.
+
+**Requirement:** `vendor/pi` must be installed *and built* before the adapter is type-checked or tested. The `Pi Runtime` workflow does exactly that, in order.
+
+---
+
+## 3. The adapter
+
+Location: `integration/airis-runtime` — deliberately **outside `packages/*`** so AIRIS's existing workspaces, lockfile and gates are unaffected.
+
+| File | Role |
 |---|---|
-| Pi vendored at the pinned commit, unmodified | `vendor/pi` — 4,646 tracked files, 12 packages + apps + upstream root config and lockfile |
-| Vendored tree installs **reproducibly from upstream's own lockfile** | `npm ci` inside `vendor/pi`: **338 packages, 1m23s, exit 0** |
-| Isolation from AIRIS | `vendor/pi` is **not** a workspace member; AIRIS's lockfile untouched; `check:pinned-deps` and `check:ts-imports` pass with the vendored tree present |
-| **5 packages build in-sandbox** | `pi-telemetry` ✅, `pi-schema` ✅, `pi-tui` ✅, `pi-codemode` ✅, `pi-mcp` ✅ (all exit 0) |
-| AIRIS itself is unaffected | `tsc --noEmit` exit 0; `agent` **165/165**; `tui` **679/679** |
+| `src/index.ts` | AIRIS-owned interface: `AirisRuntime`, `AirisRuntimeOptions`, `AirisTurnResult`, `AirisRuntimeUnavailableError`, `normalizeRuntimeError`. **No Pi imports.** |
+| `src/pi-runtime.ts` | The **only** file in AIRIS that imports Pi. |
+| `test/unit.test.ts` | Pure unit tests — run anywhere (5 tests). |
+| `test/integration.test.ts` | Require the built runtime; run in CI after the build (4 tests). |
+| `README.md` | Architecture decision and its evidence. |
 
----
+### Every Pi symbol was read from the vendored source first
 
-## 3. What is blocked, and exactly why
-
-Both blockers were discovered by attempting the build, and both are properties of the environment or of upstream — not defects introduced by the vendoring.
-
-### 3.1 `chord` — memory
-
-```
-runtime: out of memory: cannot allocate 4194304-byte block (328892416 in use)
-fatal error: out of memory
-```
-
-`chord` is 879 TypeScript files. Its build exhausts the integration sandbox's 2 GB. It is not a code error — there are **0 `error TS` diagnostics**; the process is killed.
-
-### 3.2 `pi-ai` — network hydration
-
-```
-amazon-bedrock.json is not valid JSON: ENOENT ... packages/ai/src/providers/data/amazon-bedrock.json
-Model data is missing or stale. Run `npm run hydrate:model-data` from the repository root.
-```
-
-`packages/ai/src/providers/data/` is **gitignored upstream** (`.gitignore` line 11) and generated by a network fetch. Hydration itself fails here because the fetch is blocked:
-
-```
-npm error command sh -c node catalog/generate.ts --strict --data-only
-```
-
-This means **a fresh clone of Pi cannot build `ai` offline either** — it is an upstream characteristic, not something the vendoring broke.
-
-### 3.3 Downstream consequence
-
-`pi-durable`, `pi-env`, `pi-agent-core` and `pi-coding-agent` depend on `ai` and/or `chord`, so they cannot be built in-sandbox. `pi-evals` is independent but is not in the build chain.
-
-**Net: 5 of 11 buildable packages verified locally; 6 need CI.**
-
-### 3.4 CI verification
-
-`.github/workflows/pi-runtime.yml` runs the full sequence on a GitHub runner (network + memory available):
-
-```
-npm ci → npm run hydrate:model-data →
-telemetry → schema → chord → tui → codemode → mcp → ai → durable → env → agent → coding-agent
-→ assert every dist/ exists
-```
-
-**Result: green.** Run [44451350542](https://github.com/sufiyan-sabeel/AIRIS-CLI/actions/runs/44451350542) — install, hydration and all 11 builds succeeded, and the verification step counted emitted output per package:
-
-```
-schema        js=43    d.ts=43
-telemetry     js=8     d.ts=8
-chord         js=315   d.ts=315
-tui           js=46    d.ts=46
-codemode      js=16    d.ts=16
-mcp           js=28    d.ts=28
-ai            js=210   d.ts=210
-durable       js=102   d.ts=102
-env           js=9     d.ts=9
-agent         js=6     d.ts=6
-coding-agent  (built; step passed)
-```
-
-The first version of that check only asserted that `dist/` existed, which an empty directory satisfies. It was tightened to count `.js` and `.d.ts` files precisely because a 1.4 s `chord` build looked implausible — the counts prove real emission (315 files, matching the 315 sources in `packages/chord/src`).
-
-**Milestone 1's runtime-build goal is therefore met**: all 11 buildable packages compile from the pinned commit, reproducibly, in CI.
-
----
-
-## 4. Changed files
-
-| File | Change |
+| Symbol | Source |
 |---|---|
-| `vendor/pi/**` | **New** — 4,646 files: 12 upstream packages, apps, scripts, tsconfig/biome/vitest base, LICENSE, README, AGENTS, SECURITY, CONTRIBUTING, upstream `package.json` + `package-lock.json`, `UPSTREAM.md` |
-| `.github/workflows/pi-runtime.yml` | **New** — isolated build/verify workflow for the vendored runtime |
-| `scripts/check-pinned-deps.mjs` | `vendor` added to `ignoredDirectories` |
-| `scripts/check-ts-relative-imports.mjs` | `vendor` added to `ignoredDirectories` |
-| `.gitignore` | Recursive ignores for `vendor/pi/**/node_modules/`, `vendor/pi/**/dist/`, `vendor/pi/.artifacts/` |
-| `docs/integration/AIRIS-PI-INTEGRATION-PLAN.md` | **New** — layer boundaries, dependency graph, build order, milestones |
-| `docs/integration/AIRIS-PI-FEATURE-MATRIX.md` | **New** — three-way feature matrix for the 13 priority features |
-| `docs/integration/AIRIS-PI-INTEGRATION-REPORT.md` | **New** — this report |
+| `createAgentSession(options?)` → `{ session, extensionsResult, modelFallbackMessage? }` | `src/core/sdk.ts:191` |
+| `session.prompt(text, options?)` | `src/core/agent-session.ts:2177` |
+| `session.abort()` | `src/core/agent-session.ts:2616` |
+| `session.subscribe(listener)` → unsubscribe | `src/core/agent-session.ts:1457` |
+| `session.getLastAssistantText()` | `src/core/agent-session.ts:4526` |
+| `session.dispose()` | `src/core/agent-session.ts:1481` |
+| `SessionManager.inMemory()` | `docs/sdk.md` |
+| events `message_update` + `assistantMessageEvent.type === "text_delta"`, and `tool_execution_end` | `src/core/agent-session.ts:210-224`, `1441` |
 
-**No AIRIS source file, package manifest, command or behaviour was modified.** The only edits outside `vendor/` and `docs/` are the two check scripts (to exclude `vendor/`), `.gitignore`, and the new workflow.
+No class, method, event name or option was invented. The adapter supports start, prompt with streaming deltas, tool-execution counting, abort, dispose, and optional persistent sessions (`SessionManager.inMemory()` is used for the default `memory` mode; `persistent` leaves Pi's default on-disk store in place).
 
 ---
 
-## 5. Commits
+## 4. Verification — real CI evidence
 
-| SHA | Subject |
+Run [44531242837](https://github.com/sufiyan-sabeel/AIRIS-CLI/actions/runs/44531242837) — **all steps green**:
+
+| Step | Result |
 |---|---|
-| `ab1695580` | feat(integration): vendor the pinned Pi runtime as an isolated layer |
-| `fc71c148a` | ci(integration): run the vendored-runtime build on the integration branch |
-| `43471db84` | docs(integration): Milestone 1 report |
-| `0375b590a` | ci(integration): assert emitted output, not just directory existence |
+| Install vendored dependencies, hydrate, build 11 packages | ✅ (chord 315 js, ai 210 js, …) |
+| Install adapter dependencies | ✅ 52 packages, `pi-coding-agent` symlinked |
+| **Typecheck adapter against real Pi declarations** | ✅ 0 errors |
+| **Adapter unit tests** | ✅ 5 passed |
+| **Adapter integration tests (real Pi runtime)** | ✅ 4 passed |
 
-Base: `b4da595f3`. Pushed to `origin/integration/pi-runtime`. PR #64 targets `remediation/baseline` so the diff stays reviewable (it does not include #62/#63).
+**The integration tests did not skip.** The suite prints an explicit "runtime not importable" warning when it cannot load Pi; that warning is **absent** from the log (0 occurrences), so `available === true` and the tests executed against a genuine Pi `AgentSession`: `start()` created a real session, `dispose()` released it, and `prompt()` before `start()` correctly rejected.
 
----
-
-## 6. Architecture boundaries established
-
-```
-vendor/pi/     upstream runtime layer   — unmodified, own lockfile, own build, not a workspace member
-packages/      AIRIS product layer      — unchanged (ai, agent, coding-agent, tui)
-docs/          integration records
-```
-
-Rules now enforced by the repo itself: AIRIS's pinning and import-policy checks skip `vendor/`; biome is scoped to `packages/*`; `tsconfig` excludes `vendor/`; upstream package names are never renamed.
-
-**Not yet built:** the `airis-runtime` adapter package. It cannot be written against a real API surface until `pi-agent-core` / `pi-coding-agent` build, so creating it now would produce exactly the "fake compatibility adapter" the directive forbids.
+Two real defects were found and fixed by this loop, not by guessing:
+1. `TS2688` — the adapter lacked `@types/node`.
+2. `TS1294` — `erasableSyntaxOnly` forbids TypeScript parameter properties; both classes now declare fields explicitly.
 
 ---
 
-## 7. Known limitations
+## 5. AIRIS functionality — compatibility checklist
 
-1. **No Pi package is wired into AIRIS.** Nothing in the feature matrix changes status because of this milestone.
-2. **6 of 11 packages unverified locally** — CI is the authority; see §3.4.
-3. **`airis-runtime` adapter not created** — deliberately deferred until the runtime builds (§6).
-4. **Type coverage unchanged at 17 of 19.** The two deferred files (`dynamic-tools.ts`, `advanced-dashboard.ts`) remain excluded and unsupported; neither was touched.
-5. **Android / Termux / Windows / macOS tests not performed.** No device or platform available; these are not claimed.
-6. **The Rust CI/CD workflow still fails** (`error[E0433]: cannot find module or crate 'toml'`), and the 11 development advisories remain. Both are separate workstreams, per the directive; neither is hidden or suppressed.
-7. **Vendoring size**: +1,017,196 lines, 4,646 files. This is the cost of vendoring a real runtime rather than depending on published packages; it is why the tree is isolated and excluded from AIRIS checks.
+No AIRIS source file was modified by this milestone, so every feature below remains exactly as it was. The column that matters is *what it will need* when wired.
+
+| Feature | Works unchanged? | Needs adapter? | Needs migration? | Currently broken/unavailable? |
+|---|---|---|---|---|
+| Plan mode (`builtin-plan-mode.ts`, 509 LOC) | yes — untouched | later, to run inside a Pi session | no | **untested (0 tests)** |
+| Memory (`memory-store.ts`, 182 LOC) | yes | persistence adapter | no | no (1 test) |
+| Vision (`vision/`, 628 LOC) | yes | provider mapping | no | unverified |
+| Android automation (1,140 LOC) | yes | platform adapter | no | **partial — `python/android_automation/bridge.py` absent** |
+| Termux | yes | installer work | no | **not performed** (no device) |
+| Missions (150 LOC) | yes | no | no | **untested (0 tests)** |
+| Audit logging (337 LOC) | yes | no | no | no (2 tests) |
+| Skills & extensions | yes | **yes** — two extension models exist | possible | no |
+| Provider configuration (19 modules) | yes | **yes** — Pi registry vs AIRIS providers | possible | no (350 tests) |
+| Dashboard (`cli/dashboard.ts`, 580 LOC) | yes | no | no | no (1 test) |
+| AIRIS Ship (842 LOC) | yes | no | no | no (2 tests) |
+| Project Trust (51 LOC) | yes | no | no | **untested (0 tests)** |
+| Existing CLI commands | yes | no | no | no |
+
+Nothing was removed or downgraded. Type coverage remains **17 of 19**.
 
 ---
 
-## 8. Security implications
+## 6. What is NOT done
 
-- The vendored tree is **upstream code under upstream's MIT licence**, with `vendor/pi/LICENSE` and `vendor/pi/UPSTREAM.md` preserving attribution and the exact commit.
-- **No new dependency enters the AIRIS production tree.** `vendor/pi` has its own lockfile and is not installed by AIRIS's `npm ci`, so AIRIS's production advisory count stays **0**.
-- The vendored tree's own dependencies are upstream's; their advisories will be assessed when the runtime is actually wired in (Milestone 2), not silently inherited now.
-- Nothing in this milestone touches tool execution, filesystem access, shell, credentials or the permission model.
-- `npm ci` is used (not `npm install`) inside `vendor/pi`, so the runtime is reproducible and cannot drift from the pinned commit.
+1. **End-to-end LLM session.** Prompt → streamed response → tool execution → tool result → completed turn against a live model has **not** been demonstrated. It requires a provider credential; none is available in this environment, and a mocked response would not count. This is the single remaining gate for Milestone 2's definition of done.
+2. **AIRIS CLI does not yet launch through the adapter.** The adapter is verified in isolation; wiring `airis` to it is the next step and needs the E2E above to be meaningful.
+3. **Model selection** is not exposed through the adapter; the runtime uses Pi's configured default.
+4. **Android / Termux / Windows / macOS** runtime compatibility not measured.
+5. **Performance** not measured (startup, init, first-response latency).
+6. **Pi's own package tests** not run — only the build and the adapter suites.
 
 ---
 
-## 9. Next step
+## 7. Next steps
 
-The runtime build is green (§3.4). The remaining Milestone 1 item is the **`airis-runtime` adapter**, and it is deliberately not written yet because a prerequisite is missing: **a consumption strategy**.
+1. Obtain a provider credential (or a local/faux provider Pi supports) and write `test/e2e-session.ts`: one prompt, one tool call (a harmless fixture file), streamed deltas, persisted and restored session. Run it in the `Pi Runtime` workflow, gated on the secret being present, and report `NOT RUN` when it is absent.
+2. Route `airis` startup through `createAirisRuntime()` behind a flag, so the existing CLI path remains the default until the E2E is green.
+3. Then Milestone 2's feature adaptation (memory, audit log, Ship, providers) on top of a runtime that is proven end to end.
 
-AIRIS cannot import `@earendil-works/*` today. The vendored packages are not AIRIS workspaces (adding them crashes npm's resolver), and their transitive dependencies live in `vendor/pi/node_modules`, which AIRIS's `npm ci` does not install. So an adapter written now would either fail to resolve at type-check time or need a fake local stub — exactly the "fake compatibility adapter" the directive forbids.
+---
 
-Three viable consumption strategies, to choose from before writing the adapter:
-
-1. **Built-artifact linking** — AIRIS depends on `file:../../vendor/pi/packages/<pkg>` after the runtime is built; CI builds `vendor/pi` before AIRIS type-checks. Simple, but couples AIRIS's build to the runtime build order.
-2. **Bundled runtime** — the adapter imports from a single pre-built bundle of the runtime, produced by the `pi-runtime` workflow and consumed as one artifact. Cleanest boundary; needs an artifact-passing step.
-3. **Published upstream packages** — depend on `@earendil-works/*` from npm at the pinned versions instead of vendoring. Contradicts the vendoring decision, but is the least coupling.
-
-Recommended order once a strategy is chosen:
-
-1. Create `packages/airis-runtime` with a real, resolvable import of the chosen surface, plus a runtime-availability check and tests that fail loudly if the runtime is absent.
-2. Begin Milestone 2 feature adaptation, starting with the features that already have tests (memory, audit log, AIRIS Ship, providers).
-
-**Nothing has been merged. PR #62, #63 and #64 are all open and separate.**
+*Evidence: CI run [44531242837](https://github.com/sufiyan-sabeel/AIRIS-CLI/actions/runs/44531242837) (all adapter steps green), prototype installs run in clean temporary directories, and the vendored source line references in §3. Nothing is reported as passing that was not executed.*
