@@ -1,6 +1,8 @@
 # Excluded from type checking — findings and decisions
 
-Two source files remain excluded from `tsc` in `tsconfig.json`. This document records what each is, what the evidence says, and the decision needed. **Type coverage is not complete**; it is 17 of 19 files.
+Two source files remain excluded from `tsc` in `tsconfig.json`. **Type coverage is 17 of 19 files — it is not complete.**
+
+**Decision (2026-11-19): both files are preserved and deferred.** Neither is deleted, neither is rewritten, and no adapter or replacement API is invented. Both are marked **deferred / unsupported** and will be revisited during Pi extension-architecture reconciliation. The exclusions stay explicit until then.
 
 Both files were added on **2026-07-17** and excluded from type checking **the same day**, in commits whose messages say so directly:
 
@@ -31,14 +33,11 @@ A registry for "dynamic tools" — tool definitions loaded at runtime from exten
 
 **Unfinished feature, never wired in.** The registry and executor exist; nothing constructs it, and the real tool pipeline bypasses it entirely. It is not an abandoned API that third parties depend on — it was never published, never exported from a package entry point, and never called.
 
-### Recommendation
+### Decision: preserve and defer (deferred / unsupported)
 
-**Retire it, or complete it — but do not leave it as a half-integrated parallel path.**
+**Status: deferred, unsupported, unwired.** The implementation and its tests are kept as they are. Nothing was deleted and no adapter was invented.
 
-- **Retire (recommended).** Move to a `legacy/` directory or delete in a dedicated, reviewed commit. The test file goes with it. This is the honest option: the code has no callers, and keeping a second tool-registry implementation alongside the real one invites exactly the kind of drift that produced this situation.
-- **Complete (only if dynamic tools are a wanted feature).** That means: map `inputSchema` → `parameters`, supply `label`, and implement `execute` by delegating to the existing `executeDynamicTool(name, args, context)`. The missing piece is a real `ExtensionContext` → `DynamicToolContext` translation — **I will not invent that adapter**, because its semantics (which session, which trust level, which cancellation signal) are product decisions.
-
-**No temporary exclusion is needed either way** — the choice is retire or complete, and both resolve the type error.
+When Pi's extension architecture is reconciled (Step 1 onward), compare against whatever Pi offers for dynamic/runtime-registered tools before deciding whether to retire, adapt, or port this module. The comparison should weigh API shape, wiring cost, and whether Pi's extension API already covers the use case — not just the file's line count.
 
 ---
 
@@ -69,14 +68,11 @@ A TUI component rendering session statistics (message count, branches, tokens), 
 
 **Intended feature, deliberately disabled, and never finished.** Unlike `dynamic-tools.ts`, this one was clearly meant to be user-visible (it was imported, then commented out), and it has a real test.
 
-### Recommendation
+### Decision: preserve and defer (disabled, unsupported)
 
-**Decide whether the advanced dashboard is a supported AIRIS feature.**
+**Status: disabled, unsupported.** The source and its tests are kept. The type-check exclusion stays documented. No `session.entries` getter, theme colour, or other replacement API was fabricated.
 
-- **If yes:** the plan is concrete and small — (a) add `invalidate()`; (b) pass a `SessionManager` (or an entries accessor) into the constructor instead of reading `session.entries`; (c) pick the two colour mappings; (d) re-enable the import behind a command (e.g. `/dashboard`) rather than at startup; (e) update the test. Items (a) and (c) are mechanical; (b) and (d) are the real decisions.
-- **If no:** retire it alongside `dynamic-tools.ts`, in the same reviewed commit, with the test.
-
-**Do not fabricate a replacement API.** `session.entries` was removed for a reason, and inventing an `entries` getter on `AgentSession` to satisfy a disabled component would put a new public API in place purely to make an unused file compile.
+The feature is currently **disabled** — its import in `interactive-mode.ts` is commented out, so no user sees it. The three API decisions recorded above remain open and must be settled during AIRIS feature reconciliation before the component is either wired in or retired.
 
 ---
 
@@ -91,9 +87,9 @@ A TUI component rendering session statistics (message count, branches, tokens), 
 
 ### Follow-up
 
-| Item | Owner | Decision required |
+| Item | Status | Revisit |
 |---|---|---|
-| `dynamic-tools.ts` — retire or complete | Umaiz Sufiyan | which, and by when |
-| `advanced-dashboard.ts` — support or retire | Umaiz Sufiyan | which, plus `session.entries` and theme-colour mapping if supported |
+| `dynamic-tools.ts` | Preserved, deferred, unwired, unsupported | Pi extension-architecture reconciliation |
+| `advanced-dashboard.ts` | Preserved, disabled, unsupported; 3 API decisions open | AIRIS feature reconciliation |
 
 Neither blocks the Pi integration: both are AIRIS-layer files, and the migration plan already assigns AIRIS-only code to `airis-*` packages rather than the vendored engine.
