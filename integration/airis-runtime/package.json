@@ -7,9 +7,11 @@
 	"scripts": {
 		"typecheck": "tsc -p tsconfig.json",
 		"test": "vitest --run test/unit.test.ts test/guard.test.ts",
-		"test:integration": "vitest --run test/integration.test.ts"
+		"test:integration": "vitest --run test/integration.test.ts",
+		"test:e2e": "vitest --run test/e2e-deterministic.test.ts"
 	},
 	"dependencies": {
+		"@earendil-works/pi-ai": "file:../../vendor/pi/packages/ai",
 		"@earendil-works/pi-coding-agent": "file:../../vendor/pi/packages/coding-agent"
 	},
 	"devDependencies": {
