@@ -17,11 +17,13 @@ on:
   push:
     paths:
       - 'vendor/pi/**'
+      - 'integration/airis-runtime/**'
       - '.github/workflows/pi-runtime.yml'
   pull_request:
     branches: [main, remediation/baseline, ci/step-0-reliability]
     paths:
       - 'vendor/pi/**'
+      - 'integration/airis-runtime/**'
       - '.github/workflows/pi-runtime.yml'
   workflow_dispatch:
 
