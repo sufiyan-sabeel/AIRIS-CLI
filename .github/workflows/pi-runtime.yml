@@ -84,6 +84,21 @@ jobs:
       - name: Build coding-agent
         run: npm run build --workspace @earendil-works/pi-coding-agent
 
+      # ---- AIRIS runtime adapter -------------------------------------------
+      # Runs after the runtime build because the adapter's file: dependency
+      # resolves to the built artifacts above.
+      - name: Install adapter dependencies
+        run: npm --prefix ../../integration/airis-runtime install --ignore-scripts --no-audit --no-fund
+
+      - name: Typecheck adapter against real Pi declarations
+        run: npm --prefix ../../integration/airis-runtime run typecheck
+
+      - name: Adapter unit tests
+        run: npm --prefix ../../integration/airis-runtime run test
+
+      - name: Adapter integration tests (real Pi runtime)
+        run: npm --prefix ../../integration/airis-runtime run test:integration
+
       # A directory can exist while being empty, so assert real emitted output.
       - name: Verify build output
         run: |

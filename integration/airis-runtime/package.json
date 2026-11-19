@@ -1,0 +1,19 @@
+{
+	"name": "@sufiyan-sabeel/airis-runtime",
+	"version": "0.79.9",
+	"private": true,
+	"type": "module",
+	"description": "AIRIS <-> Pi runtime adapter. The only package in AIRIS that imports Pi.",
+	"scripts": {
+		"typecheck": "tsc -p tsconfig.json",
+		"test": "vitest --run test/unit.test.ts",
+		"test:integration": "vitest --run test/integration.test.ts"
+	},
+	"dependencies": {
+		"@earendil-works/pi-coding-agent": "file:../../vendor/pi/packages/coding-agent"
+	},
+	"devDependencies": {
+		"typescript": "5.9.3",
+		"vitest": "3.2.7"
+	}
+}

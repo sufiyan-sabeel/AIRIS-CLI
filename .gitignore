@@ -36,3 +36,7 @@ index-store/
 vendor/pi/**/node_modules/
 vendor/pi/**/dist/
 vendor/pi/.artifacts/
+
+# Integration adapter: dependencies and build output are never committed
+integration/airis-runtime/node_modules/
+integration/airis-runtime/dist/
