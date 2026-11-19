@@ -9,6 +9,21 @@
 
 ---
 
+## Milestone 3 status (19 Nov 2026)
+
+**Implemented and verified:** session persistence, restoration, diagnostics and session listing in the adapter, plus integration tests for all of them. CI run [44533332314](https://github.com/sufiyan-sabeel/AIRIS-CLI/actions/runs/44533332314): adapter typecheck clean, 5 unit tests, **6 integration tests against the real Pi runtime** (no skip warning — the runtime was importable and real sessions were created).
+
+**Not implemented — the single remaining gate:** the live end-to-end turn (prompt → streamed response → tool call → tool result → completed turn → persist → restore → continue). **No provider credential exists in this environment** (no API-key env vars, no `~/.airis/auth.json`, no `~/.pi/auth.json`), so it is reported **NOT RUN**. A mocked response would not count and is not reported as one.
+
+**Also not done:** the `airis` CLI does not yet launch through the adapter (deliberate: wiring it before the E2E works would only move the failure), model switching is not exposed, and the vendored dependency tree is not yet security-audited.
+
+New documents: `AIRIS-PI-SECURITY-REPORT.md`, `AIRIS-PI-PERFORMANCE-REPORT.md`, `AIRIS-PI-MIGRATION-ROLLBACK.md`.
+
+**Measured baseline:** AIRIS CLI startup `--version` = median **0.182 s** (n=5). No post-integration number exists, because the Pi path cannot run in this sandbox — stated rather than invented.
+
+
+---
+
 ## 1. Starting state verified
 
 | Check | Result |

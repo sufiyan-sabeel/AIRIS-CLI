@@ -52,3 +52,32 @@ Not yet integrated — listed so the gap is explicit rather than implied:
 | Evals | `pi-evals` | vendored, not built |
 
 **Nothing in this table is advertised as a working AIRIS feature.** Each becomes a claim only after it is wired and tested in Milestone 2/3.
+
+---
+
+## Milestone 3 classification (required inventory)
+
+Vocabulary: **PRESERVED** (unchanged and working as before), **INTEGRATED** (now runs through the Pi runtime), **REGRESSED** (broken by this work), **BLOCKED** (cannot be verified or used, with a stated reason), **DEFERRED** (deliberately not wired yet).
+
+| # | Feature | Classification | Note |
+|---|---|---|---|
+| 1 | AI providers | **PRESERVED** | AIRIS's 19 provider modules untouched (350 tests pass). Pi's own registry is not wired to AIRIS providers yet. |
+| 2 | Configuration & model selection | **PRESERVED** | No config default changed. Pi path does not yet expose model selection. |
+| 3 | Memory | **PRESERVED** | `memory-store.ts` untouched; not yet connected to Pi sessions. |
+| 4 | Audit log | **PRESERVED** (existing engine) · **DEFERRED** (Pi path) | Pi tool executions are **not** yet recorded in AIRIS's audit log. Real gap, stated in the security report. |
+| 5 | Plan mode | **PRESERVED** | Untouched; still has 0 tests. |
+| 6 | Missions | **PRESERVED** | Untouched; still has 0 tests. |
+| 7 | Android automation | **BLOCKED** | `python/android_automation/bridge.py` is absent from the repo; the feature cannot run from a clean clone. No device test performed. |
+| 8 | Vision | **PRESERVED** | Untouched; unverified. |
+| 9 | Extensions | **PRESERVED** · **DEFERRED** (Pi path) | AIRIS extension model unchanged; Pi's extension model not yet bridged. |
+| 10 | Skills | **PRESERVED** | Untouched. |
+| 11 | AIRIS Ship | **PRESERVED** | Untouched; 2 test files pass. |
+| 12 | Dashboard | **PRESERVED** | `cli/dashboard.ts` untouched; `advanced-dashboard.ts` remains deferred/unsupported. |
+| 13 | Termux | **BLOCKED** | No Termux environment; installer not exercised. |
+| 14 | Project Trust | **PRESERVED** | Untouched; still 0 tests. |
+| 15 | Terminal UI | **PRESERVED** | Logo, banner, colours, attribution unchanged. |
+| 16 | Commands & config compatibility | **PRESERVED** | No CLI command, flag or default changed. |
+| — | **Runtime adapter (start, sessions, diagnostics)** | **INTEGRATED** | Verified in CI: 6 integration tests against the real runtime (run 44533332314). |
+| — | **End-to-end model turn** | **BLOCKED** | No provider credential in this environment. Reported NOT RUN, not claimed. |
+
+**Nothing is classified REGRESSED**: `packages/` and AIRIS `src/` have zero diff against this branch's base.
