@@ -84,10 +84,19 @@ jobs:
       - name: Build coding-agent
         run: npm run build --workspace @earendil-works/pi-coding-agent
 
-      - name: Verify built entry points exist
+      # A directory can exist while being empty, so assert real emitted output.
+      - name: Verify build output
         run: |
           set -euo pipefail
+          fail=0
           for p in schema telemetry chord tui codemode mcp ai durable env agent coding-agent; do
-            test -d "packages/$p/dist" || { echo "::error::packages/$p/dist missing after build"; exit 1; }
+            js=$(find "packages/$p/dist" -name '*.js' -type f 2>/dev/null | wc -l)
+            dts=$(find "packages/$p/dist" -name '*.d.ts' -type f 2>/dev/null | wc -l)
+            printf '%-14s js=%-5s d.ts=%-5s\n' "$p" "$js" "$dts"
+            if [ "$js" -lt 1 ]; then
+              echo "::error::packages/$p emitted no JavaScript"
+              fail=1
+            fi
           done
-          echo "all 11 buildable packages produced dist/"
+          if [ "$fail" -ne 0 ]; then exit 1; fi
+          echo "all 11 buildable packages emitted JavaScript"
