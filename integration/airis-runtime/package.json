@@ -13,6 +13,7 @@
 		"@earendil-works/pi-coding-agent": "file:../../vendor/pi/packages/coding-agent"
 	},
 	"devDependencies": {
+		"@types/node": "22.19.19",
 		"typescript": "5.9.3",
 		"vitest": "3.2.7"
 	}
