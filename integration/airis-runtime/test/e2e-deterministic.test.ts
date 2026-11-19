@@ -131,3 +131,53 @@ describe("guard decisions over the real call shape", () => {
 		expect(records.filter((r) => r.decision === "deny")).toHaveLength(1);
 	});
 });
+
+describe("guard extension enforcement (real runtime)", () => {
+	it("blocks a denied tool call before it executes and records the decision", async () => {
+		if (!available) return expect(available).toBe(false);
+
+		const { readFileSync, existsSync } = await import("node:fs");
+		const { fileURLToPath } = await import("node:url");
+		const { writeGuardExtension } = await import("../src/guard-extension.ts");
+
+		const agentDir = join(workspace, "agent");
+		const auditPath = join(workspace, "audit.jsonl");
+		const marker = join(workspace, "should-not-exist.txt");
+		const guardModulePath = fileURLToPath(new URL("../src/guard.ts", import.meta.url));
+
+		writeGuardExtension({
+			agentDir,
+			policy: { denyExec: ["touch"] },
+			auditPath,
+			guardModulePath,
+		});
+
+		const faux = ai.fauxProvider();
+		faux.setResponses([
+			ai.fauxAssistantMessage([ai.fauxToolCall("bash", { command: `touch ${marker}` })]),
+			ai.fauxAssistantMessage([ai.fauxText("finished")]),
+		]);
+
+		const { session } = await pi.createAgentSession({
+			cwd: workspace,
+			agentDir,
+			model: faux.getModel(),
+			modelRuntime: await fauxRuntime(faux),
+			sessionManager: pi.SessionManager.inMemory(workspace),
+		});
+
+		try {
+			await session.prompt("create a marker file");
+		} finally {
+			session.dispose();
+		}
+
+		// The denial must be visible in the audit trail...
+		expect(existsSync(auditPath)).toBe(true);
+		const records = readFileSync(auditPath, "utf8").trim().split("\n").map((l) => JSON.parse(l));
+		expect(records.some((r: { decision: string }) => r.decision === "deny")).toBe(true);
+
+		// ...and the command must never have run.
+		expect(existsSync(marker)).toBe(false);
+	});
+});
