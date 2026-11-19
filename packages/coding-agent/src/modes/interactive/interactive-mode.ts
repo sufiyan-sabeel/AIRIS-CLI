@@ -719,6 +719,7 @@ export class InteractiveMode {
 				mode: welcome.modes.map((m) => m.label).join(" · "),
 				cwd: welcome.cwd,
 				version: this.version,
+				userName: this.settingsManager.getUserName(),
 			};
 			const welcomeHeader = new WelcomeHeader(headerInfo);
 

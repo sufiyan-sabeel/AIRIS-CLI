@@ -3,65 +3,96 @@
 	"compilerOptions": {
 		"noEmit": true,
 		"paths": {
-			"*": ["./*"],
-			"@sufiyan-sabeel/airis-ai": ["./packages/ai/src/index.ts"],
-			"@sufiyan-sabeel/airis-ai/oauth": ["./packages/ai/src/oauth.ts"],
-			"@sufiyan-sabeel/airis-ai/*": ["./packages/ai/src/*.ts", "./packages/ai/src/providers/*.ts"],
-			"@sufiyan-sabeel/airis-ai/dist/*": ["./packages/ai/src/*"],
-			"@sufiyan-sabeel/airis-ai": ["./packages/ai/src/index.ts"],
-			"@sufiyan-sabeel/airis-ai/oauth": ["./packages/ai/src/oauth.ts"],
-			"@sufiyan-sabeel/airis-ai/*": ["./packages/ai/src/*.ts", "./packages/ai/src/providers/*.ts"],
-			"@sufiyan-sabeel/airis-ai/dist/*": ["./packages/ai/src/*"],
-			"@sufiyan-sabeel/airis-agent-core": ["./packages/agent/src/index.ts"],
-			"@sufiyan-sabeel/airis-agent-core/*": ["./packages/agent/src/*"],
-			"@sufiyan-sabeel/airis-agent-core": ["./packages/agent/src/index.ts"],
-			"@sufiyan-sabeel/airis-agent-core/*": ["./packages/agent/src/*"],
-			"@sufiyan-sabeel/airis-cli": ["./packages/coding-agent/src/index.ts"],
-			"@sufiyan-sabeel/airis-cli/hooks": ["./packages/coding-agent/src/core/hooks/index.ts"],
-			"@sufiyan-sabeel/airis-cli/*": ["./packages/coding-agent/src/*"],
-			"@sufiyan-sabeel/airis-cli": ["./packages/coding-agent/src/index.ts"],
-			"@sufiyan-sabeel/airis-cli/*": ["./packages/coding-agent/src/*"],
-			"typebox": ["./node_modules/typebox/build/index.d.mts"],
-			"typebox/*": ["./node_modules/typebox/build/*/index.d.mts"],
-			"vitest": ["./node_modules/vitest/dist/index.d.ts"],
-			"vitest/config": ["./node_modules/vitest/config.d.ts"],
-			"yaml": ["./node_modules/yaml/dist/index.d.ts"],
-			"openai": ["./node_modules/openai/index.d.mts"],
-			"openai/resources/chat/completions.js": ["./node_modules/openai/resources/chat/completions.d.mts"],
-			"openai/resources/responses/responses.js": ["./node_modules/openai/resources/responses/responses.d.mts"],
-			"@anthropic-ai/sdk": ["./node_modules/@anthropic-ai/sdk/index.d.mts"],
-			"@anthropic-ai/sdk/resources/messages.js": ["./node_modules/@anthropic-ai/sdk/resources/messages.d.mts"],
-			"@mistralai/mistralai": ["./node_modules/@mistralai/mistralai/esm/index.d.ts"],
-			"@mistralai/mistralai/models/components": ["./node_modules/@mistralai/mistralai/esm/models/components/index.d.ts"],
-			"@sufiyan-sabeel/airis-tui": ["./packages/tui/src/index.ts"],
-			"@sufiyan-sabeel/airis-tui/*": ["./packages/tui/src/*"],
-			"@sufiyan-sabeel/airis-tui": ["./packages/tui/src/index.ts"],
-			"@sufiyan-sabeel/airis-tui/*": ["./packages/tui/src/*"],
-			"@earendil-works/airis-agent-old": ["./packages/agent-old/src/index.ts"],
-			"@earendil-works/airis-agent-old/*": ["./packages/agent-old/src/*"]
+			"*": [
+				"./*"
+			],
+			"@sufiyan-sabeel/airis-ai": [
+				"./packages/ai/src/index.ts"
+			],
+			"@sufiyan-sabeel/airis-ai/oauth": [
+				"./packages/ai/src/oauth.ts"
+			],
+			"@sufiyan-sabeel/airis-ai/*": [
+				"./packages/ai/src/*.ts",
+				"./packages/ai/src/providers/*.ts"
+			],
+			"@sufiyan-sabeel/airis-ai/dist/*": [
+				"./packages/ai/src/*"
+			],
+			"@sufiyan-sabeel/airis-agent-core": [
+				"./packages/agent/src/index.ts"
+			],
+			"@sufiyan-sabeel/airis-agent-core/*": [
+				"./packages/agent/src/*"
+			],
+			"@sufiyan-sabeel/airis-cli": [
+				"./packages/coding-agent/src/index.ts"
+			],
+			"@sufiyan-sabeel/airis-cli/hooks": [
+				"./packages/coding-agent/src/core/hooks/index.ts"
+			],
+			"@sufiyan-sabeel/airis-cli/*": [
+				"./packages/coding-agent/src/*"
+			],
+			"typebox": [
+				"./node_modules/typebox/build/index.d.mts"
+			],
+			"typebox/*": [
+				"./node_modules/typebox/build/*/index.d.mts"
+			],
+			"vitest": [
+				"./node_modules/vitest/dist/index.d.ts"
+			],
+			"vitest/config": [
+				"./node_modules/vitest/config.d.ts"
+			],
+			"yaml": [
+				"./node_modules/yaml/dist/index.d.ts"
+			],
+			"openai": [
+				"./node_modules/openai/index.d.mts"
+			],
+			"openai/resources/chat/completions.js": [
+				"./node_modules/openai/resources/chat/completions.d.mts"
+			],
+			"openai/resources/responses/responses.js": [
+				"./node_modules/openai/resources/responses/responses.d.mts"
+			],
+			"@anthropic-ai/sdk": [
+				"./node_modules/@anthropic-ai/sdk/index.d.mts"
+			],
+			"@anthropic-ai/sdk/resources/messages.js": [
+				"./node_modules/@anthropic-ai/sdk/resources/messages.d.mts"
+			],
+			"@mistralai/mistralai": [
+				"./node_modules/@mistralai/mistralai/esm/index.d.ts"
+			],
+			"@mistralai/mistralai/models/components": [
+				"./node_modules/@mistralai/mistralai/esm/models/components/index.d.ts"
+			],
+			"@sufiyan-sabeel/airis-tui": [
+				"./packages/tui/src/index.ts"
+			],
+			"@sufiyan-sabeel/airis-tui/*": [
+				"./packages/tui/src/*"
+			],
+			"@earendil-works/airis-agent-old": [
+				"./packages/agent-old/src/index.ts"
+			],
+			"@earendil-works/airis-agent-old/*": [
+				"./packages/agent-old/src/*"
+			]
 		}
 	},
-	"include": ["packages/*/src/**/*", "packages/*/test/**/*", "packages/coding-agent/examples/**/*"],
+	"include": [
+		"packages/*/src/**/*",
+		"packages/*/test/**/*",
+		"packages/coding-agent/examples/**/*"
+	],
 	"exclude": [
-		"**/dist/**",
-		"**/dynamic-tools.ts",
-		"**/builtin-sandbox.ts",
-		"**/termux.ts",
 		"**/advanced-dashboard.ts",
-		"**/audit-log.ts",
-		"**/cache-stats.ts",
-		"**/project-learning.ts",
-		"**/health-service.ts",
-		"**/provider-probe.ts",
-		"**/provider-resilience.ts",
-		"**/provider-health.ts",
-		"**/job-scheduler.ts",
-		"**/memory-store.ts",
-		"**/games.ts",
-		"**/visual-effects.ts",
-		"**/command-suggestions.ts",
-		"**/repo-intelligence.ts",
-		"**/usage-tracker.ts",
+		"**/dynamic-tools.ts",
+		"**/dist/**",
 		"**/*.test.ts",
 		"packages/coding-agent/examples/extensions/gondolin/**"
 	]

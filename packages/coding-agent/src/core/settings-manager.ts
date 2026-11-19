@@ -94,6 +94,8 @@ export interface Settings {
 	hideThinkingBlock?: boolean;
 	shellPath?: string; // Custom shell path (e.g., for Cygwin users on Windows)
 	quietStartup?: boolean;
+	/** Optional display name used to personalise the startup greeting. Unset by default. */
+	userName?: string;
 	defaultProjectTrust?: DefaultProjectTrust; // default: "ask"; global setting only
 	shellCommandPrefix?: string; // Prefix prepended to every bash command (e.g., "shopt -s expand_aliases" for alias support)
 	npmCommand?: string[]; // Command used for npm package lookup/install operations, argv-style (e.g., ["mise", "exec", "node@20", "--", "npm"])
@@ -879,6 +881,21 @@ export class SettingsManager {
 
 	getQuietStartup(): boolean {
 		return this.settings.quietStartup ?? false;
+	}
+
+	/**
+	 * Optional user-provided display name for the startup greeting.
+	 * Returns undefined when unset or blank, so callers fall back to the
+	 * generic greeting rather than printing an empty name.
+	 */
+	getUserName(): string | undefined {
+		const name = this.settings.userName?.trim();
+		return name && name.length > 0 ? name : undefined;
+	}
+
+	setUserName(name: string | undefined): void {
+		this.globalSettings.userName = name;
+		this.markModified("userName");
 	}
 
 	setQuietStartup(quiet: boolean): void {

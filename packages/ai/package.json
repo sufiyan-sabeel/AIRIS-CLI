@@ -59,7 +59,8 @@
 		"clean": "shx rm -rf dist",
 		"generate-models": "node scripts/generate-models.ts",
 		"generate-image-models": "node scripts/generate-image-models.ts",
-		"build": "npm run generate-models && npm run generate-image-models && tsc -p tsconfig.build.json",
+		"build": "tsc -p tsconfig.build.json",
+		"generate": "npm run generate-models && npm run generate-image-models",
 		"test": "vitest --run",
 		"prepublishOnly": "npm run clean && npm run build"
 	},
@@ -98,6 +99,6 @@
 	"devDependencies": {
 		"@types/node": "24.12.4",
 		"canvas": "3.2.3",
-		"vitest": "3.2.6"
+		"vitest": "3.2.7"
 	}
 }

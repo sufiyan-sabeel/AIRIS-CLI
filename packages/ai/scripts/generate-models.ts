@@ -1,6 +1,11 @@
 #!/usr/bin/env node
 
-import { writeFileSync } from "fs";
+import { existsSync, readFileSync, renameSync, writeFileSync } from "fs";
+import {
+	countModelsInRegistry,
+	describeValidationFailure,
+	validateRegistry,
+} from "./registry-validation.ts";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 import {
@@ -2307,8 +2312,30 @@ export const MODELS = {
 	output += `} as const;
 `;
 
-	// Write file
-	writeFileSync(join(packageRoot, "src/models.generated.ts"), output);
+	// Validate before replacing the committed registry.
+	//
+	// Every fetch helper above catches its own error and returns an empty list,
+	// so a network failure used to rewrite this file with a truncated registry
+	// (18,176 lines lost in one observed run). The last known-good file is kept
+	// on any validation failure.
+	const registryPath = join(packageRoot, "src/models.generated.ts");
+	const previousModelCount = existsSync(registryPath)
+		? countModelsInRegistry(readFileSync(registryPath, "utf8"))
+		: null;
+	const validation = validateRegistry({
+		modelCount: allModels.length,
+		providers: allModels.map((model) => model.provider),
+		previousModelCount,
+	});
+	if (!validation.ok) {
+		console.error(describeValidationFailure(validation.errors));
+		throw new Error(`Model registry validation failed (${validation.errors.length} problem(s))`);
+	}
+
+	// Write atomically so a crash or full disk cannot leave a partial file.
+	const tempPath = `${registryPath}.tmp-${process.pid}`;
+	writeFileSync(tempPath, output);
+	renameSync(tempPath, registryPath);
 	console.log("Generated src/models.generated.ts");
 
 	// Print statistics
@@ -2325,4 +2352,7 @@ export const MODELS = {
 }
 
 // Run the generator
-generateModels().catch(console.error);
+generateModels().catch((error) => {
+	console.error(error);
+	process.exit(1);
+});

@@ -1,11 +1,21 @@
 import { visibleWidth } from "@sufiyan-sabeel/airis-tui";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { WelcomeHeader, type WelcomeHeaderInfo } from "../src/modes/interactive/components/welcome-header.ts";
 
+// The mock must expose every theme method WelcomeHeader actually calls,
+// otherwise the component throws "theme.<method> is not a function" and the
+// assertions never run. The real theme (src/modes/interactive/theme/theme.ts)
+// implements fg, bg, bold, italic, underline, inverse and strikethrough; this
+// component uses fg, bold and italic.
 vi.mock("../src/modes/interactive/theme/theme.ts", () => ({
 	theme: {
 		fg: (_color: string, text: string) => text,
+		bg: (_color: string, text: string) => text,
 		bold: (text: string) => text,
+		italic: (text: string) => text,
+		underline: (text: string) => text,
+		inverse: (text: string) => text,
+		strikethrough: (text: string) => text,
 	},
 }));
 
@@ -40,11 +50,15 @@ describe("WelcomeHeader", () => {
 			expect(hasLogoBanner).toBe(true);
 		});
 
-		it("uses the logo banner at 45 columns", () => {
+		// The full block logo is 52 columns wide, and WIDTH_LOGO is derived from it
+		// (LOGO_BLOCK_WIDTH + 4), so 45 columns renders the compact "A I R I S"
+		// banner. This expectation predates the banner widening in d3571e1da and
+		// was never updated because the suite could not run.
+		it("uses the compact banner at 45 columns", () => {
 			const header = new WelcomeHeader(baseInfo);
 			const lines = header.render(45);
-			const hasLogoBanner = lines.some((line) => line.includes("██████╗"));
-			expect(hasLogoBanner).toBe(true);
+			const hasCompactBanner = lines.some((line) => line.includes("A I R I S"));
+			expect(hasCompactBanner).toBe(true);
 		});
 
 		it("uses the minimal fallback at 36 columns", () => {
@@ -54,18 +68,18 @@ describe("WelcomeHeader", () => {
 			expect(hasMinimalEmblem).toBe(true);
 		});
 
-		it("uses the ASCII variant at 35 columns", () => {
+		// The component has no ASCII-art (slash) variant: selectVariant() returns
+		// logo | compact | minimal | tiny, and none of them draws slashes.
+		it("uses the compact banner at 35 columns", () => {
 			const header = new WelcomeHeader(baseInfo);
 			const lines = header.render(35);
-			const hasAsciiEmblem = lines.some((line) => line.includes("\\") && line.includes("/"));
-			expect(hasAsciiEmblem).toBe(true);
+			expect(lines.some((line) => line.includes("A I R I S"))).toBe(true);
 		});
 
-		it("uses the ASCII variant at 20 columns", () => {
+		it("uses the minimal emblem at 20 columns", () => {
 			const header = new WelcomeHeader(baseInfo);
 			const lines = header.render(20);
-			const hasAsciiEmblem = lines.some((line) => line.includes("\\"));
-			expect(hasAsciiEmblem).toBe(true);
+			expect(lines.some((line) => line.includes("✦"))).toBe(true);
 		});
 	});
 
@@ -91,18 +105,49 @@ describe("WelcomeHeader", () => {
 			expect(hasTagline).toBe(false);
 		});
 
-		it("shows the compact AIRIS fallback name in the minimal layout", () => {
+		it("shows the AIRIS name in the narrow layouts", () => {
 			const header = new WelcomeHeader(baseInfo);
-			const lines = header.render(36);
-			const hasMinimalName = lines.some((line) => line.includes("AIRIS"));
-			expect(hasMinimalName).toBe(true);
+			// 36 columns renders the compact banner, 24 renders the minimal one.
+			// Both spell the wordmark with spaces ("A I R I S"), so a bare "AIRIS"
+			// substring never matches.
+			for (const width of [36, 24]) {
+				const lines = header.render(width);
+				expect(lines.some((line) => line.includes("A I R I S"))).toBe(true);
+			}
 		});
 
-		it("shows the updated tagline in the compact layout at 40 columns", () => {
+		// "Multi-platform AI CLI" does not exist anywhere in the component; the
+		// tagline that ships is "AI Coding · Automation · CLI", shown only in the
+		// full logo banner.
+		it("shows the AIRIS wordmark in the compact layout at 40 columns", () => {
 			const header = new WelcomeHeader(baseInfo);
 			const lines = header.render(40);
-			const hasUpdatedTagline = lines.some((line) => line.includes("Multi-platform AI CLI"));
-			expect(hasUpdatedTagline).toBe(true);
+			expect(lines.some((line) => line.includes("A I R I S"))).toBe(true);
+		});
+	});
+
+	describe("greeting", () => {
+		it("shows a generic greeting when no name is configured", () => {
+			const header = new WelcomeHeader(baseInfo);
+			// Inspect the greeting line only: the logo block legitimately carries
+			// the creator attribution "KageOS · Umaiz Sufiyan".
+			const welcomeLines = header.render(80).filter((line) => line.includes("Welcome back"));
+			expect(welcomeLines).toHaveLength(1);
+			expect(welcomeLines[0]).not.toContain(",");
+			expect(welcomeLines[0]).not.toContain("Sufiyan");
+		});
+
+		it("personalises the greeting when a name is configured", () => {
+			const header = new WelcomeHeader({ ...baseInfo, userName: "Riyaz" });
+			const rendered = header.render(80).join("\n");
+			expect(rendered).toContain("Welcome back, Riyaz");
+		});
+
+		it("ignores a blank configured name and falls back to the generic greeting", () => {
+			const header = new WelcomeHeader({ ...baseInfo, userName: "   " });
+			const welcomeLines = header.render(80).filter((line) => line.includes("Welcome back"));
+			expect(welcomeLines).toHaveLength(1);
+			expect(welcomeLines[0]).not.toContain(",");
 		});
 	});
 
@@ -158,11 +203,14 @@ describe("WelcomeHeader", () => {
 			}
 		});
 
-		it("maintains line count consistency across widths", () => {
+		it("maintains line count consistency within a variant", () => {
 			const header = new WelcomeHeader(baseInfo);
-			const lines45 = header.render(45);
+			// 60 and 80 both render the full logo banner. 45 renders the compact
+			// banner, which legitimately has a different height, so comparing it
+			// against 80 was never a meaningful invariant.
+			const lines60 = header.render(60);
 			const lines80 = header.render(80);
-			expect(Math.abs(lines45.length - lines80.length)).toBeLessThanOrEqual(4);
+			expect(Math.abs(lines60.length - lines80.length)).toBeLessThanOrEqual(2);
 		});
 
 		it("caches results for same width", () => {
@@ -214,6 +262,18 @@ describe("WelcomeHeader", () => {
 	});
 
 	describe("snapshot tests", () => {
+		// The banner renders the current local time and a time-of-day greeting,
+		// so snapshots taken against the real clock differ on every run (one CI
+		// run recorded "2:34 PM" and the next "2:54 PM"). Pin the clock.
+		beforeEach(() => {
+			vi.useFakeTimers();
+			vi.setSystemTime(new Date("2026-01-15T10:30:00"));
+		});
+
+		afterEach(() => {
+			vi.useRealTimers();
+		});
+
 		it("matches snapshot at 120 columns", () => {
 			const header = new WelcomeHeader(baseInfo);
 			const lines = header.render(120);

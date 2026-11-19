@@ -61,8 +61,12 @@
 		"protobufjs": ">=7.7.0",
 		"postcss": ">=8.5.18",
 		"shell-quote": ">=1.8.5",
-		"vite": ">=7.3.4",
+		"vite": "7.3.5",
 		"ws": ">=8.21.0",
-		"undici": ">=8.5.0"
+		"undici": "8.12.4",
+		"zod": "4.6.7",
+		"@anthropic-ai/sandbox-runtime": {
+			"zod": "3.25.76"
+		}
 	}
 }
