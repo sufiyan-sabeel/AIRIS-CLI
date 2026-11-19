@@ -36,9 +36,17 @@ afterAll(() => {
 	if (workspace) rmSync(workspace, { recursive: true, force: true });
 });
 
-/** Builds a ModelRuntime with a dummy key for the faux provider. */
-async function fauxRuntime(): Promise<Awaited<ReturnType<typeof pi.ModelRuntime.create>>> {
+/**
+ * Builds a ModelRuntime that knows the faux provider and holds a dummy key.
+ * The provider must be registered first (registerNativeProvider,
+ * model-runtime.ts:928); otherwise auth resolution has nothing to resolve and
+ * Pi reports 'No API key found for faux'.
+ */
+async function fauxRuntime(
+	faux: ReturnType<typeof ai.fauxProvider>,
+): Promise<Awaited<ReturnType<typeof pi.ModelRuntime.create>>> {
 	const runtime = await pi.ModelRuntime.create({ allowModelNetwork: false });
+	runtime.registerNativeProvider(faux.provider);
 	await runtime.setRuntimeApiKey("faux", "faux-test-key-not-a-secret");
 	return runtime;
 }
@@ -54,7 +62,7 @@ describe("deterministic Pi execution", () => {
 		const { session } = await pi.createAgentSession({
 			cwd: workspace,
 			model: faux.getModel(),
-			modelRuntime: await fauxRuntime(),
+			modelRuntime: await fauxRuntime(faux),
 			sessionManager: pi.SessionManager.inMemory(workspace),
 		});
 
@@ -88,7 +96,7 @@ describe("deterministic Pi execution", () => {
 		const { session } = await pi.createAgentSession({
 			cwd: workspace,
 			model: faux.getModel(),
-			modelRuntime: await fauxRuntime(),
+			modelRuntime: await fauxRuntime(faux),
 			sessionManager: pi.SessionManager.inMemory(workspace),
 		});
 
