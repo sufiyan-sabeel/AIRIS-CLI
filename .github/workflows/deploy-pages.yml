@@ -79,7 +79,19 @@ jobs:
     needs: deploy
     if: success()
     steps:
+      # Step 0: this check previously ended in `|| echo "Warning: ..."`, so it
+      # passed unconditionally and a failed deployment looked healthy. It now
+      # tolerates propagation with bounded retries and then fails for real.
       - name: Verify deployment URL is reachable
         run: |
-          sleep 10
-          curl -sfI --max-time 30 "https://sufiyan-sabeel.github.io/AIRIS-CLI/" 2>/dev/null && echo "Site is reachable" || echo "Warning: site unreachable (may still be propagating)"
+          url="https://sufiyan-sabeel.github.io/AIRIS-CLI/"
+          for attempt in 1 2 3 4 5; do
+            sleep 10
+            if curl -sfI --max-time 30 "$url" > /dev/null; then
+              echo "Site is reachable (attempt $attempt)"
+              exit 0
+            fi
+            echo "Attempt $attempt: $url not reachable yet"
+          done
+          echo "::error::Deployment URL $url did not become reachable after 5 attempts"
+          exit 1
