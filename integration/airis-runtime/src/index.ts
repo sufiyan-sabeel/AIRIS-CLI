@@ -57,11 +57,10 @@ export interface AirisRuntime {
 
 /** Raised when the runtime cannot be loaded or initialized. */
 export class AirisRuntimeUnavailableError extends Error {
-	constructor(
-		message: string,
-		readonly cause?: unknown,
-	) {
-		super(message);
+	// `erasableSyntaxOnly` forbids parameter properties, so the cause is passed
+	// through the standard Error options bag instead of a constructor field.
+	constructor(message: string, cause?: unknown) {
+		super(message, { cause });
 		this.name = "AirisRuntimeUnavailableError";
 	}
 }

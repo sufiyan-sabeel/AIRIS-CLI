@@ -50,7 +50,11 @@ export class PiAirisRuntime implements AirisRuntime {
 	private toolExecutions = 0;
 	private aborted = false;
 
-	constructor(private readonly options: AirisRuntimeOptions = {}) {}
+	private readonly options: AirisRuntimeOptions;
+
+	constructor(options: AirisRuntimeOptions = {}) {
+		this.options = options;
+	}
 
 	get available(): boolean {
 		return this.session !== undefined;
