@@ -30,7 +30,6 @@ CHANNEL="stable"
 WANT_VERSION=""
 ALLOW_UNVERIFIED=0
 DRY_RUN=0
-ASSUME_YES=0
 MODIFY_PATH=1
 PURGE=0
 COMMAND=""
@@ -75,7 +74,6 @@ Options:
   --no-modify-path       Do not touch shell configuration
   --purge                With uninstall: also delete configuration
   --dry-run              Show what would happen, change nothing
-  -y, --yes              Do not prompt
   -h, --help             This help
 USAGE
 }
@@ -429,7 +427,6 @@ while [ $# -gt 0 ]; do
     --no-modify-path) MODIFY_PATH=0 ;;
     --purge) PURGE=1 ;;
     --dry-run) DRY_RUN=1 ;;
-    -y|--yes) ASSUME_YES=1 ;;
     -h|--help) usage; exit 0 ;;
     *) die "unknown argument: $1 (see --help)" ;;
   esac

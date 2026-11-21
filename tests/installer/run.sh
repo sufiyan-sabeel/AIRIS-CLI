@@ -6,7 +6,7 @@
 # touches a real installation and never reaches the network.
 set -eu
 
-REPO_ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
+REPO_ROOT=$(CDPATH='' cd -- "$(dirname -- "$0")/../.." && pwd)
 INSTALLER="$REPO_ROOT/install.sh"
 WORK=$(mktemp -d "${TMPDIR:-/tmp}/airis-installer-tests.XXXXXX")
 trap 'rm -rf "$WORK"' EXIT INT TERM
