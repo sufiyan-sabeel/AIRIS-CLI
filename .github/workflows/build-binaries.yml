@@ -54,6 +54,19 @@ jobs:
           VERSION="${VERSION#v}"  # Remove 'v' prefix
           node scripts/release-notes.mjs extract --version "${VERSION}" --tag "${RELEASE_TAG}" --out /tmp/release-notes.md
 
+      # The installer refuses unverified downloads, so every release must carry
+      # checksums.txt listing each asset by its published name.
+      - name: Generate checksums
+        run: |
+          cd packages/coding-agent/binaries
+          sha256sum airis-darwin-arm64.tar.gz \
+                    airis-darwin-x64.tar.gz \
+                    airis-linux-x64.tar.gz \
+                    airis-linux-arm64.tar.gz \
+                    airis-windows-x64.zip \
+                    airis-windows-arm64.zip > checksums.txt
+          cat checksums.txt
+
       - name: Create GitHub Release and upload binaries
         continue-on-error: true
         env:
@@ -72,6 +85,7 @@ jobs:
               airis-linux-arm64.tar.gz \
               airis-windows-x64.zip \
               airis-windows-arm64.zip \
+              checksums.txt \
               --clobber
           else
             gh release create "${RELEASE_TAG}" \
@@ -82,7 +96,8 @@ jobs:
               airis-linux-x64.tar.gz \
               airis-linux-arm64.tar.gz \
               airis-windows-x64.zip \
-              airis-windows-arm64.zip
+              airis-windows-arm64.zip \
+              checksums.txt
           fi
 
   publish-npm:

@@ -1,0 +1,76 @@
+name: Installer
+
+# Validates the installer itself: syntax, the hermetic test suite, and that the
+# asset names the installer builds still match what the latest release publishes.
+
+on:
+  push:
+    paths:
+      - 'install.sh'
+      - 'install.ps1'
+      - 'tests/installer/**'
+      - '.github/workflows/installer.yml'
+  pull_request:
+    paths:
+      - 'install.sh'
+      - 'install.ps1'
+      - 'tests/installer/**'
+      - '.github/workflows/installer.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: installer-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Installer tests (linux-x64)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Shell syntax
+        run: |
+          set -euo pipefail
+          sh -n install.sh
+          echo "install.sh parses"
+
+      - name: ShellCheck
+        run: |
+          set -euo pipefail
+          if command -v shellcheck >/dev/null 2>&1; then
+            shellcheck -S warning install.sh tests/installer/run.sh
+          else
+            sudo apt-get update -qq && sudo apt-get install -y -qq shellcheck
+            shellcheck -S warning install.sh tests/installer/run.sh
+          fi
+
+      - name: Hermetic installer test suite
+        run: sh tests/installer/run.sh
+
+      # Guards against the drift that broke the previous installer: the asset
+      # names it builds must exist on the latest published release.
+      - name: Asset names match the latest release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          assets=$(gh release view --repo "${{ github.repository }}" --json assets -q '.assets[].name')
+          echo "published assets:"; echo "$assets"
+          missing=0
+          for want in airis-darwin-arm64.tar.gz airis-darwin-x64.tar.gz \
+                      airis-linux-x64.tar.gz airis-linux-arm64.tar.gz \
+                      airis-windows-x64.zip airis-windows-arm64.zip; do
+            if ! printf '%s\n' "$assets" | grep -qx "$want"; then
+              echo "::error::installer expects $want but the latest release does not publish it"
+              missing=1
+            fi
+          done
+          if ! printf '%s\n' "$assets" | grep -qx "checksums.txt"; then
+            echo "::warning::the latest release has no checksums.txt, so installs of it are refused unless --allow-unverified"
+          fi
+          exit "$missing"
