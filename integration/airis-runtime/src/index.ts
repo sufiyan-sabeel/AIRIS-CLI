@@ -45,6 +45,11 @@ export interface AirisRuntimeOptions {
 	 * CLI path end to end without a network model. Never set in normal use.
 	 */
 	testScriptedResponses?: string[];
+	/**
+	 * TEST ONLY. Scripts a single tool call before the text response, so the CLI
+	 * path can prove allowed and denied tool execution.
+	 */
+	testToolCall?: { tool: string; input: Record<string, unknown> };
 }
 
 /** One completed agent turn. */
@@ -73,6 +78,12 @@ export interface AirisRuntimeDiagnostics {
 	cwd: string;
 	/** Path this runtime was restored from, if any. */
 	restoredFrom?: string;
+	/** True when Pi actually loaded the AIRIS permission extension. */
+	guardLoaded: boolean;
+	/** True when the loaded guard registered a tool_call handler. */
+	guardHandlesToolCalls: boolean;
+	/** Extension load errors reported by Pi, if any. */
+	extensionErrors: string[];
 }
 
 /** Summary of a persisted session on disk. */

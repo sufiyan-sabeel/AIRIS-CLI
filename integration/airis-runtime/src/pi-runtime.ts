@@ -96,6 +96,9 @@ export class PiAirisRuntime implements AirisRuntime {
 	private unsubscribe: (() => void) | undefined;
 	private toolExecutions = 0;
 	private aborted = false;
+	private guardLoaded = false;
+	private guardHandlesToolCalls = false;
+	private extensionErrors: string[] = [];
 
 	private readonly options: AirisRuntimeOptions;
 
@@ -156,11 +159,21 @@ export class PiAirisRuntime implements AirisRuntime {
 					fauxText: (text: string) => unknown;
 				};
 				const faux = ai.fauxProvider();
-				faux.setResponses(
-					this.options.testScriptedResponses.map((text) =>
-						ai.fauxAssistantMessage([ai.fauxText(text)]),
-					),
-				);
+				const steps: unknown[] = [];
+				if (this.options.testToolCall) {
+					steps.push(
+						ai.fauxAssistantMessage([
+							(ai as unknown as { fauxToolCall: (n: string, a: unknown) => unknown }).fauxToolCall(
+								this.options.testToolCall.tool,
+								this.options.testToolCall.input,
+							),
+						]),
+					);
+				}
+				for (const text of this.options.testScriptedResponses) {
+					steps.push(ai.fauxAssistantMessage([ai.fauxText(text)]));
+				}
+				faux.setResponses(steps);
 				(modelRuntime as unknown as { registerNativeProvider: (p: unknown) => void }).registerNativeProvider(
 					faux.provider,
 				);
@@ -168,13 +181,33 @@ export class PiAirisRuntime implements AirisRuntime {
 				model = faux.getModel();
 			}
 
-			const { session } = await createAgentSession({
+			const created = await createAgentSession({
 				cwd,
 				sessionManager,
 				modelRuntime,
 				...(model ? { model: model as never } : {}),
 				...(agentDir ? { agentDir } : {}),
 			});
+			const { session } = created;
+
+			// Verify Pi actually loaded the guard and registered a tool_call
+			// handler. A written file is not proof of interception.
+			this.extensionErrors = (created.extensionsResult?.errors ?? []).map(
+				(e) => `${e.path}: ${e.error}`,
+			);
+			const guard = created.extensionsResult?.extensions?.find((e) =>
+				e.path.includes("airis-guard"),
+			);
+			this.guardLoaded = guard !== undefined;
+			this.guardHandlesToolCalls = (guard?.handlers.get("tool_call")?.length ?? 0) > 0;
+
+			if (agentDir && (!this.guardLoaded || !this.guardHandlesToolCalls)) {
+				session.dispose();
+				throw new AirisRuntimeUnavailableError(
+					"AIRIS permission extension did not load; refusing to start an ungated session" +
+						(this.extensionErrors.length ? ` (${this.extensionErrors.join("; ")})` : ""),
+				);
+			}
 			this.session = session;
 		} catch (error) {
 			throw new AirisRuntimeUnavailableError(
@@ -250,6 +283,9 @@ export class PiAirisRuntime implements AirisRuntime {
 			persistence: this.options.persistence ?? "memory",
 			cwd: this.options.cwd ?? process.cwd(),
 			restoredFrom: this.options.restoreFrom,
+			guardLoaded: this.guardLoaded,
+			guardHandlesToolCalls: this.guardHandlesToolCalls,
+			extensionErrors: this.extensionErrors,
 		};
 	}
 

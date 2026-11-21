@@ -111,9 +111,15 @@ export async function runPiEngine(parsed: Args): Promise<void> {
 		auditSessionId: `airis-pi-${Date.now()}`,
 		...(parsed.model ? { model: parsed.model } : {}),
 		...(restoreFrom ? { restoreFrom } : {}),
+		// Persistent sessions make --continue meaningful and match how a coding
+		// agent is expected to behave; files live under the AIRIS agent dir.
+		persistence: "persistent" as const,
 		// TEST ONLY: set by the CLI end-to-end test; never in normal use.
 		...(process.env.AIRIS_PI_TEST_RESPONSE
 			? { testScriptedResponses: [process.env.AIRIS_PI_TEST_RESPONSE] }
+			: {}),
+		...(process.env.AIRIS_PI_TEST_TOOL
+			? { testToolCall: JSON.parse(process.env.AIRIS_PI_TEST_TOOL) as { tool: string; input: Record<string, unknown> } }
 			: {}),
 	});
 
