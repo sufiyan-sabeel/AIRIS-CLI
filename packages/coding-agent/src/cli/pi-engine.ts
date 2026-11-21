@@ -17,6 +17,7 @@
  * through a computed specifier: AIRIS must stay buildable without vendor/pi.
  */
 import { existsSync, readFileSync } from "node:fs";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { join } from "node:path";
 import { getAgentDir } from "../config.ts";
 import type { Args } from "./args.ts";
@@ -33,22 +34,25 @@ interface AdapterModule {
 }
 
 async function loadAdapter(): Promise<AdapterModule> {
-	// Resolve relative to this module first (dist/cli/../../.. = repo root), then
-	// fall back to the current working directory so a globally linked install
-	// still finds the adapter.
-	// From dist/cli/pi-engine.js the repository root is four levels up
-	// (dist/cli -> dist -> coding-agent -> packages -> root).
-	const relative = ["..", "..", "..", "..", "integration", "airis-runtime", "src", "pi-runtime.ts"].join("/");
-	const candidates = [relative, join(process.cwd(), "integration", "airis-runtime", "src", "pi-runtime.ts")];
-	let lastError: unknown;
+	// Resolve from this module's location first (dist/cli/ -> repository root),
+	// then from the working directory for a globally linked install. Paths are
+	// checked before import so a miss reports a path, not a confusing loader error.
+	const moduleUrl = new URL("../../../../integration/airis-runtime/src/pi-runtime.ts", import.meta.url);
+	const candidates = [fileURLToPath(moduleUrl), join(process.cwd(), "integration", "airis-runtime", "src", "pi-runtime.ts")];
+
+	const tried: string[] = [];
 	for (const candidate of candidates) {
+		if (!existsSync(candidate)) {
+			tried.push(`${candidate} (missing)`);
+			continue;
+		}
 		try {
-			return (await import(candidate)) as AdapterModule;
+			return (await import(pathToFileURL(candidate).href)) as AdapterModule;
 		} catch (error) {
-			lastError = error;
+			tried.push(`${candidate} (${error instanceof Error ? error.message : String(error)})`);
 		}
 	}
-	throw lastError instanceof Error ? lastError : new Error(String(lastError));
+	throw new Error(`adapter not found or not loadable. Tried:\n  ${tried.join("\n  ")}`);
 }
 
 function fail(message: string): never {
