@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-11-20T15:05:24.019Z",
-  "date": "2026-11-20",
+  "generatedAt": "2026-11-21T14:25:24.842Z",
+  "date": "2026-11-21",
   "dailyFact": {
-    "fact": "The project runs on Node.js >=22.19.0 and is written in TypeScript.",
-    "index": 5,
+    "fact": "AIRIS has a self-debugging system that learns from error patterns.",
+    "index": 6,
     "total": 21
   },
   "analysis": {
