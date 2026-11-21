@@ -150,6 +150,7 @@ describe("guard extension enforcement (real runtime)", () => {
 			policy: { denyExec: ["touch"] },
 			auditPath,
 			guardModulePath,
+			sessionId: "e2e-guard-test",
 		});
 
 		const faux = ai.fauxProvider();
