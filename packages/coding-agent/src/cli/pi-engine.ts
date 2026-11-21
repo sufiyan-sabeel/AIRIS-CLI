@@ -36,7 +36,9 @@ async function loadAdapter(): Promise<AdapterModule> {
 	// Resolve relative to this module first (dist/cli/../../.. = repo root), then
 	// fall back to the current working directory so a globally linked install
 	// still finds the adapter.
-	const relative = ["..", "..", "..", "integration", "airis-runtime", "src", "pi-runtime.ts"].join("/");
+	// From dist/cli/pi-engine.js the repository root is four levels up
+	// (dist/cli -> dist -> coding-agent -> packages -> root).
+	const relative = ["..", "..", "..", "..", "integration", "airis-runtime", "src", "pi-runtime.ts"].join("/");
 	const candidates = [relative, join(process.cwd(), "integration", "airis-runtime", "src", "pi-runtime.ts")];
 	let lastError: unknown;
 	for (const candidate of candidates) {
