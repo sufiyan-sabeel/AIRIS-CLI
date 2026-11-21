@@ -33,8 +33,20 @@ interface AdapterModule {
 }
 
 async function loadAdapter(): Promise<AdapterModule> {
-	const specifier = ["..", "..", "..", "integration", "airis-runtime", "src", "pi-runtime.ts"].join("/");
-	return (await import(specifier)) as AdapterModule;
+	// Resolve relative to this module first (dist/cli/../../.. = repo root), then
+	// fall back to the current working directory so a globally linked install
+	// still finds the adapter.
+	const relative = ["..", "..", "..", "integration", "airis-runtime", "src", "pi-runtime.ts"].join("/");
+	const candidates = [relative, join(process.cwd(), "integration", "airis-runtime", "src", "pi-runtime.ts")];
+	let lastError: unknown;
+	for (const candidate of candidates) {
+		try {
+			return (await import(candidate)) as AdapterModule;
+		} catch (error) {
+			lastError = error;
+		}
+	}
+	throw lastError instanceof Error ? lastError : new Error(String(lastError));
 }
 
 function fail(message: string): never {
@@ -70,10 +82,10 @@ export async function runPiEngine(parsed: Args): Promise<void> {
 	let adapter: AdapterModule;
 	try {
 		adapter = await loadAdapter();
-	} catch {
+	} catch (error) {
 		fail(
-			"the Pi runtime adapter is not available. Build it first: " +
-				"cd vendor/pi && npm ci && npm run hydrate:model-data, then build the runtime.",
+			`the Pi runtime adapter is not available: ${error instanceof Error ? error.message : String(error)}\n` +
+				"Build it first: cd vendor/pi && npm ci && npm run hydrate:model-data, then build the runtime.",
 		);
 	}
 
