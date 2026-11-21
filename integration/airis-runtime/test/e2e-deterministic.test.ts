@@ -175,8 +175,13 @@ describe("guard extension enforcement (real runtime)", () => {
 
 		// The denial must be visible in the audit trail...
 		expect(existsSync(auditPath)).toBe(true);
-		const records = readFileSync(auditPath, "utf8").trim().split("\n").map((l) => JSON.parse(l));
-		expect(records.some((r: { decision: string }) => r.decision === "deny")).toBe(true);
+		// Unified schema: AIRIS AuditEntry { timestamp, type, sessionId, data }.
+		const records = readFileSync(auditPath, "utf8")
+			.trim()
+			.split("\n")
+			.map((l) => JSON.parse(l) as { sessionId?: string; type?: string; data?: { decision?: string } });
+		expect(records.every((r) => typeof r.sessionId === "string")).toBe(true);
+		expect(records.some((r) => r.data?.decision === "deny")).toBe(true);
 
 		// ...and the command must never have run.
 		expect(existsSync(marker)).toBe(false);
