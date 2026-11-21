@@ -36,6 +36,8 @@ export interface Args {
 	extensions?: string[];
 	noExtensions?: boolean;
 	print?: boolean;
+	/** Execution engine: "airis" (default) or "pi" (vendored Pi runtime). */
+	engine?: string;
 	export?: string;
 	noSkills?: boolean;
 	skills?: string[];
@@ -92,6 +94,8 @@ export function parseArgs(args: string[]): Args {
 			result.resume = true;
 		} else if (arg === "--provider" && i + 1 < args.length) {
 			result.provider = args[++i];
+		} else if (arg === "--engine" && i + 1 < args.length) {
+			result.engine = args[++i];
 		} else if (arg === "--model" && i + 1 < args.length) {
 			result.model = args[++i];
 		} else if (arg === "--aairis-key" && i + 1 < args.length) {
@@ -340,6 +344,7 @@ ${optionLine("--aairis-key <key>", "API key (defaults to env vars)")}
 ${optionLine("--system-prompt <text>", "System prompt (default: coding assistant prompt)")}
 ${optionLine("--append-system-prompt <text>", "Append text or file contents to the system prompt")}
 ${optionLine("--mode <mode>", "Output mode: text (default), json, or rpc")}
+${optionLine("--engine <name>", "Execution engine: airis (default) or pi")}
 ${optionLine("--print, -p", "Non-interactive mode: process prompt and exit")}
 ${optionLine("--continue, -c", "Continue previous session")}
 ${optionLine("--resume, -r", "Select a session to resume")}

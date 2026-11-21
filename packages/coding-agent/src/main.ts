@@ -509,6 +509,15 @@ export async function main(args: string[], options?: MainOptions) {
 		return;
 	}
 
+	// Engine selection: --engine pi routes the turn through the vendored Pi runtime.
+	// The AIRIS engine stays the default so existing behaviour is unchanged.
+	const engineProbe = parseArgs(args);
+	if (engineProbe.engine === "pi") {
+		const { runPiEngine } = await import("./cli/pi-engine.ts");
+		await runPiEngine(engineProbe);
+		return;
+	}
+
 	const parsed = parseArgs(args);
 	if (parsed.diagnostics.length > 0) {
 		for (const d of parsed.diagnostics) {
