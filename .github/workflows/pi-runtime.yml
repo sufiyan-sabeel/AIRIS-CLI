@@ -18,12 +18,14 @@ on:
     paths:
       - 'vendor/pi/**'
       - 'integration/airis-runtime/**'
+      - 'tests/pi-cli/**'
       - '.github/workflows/pi-runtime.yml'
   pull_request:
     branches: [main, remediation/baseline, ci/step-0-reliability]
     paths:
       - 'vendor/pi/**'
       - 'integration/airis-runtime/**'
+      - 'tests/pi-cli/**'
       - '.github/workflows/pi-runtime.yml'
   workflow_dispatch:
 
@@ -105,6 +107,19 @@ jobs:
       # dummy runtime key, real tool-execution events, guard allow/deny.
       - name: Deterministic end-to-end (faux provider)
         run: npm --prefix ../../integration/airis-runtime run test:e2e
+
+      # ---- AIRIS CLI end-to-end ---------------------------------------------
+      # The CLI resolves the adapter at runtime, so AIRIS must be built here and
+      # the runtime above must exist. The model is Pi's faux provider with a
+      # scripted response: real CLI -> adapter -> Pi session, no credential.
+      - name: Install AIRIS dependencies
+        run: npm --prefix ../.. ci --ignore-scripts --no-audit --no-fund
+
+      - name: Build AIRIS
+        run: npm --prefix ../.. run build
+
+      - name: CLI end-to-end (--engine pi)
+        run: sh ../../tests/pi-cli/run.sh
 
       # A directory can exist while being empty, so assert real emitted output.
       - name: Verify build output

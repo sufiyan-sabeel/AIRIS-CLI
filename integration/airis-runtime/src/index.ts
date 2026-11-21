@@ -12,6 +12,8 @@
  * vendor/pi/packages/coding-agent/dist/index.d.ts — not invented.
  */
 
+import type { AirisPermissionPolicy } from "./guard.ts";
+
 /** Options for starting an AIRIS runtime session. */
 export interface AirisRuntimeOptions {
 	/** Workspace the session operates on. Defaults to process.cwd(). */
@@ -25,6 +27,24 @@ export interface AirisRuntimeOptions {
 	model?: string;
 	/** Absolute path of a persisted Pi session to restore instead of starting fresh. */
 	restoreFrom?: string;
+	/**
+	 * AIRIS agent directory (e.g. ~/.airis/agent). When set, the runtime uses it
+	 * for Pi's config/session discovery and installs the AIRIS permission
+	 * extension into <agentDir>/extensions before the session starts.
+	 */
+	agentDir?: string;
+	/**
+	 * Permission policy enforced by the extension. Defaults to a conservative
+	 * policy that denies common secret locations when agentDir is set.
+	 */
+	permissionPolicy?: AirisPermissionPolicy;
+	/** Session id written into every audit entry. Defaults to a generated id. */
+	auditSessionId?: string;
+	/**
+	 * TEST ONLY. Scripted responses for Pi's own `faux` provider, used to prove the
+	 * CLI path end to end without a network model. Never set in normal use.
+	 */
+	testScriptedResponses?: string[];
 }
 
 /** One completed agent turn. */

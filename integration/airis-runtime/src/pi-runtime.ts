@@ -17,8 +17,13 @@
 import {
 	createAgentSession,
 	type AgentSession,
+	ModelRuntime,
 	SessionManager,
 } from "@earendil-works/pi-coding-agent";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+import { type AirisPermissionPolicy, createAirisGuard } from "./guard.ts";
+import { writeGuardExtension } from "./guard-extension.ts";
 import {
 	type AirisDeltaHandler,
 	type AirisRuntime,
@@ -31,6 +36,46 @@ import {
 } from "./index.ts";
 
 const PI_PACKAGE = "@earendil-works/pi-coding-agent";
+
+/**
+ * Conservative default: block reads of common secret locations, block writes to
+ * dotenv/key material, and block the most destructive shell commands. Applied
+ * whenever an agentDir is configured, so the extension is never silently absent.
+ */
+export const DEFAULT_AIRIS_POLICY: AirisPermissionPolicy = {
+	denyRead: ["~/.ssh/**", "**/.env", "**/.aws/credentials", "**/.config/gh/hosts.yml"],
+	denyWrite: ["**/.env", "**/*.pem", "**/*.key", "~/.ssh/**"],
+	denyExec: ["rm -rf /", "sudo ", "mkfs", "dd if="],
+	failClosed: true,
+};
+
+/**
+ * Resolves a model id against Pi's ModelRuntime.
+ * Accepts "provider/model" (model-runtime.ts:454) or a bare id, which is matched
+ * across providers via getAllModels (:470).
+ */
+export function resolveModel(runtime: ModelRuntime, modelId: string): unknown {
+	const [first, ...rest] = modelId.split("/");
+	if (rest.length > 0) {
+		const model = runtime.getModel(first, rest.join("/"));
+		if (model) return model;
+		throw new AirisRuntimeUnavailableError(`unknown model: ${modelId}`);
+	}
+	const matches = runtime.getAllModels().filter((m) => m.id === modelId);
+	if (matches.length === 1) return matches[0];
+	if (matches.length > 1) {
+		const providers = matches.map((m) => m.provider).join(", ");
+		throw new AirisRuntimeUnavailableError(
+			`model "${modelId}" is ambiguous across providers (${providers}); use provider/model`,
+		);
+	}
+	throw new AirisRuntimeUnavailableError(`unknown model: ${modelId}`);
+}
+
+/** Absolute path of this package's guard module, for the generated extension. */
+function guardModulePath(): string {
+	return join(dirname(fileURLToPath(import.meta.url)), "guard.ts");
+}
 
 /**
  * Whether the vendored runtime is built and importable. Returns false rather
@@ -67,6 +112,20 @@ export class PiAirisRuntime implements AirisRuntime {
 
 		const cwd = this.options.cwd ?? process.cwd();
 		try {
+			// The permission extension is installed before the session exists, so a
+			// session can never run without AIRIS's guard. A failure here aborts the
+			// start rather than degrading to an ungated runtime.
+			let agentDir = this.options.agentDir;
+			if (agentDir) {
+				const auditSessionId = this.options.auditSessionId ?? `airis-pi-${Date.now()}`;
+				writeGuardExtension({
+					agentDir,
+					policy: this.options.permissionPolicy ?? DEFAULT_AIRIS_POLICY,
+					auditPath: join(agentDir, "audit.jsonl"),
+					guardModulePath: guardModulePath(),
+					sessionId: auditSessionId,
+				});
+			}
 			// SessionManager decides where the transcript lives:
 			//   restoreFrom  -> SessionManager.open(path)      (resume an existing session)
 			//   persistent   -> SessionManager.create(cwd)     (new session on disk)
@@ -78,7 +137,44 @@ export class PiAirisRuntime implements AirisRuntime {
 					? SessionManager.create(cwd)
 					: SessionManager.inMemory(cwd);
 
-			const { session } = await createAgentSession({ cwd, sessionManager });
+			// One ModelRuntime serves both model resolution and the session, so no
+			// second, competing model registry is created.
+			const modelRuntime = await ModelRuntime.create({ allowModelNetwork: false });
+			let model = this.options.model ? resolveModel(modelRuntime, this.options.model) : undefined;
+
+			// TEST ONLY: register Pi's own faux provider with scripted responses so the
+			// CLI path can be exercised deterministically. This is the real runtime
+			// with a scripted model, not a mock of Pi.
+			if (this.options.testScriptedResponses?.length) {
+				const ai = (await import("@earendil-works/pi-ai")) as unknown as {
+					fauxProvider: () => {
+						provider: unknown;
+						getModel: () => unknown;
+						setResponses: (r: unknown[]) => void;
+					};
+					fauxAssistantMessage: (content: unknown[]) => unknown;
+					fauxText: (text: string) => unknown;
+				};
+				const faux = ai.fauxProvider();
+				faux.setResponses(
+					this.options.testScriptedResponses.map((text) =>
+						ai.fauxAssistantMessage([ai.fauxText(text)]),
+					),
+				);
+				(modelRuntime as unknown as { registerNativeProvider: (p: unknown) => void }).registerNativeProvider(
+					faux.provider,
+				);
+				await modelRuntime.setRuntimeApiKey("faux", "airis-test-key-not-a-secret");
+				model = faux.getModel();
+			}
+
+			const { session } = await createAgentSession({
+				cwd,
+				sessionManager,
+				modelRuntime,
+				...(model ? { model: model as never } : {}),
+				...(agentDir ? { agentDir } : {}),
+			});
 			this.session = session;
 		} catch (error) {
 			throw new AirisRuntimeUnavailableError(
@@ -86,6 +182,15 @@ export class PiAirisRuntime implements AirisRuntime {
 				error,
 			);
 		}
+	}
+
+	/**
+	 * Resolves "provider/model" (or a bare model id across providers) using Pi's
+	 * ModelRuntime, which is the supported lookup (model-runtime.ts:454).
+	 */
+	async resolveModelId(modelId: string): Promise<unknown> {
+		const runtime = await ModelRuntime.create({ allowModelNetwork: false });
+		return resolveModel(runtime, modelId);
 	}
 
 	async prompt(text: string, onDelta?: AirisDeltaHandler): Promise<AirisTurnResult> {
