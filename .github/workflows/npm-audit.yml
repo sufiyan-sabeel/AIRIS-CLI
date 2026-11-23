@@ -24,8 +24,11 @@ jobs:
       - name: Install dependencies without lifecycle scripts
         run: npm ci --ignore-scripts --no-audit --no-fund
 
+      # Step 0: the previous `|| true` masked every high/critical production
+      # advisory, so this job reported success while 5 advisories (1 critical,
+      # 4 high) were open. A security audit that cannot fail is not a gate.
       - name: Audit production vulnerabilities
-        run: npm audit --omit=dev --audit-level=high || true
+        run: npm audit --omit=dev --audit-level=high
 
       - name: Verify registry signatures
         run: npm audit signatures --omit=dev

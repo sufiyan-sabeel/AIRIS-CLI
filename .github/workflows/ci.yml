@@ -1,5 +1,15 @@
 name: CI
 
+# Every verification step in this workflow is a hard gate. If a build error,
+# type error or test failure occurs, the job MUST fail.
+#
+# Do not append any of the following to a step in this file:
+#   || echo "::warning::..."   || true   || exit 0   set +e   continue-on-error: true
+#
+# Those patterns make a failing command report success and were the reason this
+# repository's CI showed ~90% green while the build, type check and test stages
+# were all broken. See docs/ci/step-0-ci-reliability.md.
+
 on:
   push:
     branches: [main]
@@ -16,7 +26,9 @@ concurrency:
 
 jobs:
   build-check-test:
+    name: Build, type-check and test
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -25,18 +37,27 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22.19.0'
+          cache: npm
 
+      # NOTE: npm install (not npm ci) is retained deliberately. The committed
+      # lockfile is currently missing the `rollup` transitive dependency of
+      # vite, so `npm ci` cannot reproduce the tree. Fixing the lockfile is a
+      # separate, reviewable change; switching installers here would be a
+      # functional change and is out of scope for CI reliability repair.
       - name: Install dependencies
         run: npm install --ignore-scripts --no-audit --no-fund
 
       - name: Build packages
-        run: npm run build 2>&1 || echo "::warning::build failed"
+        run: npm run build
 
-      - name: Check lint & types
-        run: |
-          npm run check:pinned-deps 2>&1 || echo "::warning::pinned-deps check failed"
-          npm run check:ts-imports 2>&1 || echo "::warning::ts-imports check failed"
-          tsc --noEmit -p tsconfig.json 2>&1 || echo "::warning::tsc check failed"
+      - name: Check pinned dependencies
+        run: npm run check:pinned-deps
+
+      - name: Check TypeScript relative imports
+        run: npm run check:ts-imports
+
+      - name: Type check
+        run: npx tsc --noEmit -p tsconfig.json
 
       - name: Run tests
-        run: npm test --if-present 2>&1 || echo "::warning::tests failed"
+        run: npm test
