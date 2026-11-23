@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-11-22T14:18:55.878Z",
-  "date": "2026-11-22",
+  "generatedAt": "2026-11-23T17:42:02.694Z",
+  "date": "2026-11-23",
   "dailyFact": {
-    "fact": "The CLI supports interactive mode, one-shot prompts, and machine-readable JSON/RPC modes.",
-    "index": 7,
+    "fact": "AIRIS has a theme system with dark, graphite, and tokyo-night built-in themes.",
+    "index": 8,
     "total": 21
   },
   "analysis": {
